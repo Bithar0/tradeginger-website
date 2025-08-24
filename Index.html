@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradeginger - Buy & Sell Locally</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa; /* Softer, off-white background */
+        }
+        .hero-section {
+            background: linear-gradient(rgba(26, 32, 44, 0.7), rgba(26, 32, 44, 0.7)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=2069&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            overflow: hidden;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        #sellModal .modal-content::-webkit-scrollbar, #loginModal .modal-content::-webkit-scrollbar, #tncModal .modal-content::-webkit-scrollbar, #chat-messages::-webkit-scrollbar { width: 8px; }
+        #sellModal .modal-content::-webkit-scrollbar-track, #loginModal .modal-content::-webkit-scrollbar-track, #tncModal .modal-content::-webkit-scrollbar-track, #chat-messages::-webkit-scrollbar-track { background: #f1f1f1; }
+        #sellModal .modal-content::-webkit-scrollbar-thumb, #loginModal .modal-content::-webkit-scrollbar-thumb, #tncModal .modal-content::-webkit-scrollbar-thumb, #chat-messages::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        #sellModal .modal-content::-webkit-scrollbar-thumb:hover, #loginModal .modal-content::-webkit-scrollbar-thumb:hover, #tncModal .modal-content::-webkit-scrollbar-thumb:hover { background: #555; }
+       
+        /* Dropdown CSS */
+        .profile-dropdown, .category-dropdown, #notification-dropdown { display: none; }
+        .profile-button:focus-within .profile-dropdown, .category-item:hover > .category-dropdown { display: block; }
+
+        /* --- NEW Professional & Classy Theme Colors --- */
+        .theme-primary { color: #1a202c; /* Deep Charcoal */ }
+        .theme-accent { color: #b79438; /* Refined Gold */ }
+        .bg-theme-primary { background-color: #1a202c; }
+        .hover\:bg-theme-primary-dark:hover { background-color: #11151c; }
+        .bg-theme-accent { background-color: #b79438; }
+        .hover\:bg-theme-accent-dark:hover { background-color: #a08130; }
+        .text-theme-accent { color: #b79438; }
+        .hover\:text-theme-accent:hover { color: #a08130; }
+        .focus\:ring-theme-accent:focus { --tw-ring-color: #b79438; }
+        .border-theme-accent { border-color: #b79438; }
+       
+        .beer-cap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background-color: #1a202c; /* New Primary */
+            color: #b79438; /* New Accent */
+            border-radius: 50%;
+            font-size: 1rem;
+            box-shadow: 0 0 0 2px #f8f9fa, 0 0 0 3px #aaa, inset 0 1px 3px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .beer-cap:hover {
+            transform: scale(1.1) rotate(5deg) !important;
+        }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] summary .accordion-icon { transform: rotate(180deg); }
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: red;
+        }
+        .premium-tag {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background-color: #b79438; /* Gold */
+            color: #1a202c; /* Charcoal */
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1rem;
+        }
+        .card {
+          background: #e8f4fd;
+          padding: 1rem;
+          border-radius: 8px;
+          box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header Section (Logged-out state) -->
+    <header id="header-logged-out" class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#" onclick="showHomepage(event)" class="flex items-center space-x-2">
+                        <svg class="h-8 w-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <g>
+                                <path d="M50 10 C 27.9 10, 10 27.9, 10 50 C 10 72.1, 27.9 90, 50 90 C 72.1 90, 90 72.1, 90 50 C 90 27.9, 72.1 10, 50 10 Z M 50 15 C 69.3 15, 85 30.7, 85 50 C 85 69.3, 69.3 85, 50 85 C 30.7 85, 15 69.3, 15 50 C 15 30.7, 30.7 15, 50 15 Z" fill="#1a202c"/>
+                                <path d="M 40 30 L 60 30 L 60 50 L 50 50 L 50 70 L 40 70 Z" fill="#b79438"/>
+                                <path d="M 65 55 C 65 63.3, 58.3 70, 50 70 C 41.7 70, 35 63.3, 35 55 L 45 55 C 45 57.8, 47.2 60, 50 60 C 52.8 60, 55 57.8, 55 55 Z" fill="#b79438"/>
+                            </g>
+                        </svg>
+                        <span class="text-2xl font-bold theme-primary">Tradeginger</span>
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#" onclick="showPremiumListingPage(event)" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Premium</a>
+                        <a href="#" onclick="showListingPage(event, 'cars')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Cars</a>
+                        <a href="#" onclick="showListingPage(event, 'mobiles')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Mobiles</a>
+                        <a href="#" onclick="showListingPage(event, 'electronics')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Electronics</a>
+                        <a href="#" onclick="showListingPage(event, 'property')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Property</a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <a href="#" onclick="showLoginModal(event)" class="text-sm font-medium text-gray-700 hover:text-theme-accent mr-4">Login</a>
+                    <button onclick="showSellModal()" class="flex items-center bg-theme-accent text-white px-4 py-2 rounded-full shadow-lg hover:bg-theme-accent-dark transition duration-300">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        SELL
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Header Section (Logged-in state) -->
+    <header id="header-logged-in" class="bg-white shadow-md sticky top-0 z-50 hidden">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-8">
+                    <a href="#" onclick="showHomepage(event)" class="flex items-center space-x-2">
+                        <svg class="h-8 w-8" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <g>
+                                <path d="M50 10 C 27.9 10, 10 27.9, 10 50 C 10 72.1, 27.9 90, 50 90 C 72.1 90, 90 72.1, 90 50 C 90 27.9, 72.1 10, 50 10 Z M 50 15 C 69.3 15, 85 30.7, 85 50 C 85 69.3, 69.3 85, 50 85 C 30.7 85, 15 69.3, 15 50 C 15 30.7, 30.7 15, 50 15 Z" fill="#1a202c"/>
+                                <path d="M 40 30 L 60 30 L 60 50 L 50 50 L 50 70 L 40 70 Z" fill="#b79438"/>
+                                <path d="M 65 55 C 65 63.3, 58.3 70, 50 70 C 41.7 70, 35 63.3, 35 55 L 45 55 C 45 57.8, 47.2 60, 50 60 C 52.8 60, 55 57.8, 55 55 Z" fill="#b79438"/>
+                            </g>
+                        </svg>
+                        <span class="text-2xl font-bold theme-primary">Tradeginger</span>
+                    </a>
+                    <a href="#" onclick="showHomepage(event)" class="text-xl text-gray-500 hover:text-theme-accent" title="Home">
+                        <i class="fas fa-home"></i>
+                    </a>
+                    <a href="#" onclick="showPremiumListingPage(event)" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Premium</a>
+                    <a href="#" onclick="showDashboardPage(event)" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                    <div class="hidden md:flex items-center border-2 rounded-full p-1 w-96">
+                        <i class="fas fa-search text-gray-400 mx-3"></i>
+                        <input type="text" placeholder="Search for cars, mobiles..." class="w-full bg-transparent focus:outline-none text-sm">
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                   <button onclick="showPlaceholderPage(event)" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-comment-dots text-xl"></i>
+                        <span id="chat-notification-dot" class="hidden notification-dot"></span>
+                   </button>
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700">
+                            <i class="far fa-bell text-xl"></i>
+                            <span id="main-notification-dot" class="hidden notification-dot"></span>
+                        </button>
+                        <div id="notification-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50 overflow-hidden">
+                            <div class="p-4 font-bold border-b">Notifications</div>
+                            <div class="divide-y">
+                                <a href="#" class="block p-4 text-sm hover:bg-gray-50">
+                                    <p class="font-semibold">Your ad is live!</p>
+                                    <p class="text-gray-500">Your listing "Honda City 2021" is now visible to everyone.</p>
+                                </a>
+                                <a href="#" onclick="showMyAdsPage(event)" class="block p-4 text-sm hover:bg-gray-50">
+                                    <p class="font-semibold">New Message</p>
+                                    <p class="text-gray-500">You have a new message regarding your ad "iPhone 14".</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative profile-button">
+                        <button class="flex items-center space-x-2">
+                            <img id="header-profile-pic" class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" alt="User profile">
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="profile-dropdown absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-50 overflow-hidden">
+                            <div class="p-4">
+                                <div class="flex items-center gap-3">
+                                    <img id="dropdown-profile-pic" class="h-12 w-12 rounded-full object-cover" src="https://placehold.co/48x48/0A2342/D4AF37?text=U" alt="User profile">
+                                    <div>
+                                        <p id="dropdown-username" class="font-semibold text-gray-800">Unknown</p>
+                                        <a href="#" onclick="showUserProfilePage(event)" class="text-sm text-theme-accent hover:underline">View and edit profile</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <nav class="border-t border-gray-100">
+                                <a href="#" onclick="showMyAdsPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-ad w-5 text-center text-gray-500"></i> My ADS</a>
+                                <a href="#" onclick="showPlaceholderPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-briefcase w-5 text-center text-gray-500"></i> Premium Business Listing</a>
+                                <a href="#" onclick="showPlaceholderPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-shopping-cart w-5 text-center text-gray-500"></i> View Cart</a>
+                                <a href="#" onclick="showPlaceholderPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-file-invoice-dollar w-5 text-center text-gray-500"></i> Your Business Listing</a>
+                            </nav>
+                            <div class="border-t border-gray-100">
+                                <a href="#" onclick="showHelpPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-question-circle w-5 text-center text-gray-500"></i> Help</a>
+                                <a href="#" onclick="logout()" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-sign-out-alt w-5 text-center text-gray-500"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="showSellModal()" class="flex items-center bg-theme-accent text-white px-4 py-2 rounded-full shadow-lg hover:bg-theme-accent-dark transition duration-300"><i class="fas fa-plus-circle mr-2"></i>SELL</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- PAGE 1: Homepage -->
+    <div id="homepage">
+        <section class="hero-section text-white py-20">
+            <!-- Beer Cap Icons -->
+            <div class="absolute top-4 left-4 flex space-x-3 z-20">
+                <a href="#" onclick="showListingPage(event, 'cars')" class="beer-cap" style="transform: rotate(-15deg);"><i class="fas fa-car"></i></a>
+                <a href="#" onclick="showListingPage(event, 'mobiles')" class="beer-cap" style="transform: rotate(10deg);"><i class="fas fa-mobile-alt"></i></a>
+                <a href="#" onclick="showListingPage(event, 'property')" class="beer-cap" style="transform: rotate(8deg);"><i class="fas fa-building"></i></a>
+                <a href="#" onclick="showListingPage(event, 'furniture')" class="beer-cap" style="transform: rotate(-12deg);"><i class="fas fa-couch"></i></a>
+                <a href="#" onclick="showListingPage(event, 'bikes')" class="beer-cap" style="transform: rotate(15deg);"><i class="fas fa-motorcycle"></i></a>
+                <a href="#" onclick="showListingPage(event, 'pets')" class="beer-cap" style="transform: rotate(-5deg);"><i class="fas fa-dog"></i></a>
+            </div>
+           
+            <div class="container mx-auto px-4 text-center relative z-10">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-4">India's Marketplace</h1>
+                <p class="text-lg md:text-xl mb-8">Find the best deals near you</p>
+                <div class="max-w-4xl mx-auto bg-white rounded-full p-2 flex items-center shadow-2xl">
+                    <div class="flex-grow flex items-center border-r-2 border-gray-200">
+                        <i class="fas fa-map-marker-alt text-gray-400 mx-3"></i>
+                        <input id="location-search" type="text" placeholder="Enter Pin Code or City" class="w-full bg-transparent text-gray-700 focus:outline-none">
+                    </div>
+                    <div class="flex-grow flex items-center ml-2">
+                         <i class="fas fa-search text-gray-400 mx-3"></i>
+                        <input id="keyword-search" type="text" placeholder="Search for cars, mobiles, and more..." class="w-full bg-transparent text-gray-700 focus:outline-none">
+                    </div>
+                    <button onclick="searchFromHome(event)" class="bg-theme-accent text-white rounded-full px-6 py-3 font-semibold hover:bg-theme-accent-dark transition duration-300">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </section>
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-6 text-center">Browse by Category</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <!-- Marketplace Goods -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 theme-primary">Marketplace</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <a href="#" onclick="showListingPage(event, 'mobiles')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-mobile-alt text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Mobiles</span></a>
+                            <a href="#" onclick="showListingPage(event, 'laptops')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-laptop text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Laptops</span></a>
+                            <a href="#" onclick="showListingPage(event, 'furniture')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-couch text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Furniture</span></a>
+                            <a href="#" onclick="showListingPage(event, 'fashion')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-tshirt text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Fashion</span></a>
+                            <a href="#" onclick="showListingPage(event, 'pets')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-dog text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Pets</span></a>
+                        </div>
+                    </div>
+                     <!-- Vehicles -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 theme-primary">Vehicles</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <a href="#" onclick="showListingPage(event, 'cars')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-car text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Cars</span></a>
+                             <a href="#" onclick="showListingPage(event, 'bikes')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-motorcycle text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Bikes</span></a>
+                            <a href="#" onclick="showListingPage(event, 'commercial_vehicles')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-truck text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Commercial</span></a>
+                        </div>
+                    </div>
+                     <!-- Real Estate -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 theme-primary">Real Estate</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <a href="#" onclick="showListingPage(event, 'property')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-building text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">For Sale</span></a>
+                            <a href="#" onclick="showListingPage(event, 'property')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-sign text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">For Rent</span></a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- PAGE 2: Product Listing Page -->
+    <div id="listingpage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row gap-8">
+                <aside id="filter-sidebar" class="w-full md:w-1/3">
+                    <!-- Dynamic Filters will be injected here by JavaScript -->
+                </aside>
+                <section class="w-full md:w-2/3">
+                    <div class="flex items-center gap-4 mb-4">
+                        <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                        <h1 id="listing-page-title" class="text-2xl font-bold"></h1>
+                    </div>
+                    <div id="listings-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Dynamic Ads will be loaded here -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- PAGE 3: Help Center -->
+    <div id="helppage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                <div class="prose max-w-none">
+                    <div class="flex items-center gap-4 mb-6">
+                        <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                        <h1 class="text-3xl font-bold">Help Center & Legal Information</h1>
+                    </div>
+                    <p class="mb-8">Welcome to the Tradeginger Help Center. Here you can find our terms of use, privacy policies, and rules for posting on our platform.</p>
+                   
+                    <h2 class="text-2xl font-bold border-b pb-2 mb-4">1. Terms of Use</h2>
+                    <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> [Date]</p>
+                    <h3 class="text-xl font-semibold mt-4">Introduction</h3>
+                    <p>Welcome to Tradeginger! These are the terms and conditions governing your access to and use of the website Tradeginger and its related sub-domains, sites, services, and tools. By using the Site, you hereby accept these terms and conditions and represent that you agree to comply with these terms and conditions. This User Agreement is deemed effective upon your use of the Site which signifies your acceptance of these terms.</p>
+                    <h3 class="text-xl font-semibold mt-4">Eligibility for Membership</h3>
+                    <p>Tradeginger wishes to ensure that its members are able to form legally binding contracts and that minors do not purchase unsuitable content. Therefore, membership of the Site is not available to persons under the age of 18 years. You represent that you are 18 years of age or over the age of 18 years before you become a member of the Site.</p>
+                   
+                    <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">2. Privacy Policy</h2>
+                    <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> [Date]</p>
+                    <p>This Privacy Policy describes our policies on the collection, use, and disclosure of information about you in connection with your use of our services, including those offered through our websites, communications (e.g., emails, phone calls, and texts), and mobile applications.</p>
+                    <h3 class="text-xl font-semibold mt-4">Information We Collect</h3>
+                    <p>We may collect and store information about you when you use the Service. We use the information to fulfill your requests, provide the Service’s functionality, improve the Service’s quality, personalize your experience, track usage of the Service, provide feedback to third-party businesses that are listed on the Service, display relevant advertising, market the Service, provide customer support, message you, back up our systems, and comply with legal obligations.</p>
+                   
+                    <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">3. Prohibited Items Policy</h2>
+                    <p>Tradeginger users are responsible for ensuring their ads comply with all applicable laws. Our list of prohibited products and services below is not exhaustive and we reserve the right to update it at any time.</p>
+                    <h3 class="text-xl font-semibold mt-4">Examples of Prohibited Items:</h3>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Adult/Pornographic Material</li>
+                        <li>Alcohol, Tobacco Products, Drugs</li>
+                        <li>Counterfeit and Replica Items</li>
+                        <li>Firearms, Ammunition, and Weapons</li>
+                        <li>Hazardous Materials</li>
+                        <li>Human Parts and Remains</li>
+                        <li>Illegal Items & Services</li>
+                        <li>Stolen Property</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PAGE 4: Placeholder Page -->
+    <div id="placeholderpage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto text-center">
+                 <div class="flex items-center justify-center gap-4 mb-6">
+                    <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                    <h1 class="text-3xl font-bold theme-primary">Coming Soon!</h1>
+                </div>
+                <p class="mt-4 text-lg text-gray-600">We are working hard on this feature and will be updating soon.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- PAGE 5: Coming Soon Page -->
+    <div id="comingsoonpage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto text-center">
+                 <div class="flex items-center justify-center gap-4 mb-6">
+                    <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                    <h1 class="text-3xl font-bold text-red-600">We would be Live soon</h1>
+                </div>
+            </div>
+        </main>
+    </div>
+   
+    <!-- PAGE 6: Product Detail Page -->
+    <div id="productdetailpage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+             <div class="flex items-center gap-4 mb-4">
+                <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                <h1 class="text-2xl font-bold">Product Details</h1>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex flex-col md:flex-row gap-8">
+                    <!-- Image Gallery -->
+                    <div class="w-full md:w-2/3">
+                        <img id="main-product-image" src="https://placehold.co/800x600/CBD5E0/4A5568?text=Honda+City" alt="Main Product Image" class="w-full h-auto rounded-lg shadow-lg">
+                        <div class="flex space-x-2 mt-4">
+                            <img src="https://placehold.co/100x75/CBD5E0/4A5568?text=Side" alt="Thumbnail" class="w-24 h-auto rounded-md cursor-pointer border-2 border-theme-accent">
+                            <img src="https://placehold.co/100x75/CBD5E0/4A5568?text=Interior" alt="Thumbnail" class="w-24 h-auto rounded-md cursor-pointer">
+                            <img src="https://placehold.co/100x75/CBD5E0/4A5568?text=Back" alt="Thumbnail" class="w-24 h-auto rounded-md cursor-pointer">
+                        </div>
+                    </div>
+                    <!-- Ad Details -->
+                    <div class="w-full md:w-1/3">
+                        <div class="border-b pb-4 mb-4">
+                            <h2 id="product-detail-price" class="text-3xl font-bold mb-2"></h2>
+                            <p  id="product-detail-title" class="text-lg text-gray-600"></p>
+                            <div class="flex justify-between text-sm text-gray-500 mt-2">
+                                <span id="product-detail-location"></span>
+                                <span id="product-detail-date"></span>
+                            </div>
+                        </div>
+                        <div class="border-b pb-4 mb-4">
+                             <h3 class="text-xl font-semibold mb-2">Seller Details</h3>
+                             <div class="flex items-center gap-4">
+                                <img id="product-detail-seller-pic" class="h-16 w-16 rounded-full object-cover" src="" alt="Seller profile">
+                                <div>
+                                    <p id="product-detail-seller-name" class="font-bold text-lg"></p>
+                                    <p id="product-detail-seller-since" class="text-sm text-gray-500"></p>
+                                </div>
+                             </div>
+                             <button id="chat-with-seller-btn" class="w-full mt-4 bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">
+                                 <i class="fas fa-comments mr-2"></i>Chat with Seller
+                             </button>
+                        </div>
+                         <button class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
+                            <i class="far fa-heart text-red-500"></i>
+                            <span class="font-semibold">Add to Favorites</span>
+                         </button>
+                    </div>
+                </div>
+                <div id="product-detail-attributes" class="mt-8 border-t pt-6">
+                    <h3 class="text-xl font-semibold mb-4">Details</h3>
+                    <!-- Attributes will be injected here -->
+                </div>
+                 <div class="mt-8 border-t pt-6">
+                    <h3 class="text-xl font-semibold mb-4">Description</h3>
+                    <p id="product-detail-description" class="text-gray-700 leading-relaxed"></p>
+                </div>
+                <div class="mt-8 border-t pt-6">
+                    <h3 class="text-xl font-semibold mb-4">Similar Ads</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Similar Ad 1 -->
+                        <a href="#" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
+                            <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=Hyundai+Verna" alt="Product" class="w-full h-40 object-cover">
+                            <div class="p-3">
+                                <h3 class="font-bold text-md mb-1">₹ 9,20,000</h3>
+                                <p class="text-gray-600 text-xs">Hyundai Verna 2022</p>
+                            </div>
+                        </a>
+                        <!-- Similar Ad 2 -->
+                        <a href="#" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
+                            <img src="https://placehold.co/400x300/E2E8F0/4A5568?text=Maruti+Ciaz" alt="Product" class="w-full h-40 object-cover">
+                            <div class="p-3">
+                                <h3 class="font-bold text-md mb-1">₹ 8,90,000</h3>
+                                <p class="text-gray-600 text-xs">Maruti Suzuki Ciaz 2021</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-8 border-t pt-6">
+                    <h3 class="text-xl font-semibold mb-4">Sponsored Links</h3>
+                    <div class="p-4 border rounded-lg bg-gray-50 text-center">
+                        <p class="text-gray-500">Advertisement</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PAGE 7: My Ads Page -->
+    <div id="myadspage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex items-center gap-4 mb-6">
+                <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                <h1 class="text-3xl font-bold">My Ads</h1>
+            </div>
+            <div id="my-ads-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Ads will be dynamically inserted here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- PAGE 8: User Profile Page -->
+    <div id="userprofilepage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="w-full md:w-1/4">
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <img id="profile-page-pic" class="h-24 w-24 rounded-full object-cover mx-auto mb-4" src="https://placehold.co/96x96/0A2342/D4AF37?text=M" alt="User profile">
+                        <h2 id="profile-page-username" class="text-2xl font-bold">Manas</h2>
+                        <p id="profile-page-member-since" class="text-sm text-gray-500">Member since Sep 2014</p>
+                        <div class="text-left text-sm mt-4">
+                            <p class="font-semibold mb-2">User verified with:</p>
+                            <div class="flex items-center gap-2 text-gray-600">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span>Phone</span>
+                            </div>
+                             <div class="flex items-center gap-2 text-gray-600">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span>Email</span>
+                            </div>
+                        </div>
+                        <button onclick="showEditProfilePage(event)" class="w-full mt-6 bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">Edit Profile</button>
+                    </div>
+                </div>
+                <div class="w-full md:w-3/4">
+                     <div class="bg-white p-8 rounded-lg shadow-md text-center">
+                        <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
+                        <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
+                        <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
+                        <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+   
+    <!-- PAGE 9: Edit Profile Page -->
+    <div id="editprofilepage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+                <div class="flex items-center gap-4 mb-6 border-b pb-4">
+                    <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                    <h1 class="text-2xl font-bold">Edit Profile</h1>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Profile picture</h3>
+                        <div class="flex items-center gap-4">
+                             <img id="profile-pic-preview" class="h-24 w-24 rounded-full object-cover" src="https://placehold.co/96x96/0A2342/D4AF37?text=M" alt="User profile">
+                             <input type="file" id="profile-pic-upload" class="hidden" accept="image/*" onchange="handleProfilePictureChange(event)">
+                             <button onclick="document.getElementById('profile-pic-upload').click()" class="border border-gray-300 px-4 py-2 rounded-md text-sm font-semibold hover:bg-gray-50">Change Picture</button>
+                        </div>
+                        <div class="mt-8">
+                            <h3 class="text-lg font-semibold mb-4">Basic information</h3>
+                            <div class="space-y-4">
+                                <input id="edit-profile-name-input" type="text" value="Manas" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                                <textarea placeholder="About me (optional)" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent h-24"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">Contact information</h3>
+                             <div class="space-y-4">
+                                <input type="email" value="user@example.com" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                                <input type="tel" value="+919876543210" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                            </div>
+                        </div>
+                         <div>
+                            <h3 class="text-lg font-semibold mb-2">Additional information</h3>
+                             <div class="flex items-center justify-between p-4 border rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <i class="fab fa-google text-red-500 text-2xl"></i>
+                                    <div>
+                                        <p class="font-semibold">Google</p>
+                                        <p class="text-xs text-gray-500">Link your Google account to seamlessly use your contact list.</p>
+                                    </div>
+                                </div>
+                                <button class="border-2 border-red-500 text-red-500 px-4 py-1 rounded-full text-sm font-semibold hover:bg-red-50">Unlink</button>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="flex justify-end gap-4 border-t pt-6 mt-8">
+                    <button onclick="showUserProfilePage(event)" class="text-gray-600 font-semibold hover:text-theme-primary">Discard</button>
+                    <button onclick="handleProfileUpdate(event)" class="bg-theme-primary text-white px-6 py-2 rounded-md font-semibold hover:bg-theme-primary-dark">Save changes</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PAGE 10: Premium Listing Page -->
+    <div id="premiumlistingpage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex items-center gap-4 mb-6">
+                <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                <h1 class="text-3xl font-bold">Premium Listings</h1>
+            </div>
+            <div class="space-y-12">
+                <!-- Featured Vehicles -->
+                <section>
+                    <h2 class="text-2xl font-bold mb-4">Featured Vehicles</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                         <a href="#" onclick="showProductDetailPage(event)" class="block bg-white rounded-lg border-2 border-theme-accent overflow-hidden product-card transition-all duration-300 relative">
+                            <span class="premium-tag">Premium</span>
+                            <img src="https://placehold.co/400x300/FEF3C7/4A5568?text=Jeep+Compass" alt="Product" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg mb-2">₹ 18,50,000</h3>
+                                <p class="text-gray-600 text-sm">Jeep Compass 2022, Low KMs</p>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+                 <!-- Premium Properties -->
+                <section>
+                    <h2 class="text-xl font-bold mb-4">Premium Properties</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                         <a href="#" onclick="showProductDetailPage(event)" class="block bg-white rounded-lg border-2 border-theme-accent overflow-hidden product-card transition-all duration-300 relative">
+                            <span class="premium-tag">Premium</span>
+                            <img src="https://placehold.co/400x300/FEF3C7/4A5568?text=Luxury+Villa" alt="Product" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg mb-2">₹ 2,50,00,000</h3>
+                                <p class="text-gray-600 text-sm">4 BHK Luxury Villa in South Delhi</p>
+                            </div>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- PAGE 11: User Dashboard -->
+    <div id="dashboardpage" class="hidden">
+      <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex items-center gap-4 mb-6">
+              <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+              <h1 class="text-3xl font-bold">Premium Dashboard</h1>
+        </div>
+        <div class="dashboard-grid">
+          <div class="card"><strong>Balance:</strong> ₹12,300</div>
+          <div class="card"><strong>Last Login:</strong> 19 Jul 2025</div>
+          <div class="card"><strong>Status:</strong> Premium Member</div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Universal Footer -->
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div><h3 class="font-bold mb-4">Popular Categories</h3><ul><li class="mb-2"><a href="#" onclick="showListingPage(event, 'cars')" class="hover:text-theme-accent">Cars</a></li><li class="mb-2"><a href="#" onclick="showListingPage(event, 'mobiles')" class="hover:text-theme-accent">Mobiles</a></li></ul></div>
+                <div><h3 class="font-bold mb-4">About Us</h3><ul><li class="mb-2"><a href="#" onclick="showComingSoonPage(event)" class="hover:text-theme-accent">About Tradeginger</a></li><li class="mb-2"><a href="#" onclick="showComingSoonPage(event)" class="hover:text-theme-accent">Careers</a></li></ul></div>
+                <div><h3 class="font-bold mb-4">Tradeginger</h3><ul><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Help</a></li><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Legal & Privacy</a></li></ul></div>
+                <div><h3 class="font-bold mb-4">Follow Us</h3><div class="flex space-x-4"><a href="#" onclick="showComingSoonPage(event)" class="text-2xl hover:text-theme-accent"><i class="fab fa-facebook-f"></i></a><a href="#" onclick="showComingSoonPage(event)" class="text-2xl hover:text-theme-accent"><i class="fab fa-twitter"></i></a><a href="#" onclick="showComingSoonPage(event)" class="text-2xl hover:text-theme-accent"><i class="fab fa-instagram"></i></a></div></div>
+            </div>
+            <div class="text-center text-gray-400 mt-8 pt-8 border-t border-gray-700">&copy; 2025 Tradeginger. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <!-- Universal Sell Item Modal -->
+    <div id="sellModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full z-50 flex items-center justify-center">
+        <div class="relative mx-auto border w-full max-w-3xl shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center p-4 border-b"><p class="text-2xl font-bold">Post Your Ad</p><div class="cursor-pointer z-50" onclick="hideSellModal()"><i class="fas fa-times text-xl"></i></div></div>
+            <div class="p-6 modal-content" style="max-height: 85vh; overflow-y: auto;">
+                <form id="adForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Category*</label>
+                        <select id="category-select" onchange="updateAttributeFields()" class="mt-1 block w-full input-style">
+                            <option value="">Select a Category</option>
+                        </select>
+                    </div>
+                    <div id="category-attributes" class="space-y-4 border-t pt-4 mt-4"></div>
+                    <div class="border-t pt-6 mt-6 space-y-6">
+                        <div>
+                            <label class="label-style">Ad Title*</label>
+                            <input type="text" id="ad-title" class="mt-1 block w-full input-style" required>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center">
+                                <label class="label-style">Description* (Min 50 words)</label>
+                                <button type="button" onclick="generateDescription()" class="text-sm text-theme-accent font-semibold">✨ Generate Description</button>
+                            </div>
+                            <textarea rows="4" id="ad-description" placeholder="Include condition, features, and reason for selling" class="mt-1 block w-full input-style" required></textarea>
+                        </div>
+                        <div>
+                            <label class="label-style">Set a Price (₹)*</label>
+                            <input type="number" id="ad-price" placeholder="e.g., 15000" class="mt-1 block w-full input-style" required>
+                        </div>
+                        <div>
+                            <label class="label-style">Upload Photos</label>
+                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                                <div class="space-y-1 text-center">
+                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
+                                    <div class="flex text-sm text-gray-600">
+                                        <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-theme-accent hover\:text-theme-accent">
+                                            <span>Upload a file</span>
+                                            <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple>
+                                        </label>
+                                        <p class="pl-1">or drag and drop</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input id="terms-checkbox" type="checkbox" onchange="togglePostButton()" class="h-4 w-4 text-theme-accent rounded focus:ring-theme-accent">
+                            <label for="terms-checkbox" class="text-xs text-gray-600">I have read all <a href="#" onclick="showTncModal(event)" class="underline text-theme-primary">T&C</a> AND I accepted the T&C*</label>
+                        </div>
+                    </div>
+                    <div class="pt-6 border-t">
+                        <button id="post-ad-button" type="submit" class="w-full bg-theme-accent text-white py-3 px-4 rounded-md font-semibold text-lg opacity-50 cursor-not-allowed" disabled>Post Now</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+   
+    <!-- T&C Modal -->
+    <div id="tncModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 h-full w-full z-50 flex items-center justify-center">
+        <div class="relative mx-auto border w-full max-w-2xl shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center p-4 border-b">
+                <p class="text-2xl font-bold">Terms of Use</p>
+                <div class="cursor-pointer z-50" onclick="hideTncModal()">
+                    <i class="fas fa-times text-xl"></i>
+                </div>
+            </div>
+            <div class="p-6 modal-content prose prose-sm max-w-none" style="max-height: 70vh; overflow-y: auto;">
+                 <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> [Date]</p>
+                 <h3 class="text-xl font-semibold mt-4">Introduction</h3>
+                 <p>Welcome to Tradeginger! These are the terms and conditions governing your access to and use of the website Tradeginger and its related sub-domains, sites, services, and tools. By using the Site, you hereby accept these terms and conditions and represent that you agree to comply with these terms and conditions. This User Agreement is deemed effective upon your use of the Site which signifies your acceptance of these terms.</p>
+                 <h3 class="text-xl font-semibold mt-4">Eligibility for Membership</h3>
+                 <p>Tradeginger wishes to ensure that its members are able to form legally binding contracts and that minors do not purchase unsuitable content. Therefore, membership of the Site is not available to persons under the age of 18 years. You represent that you are 18 years of age or over the age of 18 years before you become a member of the Site.</p>
+                 <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">2. Privacy Policy</h2>
+                 <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> [Date]</p>
+                 <p>This Privacy Policy describes our policies on the collection, use, and disclosure of information about you in connection with your use of our services, including those offered through our websites, communications (e.g., emails, phone calls, and texts), and mobile applications.</p>
+                 <h3 class="text-xl font-semibold mt-4">Information We Collect</h3>
+                 <p>We may collect and store information about you when you use the Service. We use the information to fulfill your requests, provide the Service’s functionality, improve the Service’s quality, personalize your experience, track usage of the Service, provide feedback to third-party businesses that are listed on the Service, display relevant advertising, market the Service, provide customer support, message you, back up our systems, and comply with legal obligations.</p>
+                 <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">3. Prohibited Items Policy</h2>
+                 <p>Tradeginger users are responsible for ensuring their ads comply with all applicable laws. Our list of prohibited products and services below is not exhaustive and we reserve the right to update it at any time.</p>
+                 <h3 class="text-xl font-semibold mt-4">Examples of Prohibited Items:</h3>
+                 <ul class="list-disc list-inside space-y-1">
+                     <li>Adult/Pornographic Material</li>
+                     <li>Alcohol, Tobacco Products, Drugs</li>
+                     <li>Counterfeit and Replica Items</li>
+                     <li>Firearms, Ammunition, and Weapons</li>
+                     <li>Hazardous Materials</li>
+                     <li>Human Parts and Remains</li>
+                     <li>Illegal Items & Services</li>
+                     <li>Stolen Property</li>
+                 </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 h-full w-full z-50 flex items-center justify-center p-4">
+        <div class="relative w-full max-w-4xl mx-auto rounded-lg overflow-hidden flex flex-col md:flex-row" style="max-height: 90vh;">
+            <!-- Left Side -->
+            <div class="w-full md:w-1/3 bg-theme-primary text-white p-8 space-y-8 hidden md:flex flex-col justify-center">
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-truck-loading text-2xl text-theme-accent"></i>
+                    <div>
+                        <h3 class="font-bold">Manage your orders</h3>
+                        <p class="text-sm text-gray-300">Track your orders, delivery and returns</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-comments-dollar text-2xl text-theme-accent"></i>
+                    <div>
+                        <h3 class="font-bold">Transact with buyers and sellers</h3>
+                        <p class="text-sm text-gray-300">Check and respond to chats, replies, offers and more</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-bell text-2xl text-theme-accent"></i>
+                    <div>
+                        <h3 class="font-bold">Personalized notifications and alerts</h3>
+                        <p class="text-sm text-gray-300">Get matching alerts for the products/services you are looking for</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Side -->
+            <div class="w-full md:w-2/3 bg-white p-8 flex flex-col justify-center relative overflow-y-auto">
+                <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+                <div id="login-form" class="w-full max-w-sm mx-auto">
+                    <div class="flex border-b mb-4">
+                        <button id="login-tab" class="flex-1 py-2 font-semibold border-b-2 border-theme-accent" onclick="switchAuthForm('login')">Login</button>
+                        <button id="register-tab" class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('register')">Register</button>
+                    </div>
+                    <h2 class="text-2xl font-bold text-center mb-2">Login to Tradeginger</h2>
+                    <p class="text-center text-gray-500 mb-6">Please provide your Email and Password</p>
+                    <input id="login-email" type="email" placeholder="Enter Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                    <input id="login-password" type="password" placeholder="Enter Password" class="w-full border-2 border-gray-300 p-3 rounded-md mt-4 focus:outline-none focus:border-theme-accent">
+                    <button onclick="handleLogin(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Continue</button>
+                    <div class="my-6 flex items-center">
+                        <div class="flex-grow border-t border-gray-300"></div>
+                        <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
+                        <div class="flex-grow border-t border-gray-300"></div>
+                    </div>
+                    <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
+                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
+                        <span class="font-semibold">Login with Google</span>
+                    </button>
+                     <p class="text-center mt-4 text-sm">Don't have an account? <a href="#" onclick="switchAuthForm('register')" class="font-semibold text-theme-accent">Register</a></p>
+                </div>
+                <div id="register-form" class="w-full max-w-sm mx-auto hidden">
+                     <div class="flex border-b mb-4">
+                        <button id="login-tab-reg" class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('login')">Login</button>
+                        <button id="register-tab-reg" class="flex-1 py-2 font-semibold border-b-2 border-theme-accent" onclick="switchAuthForm('register')">Register</button>
+                    </div>
+                    <h2 class="text-2xl font-bold text-center mb-6">Register on Tradeginger</h2>
+                    <div class="space-y-4">
+                        <input id="register-first-name" type="text" placeholder="First Name" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                        <input id="register-last-name" type="text" placeholder="Last Name" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                        <input id="register-email" type="email" placeholder="Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                        <input id="register-mobile" type="tel" placeholder="10-digit Mobile Number" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                        <input id="register-password" type="password" placeholder="Password" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                        <button onclick="handleRegister(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Register</button>
+                    </div>
+                    <p class="text-center mt-4 text-sm">Already have an account? <a href="#" onclick="switchAuthForm('login')" class="font-semibold text-theme-accent">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Window -->
+    <div id="chat-window" class="hidden fixed bottom-0 right-4 w-80 bg-white rounded-t-lg shadow-2xl z-50">
+        <div class="flex justify-between items-center bg-theme-primary text-white p-2 rounded-t-lg">
+            <div>
+                <p id="chat-seller-name" class="font-bold text-sm"></p>
+                <p id="chat-ad-id" class="text-xs"></p>
+            </div>
+            <div>
+                <button id="mute-btn" onclick="toggleMute()" class="mr-2 hover:text-theme-accent"><i class="fas fa-volume-up"></i></button>
+                <button onclick="closeChatWindow()" class="hover:text-red-400"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div id="chat-messages" class="h-64 p-4 overflow-y-auto space-y-4">
+            <!-- Messages will be injected here -->
+        </div>
+        <div class="p-2 border-t">
+            <div class="flex items-center mb-2">
+                <button onclick="getAIChatAssistance('suggest_questions')" class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full hover:bg-gray-300">✨ Suggest Questions</button>
+                <button onclick="getAIChatAssistance('draft_reply')" class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full hover:bg-gray-300 ml-2">✨ Draft Reply</button>
+                <button onclick="getAIChatAssistance('negotiation_tips')" class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full hover:bg-gray-300 ml-2">✨ Negotiate</button>
+            </div>
+            <form id="chat-form" class="flex items-center">
+                <input id="chat-input" type="text" placeholder="Type a message..." class="w-full border rounded-full py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent">
+                <button type="submit" class="ml-2 bg-theme-accent text-white rounded-full h-8 w-8 flex items-center justify-center"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+
+     <!-- Ad Submission Success Modal -->
+    <div id="adSuccessModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 h-full w-full z-50 flex items-center justify-center">
+        <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-md bg-white text-center">
+            <i class="fas fa-check-circle text-green-500 text-5xl mb-4"></i>
+            <h3 class="text-2xl font-bold mb-2">Ad Submitted!</h3>
+            <p class="text-gray-600 mb-6">Your ad is under processing and will be live soon.</p>
+            <div class="space-y-4">
+                <button onclick="showPremiumListingPage(event); hideAdSuccessModal();" class="w-full bg-theme-accent text-white p-3 rounded-md font-semibold hover:bg-theme-accent-dark">For Paid Listing Click here</button>
+                <button onclick="hideAdSuccessModal()" class="w-full bg-gray-200 text-gray-700 p-2 rounded-md font-semibold hover:bg-gray-300">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Supabase Connection ---
+        const SUPABASE_URL = 'https://ynyqwmbeglqwtvwqpaeg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueXF3bWJlZ2xxd3R2d3FwYWVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5MzAxODcsImV4cCI6MjA3MTUwNjE4N30.IsLuwykC4Qtl4gXsFrygN5Ko1o4VZ4oLS6EDd8QGWoI';
+       
+        let supabase = null;
+        if(window.supabase) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } else {
+            console.error("Supabase client library not loaded.");
+        }
+
+        // --- Cloudinary Configuration ---
+        const CLOUDINARY_CLOUD_NAME = 'dcxhenppn';
+        const CLOUDINARY_UPLOAD_PRESET = 'marketplace_preset';
+
+
+        // --- Page Navigation Logic ---
+        let navigationHistory = [];
+        let postLoginAction = null;
+
+        const pageDivs = {
+            homepage: document.getElementById('homepage'),
+            listingpage: document.getElementById('listingpage'),
+            helppage: document.getElementById('helppage'),
+            placeholderpage: document.getElementById('placeholderpage'),
+            productdetailpage: document.getElementById('productdetailpage'),
+            comingsoonpage: document.getElementById('comingsoonpage'),
+            myadspage: document.getElementById('myadspage'),
+            userprofilepage: document.getElementById('userprofilepage'),
+            editprofilepage: document.getElementById('editprofilepage'),
+            premiumlistingpage: document.getElementById('premiumlistingpage'),
+            dashboardpage: document.getElementById('dashboardpage'),
+        };
+        const headers = {
+            loggedOut: document.getElementById('header-logged-out'),
+            loggedIn: document.getElementById('header-logged-in')
+        };
+
+        function showPage(pageName, isLoggedIn, isBack = false) {
+            let currentPage = '';
+            for (const [name, div] of Object.entries(pageDivs)) {
+                if (div && !div.classList.contains('hidden')) {
+                    currentPage = name;
+                    break;
+                }
+            }
+
+            if (!isBack && currentPage && currentPage !== pageName) {
+                navigationHistory.push(currentPage);
+            }
+           
+            Object.values(pageDivs).forEach(div => { if(div) div.classList.add('hidden'); });
+            if (pageDivs[pageName]) pageDivs[pageName].classList.remove('hidden');
+
+            headers.loggedOut.classList.toggle('hidden', isLoggedIn);
+            headers.loggedIn.classList.toggle('hidden', !isLoggedIn);
+            window.scrollTo(0, 0);
+        }
+       
+        function goBack(event) {
+            if (event) event.preventDefault();
+            if (navigationHistory.length > 0) {
+                const previousPage = navigationHistory.pop();
+                const isLoggedIn = !headers.loggedIn.classList.contains('hidden');
+                showPage(previousPage, isLoggedIn, true);
+            } else {
+                showHomepage(event);
+            }
+        }
+
+        function showHomepage(event) { if(event) event.preventDefault(); navigationHistory = []; showPage('homepage', !headers.loggedIn.classList.contains('hidden')); }
+        function showListingPage(event, categoryKey) { if(event) event.preventDefault(); showPage('listingpage', !headers.loggedIn.classList.contains('hidden')); updateListingPage(categoryKey); }
+        function showHelpPage(event) { if(event) event.preventDefault(); showPage('helppage', !headers.loggedIn.classList.contains('hidden')); }
+        function showPlaceholderPage(event) { if(event) event.preventDefault(); showPage('placeholderpage', true); }
+       
+        async function showProductDetailPage(event, adId) {
+            if (event) event.preventDefault();
+            const isLoggedIn = !document.getElementById('header-logged-in').classList.contains('hidden');
+            if (isLoggedIn) {
+                 await loadProductDetails(adId);
+                 showPage('productdetailpage', true);
+            } else {
+                postLoginAction = () => showProductDetailPage(null, adId);
+                showLoginModal(event);
+            }
+        }
+
+        function showComingSoonPage(event) { if(event) event.preventDefault(); showPage('comingsoonpage', !headers.loggedIn.classList.contains('hidden')); }
+       
+        async function showMyAdsPage(event) {
+            if(event) event.preventDefault();
+            await fetchAndDisplayMyAds(); // Fetch data before showing the page
+            showPage('myadspage', true);
+        }
+
+        function showUserProfilePage(event) { if(event) event.preventDefault(); showPage('userprofilepage', true); }
+        function showEditProfilePage(event) { if(event) event.preventDefault(); showPage('editprofilepage', true); }
+        function showPremiumListingPage(event) { if(event) event.preventDefault(); showPage('premiumlistingpage', !headers.loggedIn.classList.contains('hidden')); }
+        function showDashboardPage(event) { if(event) event.preventDefault(); showPage('dashboardpage', true); }
+       
+        function searchFromHome(event) {
+            if (event) event.preventDefault();
+            const locationValue = document.getElementById('location-search').value;
+            showListingPage(event, 'cars'); // Default to cars for search
+            document.getElementById('location-filter').value = locationValue;
+            alert(`Searching for items near "${locationValue}"`);
+        }
+
+        // --- Modal Control ---
+        function showSellModal(event) {
+            if(event) event.preventDefault();
+            const isLoggedIn = !document.getElementById('header-logged-in').classList.contains('hidden');
+            if (isLoggedIn) {
+                document.getElementById('sellModal').classList.remove('hidden');
+            } else {
+                postLoginAction = showSellModal;
+                showLoginModal(event);
+            }
+        }
+        function hideSellModal() {
+            document.getElementById('sellModal').classList.add('hidden');
+            // Reset state when modal is hidden
+            editingAdId = null;
+            document.getElementById('adForm').reset();
+            document.querySelector('#sellModal .text-2xl').textContent = 'Post Your Ad';
+            document.getElementById('post-ad-button').textContent = 'Post Now';
+        }
+        function showLoginModal(event) { if(event) event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); }
+        function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+        function showTncModal(event) { if(event) event.preventDefault(); document.getElementById('tncModal').classList.remove('hidden'); }
+        function hideTncModal() { document.getElementById('tncModal').classList.add('hidden'); }
+        function showPostSuccessModal() { document.getElementById('adSuccessModal').classList.remove('hidden'); }
+        function hideAdSuccessModal() { document.getElementById('adSuccessModal').classList.add('hidden'); }
+
+        document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
+       
+        // --- RERA Info ---
+        function showReraInfo() { alert('RERA stands for Real Estate Regulatory Authority. A RERA number is a unique identification number assigned to real estate projects, ensuring transparency and accountability from builders.'); }
+
+        // --- Dynamic Form Logic ---
+        function generateYearOptions(start, end) {
+            let options = '<option value="">Select Year</option>';
+            for (let year = end; year >= start; year--) {
+                options += `<option value="${year}">${year}</option>`;
+            }
+            return options;
+        }
+        const yearDropdown = generateYearOptions(1990, 2025);
+
+        const attributeTemplates = {
+            cars: `<h3 class="text-xl font-bold text-gray-900 mb-4">Car Details</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="label-style">Brand*</label><select class="input-style w-full"><option>Maruti Suzuki</option><option>Hyundai</option><option>Tata</option><option>Mahindra</option><option>Kia</option><option>Toyota</option><option>Honda</option><option>Volkswagen</option><option>Skoda</option><option>MG</option><option>Renault</option><option>Nissan</option><option>Jeep</option><option>Citroen</option><option>Isuzu</option><option>Mercedes-Benz</option><option>BMW</option><option>Audi</option><option>Jaguar</option><option>Land Rover</option><option>Volvo</option><option>Other</option></select></div><div><label class="label-style">Model*</label><input type="text" placeholder="e.g., Swift, Creta, Nexon" class="input-style w-full"></div><div><label class="label-style">Variant*</label><input type="text" placeholder="e.g., VXI, SX, XZ+" class="input-style w-full"></div><div><label class="label-style">Year*</label><select class="input-style w-full">${yearDropdown}</select></div><div><label class="label-style">Fuel*</label><select class="input-style w-full"><option>Petrol</option><option>Diesel</option><option>CNG & Hybrids</option><option>Electric</option><option>LPG</option></select></div><div><label class="label-style">Transmission*</label><select class="input-style w-full"><option>Manual</option><option>Automatic</option></select></div><div><label class="label-style">KM Driven*</label><input type="number" placeholder="e.g., 25000" class="input-style w-full"></div><div><label class="label-style">No. of Owners*</label><select class="input-style w-full"><option>1st</option><option>2nd</option><option>3rd</option><option>4th+</option></select></div></div><div><label class="label-style">Condition</label><div class="flex space-x-4 mt-1"><label class="flex items-center"><input type="radio" name="condition" class="mr-2 h-4 w-4"

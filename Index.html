@@ -15,10 +15,10 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f4f4f5; /* Lighter gray background */
+            background-color: #f8f9fa; /* Softer, off-white background */
         }
         .hero-section {
-            background: linear-gradient(rgba(10, 35, 66, 0.7), rgba(10, 35, 66, 0.7)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=2069&auto=format&fit=crop') no-repeat center center;
+            background: linear-gradient(rgba(26, 32, 44, 0.7), rgba(26, 32, 44, 0.7)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=2069&auto=format&fit=crop') no-repeat center center;
             background-size: cover;
             position: relative;
             overflow: hidden;
@@ -36,17 +36,17 @@
         .profile-dropdown, .category-dropdown, #notification-dropdown { display: none; }
         .profile-button:focus-within .profile-dropdown, .category-item:hover > .category-dropdown { display: block; }
 
-        /* Custom Theme Colors */
-        .theme-primary { color: #0A2342; /* Prussian Blue */ }
-        .theme-accent { color: #D4AF37; /* Gold */ }
-        .bg-theme-primary { background-color: #0A2342; }
-        .hover\:bg-theme-primary-dark:hover { background-color: #071a30; }
-        .bg-theme-accent { background-color: #D4AF37; }
-        .hover\:bg-theme-accent-dark:hover { background-color: #b89a2e; }
-        .text-theme-accent { color: #D4AF37; }
-        .hover\:text-theme-accent:hover { color: #b89a2e; }
-        .focus\:ring-theme-accent:focus { --tw-ring-color: #D4AF37; }
-        .border-theme-accent { border-color: #D4AF37; }
+        /* --- NEW Professional & Classy Theme Colors --- */
+        .theme-primary { color: #1a202c; /* Deep Charcoal */ }
+        .theme-accent { color: #b79438; /* Refined Gold */ }
+        .bg-theme-primary { background-color: #1a202c; }
+        .hover\:bg-theme-primary-dark:hover { background-color: #11151c; }
+        .bg-theme-accent { background-color: #b79438; }
+        .hover\:bg-theme-accent-dark:hover { background-color: #a08130; }
+        .text-theme-accent { color: #b79438; }
+        .hover\:text-theme-accent:hover { color: #a08130; }
+        .focus\:ring-theme-accent:focus { --tw-ring-color: #b79438; }
+        .border-theme-accent { border-color: #b79438; }
         
         .beer-cap {
             display: flex;
@@ -54,11 +54,11 @@
             justify-content: center;
             width: 35px;
             height: 35px;
-            background-color: #0A2342; /* Blue */
-            color: #D4AF37; /* Yellow */
+            background-color: #1a202c; /* New Primary */
+            color: #b79438; /* New Accent */
             border-radius: 50%;
             font-size: 1rem;
-            box-shadow: 0 0 0 2px #f4f4f5, 0 0 0 3px #aaa, inset 0 1px 3px rgba(0,0,0,0.4);
+            box-shadow: 0 0 0 2px #f8f9fa, 0 0 0 3px #aaa, inset 0 1px 3px rgba(0,0,0,0.4);
             transition: transform 0.2s ease-in-out;
             cursor: pointer;
             flex-shrink: 0;
@@ -78,30 +78,6 @@
             border-radius: 50%;
             background-color: red;
         }
-        .premium-tag {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            background-color: #D4AF37; /* Gold */
-            color: #0A2342; /* Prussian Blue */
-            padding: 2px 8px;
-            border-radius: 9999px;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-
-        /* Dashboard Styles */
-        .dashboard-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1rem;
-        }
-        .card {
-          background: #e8f4fd;
-          padding: 1rem;
-          border-radius: 8px;
-          box-shadow: 0 0 5px rgba(0,0,0,0.1);
-        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -115,7 +91,6 @@
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="#" onclick="showPremiumListingPage(event)" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Premium</a>
                         <a href="#" onclick="showListingPage(event, 'cars')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Cars</a>
                         <a href="#" onclick="showListingPage(event, 'mobiles')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Mobiles</a>
                         <a href="#" onclick="showListingPage(event, 'electronics')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Electronics</a>
@@ -142,9 +117,6 @@
                     <a href="#" onclick="showHomepage(event)" class="text-xl text-gray-500 hover:text-theme-accent" title="Home">
                         <i class="fas fa-home"></i>
                     </a>
-                    <a href="#" onclick="showPremiumListingPage(event)" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Premium</a>
-                    <a href="#" onclick="showDashboardPage(event)" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                    <a href="#" onclick="showAdminPage(event)" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Admin</a>
                     <div class="hidden md:flex items-center border-2 rounded-full p-1 w-96">
                         <i class="fas fa-search text-gray-400 mx-3"></i>
                         <input type="text" placeholder="Search for cars, mobiles..." class="w-full bg-transparent focus:outline-none text-sm">
@@ -288,8 +260,7 @@
                         <h1 id="listing-page-title" class="text-2xl font-bold"></h1>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <a href="#" onclick="showProductDetailPage(event)" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300"><img src="https://placehold.co/400x300/E2E8F0/4A5568?text=iPhone+14" alt="Product" class="w-full h-48 object-cover"><div class="p-4 flex flex-col h-40 justify-between"><div><div class="flex justify-between items-start"><h3 class="font-bold text-lg mb-2">₹ 75,000</h3><button class="text-gray-400 hover:text-red-500 z-10 relative"><i class="far fa-heart"></i></button></div><p class="text-gray-600 text-sm mb-2">iPhone 14 Pro, 128GB, Like New</p></div><div class="flex justify-between text-xs text-gray-500 mt-2"><span>Gurugram</span><span>Today</span></div></div></a>
-                        <a href="#" onclick="showProductDetailPage(event)" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300"><img src="https://placehold.co/400x300/CBD5E0/4A5568?text=Honda+City" alt="Product" class="w-full h-48 object-cover"><div class="p-4 flex flex-col h-40 justify-between"><div><div class="flex justify-between items-start"><h3 class="font-bold text-lg mb-2">₹ 8,50,000</h3><button class="text-gray-400 hover:text-red-500 z-10 relative"><i class="far fa-heart"></i></button></div><p class="text-gray-600 text-sm mb-2">Honda City 2021, Petrol, 25000 km</p></div><div class="flex justify-between text-xs text-gray-500 mt-2"><span>Noida</span><span>Yesterday</span></div></div></a>
+                        <!-- Dynamic Ads will be loaded here -->
                     </div>
                 </section>
             </div>
@@ -465,39 +436,8 @@
                 <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
                 <h1 class="text-3xl font-bold">My Ads</h1>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <!-- Sample Ad 1 -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <img src="https://placehold.co/400x300/A7F3D0/4A5568?text=Laptop" alt="Product Image" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-bold text-lg mb-2">₹ 42,000</h3>
-                        <p class="text-gray-600 text-sm mb-4">Dell Inspiron 15, i5 11th Gen</p>
-                        <div class="flex justify-between items-center text-xs text-gray-500">
-                            <span>Faridabad</span>
-                            <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">Active</span>
-                        </div>
-                        <div class="mt-4 flex gap-2">
-                            <button class="w-full bg-gray-200 text-gray-700 p-2 rounded-md font-semibold hover:bg-gray-300 text-sm">Edit</button>
-                            <button class="w-full bg-red-500 text-white p-2 rounded-md font-semibold hover:bg-red-600 text-sm">Delete</button>
-                        </div>
-                    </div>
-                </div>
-                 <!-- Sample Ad 2 -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <img src="https://placehold.co/400x300/FEEBC8/4A5568?text=Sofa" alt="Product Image" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="font-bold text-lg mb-2">₹ 15,000</h3>
-                        <p class="text-gray-600 text-sm mb-4">5 Seater Sofa Set, good condition</p>
-                        <div class="flex justify-between items-center text-xs text-gray-500">
-                            <span>Delhi</span>
-                             <span class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs">Pending</span>
-                        </div>
-                         <div class="mt-4 flex gap-2">
-                            <button class="w-full bg-gray-200 text-gray-700 p-2 rounded-md font-semibold hover:bg-gray-300 text-sm">Edit</button>
-                            <button class="w-full bg-red-500 text-white p-2 rounded-md font-semibold hover:bg-red-600 text-sm">Delete</button>
-                        </div>
-                    </div>
-                </div>
+            <div id="my-ads-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Ads will be dynamically inserted here -->
             </div>
         </main>
     </div>
@@ -527,7 +467,7 @@
                 </div>
                 <div class="w-full md:w-3/4">
                      <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                        <img src="https://placehold.co/300x200/F0F9FF/0A2342?text=Sell+Something" class="mx-auto mb-4">
+                        <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
                         <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
                         <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
                         <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
@@ -647,23 +587,6 @@
       </main>
     </div>
 
-    <!-- PAGE 12: Admin Dashboard -->
-    <div id="adminpage" class="hidden">
-      <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-           <div class="flex items-center gap-4 mb-6">
-              <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
-              <h1 class="text-3xl font-bold">Admin Analytics</h1>
-          </div>
-          <div class="dashboard-grid">
-            <div class="card"><strong>Total Users:</strong> 2300</div>
-            <div class="card"><strong>Active Sessions:</strong> 114</div>
-            <div class="card"><strong>Email Confirmed:</strong> 1820</div>
-            <div class="card"><strong>Premium Users:</strong> 380</div>
-          </div>
-      </main>
-    </div>
-
-
     <!-- Universal Footer -->
     <footer class="bg-gray-800 text-white mt-12">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -685,8 +608,14 @@
                 <form id="adForm" class="space-y-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Category*</label>
-                        <select id="category-select" onchange="updateAttributeFields()" class="mt-1 block w-full input-style">
+                        <select id="category-select" onchange="handleCategoryChange(event)" class="mt-1 block w-full input-style">
                             <option value="">Select a Category</option>
+                        </select>
+                    </div>
+                    <div id="subcategory-container" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700">Subcategory*</label>
+                        <select id="subcategory-select" onchange="handleSubcategoryChange(event)" class="mt-1 block w-full input-style">
+                            <option value="">Select a Subcategory</option>
                         </select>
                     </div>
                     <div id="category-attributes" class="space-y-4 border-t pt-4 mt-4"></div>
@@ -889,6 +818,11 @@
             console.error("Supabase client library not loaded.");
         }
 
+        // --- Cloudinary Configuration ---
+        const CLOUDINARY_CLOUD_NAME = 'dcxhenppn';
+        const CLOUDINARY_UPLOAD_PRESET = 'marketplace_preset';
+
+
         // --- Page Navigation Logic ---
         let navigationHistory = [];
         let postLoginAction = null;
@@ -905,7 +839,6 @@
             editprofilepage: document.getElementById('editprofilepage'),
             premiumlistingpage: document.getElementById('premiumlistingpage'),
             dashboardpage: document.getElementById('dashboardpage'),
-            adminpage: document.getElementById('adminpage')
         };
         const headers = {
             loggedOut: document.getElementById('header-logged-out'),
@@ -959,13 +892,18 @@
             }
         }
         function showComingSoonPage(event) { if(event) event.preventDefault(); showPage('comingsoonpage', !headers.loggedIn.classList.contains('hidden')); }
-        function showMyAdsPage(event) { if(event) event.preventDefault(); showPage('myadspage', true); }
+        
+        async function showMyAdsPage(event) {
+            if(event) event.preventDefault();
+            await fetchAndDisplayMyAds(); // Fetch data before showing the page
+            showPage('myadspage', true);
+        }
+
         function showUserProfilePage(event) { if(event) event.preventDefault(); showPage('userprofilepage', true); }
         function showEditProfilePage(event) { if(event) event.preventDefault(); showPage('editprofilepage', true); }
         function showPremiumListingPage(event) { if(event) event.preventDefault(); showPage('premiumlistingpage', !headers.loggedIn.classList.contains('hidden')); }
         function showDashboardPage(event) { if(event) event.preventDefault(); showPage('dashboardpage', true); }
-        function showAdminPage(event) { if(event) event.preventDefault(); showPage('adminpage', true); }
-
+        
         function searchFromHome(event) {
             if (event) event.preventDefault();
             const locationValue = document.getElementById('location-search').value;
@@ -985,7 +923,14 @@
                 showLoginModal(event);
             }
         }
-        function hideSellModal() { document.getElementById('sellModal').classList.add('hidden'); }
+        function hideSellModal() { 
+            document.getElementById('sellModal').classList.add('hidden'); 
+            // Reset state when modal is hidden
+            editingAdId = null;
+            document.getElementById('adForm').reset();
+            document.querySelector('#sellModal .text-2xl').textContent = 'Post Your Ad';
+            document.getElementById('post-ad-button').textContent = 'Post Now';
+        }
         function showLoginModal(event) { if(event) event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); }
         function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
         function showTncModal(event) { if(event) event.preventDefault(); document.getElementById('tncModal').classList.remove('hidden'); }
@@ -1023,6 +968,17 @@
         const style = document.createElement('style');
         style.innerHTML = `.input-style { padding: 0.5rem 0.75rem; background-color: white; border: 1px solid #D1D5DB; border-radius: 0.375rem; } .input-style:focus { outline: none; ring: 2px; ring-offset: 2px; ring-color: #D4AF37; border-color: #D4AF37; } .label-style { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }`;
         document.head.appendChild(style);
+        
+        function handleCategoryChange(event) {
+            // This function is now defined
+            console.log("Category changed:", event.target.value);
+        }
+
+        function handleSubcategoryChange(event) {
+            // This function is now defined
+            console.log("Subcategory changed:", event.target.value);
+        }
+
         function updateAttributeFields() {
             const category = document.getElementById('category-select').value;
             const container = document.getElementById('category-attributes');
@@ -1133,7 +1089,7 @@
                     </div>
                     ${filters.map(createFilterSection).join('')}
                     <div class="border-t pt-4 mt-4 space-y-2">
-                         <button onclick="alert('Filters Applied!')" class="w-full bg-theme-primary text-white p-2 rounded-md font-semibold hover:bg-theme-primary-dark text-sm">Apply Filters</button>
+                         <button onclick="console.log('Filters Applied!')" class="w-full bg-theme-primary text-white p-2 rounded-md font-semibold hover:bg-theme-primary-dark text-sm">Apply Filters</button>
                          <button onclick="updateListingPage('${categoryKey}')" class="w-full bg-gray-200 text-gray-700 p-2 rounded-md font-semibold hover:bg-gray-300 text-sm">Reset</button>
                     </div>
                 </div>
@@ -1292,8 +1248,6 @@
             if (error) {
                 alert('Error signing up: ' + error.message);
             } else {
-                // IMPORTANT: Supabase handles the email validation trigger automatically.
-                // You must enable "Email confirmations" in your Supabase project's Authentication settings.
                 alert('Registration successful! Please check your email to validate your account.');
                 hideLoginModal();
             }
@@ -1329,8 +1283,7 @@
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
             });
-
-            if (error) {
+            if(error){
                 console.error('Error with Google login:', error);
                 alert('Google login failed. Please try again.');
             }
@@ -1373,8 +1326,8 @@
 
         // Function to update UI elements when a user is logged in
         function updateUIForUser(user) {
-            const fullName = user.user_metadata?.first_name ? `${user.user_metadata.first_name} ${user.user_metadata.last_name || ''}`.trim() : user.email;
-            const profilePicUrl = user.user_metadata?.avatar_url || `https://placehold.co/48x48/0A2342/D4AF37?text=${fullName.charAt(0).toUpperCase()}`;
+            const fullName = user.user_metadata?.full_name || user.email;
+            const profilePicUrl = user.user_metadata?.avatar_url || `https://placehold.co/48x48/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
 
             // Update Header
             document.getElementById('header-profile-pic').src = profilePicUrl;
@@ -1415,20 +1368,16 @@
                 return;
             }
 
-            const [firstName, ...lastNameParts] = newName.split(' ');
-            const lastName = lastNameParts.join(' ');
-
             const { data, error } = await supabase.auth.updateUser({
                 data: { 
-                    first_name: firstName,
-                    last_name: lastName
+                    full_name: newName
                 }
             });
 
             if (error) {
                 alert('Failed to update profile: ' + error.message);
             } else {
-                alert('Profile updated successfully!');
+                console.log('Profile updated successfully!');
                 updateUIForUser(data.user);
                 showUserProfilePage(event);
             }
@@ -1458,37 +1407,39 @@
             });
         }
 
-        // --- UPDATED --- Function to upload files and get their public URLs
-        async function uploadFilesAndGetUrls(files, userId) {
+        // --- UPDATED --- Function to upload files to Cloudinary
+        async function uploadFilesToCloudinary(files) {
             const uploadedUrls = [];
+            const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
             for (const file of files) {
-                const fileName = `${userId}/${Date.now()}_${file.name}`;
-                const { data, error } = await supabase.storage
-                    .from('listings_images')
-                    .upload(fileName, file);
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
-                if (error) {
-                    console.error('Error uploading file:', error);
-                    // Check for specific "Bucket not found" error
-                    if (error.message.includes('Bucket not found')) {
-                         alert("Upload Error: The 'listings_images' storage bucket was not found in your Supabase project. Please ensure you have created it, set it to public, and configured the correct access policies.");
-                         throw new Error("Bucket not found");
+                try {
+                    const response = await fetch(uploadUrl, {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    const data = await response.json();
+                    if (data.secure_url) {
+                        uploadedUrls.push(data.secure_url);
+                    } else {
+                        throw new Error('Image upload failed to return a secure URL.');
                     }
-                    continue; // Skip this file and continue with the next
+                } catch (error) {
+                    console.error('Error uploading to Cloudinary:', error);
+                    alert('An error occurred during file upload. Please try again.');
+                    return []; // Return empty array on failure
                 }
-
-                // Get public URL for the uploaded file
-                const { data: { publicUrl } } = supabase.storage
-                    .from('listings_images')
-                    .getPublicUrl(fileName);
-                
-                uploadedUrls.push(publicUrl);
             }
             return uploadedUrls;
         }
+        
+        let editingAdId = null; // Variable to track if we are editing an ad
 
-
-        // --- UPDATED --- Function to handle ad submission
+        // --- UPDATED --- Function to handle ad submission (Create & Update)
         async function handleAdSubmit(event) {
             event.preventDefault();
             
@@ -1524,17 +1475,10 @@
             // Upload images if any are selected
             let imageUrls = [];
             if (files.length > 0) {
-                try {
-                    imageUrls = await uploadFilesAndGetUrls(files, user.id);
-                    if (imageUrls.length !== files.length) {
-                        alert('Some images failed to upload. Please check the console for errors and try again.');
-                        return;
-                    }
-                } catch (error) {
-                    // The specific alert is already shown in uploadFilesAndGetUrls.
-                    // We just need to stop the function execution here.
-                    console.error("Stopping ad submission due to upload error:", error.message);
-                    return; 
+                imageUrls = await uploadFilesToCloudinary(files);
+                if (imageUrls.length !== files.length) {
+                    alert('Some images failed to upload. Please try again.');
+                    return; // Stop if upload fails
                 }
             }
 
@@ -1548,19 +1492,139 @@
                 location: document.getElementById('location-search').value || 'Not specified'
             };
 
-            const { data, error } = await supabase
-                .from('listings')
-                .insert([listingData]);
+            let result;
+            if (editingAdId) {
+                // UPDATE existing ad
+                result = await supabase
+                    .from('listings')
+                    .update(listingData)
+                    .eq('id', editingAdId);
+            } else {
+                // INSERT new ad
+                result = await supabase
+                    .from('listings')
+                    .insert([listingData]);
+            }
+
+            const { data, error } = result;
 
             if (error) {
-                console.error('Error inserting listing:', error);
-                alert('Failed to post ad: ' + error.message);
+                console.error('Error saving listing:', error);
+                alert('Failed to save ad: ' + error.message);
             } else {
                 hideSellModal();
-                showPostSuccessModal();
-                document.getElementById('adForm').reset(); // Clear the form
+                if (editingAdId) {
+                    console.log('Ad updated successfully!');
+                } else {
+                    showPostSuccessModal();
+                }
+                fetchAndDisplayMyAds(); // Refresh the list of ads
             }
         }
+
+        // --- NEW --- Function to handle editing an ad
+        async function handleEditAd(adId) {
+            editingAdId = adId;
+
+            const { data: ad, error } = await supabase
+                .from('listings')
+                .select('*')
+                .eq('id', adId)
+                .single();
+
+            if (error) {
+                console.error('Error fetching ad for edit:', error);
+                alert('Could not load ad details for editing.');
+                return;
+            }
+
+            // Populate the form
+            document.getElementById('category-select').value = ad.category_id;
+            updateAttributeFields(); // This will show category-specific fields if any
+            document.getElementById('ad-title').value = ad.title;
+            document.getElementById('ad-description').value = ad.description;
+            document.getElementById('ad-price').value = ad.price;
+            
+            // Change modal title and button text for editing
+            document.querySelector('#sellModal .text-2xl').textContent = 'Edit Your Ad';
+            document.getElementById('post-ad-button').textContent = 'Update Ad';
+            
+            showSellModal();
+        }
+
+        // --- UPDATED --- Function to handle deleting an ad
+        async function handleDeleteAd(adId) {
+            const { error } = await supabase
+                .from('listings')
+                .delete()
+                .eq('id', adId);
+
+            if (error) {
+                console.error('Error deleting ad:', error);
+                alert('Failed to delete ad.');
+            } else {
+                console.log('Ad deleted successfully!');
+                fetchAndDisplayMyAds(); // Refresh the list
+            }
+        }
+
+
+        // --- NEW --- Function to fetch and display user's ads
+        async function fetchAndDisplayMyAds() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                showLoginModal();
+                return;
+            }
+
+            const { data: ads, error } = await supabase
+                .from('listings')
+                .select('*')
+                .eq('user_id', user.id);
+
+            if (error) {
+                console.error('Error fetching ads:', error);
+                return;
+            }
+
+            const adsGrid = document.getElementById('my-ads-grid');
+            adsGrid.innerHTML = ''; // Clear existing ads
+
+            if (ads.length === 0) {
+                const noAdsHTML = `
+                    <div class="col-span-full bg-white p-8 rounded-lg shadow-md text-center">
+                        <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
+                        <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
+                        <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
+                        <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
+                    </div>
+                `;
+                adsGrid.innerHTML = noAdsHTML;
+                return;
+            }
+
+            ads.forEach(ad => {
+                const adCard = `
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="Product Image" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2">₹ ${ad.price.toLocaleString('en-IN')}</h3>
+                            <p class="text-gray-600 text-sm mb-4 truncate">${ad.title}</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500">
+                                <span>${ad.location || 'N/A'}</span>
+                                <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">Active</span>
+                            </div>
+                            <div class="mt-4 flex gap-2">
+                                <button onclick="handleEditAd(${ad.id})" class="w-full bg-gray-200 text-gray-700 p-2 rounded-md font-semibold hover:bg-gray-300 text-sm">Edit</button>
+                                <button onclick="handleDeleteAd(${ad.id})" class="w-full bg-red-500 text-white p-2 rounded-md font-semibold hover:bg-red-600 text-sm">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                adsGrid.innerHTML += adCard;
+            });
+        }
+
 
         // Load categories when the page is ready
         document.addEventListener('DOMContentLoaded', loadCategories);

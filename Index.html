@@ -78,6 +78,28 @@
             border-radius: 50%;
             background-color: red;
         }
+        /* Toast Notification */
+        #toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+        }
+        #toast-notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -10px);
+        }
+        .toast-success { background-color: #28a745; }
+        .toast-error { background-color: #dc3545; }
+        .toast-info { background-color: #17a2b8; }
     </style>
 </head>
 <body class="text-gray-800">
@@ -124,8 +146,8 @@
                 </div>
                 <div class="flex items-center space-x-4">
                      <button onclick="openChatWindow('Recent Chat', 'AD-67890')" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-comment-dots text-xl"></i>
-                        <span id="chat-notification-dot" class="hidden notification-dot"></span>
+                         <i class="fas fa-comment-dots text-xl"></i>
+                         <span id="chat-notification-dot" class="hidden notification-dot"></span>
                      </button>
                     <div class="relative">
                         <button onclick="toggleNotifications()" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700">
@@ -169,7 +191,7 @@
                             </nav>
                             <div class="border-t border-gray-100">
                                 <a href="#" onclick="showHelpPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-question-circle w-5 text-center text-gray-500"></i> Help</a>
-                                <a href="#" onclick="logout()" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-sign-out-alt w-5 text-center text-gray-500"></i> Logout</a>
+                                <a href="#" onclick="logout(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-sign-out-alt w-5 text-center text-gray-500"></i> Logout</a>
                             </div>
                         </div>
                     </div>
@@ -259,7 +281,7 @@
                         <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
                         <h1 id="listing-page-title" class="text-2xl font-bold"></h1>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div id="listing-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <!-- Dynamic Ads will be loaded here -->
                     </div>
                 </section>
@@ -279,14 +301,14 @@
                     <p class="mb-8">Welcome to the Marketplace Help Center. Here you can find our terms of use, privacy policies, and rules for posting on our platform.</p>
                     
                     <h2 class="text-2xl font-bold border-b pb-2 mb-4">1. Terms of Use</h2>
-                    <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> [Date]</p>
+                    <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> 25 Aug 2025</p>
                     <h3 class="text-xl font-semibold mt-4">Introduction</h3>
                     <p>Welcome to Marketplace! These are the terms and conditions governing your access to and use of the website Marketplace and its related sub-domains, sites, services, and tools. By using the Site, you hereby accept these terms and conditions and represent that you agree to comply with these terms and conditions. This User Agreement is deemed effective upon your use of the Site which signifies your acceptance of these terms.</p>
                     <h3 class="text-xl font-semibold mt-4">Eligibility for Membership</h3>
                     <p>Marketplace wishes to ensure that its members are able to form legally binding contracts and that minors do not purchase unsuitable content. Therefore, membership of the Site is not available to persons under the age of 18 years. You represent that you are 18 years of age or over the age of 18 years before you become a member of the Site.</p>
                     
                     <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">2. Privacy Policy</h2>
-                    <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> [Date]</p>
+                    <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> 25 Aug 2025</p>
                     <p>This Privacy Policy describes our policies on the collection, use, and disclosure of information about you in connection with your use of our services, including those offered through our websites, communications (e.g., emails, phone calls, and texts), and mobile applications.</p>
                     <h3 class="text-xl font-semibold mt-4">Information We Collect</h3>
                     <p>We may collect and store information about you when you use the Service. We use the information to fulfill your requests, provide the Service’s functionality, improve the Service’s quality, personalize your experience, track usage of the Service, provide feedback to third-party businesses that are listed on the Service, display relevant advertising, market the Service, provide customer support, message you, back up our systems, and comply with legal obligations.</p>
@@ -372,7 +394,7 @@
                                 </div>
                              </div>
                              <button onclick="openChatWindow('Seller Name', 'AD-12345')" class="w-full mt-4 bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">
-                                <i class="fas fa-comments mr-2"></i>Chat with Seller
+                                 <i class="fas fa-comments mr-2"></i>Chat with Seller
                              </button>
                         </div>
                          <button class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
@@ -497,7 +519,7 @@
                             <h3 class="text-lg font-semibold mb-4">Basic information</h3>
                             <div class="space-y-4">
                                 <input id="edit-profile-name-input" type="text" value="Manas" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
-                                <textarea placeholder="About me (optional)" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent h-24"></textarea>
+                                <textarea id="edit-profile-about-input" placeholder="About me (optional)" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent h-24"></textarea>
                             </div>
                         </div>
                     </div>
@@ -505,8 +527,8 @@
                         <div>
                             <h3 class="text-lg font-semibold mb-2">Contact information</h3>
                              <div class="space-y-4">
-                                <input type="email" value="user@example.com" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
-                                <input type="tel" value="+919876543210" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                                <input id="edit-profile-email-input" type="email" value="user@example.com" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent bg-gray-100" readonly>
+                                <input id="edit-profile-phone-input" type="tel" value="+919876543210" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
                             </div>
                         </div>
                          <div>
@@ -545,7 +567,7 @@
                     <h2 class="text-2xl font-bold mb-4">Featured Vehicles</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                          <a href="#" onclick="showProductDetailPage(event)" class="block bg-white rounded-lg border-2 border-theme-accent overflow-hidden product-card transition-all duration-300 relative">
-                            <span class="premium-tag">Premium</span>
+                            <span class="absolute top-2 right-2 bg-theme-accent text-white text-xs font-bold px-2 py-1 rounded">Premium</span>
                             <img src="https://placehold.co/400x300/FEF3C7/4A5568?text=Jeep+Compass" alt="Product" class="w-full h-48 object-cover">
                             <div class="p-4">
                                 <h3 class="font-bold text-lg mb-2">₹ 18,50,000</h3>
@@ -559,7 +581,7 @@
                     <h2 class="text-xl font-bold mb-4">Premium Properties</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                          <a href="#" onclick="showProductDetailPage(event)" class="block bg-white rounded-lg border-2 border-theme-accent overflow-hidden product-card transition-all duration-300 relative">
-                            <span class="premium-tag">Premium</span>
+                            <span class="absolute top-2 right-2 bg-theme-accent text-white text-xs font-bold px-2 py-1 rounded">Premium</span>
                             <img src="https://placehold.co/400x300/FEF3C7/4A5568?text=Luxury+Villa" alt="Product" class="w-full h-48 object-cover">
                             <div class="p-4">
                                 <h3 class="font-bold text-lg mb-2">₹ 2,50,00,000</h3>
@@ -579,10 +601,10 @@
               <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
               <h1 class="text-3xl font-bold">Premium Dashboard</h1>
           </div>
-          <div class="dashboard-grid">
-            <div class="card"><strong>Balance:</strong> ₹12,300</div>
-            <div class="card"><strong>Last Login:</strong> 19 Jul 2025</div>
-            <div class="card"><strong>Status:</strong> Premium Member</div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-md"><strong>Balance:</strong> ₹12,300</div>
+            <div class="bg-white p-6 rounded-lg shadow-md"><strong>Last Login:</strong> 25 Aug 2025</div>
+            <div class="bg-white p-6 rounded-lg shadow-md"><strong>Status:</strong> Premium Member</div>
           </div>
       </main>
     </div>
@@ -608,14 +630,8 @@
                 <form id="adForm" class="space-y-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Category*</label>
-                        <select id="category-select" onchange="handleCategoryChange(event)" class="mt-1 block w-full input-style">
+                        <select id="category-select" onchange="updateAttributeFields()" class="mt-1 block w-full input-style">
                             <option value="">Select a Category</option>
-                        </select>
-                    </div>
-                    <div id="subcategory-container" class="hidden">
-                        <label class="block text-sm font-medium text-gray-700">Subcategory*</label>
-                        <select id="subcategory-select" onchange="handleSubcategoryChange(event)" class="mt-1 block w-full input-style">
-                            <option value="">Select a Subcategory</option>
                         </select>
                     </div>
                     <div id="category-attributes" class="space-y-4 border-t pt-4 mt-4"></div>
@@ -640,13 +656,14 @@
                                     <div class="flex text-sm text-gray-600">
                                         <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-theme-accent hover\:text-theme-accent">
                                             <span>Upload a file</span>
-                                            <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple>
+                                            <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple accept="image/*">
                                         </label>
                                         <p class="pl-1">or drag and drop</p>
                                     </div>
-                                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                    <p class="text-xs text-gray-500">PNG, JPG up to 5MB</p>
                                 </div>
                             </div>
+                             <div id="image-preview-container" class="mt-4 flex flex-wrap gap-2"></div>
                         </div>
                         <div class="flex items-center gap-2">
                             <input id="terms-checkbox" type="checkbox" onchange="togglePostButton()" class="h-4 w-4 text-theme-accent rounded focus:ring-theme-accent">
@@ -671,13 +688,13 @@
                 </div>
             </div>
             <div class="p-6 modal-content prose prose-sm max-w-none" style="max-height: 70vh; overflow-y: auto;">
-                 <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> [Date]</p>
+                 <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> 25 Aug 2025</p>
                  <h3 class="text-xl font-semibold mt-4">Introduction</h3>
                  <p>Welcome to Marketplace! These are the terms and conditions governing your access to and use of the website Marketplace and its related sub-domains, sites, services, and tools. By using the Site, you hereby accept these terms and conditions and represent that you agree to comply with these terms and conditions. This User Agreement is deemed effective upon your use of the Site which signifies your acceptance of these terms.</p>
                  <h3 class="text-xl font-semibold mt-4">Eligibility for Membership</h3>
                  <p>Marketplace wishes to ensure that its members are able to form legally binding contracts and that minors do not purchase unsuitable content. Therefore, membership of the Site is not available to persons under the age of 18 years. You represent that you are 18 years of age or over the age of 18 years before you become a member of the Site.</p>
                  <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">2. Privacy Policy</h2>
-                 <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> [Date]</p>
+                 <p class="text-sm text-gray-500 mb-4"><strong>Last Updated:</strong> 25 Aug 2025</p>
                  <p>This Privacy Policy describes our policies on the collection, use, and disclosure of information about you in connection with your use of our services, including those offered through our websites, communications (e.g., emails, phone calls, and texts), and mobile applications.</p>
                  <h3 class="text-xl font-semibold mt-4">Information We Collect</h3>
                  <p>We may collect and store information about you when you use the Service. We use the information to fulfill your requests, provide the Service’s functionality, improve the Service’s quality, personalize your experience, track usage of the Service, provide feedback to third-party businesses that are listed on the Service, display relevant advertising, market the Service, provide customer support, message you, back up our systems, and comply with legal obligations.</p>
@@ -685,14 +702,14 @@
                  <p>Marketplace users are responsible for ensuring their ads comply with all applicable laws. Our list of prohibited products and services below is not exhaustive and we reserve the right to update it at any time.</p>
                  <h3 class="text-xl font-semibold mt-4">Examples of Prohibited Items:</h3>
                  <ul class="list-disc list-inside space-y-1">
-                     <li>Adult/Pornographic Material</li>
-                     <li>Alcohol, Tobacco Products, Drugs</li>
-                     <li>Counterfeit and Replica Items</li>
-                     <li>Firearms, Ammunition, and Weapons</li>
-                     <li>Hazardous Materials</li>
-                     <li>Human Parts and Remains</li>
-                     <li>Illegal Items & Services</li>
-                     <li>Stolen Property</li>
+                    <li>Adult/Pornographic Material</li>
+                    <li>Alcohol, Tobacco Products, Drugs</li>
+                    <li>Counterfeit and Replica Items</li>
+                    <li>Firearms, Ammunition, and Weapons</li>
+                    <li>Hazardous Materials</li>
+                    <li>Human Parts and Remains</li>
+                    <li>Illegal Items & Services</li>
+                    <li>Stolen Property</li>
                  </ul>
             </div>
         </div>
@@ -805,12 +822,33 @@
         </div>
     </div>
 
+    <!-- Toast Notification Element -->
+    <div id="toast-notification"></div>
 
-    <script>
-        // --- Supabase Connection ---
-        const SUPABASE_URL = 'https://ynyqwmbeglqwtvwqpaeg.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueXF3bWJlZ2xxd3R2d3FwYWVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5MzAxODcsImV4cCI6MjA3MTUwNjE4N30.IsLuwykC4Qtl4gXsFrygN5Ko1o4VZ4oLS6EDd8QGWoI'; 
+    <script type="module">
+        // Import Firebase modules for AUTHENTICATION ONLY
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signInWithPopup,
+            GoogleAuthProvider,
+            signOut,
+            updateProfile,
+            signInAnonymously,
+            signInWithCustomToken
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // --- Firebase Configuration ---
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         
+        // --- Supabase Configuration for DATABASE ---
+        const SUPABASE_URL = 'https://ynyqwmbeglqwtvwqpaeg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueXF3bWJlZ2xxd3R2d3FwYWVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5MzAxODcsImV4cCI6MjA3MTUwNjE4N30.IsLuwykC4Qtl4gXsFrygN5Ko1o4VZ4oLS6EDd8QGWoI';
         let supabase = null;
         if(window.supabase) {
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -818,13 +856,12 @@
             console.error("Supabase client library not loaded.");
         }
 
-        // --- Cloudinary Configuration ---
+        // --- Cloudinary Configuration for STORAGE ---
         const CLOUDINARY_CLOUD_NAME = 'dcxhenppn';
         const CLOUDINARY_UPLOAD_PRESET = 'marketplace_preset';
 
-
-        // --- Page Navigation Logic ---
-        let navigationHistory = [];
+        // --- Page Navigation & State Management ---
+        window.navigationHistory = [];
         let postLoginAction = null;
 
         const pageDivs = {
@@ -845,6 +882,19 @@
             loggedIn: document.getElementById('header-logged-in')
         };
 
+        // --- Toast Notification ---
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast-notification');
+            toast.textContent = message;
+            toast.className = `toast-${type} show`;
+            setTimeout(() => {
+                toast.className = toast.className.replace('show', '');
+            }, 3000);
+        }
+        window.showToast = showToast;
+
+
+        // --- Page Navigation Logic ---
         function showPage(pageName, isLoggedIn, isBack = false) {
             let currentPage = '';
             for (const [name, div] of Object.entries(pageDivs)) {
@@ -855,7 +905,7 @@
             }
 
             if (!isBack && currentPage && currentPage !== pageName) {
-                navigationHistory.push(currentPage);
+                window.navigationHistory.push(currentPage);
             }
             
             Object.values(pageDivs).forEach(div => { if(div) div.classList.add('hidden'); });
@@ -865,85 +915,138 @@
             headers.loggedIn.classList.toggle('hidden', !isLoggedIn);
             window.scrollTo(0, 0);
         }
+        window.showPage = showPage;
         
         function goBack(event) {
             if (event) event.preventDefault();
-            if (navigationHistory.length > 0) {
-                const previousPage = navigationHistory.pop();
+            if (window.navigationHistory.length > 0) {
+                const previousPage = window.navigationHistory.pop();
                 const isLoggedIn = !headers.loggedIn.classList.contains('hidden');
                 showPage(previousPage, isLoggedIn, true);
             } else {
                 showHomepage(event);
             }
         }
+        window.goBack = goBack;
 
-        function showHomepage(event) { if(event) event.preventDefault(); navigationHistory = []; showPage('homepage', !headers.loggedIn.classList.contains('hidden')); }
-        function showListingPage(event, categoryKey) { if(event) event.preventDefault(); showPage('listingpage', !headers.loggedIn.classList.contains('hidden')); updateListingPage(categoryKey); }
-        function showHelpPage(event) { if(event) event.preventDefault(); showPage('helppage', !headers.loggedIn.classList.contains('hidden')); }
+        function showHomepage(event) { if(event) event.preventDefault(); window.navigationHistory = []; showPage('homepage', !!auth.currentUser); }
+        window.showHomepage = showHomepage;
+        
+        async function showListingPage(event, categoryKey) { 
+            if(event) event.preventDefault(); 
+            showPage('listingpage', !!auth.currentUser); 
+            updateListingPage(categoryKey); 
+            await fetchAndDisplayListings(categoryKey);
+        }
+        window.showListingPage = showListingPage;
+
+        function showHelpPage(event) { if(event) event.preventDefault(); showPage('helppage', !!auth.currentUser); }
+        window.showHelpPage = showHelpPage;
+        
         function showPlaceholderPage(event) { if(event) event.preventDefault(); showPage('placeholderpage', true); }
+        window.showPlaceholderPage = showPlaceholderPage;
+        
         function showProductDetailPage(event) { 
             if (event) event.preventDefault();
-            const isLoggedIn = !document.getElementById('header-logged-in').classList.contains('hidden');
-            if (isLoggedIn) {
+            if (auth.currentUser) {
                  showPage('productdetailpage', true); 
             } else {
                 postLoginAction = 'viewProduct';
                 showLoginModal(event);
             }
         }
-        function showComingSoonPage(event) { if(event) event.preventDefault(); showPage('comingsoonpage', !headers.loggedIn.classList.contains('hidden')); }
+        window.showProductDetailPage = showProductDetailPage;
+        
+        function showComingSoonPage(event) { if(event) event.preventDefault(); showPage('comingsoonpage', !!auth.currentUser); }
+        window.showComingSoonPage = showComingSoonPage;
         
         async function showMyAdsPage(event) {
             if(event) event.preventDefault();
-            await fetchAndDisplayMyAds(); // Fetch data before showing the page
             showPage('myadspage', true);
+            await fetchAndDisplayMyAds(); // Fetch data after showing the page
         }
+        window.showMyAdsPage = showMyAdsPage;
 
         function showUserProfilePage(event) { if(event) event.preventDefault(); showPage('userprofilepage', true); }
+        window.showUserProfilePage = showUserProfilePage;
+        
         function showEditProfilePage(event) { if(event) event.preventDefault(); showPage('editprofilepage', true); }
-        function showPremiumListingPage(event) { if(event) event.preventDefault(); showPage('premiumlistingpage', !headers.loggedIn.classList.contains('hidden')); }
+        window.showEditProfilePage = showEditProfilePage;
+        
+        function showPremiumListingPage(event) { if(event) event.preventDefault(); showPage('premiumlistingpage', !!auth.currentUser); }
+        window.showPremiumListingPage = showPremiumListingPage;
+        
         function showDashboardPage(event) { if(event) event.preventDefault(); showPage('dashboardpage', true); }
+        window.showDashboardPage = showDashboardPage;
         
         function searchFromHome(event) {
             if (event) event.preventDefault();
             const locationValue = document.getElementById('location-search').value;
             showListingPage(event, 'cars'); // Default to cars for search
             document.getElementById('location-filter').value = locationValue;
-            alert(`Searching for items near "${locationValue}"`);
+            showToast(`Searching for items near "${locationValue}"`, 'info');
         }
+        window.searchFromHome = searchFromHome;
 
         // --- Modal Control ---
         function showSellModal(event) { 
             if(event) event.preventDefault();
-            const isLoggedIn = !document.getElementById('header-logged-in').classList.contains('hidden');
-            if (isLoggedIn) {
+            if (auth.currentUser) {
                 document.getElementById('sellModal').classList.remove('hidden'); 
             } else {
                 postLoginAction = 'sellItem';
                 showLoginModal(event);
             }
         }
+        window.showSellModal = showSellModal;
+
         function hideSellModal() { 
             document.getElementById('sellModal').classList.add('hidden'); 
-            // Reset state when modal is hidden
             editingAdId = null;
             document.getElementById('adForm').reset();
+            document.getElementById('image-preview-container').innerHTML = '';
             document.querySelector('#sellModal .text-2xl').textContent = 'Post Your Ad';
             document.getElementById('post-ad-button').textContent = 'Post Now';
         }
+        window.hideSellModal = hideSellModal;
+
         function showLoginModal(event) { if(event) event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); }
+        window.showLoginModal = showLoginModal;
+        
         function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+        window.hideLoginModal = hideLoginModal;
+
         function showTncModal(event) { if(event) event.preventDefault(); document.getElementById('tncModal').classList.remove('hidden'); }
+        window.showTncModal = showTncModal;
+
         function hideTncModal() { document.getElementById('tncModal').classList.add('hidden'); }
+        window.hideTncModal = hideTncModal;
+
         function showPostSuccessModal() { document.getElementById('adSuccessModal').classList.remove('hidden'); }
+        window.showPostSuccessModal = showPostSuccessModal;
+
         function hideAdSuccessModal() { document.getElementById('adSuccessModal').classList.add('hidden'); }
+        window.hideAdSuccessModal = hideAdSuccessModal;
 
         document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
         
-        // --- RERA Info ---
-        function showReraInfo() { alert('RERA stands for Real Estate Regulatory Authority. A RERA number is a unique identification number assigned to real estate projects, ensuring transparency and accountability from builders.'); }
+        function showReraInfo() { showToast('RERA is a unique ID for real estate projects, ensuring transparency.', 'info'); }
+        window.showReraInfo = showReraInfo;
 
         // --- Dynamic Form Logic ---
+        const categoriesData = [
+            { id: 'cars', name: 'Cars' },
+            { id: 'property', name: 'Property' },
+            { id: 'mobiles', name: 'Mobiles' },
+            { id: 'bikes', name: 'Bikes' },
+            { id: 'electronics', name: 'Electronics & Appliances' },
+            { id: 'commercial_vehicles', name: 'Commercial Vehicles' },
+            { id: 'furniture', name: 'Furniture' },
+            { id: 'fashion', name: 'Fashion' },
+            { id: 'pets', name: 'Pets' },
+            { id: 'services', name: 'Services' },
+        ];
+
         function generateYearOptions(start, end) {
             let options = '<option value="">Select Year</option>';
             for (let year = end; year >= start; year--) {
@@ -969,21 +1072,13 @@
         style.innerHTML = `.input-style { padding: 0.5rem 0.75rem; background-color: white; border: 1px solid #D1D5DB; border-radius: 0.375rem; } .input-style:focus { outline: none; ring: 2px; ring-offset: 2px; ring-color: #D4AF37; border-color: #D4AF37; } .label-style { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }`;
         document.head.appendChild(style);
         
-        function handleCategoryChange(event) {
-            // This function is now defined
-            console.log("Category changed:", event.target.value);
-        }
-
-        function handleSubcategoryChange(event) {
-            // This function is now defined
-            console.log("Subcategory changed:", event.target.value);
-        }
-
         function updateAttributeFields() {
             const category = document.getElementById('category-select').value;
             const container = document.getElementById('category-attributes');
             container.innerHTML = (category && attributeTemplates[category]) ? attributeTemplates[category] : '<p class="text-gray-500 text-center py-4">Please select a category to see relevant options.</p>';
         }
+        window.updateAttributeFields = updateAttributeFields;
+
         function handlePropertyTypeChange(selectElement) {
             const landSubCategoryContainer = document.getElementById('land-subcategory-container');
             if (selectElement.value === 'Land') {
@@ -992,10 +1087,16 @@
                 landSubCategoryContainer.classList.add('hidden');
             }
         }
-        const originalShowModal = showSellModal;
-        showSellModal = function() { document.getElementById('category-select').value = ''; updateAttributeFields(); originalShowModal(); }
+        window.handlePropertyTypeChange = handlePropertyTypeChange;
 
-        // --- UPDATED Filter Data and Logic (Based on Quikr) ---
+        const originalShowModal = showSellModal;
+        window.showSellModal = function() { 
+            document.getElementById('category-select').value = ''; 
+            updateAttributeFields(); 
+            originalShowModal(); 
+        }
+
+        // --- Filter Data and Logic ---
         const filterData = {
             cars: [
                 { title: 'Budget', type: 'range' },
@@ -1100,9 +1201,10 @@
             
             const locationFilter = document.getElementById('location-filter');
             if (locationFilter) {
-                locationFilter.value = document.getElementById('location-search').value || "Gurugram, Haryana";
+                locationFilter.value = document.getElementById('location-search').value || "Aligarh, Uttar Pradesh";
             }
         }
+        window.updateListingPage = updateListingPage;
         
         function togglePostButton() {
             const checkbox = document.getElementById('terms-checkbox');
@@ -1115,6 +1217,7 @@
                 button.classList.add('opacity-50', 'cursor-not-allowed');
             }
         }
+        window.togglePostButton = togglePostButton;
 
         // --- Chat Logic ---
         let isMuted = false;
@@ -1126,16 +1229,19 @@
             document.getElementById('chat-window').classList.remove('hidden');
             document.getElementById('chat-notification-dot').classList.add('hidden');
         }
+        window.openChatWindow = openChatWindow;
 
         function closeChatWindow() {
             document.getElementById('chat-window').classList.add('hidden');
         }
+        window.closeChatWindow = closeChatWindow;
 
         function toggleMute() {
             isMuted = !isMuted;
             const muteIcon = document.getElementById('mute-btn').querySelector('i');
             muteIcon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
         }
+        window.toggleMute = toggleMute;
 
         document.getElementById('chat-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1153,9 +1259,9 @@
             const messageDiv = document.createElement('div');
             messageDiv.textContent = text;
             if (type === 'sent') {
-                messageDiv.className = 'bg-theme-accent text-white p-2 rounded-lg self-end';
+                messageDiv.className = 'bg-theme-accent text-white p-2 rounded-lg self-end ml-auto max-w-xs break-words';
             } else {
-                messageDiv.className = 'bg-gray-200 p-2 rounded-lg self-start';
+                messageDiv.className = 'bg-gray-200 p-2 rounded-lg self-start mr-auto max-w-xs break-words';
                 if (!isMuted) {
                     synth.triggerAttackRelease("C5", "8n");
                 }
@@ -1177,6 +1283,7 @@
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
             document.getElementById('main-notification-dot').classList.add('hidden');
         }
+        window.toggleNotifications = toggleNotifications;
 
         function switchAuthForm(form) {
             const loginForm = document.getElementById('login-form');
@@ -1191,6 +1298,7 @@
                 registerForm.classList.remove('hidden');
             }
         }
+        window.switchAuthForm = switchAuthForm;
         
         function handleProfilePictureChange(event) {
             const file = event.target.files[0];
@@ -1199,16 +1307,13 @@
                 reader.onload = function(e) {
                     const imageUrl = e.target.result;
                     document.getElementById('profile-pic-preview').src = imageUrl;
-                    document.getElementById('header-profile-pic').src = imageUrl;
-                    document.getElementById('dropdown-profile-pic').src = imageUrl;
                 }
                 reader.readAsDataURL(file);
             }
         }
+        window.handleProfilePictureChange = handleProfilePictureChange;
         
         // --- Authentication Logic ---
-
-        // Function to handle new user registration
         async function handleRegister(event) {
             event.preventDefault();
             const firstName = document.getElementById('register-first-name').value.trim();
@@ -1217,117 +1322,129 @@
             const mobile = document.getElementById('register-mobile').value.trim();
             const password = document.getElementById('register-password').value.trim();
 
-            // Validation
             if (!firstName || !lastName || !email || !password || !mobile) {
-                alert('Please fill in all required fields.');
+                showToast('Please fill in all required fields.', 'error');
                 return;
             }
-            const mobileRegex = /^[0-9]{10}$/;
-            if (!mobileRegex.test(mobile)) {
-                alert('Please enter a valid 10-digit mobile number.');
+            if (!/^[0-9]{10}$/.test(mobile)) {
+                showToast('Please enter a valid 10-digit mobile number.', 'error');
                 return;
             }
             if (password.length < 6) {
-                alert('Password must be at least 6 characters long.');
+                showToast('Password must be at least 6 characters long.', 'error');
                 return;
             }
 
-            // Supabase sign up
-            const { data, error } = await supabase.auth.signUp({
-                email: email,
-                password: password,
-                options: {
-                    data: {
-                        first_name: firstName,
-                        last_name: lastName,
-                        mobile: mobile
-                    }
-                }
-            });
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
 
-            if (error) {
-                alert('Error signing up: ' + error.message);
-            } else {
-                alert('Registration successful! Please check your email to validate your account.');
+                await updateProfile(user, {
+                    displayName: `${firstName} ${lastName}`
+                });
+
+                // Create a user profile in Supabase
+                const { error: supabaseError } = await supabase
+                    .from('profiles')
+                    .insert([{ 
+                        id: user.uid, 
+                        first_name: firstName, 
+                        last_name: lastName, 
+                        mobile: mobile,
+                        email: email 
+                    }]);
+
+                if (supabaseError) throw supabaseError;
+
+                showToast('Registration successful! Please check your email to verify your account.', 'success');
                 hideLoginModal();
+            } catch (error) {
+                console.error("Error signing up:", error);
+                showToast('Error signing up: ' + error.message, 'error');
             }
         }
+        window.handleRegister = handleRegister;
 
-        // Function to handle user login
         async function handleLogin(event) {
             event.preventDefault();
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value.trim();
 
             if (!email || !password) {
-                alert('Please enter both email and password.');
+                showToast('Please enter both email and password.', 'error');
                 return;
             }
 
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
-
-            if (error) {
-                alert('Error logging in: ' + error.message);
-            } else {
-                // The onAuthStateChange listener will handle the UI update
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
                 hideLoginModal();
+                showToast('Login successful!', 'success');
+            } catch (error) {
+                console.error("Error logging in:", error);
+                showToast('Error logging in: ' + error.message, 'error');
             }
         }
+        window.handleLogin = handleLogin;
 
-        // Function to handle Google OAuth login
         async function loginWithGoogle(event) {
             event.preventDefault();
-            const { data, error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-            });
-            if(error){
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                hideLoginModal();
+                showToast('Logged in with Google successfully!', 'success');
+            } catch (error) {
                 console.error('Error with Google login:', error);
-                alert('Google login failed. Please try again.');
+                showToast('Google login failed. Please try again.', 'error');
             }
         }
+        window.loginWithGoogle = loginWithGoogle;
         
-        // Function to handle user logout
-        async function logout() {
-            const { error } = await supabase.auth.signOut();
-            if (error) {
+        async function logout(event) {
+            if(event) event.preventDefault();
+            try {
+                await signOut(auth);
+                showToast('You have been logged out.', 'info');
+            } catch (error) {
                 console.error('Error logging out:', error);
-                alert('Logout failed!');
+                showToast('Logout failed!', 'error');
             }
         }
+        window.logout = logout;
 
-        // Listen for authentication state changes
-        supabase.auth.onAuthStateChange((event, session) => {
-            const user = session?.user;
+        // --- Auth State Listener ---
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // User is logged in
-                const isLoggedIn = true;
-                const lastPage = navigationHistory.length > 0 ? navigationHistory.pop() : 'listingpage';
-                showPage(lastPage, isLoggedIn); 
-                updateUIForUser(user);
+                const lastPage = window.navigationHistory.length > 0 ? window.navigationHistory[window.navigationHistory.length - 1] : 'homepage';
+                showPage(lastPage, true); 
+                await updateUIForUser(user);
                 
-                // Handle post-login actions
                 if (postLoginAction === 'sellItem') {
                     showSellModal();
                 } else if (postLoginAction === 'viewProduct') {
                     showProductDetailPage();
                 }
-                postLoginAction = null; // Reset action
-
+                postLoginAction = null;
             } else {
-                // User is logged out
                 showPage('homepage', false);
                 updateUIForGuest();
             }
         });
 
+        async function updateUIForUser(user) {
+            const fullName = user.displayName || user.email;
+            const profilePicUrl = user.photoURL || `https://placehold.co/96x96/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
 
-        // Function to update UI elements when a user is logged in
-        function updateUIForUser(user) {
-            const fullName = user.user_metadata?.full_name || user.email;
-            const profilePicUrl = user.user_metadata?.avatar_url || `https://placehold.co/48x48/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
+            // Fetch additional user data from Supabase
+            const { data: userProfileData, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.uid)
+                .single();
+            
+            if (error && error.code !== 'PGRST116') { // Ignore "No rows found" error
+                console.error("Error fetching user profile from Supabase:", error);
+            }
 
             // Update Header
             document.getElementById('header-profile-pic').src = profilePicUrl;
@@ -1337,69 +1454,74 @@
             // Update Profile Page
             document.getElementById('profile-page-pic').src = profilePicUrl;
             document.getElementById('profile-page-username').innerText = fullName;
-            document.getElementById('profile-page-member-since').innerText = `Member since ${new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
+            const creationDate = user.metadata.creationTime ? new Date(user.metadata.creationTime) : new Date();
+            document.getElementById('profile-page-member-since').innerText = `Member since ${creationDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
 
             // Update Edit Profile Page
             document.getElementById('profile-pic-preview').src = profilePicUrl;
             document.getElementById('edit-profile-name-input').value = fullName;
+            document.getElementById('edit-profile-email-input').value = user.email || '';
+            if(userProfileData) {
+                document.getElementById('edit-profile-phone-input').value = userProfileData.mobile || '';
+                document.getElementById('edit-profile-about-input').value = userProfileData.about || '';
+            }
         }
 
-        // Function to reset UI elements when a user is logged out
         function updateUIForGuest() {
             const placeholderPic = 'https://placehold.co/40x40/E2E8F0/4A5568?text=U';
-            // Reset Header
             document.getElementById('header-profile-pic').src = placeholderPic;
             document.getElementById('dropdown-profile-pic').src = placeholderPic;
             document.getElementById('dropdown-username').innerText = 'Unknown';
         }
 
-        // Function to handle profile updates
         async function handleProfileUpdate(event) {
             event.preventDefault();
+            const user = auth.currentUser;
+            if (!user) {
+                showToast('You must be logged in to update your profile.', 'error');
+                return;
+            }
+
             const newName = document.getElementById('edit-profile-name-input').value.trim();
+            const newPhone = document.getElementById('edit-profile-phone-input').value.trim();
+            const newAbout = document.getElementById('edit-profile-about-input').value.trim();
+
             if (!newName) {
-                alert('Name cannot be empty.');
+                showToast('Name cannot be empty.', 'error');
                 return;
             }
             
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                alert('You must be logged in to update your profile.');
-                return;
-            }
+            try {
+                await updateProfile(user, { displayName: newName });
+                
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({ 
+                        mobile: newPhone, 
+                        about: newAbout,
+                        first_name: newName.split(' ')[0],
+                        last_name: newName.split(' ').slice(1).join(' ')
+                    })
+                    .eq('id', user.uid);
+                
+                if (error) throw error;
 
-            const { data, error } = await supabase.auth.updateUser({
-                data: { 
-                    full_name: newName
-                }
-            });
-
-            if (error) {
-                alert('Failed to update profile: ' + error.message);
-            } else {
-                console.log('Profile updated successfully!');
-                updateUIForUser(data.user);
+                showToast('Profile updated successfully!', 'success');
+                await updateUIForUser(user);
                 showUserProfilePage(event);
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                showToast('Failed to update profile: ' + error.message, 'error');
             }
         }
+        window.handleProfileUpdate = handleProfileUpdate;
         
-        // --- NEW --- Function to load categories into the sell modal
-        async function loadCategories() {
-            const { data, error } = await supabase
-                .from('categories')
-                .select('id, name');
-
-            if (error) {
-                console.error('Error fetching categories:', error);
-                return;
-            }
-
+        function loadCategories() {
             const categorySelect = document.getElementById('category-select');
-            // Clear existing options except the first one
             while (categorySelect.options.length > 1) {
                 categorySelect.remove(1);
             }
-            data.forEach(category => {
+            categoriesData.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category.id;
                 option.textContent = category.name;
@@ -1407,7 +1529,6 @@
             });
         }
 
-        // --- UPDATED --- Function to upload files to Cloudinary
         async function uploadFilesToCloudinary(files) {
             const uploadedUrls = [];
             const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -1418,34 +1539,27 @@
                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
                 try {
-                    const response = await fetch(uploadUrl, {
-                        method: 'POST',
-                        body: formData,
-                    });
+                    const response = await fetch(uploadUrl, { method: 'POST', body: formData });
                     const data = await response.json();
                     if (data.secure_url) {
                         uploadedUrls.push(data.secure_url);
-                    } else {
-                        throw new Error('Image upload failed to return a secure URL.');
-                    }
+                    } else { throw new Error('Image upload failed.'); }
                 } catch (error) {
                     console.error('Error uploading to Cloudinary:', error);
-                    alert('An error occurred during file upload. Please try again.');
-                    return []; // Return empty array on failure
+                    showToast('An error occurred during file upload.', 'error');
+                    return [];
                 }
             }
             return uploadedUrls;
         }
         
-        let editingAdId = null; // Variable to track if we are editing an ad
+        let editingAdId = null; 
 
-        // --- UPDATED --- Function to handle ad submission (Create & Update)
         async function handleAdSubmit(event) {
             event.preventDefault();
-            
-            const { data: { user } } = await supabase.auth.getUser();
+            const user = auth.currentUser;
             if (!user) {
-                alert('You must be logged in to post an ad.');
+                showToast('You must be logged in to post an ad.', 'error');
                 showLoginModal();
                 return;
             }
@@ -1456,122 +1570,106 @@
             const categoryId = document.getElementById('category-select').value;
             const files = document.getElementById('file-upload').files;
             
-            // Validation
             if (!title || !description || !price || !categoryId) {
-                alert("Please fill out all required fields: Title, Description, Price, and Category.");
+                showToast("Please fill out all required fields.", 'error');
                 return;
             }
-            const wordCount = description.split(/\s+/).filter(word => word.length > 0).length;
-            if (wordCount < 50) {
-                alert(`Product Description is mandatory and must be at least 50 words long. You currently have ${wordCount} words.`);
+            if (description.split(/\s+/).filter(w => w.length > 0).length < 50) {
+                showToast(`Description must be at least 50 words.`, 'error');
                 return;
             }
-            const phoneRegex = /(\+?\d{1,4}?[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?[\d\-.\s]{7,10}/g;
-            if (phoneRegex.test(title) || phoneRegex.test(description)) {
-                alert("For your safety, phone numbers or similar patterns are not allowed in the title or description. Please use the chat feature to communicate.");
+            if (/(\+?\d{1,4}?[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?[\d\-.\s]{7,10}/g.test(title + description)) {
+                showToast("Phone numbers are not allowed in title or description.", 'error');
                 return;
             }
 
-            // Upload images if any are selected
             let imageUrls = [];
             if (files.length > 0) {
                 imageUrls = await uploadFilesToCloudinary(files);
                 if (imageUrls.length !== files.length) {
-                    alert('Some images failed to upload. Please try again.');
-                    return; // Stop if upload fails
+                    showToast('Some images failed to upload. Please try again.', 'error');
+                    return;
                 }
             }
 
             const listingData = {
-                user_id: user.id,
-                category_id: parseInt(categoryId),
+                user_id: user.uid,
+                category_id: categoryId,
                 title: title,
                 description: description,
                 price: parseFloat(price),
-                image_urls: imageUrls, // Add the image URLs
+                image_urls: imageUrls,
                 location: document.getElementById('location-search').value || 'Not specified'
             };
 
-            let result;
-            if (editingAdId) {
-                // UPDATE existing ad
-                result = await supabase
-                    .from('listings')
-                    .update(listingData)
-                    .eq('id', editingAdId);
-            } else {
-                // INSERT new ad
-                result = await supabase
-                    .from('listings')
-                    .insert([listingData]);
-            }
-
-            const { data, error } = result;
-
-            if (error) {
-                console.error('Error saving listing:', error);
-                alert('Failed to save ad: ' + error.message);
-            } else {
-                hideSellModal();
+            try {
+                let error;
                 if (editingAdId) {
-                    console.log('Ad updated successfully!');
+                    const result = await supabase.from('listings').update(listingData).eq('id', editingAdId);
+                    error = result.error;
+                } else {
+                    const result = await supabase.from('listings').insert([listingData]);
+                    error = result.error;
+                }
+
+                if (error) throw error;
+                
+                if(editingAdId) {
+                    showToast('Ad updated successfully!', 'success');
                 } else {
                     showPostSuccessModal();
                 }
-                fetchAndDisplayMyAds(); // Refresh the list of ads
+
+                hideSellModal();
+                fetchAndDisplayMyAds();
+            } catch (error) {
+                console.error('Error saving listing to Supabase:', error);
+                showToast('Failed to save ad: ' + error.message, 'error');
             }
         }
+        window.handleAdSubmit = handleAdSubmit;
 
-        // --- NEW --- Function to handle editing an ad
         async function handleEditAd(adId) {
             editingAdId = adId;
-
             const { data: ad, error } = await supabase
                 .from('listings')
                 .select('*')
                 .eq('id', adId)
                 .single();
-
+            
             if (error) {
-                console.error('Error fetching ad for edit:', error);
-                alert('Could not load ad details for editing.');
+                console.error("Error fetching ad for edit:", error);
+                showToast('Could not load ad details for editing.', 'error');
                 return;
             }
-
-            // Populate the form
+            
             document.getElementById('category-select').value = ad.category_id;
-            updateAttributeFields(); // This will show category-specific fields if any
+            updateAttributeFields();
             document.getElementById('ad-title').value = ad.title;
             document.getElementById('ad-description').value = ad.description;
             document.getElementById('ad-price').value = ad.price;
             
-            // Change modal title and button text for editing
             document.querySelector('#sellModal .text-2xl').textContent = 'Edit Your Ad';
             document.getElementById('post-ad-button').textContent = 'Update Ad';
             
             showSellModal();
         }
+        window.handleEditAd = handleEditAd;
 
-        // --- UPDATED --- Function to handle deleting an ad
         async function handleDeleteAd(adId) {
-            const { error } = await supabase
-                .from('listings')
-                .delete()
-                .eq('id', adId);
-
+            const { error } = await supabase.from('listings').delete().eq('id', adId);
             if (error) {
                 console.error('Error deleting ad:', error);
-                alert('Failed to delete ad.');
+                showToast('Failed to delete ad.', 'error');
             } else {
-                console.log('Ad deleted successfully!');
-                fetchAndDisplayMyAds(); // Refresh the list
+                showToast('Ad deleted successfully!', 'success');
+                fetchAndDisplayMyAds();
             }
         }
+        window.handleDeleteAd = handleDeleteAd;
 
-
-        // --- NEW --- Function to fetch and display user's ads
         async function fetchAndDisplayMyAds() {
-            const { data: { user } } = await supabase.auth.getUser();
+            const user = auth.currentUser;
             if (!user) {
                 showLoginModal();
                 return;
@@ -1580,30 +1678,29 @@
             const { data: ads, error } = await supabase
                 .from('listings')
                 .select('*')
-                .eq('user_id', user.id);
+                .eq('user_id', user.uid);
 
             if (error) {
-                console.error('Error fetching ads:', error);
+                console.error("Error fetching user's ads:", error);
+                showToast("Could not fetch your ads.", 'error');
                 return;
             }
 
             const adsGrid = document.getElementById('my-ads-grid');
-            adsGrid.innerHTML = ''; // Clear existing ads
+            adsGrid.innerHTML = '';
 
-            if (ads.length === 0) {
-                const noAdsHTML = `
+            if (!ads || ads.length === 0) {
+                adsGrid.innerHTML = `
                     <div class="col-span-full bg-white p-8 rounded-lg shadow-md text-center">
                         <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
                         <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
                         <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
                         <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
-                    </div>
-                `;
-                adsGrid.innerHTML = noAdsHTML;
+                    </div>`;
                 return;
             }
 
-            ads.forEach(ad => {
+            ads.forEach((ad) => {
                 const adCard = `
                     <div class="bg-white rounded-lg shadow-md overflow-hidden">
                         <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="Product Image" class="w-full h-48 object-cover">
@@ -1619,17 +1716,78 @@
                                 <button onclick="handleDeleteAd(${ad.id})" class="w-full bg-red-500 text-white p-2 rounded-md font-semibold hover:bg-red-600 text-sm">Delete</button>
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
                 adsGrid.innerHTML += adCard;
+            });
+        }
+        window.fetchAndDisplayMyAds = fetchAndDisplayMyAds;
+
+        async function fetchAndDisplayListings(category) {
+            const { data: ads, error } = await supabase
+                .from('listings')
+                .select('*')
+                .eq('category_id', category);
+
+            if (error) {
+                console.error("Error fetching listings:", error);
+                showToast("Could not fetch listings.", 'error');
+                return;
+            }
+
+            const listingGrid = document.getElementById('listing-grid');
+            listingGrid.innerHTML = '';
+
+            if (!ads || ads.length === 0) {
+                listingGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">No listings found in this category yet.</p>`;
+                return;
+            }
+
+            ads.forEach((ad) => {
+                const adCard = `
+                <a href="#" onclick="showProductDetailPage(event)" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300 relative">
+                    ${ad.is_premium ? '<span class="absolute top-2 right-2 bg-theme-accent text-white text-xs font-bold px-2 py-1 rounded">Premium</span>' : ''}
+                    <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${ad.title}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-lg mb-2 truncate">₹ ${ad.price.toLocaleString('en-IN')}</h3>
+                            <i class="far fa-heart text-gray-400 hover:text-red-500"></i>
+                        </div>
+                        <p class="text-gray-600 text-sm truncate">${ad.title}</p>
+                        <div class="flex justify-between text-xs text-gray-500 mt-2">
+                            <span>${ad.location}</span>
+                            <span>${ad.created_at ? new Date(ad.created_at).toLocaleDateString() : 'Recently'}</span>
+                        </div>
+                    </div>
+                </a>`;
+                listingGrid.innerHTML += adCard;
             });
         }
 
 
-        // Load categories when the page is ready
-        document.addEventListener('DOMContentLoaded', loadCategories);
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+             // Initial Sign-In Logic
+            (async () => {
+                try {
+                    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                    if (initialAuthToken) {
+                        console.log("Signing in with custom token...");
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else if (!auth.currentUser) {
+                        console.log("Signing in anonymously...");
+                        await signInAnonymously(auth);
+                    }
+                    console.log("Initial sign-in check complete.");
+                } catch (error) {
+                    console.error("Error during initial sign-in:", error);
+                    showToast(`Initial authentication failed: ${error.message}`, 'error');
+                }
+            })();
+
+            loadCategories();
+            showHomepage(); // Show homepage on initial load
+        });
 
     </script>
-
 </body>
 </html>

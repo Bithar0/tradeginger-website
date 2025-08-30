@@ -10,8 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <!-- Supabase Client Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase Client Library is now loaded via the module script below -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -765,16 +764,51 @@
     <div id="toast-notification"></div>
 
     <script type="module">
-        // --- Supabase Configuration for DATABASE & AUTH ---
-        const SUPABASE_URL = 'https://ynyqwmbeglqwtvwqpaeg.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlueXF3bWJlZ2xxd3R2d3FwYWVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5MzAxODcsImV4cCI6MjA3MTUwNjE4N30.IsLuwykC4Qtl4gXsFrygN5Ko1o4VZ4oLS6EDd8QGWoI';
-        let supabase = null;
-        if(window.supabase) {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        } else {
-            console.error("Supabase client library not loaded.");
-        }
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
+        // --- Supabase Configuration for "My Project" ---
+        // IMPORTANT: Replace these with the actual URL and Anon Key from your "My Project" dashboard.
+        // 1. Go to your Supabase project dashboard.
+        // 2. Go to Project Settings (the gear icon).
+        // 3. Click on "API".
+        // 4. Copy the "Project URL" and the "Project API Keys" (use the 'anon' public key).
+        const SUPABASE_URL = 'https://crepnlidfdoskighdhdt.supabase.co'; // e.g., 'https://xyz.supabase.co'
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyZXBubGlkZmRvc2tpZ2hkaGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4Mjg3MzYsImV4cCI6MjA2ODQwNDczNn0.SjrYMGxuIFDsSZpPBm6a_ZveuI_gef80o03TNESJlDw';
+
+        let supabase;
+        
+        // This function is defined early to be used in the config check
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast-notification');
+            toast.textContent = message;
+            toast.className = `toast-${type} show`;
+            setTimeout(() => {
+                toast.className = toast.className.replace('show', '');
+            }, 3000);
+        }
+        window.showToast = showToast;
+
+        try {
+            if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
+                throw new Error("Supabase credentials are placeholders. Please update them in index.html.");
+            }
+            supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (error) {
+            console.error("Error creating Supabase client:", error);
+            // Display a prominent error message to the user, as the app cannot function.
+             document.body.innerHTML = `
+                <div class="fixed inset-0 bg-red-100 text-red-800 flex items-center justify-center p-8 z-50">
+                    <div class="text-center">
+                        <h1 class="text-2xl font-bold mb-4">Application Configuration Error</h1>
+                        <p>The application could not connect to the backend.</p>
+                        <p class="mt-2 font-semibold">Please update the <strong>SUPABASE_URL</strong> and <strong>SUPABASE_ANON_KEY</strong> variables in the script tag in <strong>index.html</strong> with the correct credentials from your 'My Project' dashboard in Supabase.</p>
+                    </div>
+                </div>
+            `;
+            // Stop further script execution
+            throw new Error("Supabase is not configured.");
+        }
+        
         // --- Cloudinary Configuration for STORAGE ---
         const CLOUDINARY_CLOUD_NAME = 'dcxhenppn';
         const CLOUDINARY_UPLOAD_PRESET = 'marketplace_preset';
@@ -809,19 +843,6 @@
         };
 
         const loadingSpinnerHTML = `<div class="loading-container col-span-full"><div class="loader"></div></div>`;
-
-
-        // --- Toast Notification ---
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast-notification');
-            toast.textContent = message;
-            toast.className = `toast-${type} show`;
-            setTimeout(() => {
-                toast.className = toast.className.replace('show', '');
-            }, 3000);
-        }
-        window.showToast = showToast;
-
 
         // --- Page Navigation Logic ---
         function showPage(pageName, isLoggedIn, isBack = false) {
@@ -1564,7 +1585,14 @@
                 hideLoginModal();
             } catch (err) {
                 console.error("Signup error:", err);
-                showToast("Registration failed: " + err.message, "error");
+                if (err.message && err.message.includes('captcha verification failed')) {
+                    showToast("Registration failed. Please disable CAPTCHA in your Supabase project's Authentication settings.", "error");
+                } else if (err.message && err.message.includes('Error sending confirmation email')) {
+                    showToast("Registration failed. Please disable 'Confirm email' in your Supabase project: Authentication -> Providers -> Email.", "error");
+                }
+                 else {
+                    showToast("Registration failed: " + (err.message || "Unknown error"), "error");
+                }
             }
         }
         window.handleRegister = handleRegister;
@@ -2242,4 +2270,7 @@
     </script>
 </body>
 </html>
+" and want to apply the following change:
+
+Registration is working now I'm facing issue while I try to use my Google ID to authenticate. I'm getting a blank screen. Please update the code to make it work.
 

@@ -754,6 +754,9 @@
                     <p class="text-center text-gray-500 mb-6">Please provide your Email and Password</p>
                     <input id="login-email" type="email" placeholder="Enter Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
                     <input id="login-password" type="password" placeholder="Enter Password" class="w-full border-2 border-gray-300 p-3 rounded-md mt-4 focus:outline-none focus:border-theme-accent">
+                    <div class="text-right mt-2">
+                        <a href="#" onclick="switchAuthForm('forgot')" class="text-sm text-theme-accent hover:underline">Forgot Password?</a>
+                    </div>
                     <button onclick="handleLogin(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Continue</button>
                     <div class="my-6 flex items-center">
                         <div class="flex-grow border-t border-gray-300"></div>
@@ -782,6 +785,17 @@
                     </div>
                     <p class="text-center mt-4 text-sm">Already have an account? <a href="#" onclick="switchAuthForm('login')" class="font-semibold text-theme-accent">Login</a></p>
                 </div>
+                <div id="forgot-password-form" class="w-full max-w-sm mx-auto hidden">
+                    <div class="flex border-b mb-4">
+                       <button class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('login')">Login</button>
+                       <button class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('register')">Register</button>
+                   </div>
+                   <h2 class="text-2xl font-bold text-center mb-2">Reset Password</h2>
+                   <p class="text-center text-gray-500 mb-6">Enter your email to receive a password reset link.</p>
+                   <input id="reset-email" type="email" placeholder="Enter your registered Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                   <button onclick="handlePasswordReset(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Send Reset Link</button>
+                    <p class="text-center mt-4 text-sm"><a href="#" onclick="switchAuthForm('login')" class="font-semibold text-theme-accent">Back to Login</a></p>
+               </div>
             </div>
         </div>
     </div>
@@ -838,7 +852,8 @@
             signOut,
             updateProfile,
             signInAnonymously,
-            signInWithCustomToken
+            signInWithCustomToken,
+            sendPasswordResetEmail
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // --- Firebase Configuration ---
@@ -1288,14 +1303,18 @@
         function switchAuthForm(form) {
             const loginForm = document.getElementById('login-form');
             const registerForm = document.getElementById('register-form');
+            const forgotForm = document.getElementById('forgot-password-form');
             
             loginForm.classList.add('hidden');
             registerForm.classList.add('hidden');
+            forgotForm.classList.add('hidden');
 
             if (form === 'login') {
                 loginForm.classList.remove('hidden');
             } else if (form === 'register') {
                 registerForm.classList.remove('hidden');
+            } else if (form === 'forgot') {
+                forgotForm.classList.remove('hidden');
             }
         }
         window.switchAuthForm = switchAuthForm;
@@ -1399,6 +1418,26 @@
             }
         }
         window.loginWithGoogle = loginWithGoogle;
+
+        async function handlePasswordReset(event) {
+            event.preventDefault();
+            const email = document.getElementById('reset-email').value.trim();
+
+            if (!email) {
+                showToast('Please enter your email address.', 'error');
+                return;
+            }
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showToast('Password reset link sent! Please check your email.', 'success');
+                switchAuthForm('login');
+            } catch (error) {
+                console.error("Error sending password reset email:", error);
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+        window.handlePasswordReset = handlePasswordReset;
         
         async function logout(event) {
             if(event) event.preventDefault();
@@ -1791,3 +1830,4 @@
     </script>
 </body>
 </html>
+

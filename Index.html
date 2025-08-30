@@ -1545,32 +1545,16 @@
                         data: {
                             first_name: firstName,
                             last_name: lastName,
+                            mobile: mobile // Pass mobile here so the trigger can access it
                         },
                     },
                 });
 
                 if (error) throw error;
-
-                const user = data?.user ?? null;
+                
+                // The trigger will handle profile creation automatically.
+                
                 const session = data?.session ?? null;
-
-                if (!user) {
-                    showToast("User creation failed. Please check your email verification.", "error");
-                    return;
-                }
-
-                // Insert user profile row
-                const { error: supabaseError } = await supabase
-                    .from("profiles")
-                    .insert({
-                        id: user.id,
-                        first_name: firstName,
-                        last_name: lastName,
-                        email: email,
-                        mobile: mobile,
-                    });
-
-                if (supabaseError) throw supabaseError;
 
                 if (session) {
                     showToast("Registration successful! You are logged in.", "success");
@@ -1655,39 +1639,57 @@
             try {
                 stopNotificationPolling();
                 const { error } = await supabase.auth.signOut();
-                if (error) throw error;
-                showToast('You have been logged out.', 'info');
+                if (error) {
+                    throw error;
+                }
+                // After successful sign-out, force a full page reload to ensure a clean state
+                window.location.reload(); 
             } catch (error) {
                 console.error('Error logging out:', error);
-                showToast('Logout failed!', 'error');
+                showToast('Logout failed: ' + error.message, 'error');
             }
         }
         window.logout = logout;
 
         // --- Auth State Listener ---
         supabase.auth.onAuthStateChange(async (event, session) => {
-            const user = session?.user;
-            if (user) {
-                startNotificationPolling();
-                const lastPage = window.navigationHistory.length > 0 ? window.navigationHistory[window.navigationHistory.length - 1] : 'homepage';
-                showPage(lastPage, true); 
-                await updateUIForUser(user);
-                
-                if (postLoginAction) {
-                    const actionToPerform = postLoginAction; // Make a local copy to avoid race condition
-                    postLoginAction = null; // Clear the global action immediately
-
-                    if (actionToPerform.action === 'sellItem') {
-                         showSellModal();
-                    } else if (actionToPerform.action === 'viewProduct' && actionToPerform.adId) {
-                         // Use the local copy which won't be nulled out
-                         setTimeout(() => showProductDetailPage(null, actionToPerform.adId), 0);
+            try {
+                const user = session?.user;
+                if (user) {
+                    startNotificationPolling();
+                    // Don't change the page if a refresh happens, only on sign-in/initial load
+                    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+                        const lastPage = window.navigationHistory.length > 0 ? window.navigationHistory.pop() : 'homepage';
+                        showPage(lastPage, true);
                     }
+                    
+                    await updateUIForUser(user);
+                    
+                    if (postLoginAction) {
+                        const actionToPerform = postLoginAction;
+                        postLoginAction = null; 
+
+                        if (actionToPerform.action === 'sellItem') {
+                             showSellModal();
+                        } else if (actionToPerform.action === 'viewProduct' && actionToPerform.adId) {
+                             setTimeout(() => showProductDetailPage(null, actionToPerform.adId), 0);
+                        }
+                    }
+                } else {
+                    stopNotificationPolling();
+                    // On sign out, always go to the homepage
+                    if (event === 'SIGNED_OUT') {
+                         window.navigationHistory = [];
+                         showPage('homepage', false);
+                    } else {
+                        // For initial load with no session, just show the homepage
+                        showPage('homepage', false);
+                    }
+                    updateUIForGuest();
                 }
-            } else {
-                stopNotificationPolling();
-                showPage('homepage', false);
-                updateUIForGuest();
+            } catch (error) {
+                console.error("Error in onAuthStateChange:", error);
+                showToast("There was an error managing your session.", "error");
             }
         });
 

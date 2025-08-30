@@ -846,15 +846,20 @@
         }
         window.showPage = showPage;
         
-        function goBack(event) {
+        async function goBack(event) {
             if (event) event.preventDefault();
             if (window.navigationHistory.length > 0) {
                 const previousPage = window.navigationHistory.pop();
-                const { data: { session } } = supabase.auth.getSession();
-                const isLoggedIn = !!session?.user;
+                const { data, error } = await supabase.auth.getSession();
+                if (error) {
+                    console.error("Error getting session in goBack:", error);
+                    showPage(previousPage, false, true); // default to logged out
+                    return;
+                }
+                const isLoggedIn = !!data.session?.user;
                 showPage(previousPage, isLoggedIn, true);
             } else {
-                showHomepage(event);
+                await showHomepage(event);
             }
         }
         window.goBack = goBack;
@@ -876,9 +881,9 @@
         }
         window.showListingPage = showListingPage;
 
-        function showHelpPage(event) { 
+        async function showHelpPage(event) { 
             if(event) event.preventDefault(); 
-            const { data: { session } } = supabase.auth.getSession();
+            const { data: { session } } = await supabase.auth.getSession();
             showPage('helppage', !!session?.user); 
         }
         window.showHelpPage = showHelpPage;
@@ -909,9 +914,9 @@
         }
         window.showProductDetailPage = showProductDetailPage;
         
-        function showComingSoonPage(event) { 
+        async function showComingSoonPage(event) { 
             if(event) event.preventDefault(); 
-            const { data: { session } } = supabase.auth.getSession();
+            const { data: { session } } = await supabase.auth.getSession();
             showPage('comingsoonpage', !!session?.user); 
         }
         window.showComingSoonPage = showComingSoonPage;
@@ -933,9 +938,9 @@
         function showEditProfilePage(event) { if(event) event.preventDefault(); showPage('editprofilepage', true); }
         window.showEditProfilePage = showEditProfilePage;
         
-        function showPremiumListingPage(event) { 
+        async function showPremiumListingPage(event) { 
             if(event) event.preventDefault();
-            const { data: { session } } = supabase.auth.getSession();
+            const { data: { session } } = await supabase.auth.getSession();
             showPage('premiumlistingpage', !!session?.user); 
         }
         window.showPremiumListingPage = showPremiumListingPage;
@@ -1669,13 +1674,16 @@
                 await updateUIForUser(user);
                 
                 if (postLoginAction) {
-                    if (postLoginAction.action === 'sellItem') {
+                    const actionToPerform = postLoginAction; // Make a local copy to avoid race condition
+                    postLoginAction = null; // Clear the global action immediately
+
+                    if (actionToPerform.action === 'sellItem') {
                          showSellModal();
-                    } else if (postLoginAction.action === 'viewProduct' && postLoginAction.adId) {
-                         setTimeout(() => showProductDetailPage(null, postLoginAction.adId), 0);
+                    } else if (actionToPerform.action === 'viewProduct' && actionToPerform.adId) {
+                         // Use the local copy which won't be nulled out
+                         setTimeout(() => showProductDetailPage(null, actionToPerform.adId), 0);
                     }
                 }
-                postLoginAction = null;
             } else {
                 stopNotificationPolling();
                 showPage('homepage', false);
@@ -2093,7 +2101,7 @@
                 if (sellerError) {
                     console.warn("Could not fetch seller profile, using default:", sellerError);
                     // Create a default seller profile if one isn't found, to prevent crashes.
-                    seller = { first_name: 'Unknown', last_name: 'Seller', created_at: ad.created_at };
+                    seller = { id: 'unknown', first_name: 'Unknown', last_name: 'Seller', created_at: ad.created_at };
                 } else {
                     seller = sellerData;
                 }
@@ -2232,5 +2240,4 @@
     </script>
 </body>
 </html>
-
 

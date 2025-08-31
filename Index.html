@@ -565,8 +565,11 @@
                             <input type="text" id="ad-title" class="mt-1 block w-full input-style" required>
                         </div>
                         <div>
-                            <label class="label-style">Description* (Min 50 words)</label>
-                            <textarea rows="4" id="ad-description" placeholder="Include condition, features, and reason for selling" class="mt-1 block w-full input-style" required></textarea>
+                            <div class="flex justify-between items-center">
+                                <label class="label-style">Description</label>
+                                <button type="button" onclick="generateAdDescription(event)" class="text-xs bg-purple-100 text-purple-700 font-semibold px-2 py-1 rounded-md hover:bg-purple-200">✨ Generate with AI</button>
+                            </div>
+                            <textarea rows="4" id="ad-description" placeholder="Include condition, features, and reason for selling" class="mt-1 block w-full input-style"></textarea>
                         </div>
                         <div>
                             <label class="label-style">Set a Price (₹)*</label>
@@ -574,15 +577,26 @@
                         </div>
                         <div>
                             <label class="label-style">Upload Photos</label>
+                            <div id="camera-view" class="hidden relative mb-4">
+                                <video id="camera-stream" class="w-full rounded-md" autoplay playsinline></video>
+                                <canvas id="camera-canvas" class="hidden"></canvas>
+                                <button type="button" onclick="captureImage(event)" class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-full h-16 w-16 flex items-center justify-center border-4 border-gray-300">
+                                    <div class="bg-red-500 h-12 w-12 rounded-full"></div>
+                                </button>
+                                <button type="button" onclick="closeCamera(event)" class="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full h-8 w-8 flex items-center justify-center">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
                             <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                                 <div class="space-y-1 text-center">
                                     <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
                                     <div class="flex text-sm text-gray-600">
                                         <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-theme-accent hover\:text-theme-accent">
                                             <span>Upload a file</span>
-                                            <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple accept="image/*" onchange="updateImagePreviews(event)">
+                                            <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple accept="image/*" onchange="handleFileUpload(event)">
                                         </label>
-                                        <p class="pl-1">or drag and drop</p>
+                                        <p class="pl-1">or</p>
+                                        <button type="button" onclick="openCamera(event)" class="ml-1 relative cursor-pointer bg-white rounded-md font-medium text-theme-accent hover\:text-theme-accent">Take a Picture with AI</button>
                                     </div>
                                     <p class="text-xs text-gray-500">PNG, JPG up to 5MB</p>
                                 </div>
@@ -767,27 +781,20 @@
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
         // --- Supabase Configuration for "My Project" ---
-        // IMPORTANT: Replace these with the actual URL and Anon Key from your "My Project" dashboard.
-        // 1. Go to your Supabase project dashboard.
-        // 2. Go to Project Settings (the gear icon).
-        // 3. Click on "API".
-        // 4. Copy the "Project URL" and the "Project API Keys" (use the 'anon' public key).
-        const SUPABASE_URL = 'https://crepnlidfdoskighdhdt.supabase.co'; // e.g., 'https://xyz.supabase.co'
+        const SUPABASE_URL = 'https://crepnlidfdoskighdhdt.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyZXBubGlkZmRvc2tpZ2hkaGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4Mjg3MzYsImV4cCI6MjA2ODQwNDczNn0.SjrYMGxuIFDsSZpPBm6a_ZveuI_gef80o03TNESJlDw';
 
         let supabase;
         
-        // This function is defined early to be used in the config check
         function showToast(message, type = 'info') {
             const toast = document.getElementById('toast-notification');
             toast.textContent = message;
             toast.className = `toast-${type} show`;
             setTimeout(() => {
                 toast.className = toast.className.replace('show', '');
-            }, 3000);
+            }, 5000);
         }
-        window.showToast = showToast;
-
+        
         try {
             if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
                 throw new Error("Supabase credentials are placeholders. Please update them in index.html.");
@@ -795,7 +802,6 @@
             supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         } catch (error) {
             console.error("Error creating Supabase client:", error);
-            // Display a prominent error message to the user, as the app cannot function.
              document.body.innerHTML = `
                 <div class="fixed inset-0 bg-red-100 text-red-800 flex items-center justify-center p-8 z-50">
                     <div class="text-center">
@@ -805,7 +811,6 @@
                     </div>
                 </div>
             `;
-            // Stop further script execution
             throw new Error("Supabase is not configured.");
         }
         
@@ -865,7 +870,6 @@
             headers.loggedIn.classList.toggle('hidden', !isLoggedIn);
             window.scrollTo(0, 0);
         }
-        window.showPage = showPage;
         
         async function goBack(event) {
             if (event) event.preventDefault();
@@ -883,7 +887,6 @@
                 await showHomepage(event);
             }
         }
-        window.goBack = goBack;
 
         async function showHomepage(event) { 
             if(event) event.preventDefault(); 
@@ -891,7 +894,6 @@
             window.navigationHistory = []; 
             showPage('homepage', !!session?.user); 
         }
-        window.showHomepage = showHomepage;
         
         async function showListingPage(event, categoryKey) { 
             if(event) event.preventDefault(); 
@@ -900,17 +902,14 @@
             updateListingPage(categoryKey); 
             await fetchAndDisplayListings(categoryKey);
         }
-        window.showListingPage = showListingPage;
 
         async function showHelpPage(event) { 
             if(event) event.preventDefault(); 
             const { data: { session } } = await supabase.auth.getSession();
             showPage('helppage', !!session?.user); 
         }
-        window.showHelpPage = showHelpPage;
         
         function showPlaceholderPage(event) { if(event) event.preventDefault(); showPage('placeholderpage', true); }
-        window.showPlaceholderPage = showPlaceholderPage;
         
         async function showProductDetailPage(event, adId) { 
             if (event) event.preventDefault();
@@ -933,41 +932,34 @@
                 showLoginModal(event);
             }
         }
-        window.showProductDetailPage = showProductDetailPage;
         
         async function showComingSoonPage(event) { 
             if(event) event.preventDefault(); 
             const { data: { session } } = await supabase.auth.getSession();
             showPage('comingsoonpage', !!session?.user); 
         }
-        window.showComingSoonPage = showComingSoonPage;
         
         async function showMyAdsPage(event) {
             if(event) event.preventDefault();
             showPage('myadspage', true);
-            await fetchAndDisplayMyAds(); // Fetch data after showing the page
+            await fetchAndDisplayMyAds();
         }
-        window.showMyAdsPage = showMyAdsPage;
 
         async function showUserProfilePage(event) { 
             if(event) event.preventDefault(); 
             showPage('userprofilepage', true);
             await renderProfileAds();
         }
-        window.showUserProfilePage = showUserProfilePage;
         
         function showEditProfilePage(event) { if(event) event.preventDefault(); showPage('editprofilepage', true); }
-        window.showEditProfilePage = showEditProfilePage;
         
         async function showPremiumListingPage(event) { 
             if(event) event.preventDefault();
             const { data: { session } } = await supabase.auth.getSession();
             showPage('premiumlistingpage', !!session?.user); 
         }
-        window.showPremiumListingPage = showPremiumListingPage;
         
         function showDashboardPage(event) { if(event) event.preventDefault(); showPage('dashboardpage', true); }
-        window.showDashboardPage = showDashboardPage;
         
         function searchFromHome(event) {
             if (event) event.preventDefault();
@@ -976,7 +968,6 @@
             document.getElementById('location-filter').value = locationValue;
             showToast(`Searching for items near "${locationValue}"`, 'info');
         }
-        window.searchFromHome = searchFromHome;
 
         // --- Modal Control ---
         async function showSellModal(event) { 
@@ -989,7 +980,6 @@
                 showLoginModal(event);
             }
         }
-        window.showSellModal = showSellModal;
 
         function hideSellModal() { 
             document.getElementById('sellModal').classList.add('hidden'); 
@@ -999,30 +989,20 @@
             document.querySelector('#sellModal .text-2xl').textContent = 'Post Your Ad';
             document.getElementById('post-ad-button').textContent = 'Post Now';
         }
-        window.hideSellModal = hideSellModal;
 
         function showLoginModal(event) { if(event) event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); }
-        window.showLoginModal = showLoginModal;
         
         function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
-        window.hideLoginModal = hideLoginModal;
 
         function showTncModal(event) { if(event) event.preventDefault(); document.getElementById('tncModal').classList.remove('hidden'); }
-        window.showTncModal = showTncModal;
 
         function hideTncModal() { document.getElementById('tncModal').classList.add('hidden'); }
-        window.hideTncModal = hideTncModal;
 
         function showPostSuccessModal() { document.getElementById('adSuccessModal').classList.remove('hidden'); }
-        window.showPostSuccessModal = showPostSuccessModal;
 
         function hideAdSuccessModal() { document.getElementById('adSuccessModal').classList.add('hidden'); }
-        window.hideAdSuccessModal = hideAdSuccessModal;
-
-        document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
         
         function showReraInfo() { showToast('RERA is a unique ID for real estate projects, ensuring transparency.', 'info'); }
-        window.showReraInfo = showReraInfo;
 
         // --- Dynamic Form Logic ---
         const categoriesData = [
@@ -1068,7 +1048,6 @@
             const container = document.getElementById('category-attributes');
             container.innerHTML = (category && attributeTemplates[category]) ? attributeTemplates[category] : '<p class="text-gray-500 text-center py-4">Please select a category to see relevant options.</p>';
         }
-        window.updateAttributeFields = updateAttributeFields;
 
         function handlePropertyTypeChange(selectElement) {
             const landSubCategoryContainer = document.getElementById('land-subcategory-container');
@@ -1077,14 +1056,6 @@
             } else {
                 landSubCategoryContainer.classList.add('hidden');
             }
-        }
-        window.handlePropertyTypeChange = handlePropertyTypeChange;
-
-        const originalShowModal = showSellModal;
-        window.showSellModal = function(event) { 
-            document.getElementById('category-select').value = ''; 
-            updateAttributeFields(); 
-            originalShowModal(event); 
         }
 
         // --- Filter Data and Logic ---
@@ -1195,7 +1166,6 @@
                 locationFilter.value = document.getElementById('location-search').value || "Gurugram, Haryana";
             }
         }
-        window.updateListingPage = updateListingPage;
         
         function togglePostButton() {
             const checkbox = document.getElementById('terms-checkbox');
@@ -1208,7 +1178,6 @@
                 button.classList.add('opacity-50', 'cursor-not-allowed');
             }
         }
-        window.togglePostButton = togglePostButton;
 
         // --- Chat Logic (Polling) ---
         let isMuted = false;
@@ -1315,7 +1284,6 @@
                 showToast("Could not open chat.", "error");
             }
         }
-        window.openChatWindow = openChatWindow;
 
         function closeChatWindow() {
             document.getElementById('chat-window').classList.add('hidden');
@@ -1325,52 +1293,11 @@
             lastMessageTimestamp = null;
             document.getElementById('chat-messages').innerHTML = '';
         }
-        window.closeChatWindow = closeChatWindow;
 
         function toggleMute() {
             isMuted = !isMuted;
             const muteIcon = document.getElementById('mute-btn').querySelector('i');
             muteIcon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-        }
-        window.toggleMute = toggleMute;
-
-        document.getElementById('chat-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const input = document.getElementById('chat-input');
-            const messageText = input.value.trim();
-            const { data: { user } } = await supabase.auth.getUser();
-
-            if (messageText && currentRoomId && user) {
-                appendMessage(messageText, 'sent', false);
-                input.value = '';
-
-                try {
-                    const { error } = await supabase.from('chat_messages').insert({
-                        room_id: currentRoomId,
-                        sender_id: user.id,
-                        receiver_id: currentReceiverId,
-                        content: messageText
-                    });
-                    if (error) throw error;
-                } catch (error) {
-                     console.error("Error sending message:", error);
-                     showToast("Message failed to send.", "error");
-                }
-            }
-        });
-
-        function appendMessage(text, type, playSound = false) {
-            const messagesDiv = document.getElementById('chat-messages');
-            const messageDiv = document.createElement('div');
-            messageDiv.textContent = text;
-            if (type === 'sent') {
-                messageDiv.className = 'bg-theme-accent text-white p-2 rounded-lg self-end ml-auto max-w-xs break-words';
-            } else {
-                messageDiv.className = 'bg-gray-200 p-2 rounded-lg self-start mr-auto max-w-xs break-words';
-                if (playSound && !isMuted) { synth.triggerAttackRelease("C5", "8n"); }
-            }
-            messagesDiv.appendChild(messageDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
 
         // --- Notification Logic ---
@@ -1488,7 +1415,6 @@
                  console.error("Error marking notifications as read:", error);
             }
         }
-        window.markNotificationsAsRead = markNotificationsAsRead;
 
         async function toggleNotifications() {
             const dropdown = document.getElementById('notification-dropdown');
@@ -1502,7 +1428,6 @@
                 setTimeout(markNotificationsAsRead, 2000);
             }
         }
-        window.toggleNotifications = toggleNotifications;
 
         function switchAuthForm(form) {
             const loginForm = document.getElementById('login-form');
@@ -1521,7 +1446,6 @@
                 forgotForm.classList.remove('hidden');
             }
         }
-        window.switchAuthForm = switchAuthForm;
         
         function handleProfilePictureChange(event) {
             const file = event.target.files[0];
@@ -1534,7 +1458,6 @@
                 reader.readAsDataURL(file);
             }
         }
-        window.handleProfilePictureChange = handleProfilePictureChange;
         
         // --- Authentication Logic (Supabase) ---
         async function handleRegister(event) {
@@ -1573,8 +1496,6 @@
 
                 if (error) throw error;
                 
-                // The trigger will handle profile creation automatically.
-                
                 const session = data?.session ?? null;
 
                 if (session) {
@@ -1595,7 +1516,6 @@
                 }
             }
         }
-        window.handleRegister = handleRegister;
 
         async function handleLogin(event) {
             event.preventDefault();
@@ -1620,7 +1540,6 @@
                 showToast('Error logging in: ' + error.message, 'error');
             }
         }
-        window.handleLogin = handleLogin;
 
         async function loginWithGoogle(event) {
             event.preventDefault();
@@ -1631,10 +1550,13 @@
                 if (error) throw error;
             } catch (error) {
                 console.error('Error with Google login:', error);
-                showToast('Google login failed. Please try again.', 'error');
+                if (error.message.includes("redirect_uri")) {
+                     showToast('Google login failed: Check your Supabase Redirect URL settings.', 'error');
+                } else {
+                     showToast('Google login failed. Please try again.', 'error');
+                }
             }
         }
-        window.loginWithGoogle = loginWithGoogle;
 
         async function handlePasswordReset(event) {
             event.preventDefault();
@@ -1646,10 +1568,6 @@
             }
 
             try {
-                // This function relies on your Supabase Email Template configuration.
-                // For the password reset link to work correctly, you MUST set your Site URL in your Supabase project:
-                // Go to your Supabase Dashboard -> Authentication -> URL Configuration -> Site URL.
-                // Set it to the URL where your application is hosted.
                 const { error } = await supabase.auth.resetPasswordForEmail(email);
 
                 if (error) throw error;
@@ -1660,7 +1578,6 @@
                 showToast('Error: ' + error.message, 'error');
             }
         }
-        window.handlePasswordReset = handlePasswordReset;
         
         async function logout(event) {
             if(event) event.preventDefault();
@@ -1670,14 +1587,12 @@
                 if (error) {
                     throw error;
                 }
-                // After successful sign-out, force a full page reload to ensure a clean state
                 window.location.reload(); 
             } catch (error) {
                 console.error('Error logging out:', error);
                 showToast('Logout failed: ' + error.message, 'error');
             }
         }
-        window.logout = logout;
 
         // --- Auth State Listener ---
         supabase.auth.onAuthStateChange(async (event, session) => {
@@ -1685,10 +1600,9 @@
                 const user = session?.user;
                 if (user) {
                     startNotificationPolling();
-                    // Don't change the page if a refresh happens, only on sign-in/initial load
                     if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-                        const lastPage = window.navigationHistory.length > 0 ? window.navigationHistory.pop() : 'homepage';
-                        showPage(lastPage, true);
+                        hideLoginModal();
+                        showPage('homepage', true);
                     }
                     
                     await updateUIForUser(user);
@@ -1705,12 +1619,10 @@
                     }
                 } else {
                     stopNotificationPolling();
-                    // On sign out, always go to the homepage
                     if (event === 'SIGNED_OUT') {
                          window.navigationHistory = [];
                          showPage('homepage', false);
                     } else {
-                        // For initial load with no session, just show the homepage
                         showPage('homepage', false);
                     }
                     updateUIForGuest();
@@ -1723,7 +1635,7 @@
 
         async function updateUIForUser(user) {
             try {
-                const fullName = `${user.user_metadata.first_name || ''} ${user.user_metadata.last_name || ''}`.trim() || user.email;
+                const fullName = `${user.user_metadata.first_name || user.user_metadata.full_name || ''} ${user.user_metadata.last_name || ''}`.trim() || user.email;
                 const profilePicUrl = user.user_metadata.avatar_url || `https://placehold.co/96x96/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
 
                 const { data: userProfileData, error } = await supabase
@@ -1815,7 +1727,6 @@
                 showToast('Failed to update profile: ' + error.message, 'error');
             }
         }
-        window.handleProfileUpdate = handleProfileUpdate;
         
         function loadCategories() {
             const categorySelect = document.getElementById('category-select');
@@ -1835,8 +1746,12 @@
             const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
 
             for (const file of files) {
-                const formData = new FormData();
-                formData.append('file', file);
+                 const formData = new FormData();
+                if (typeof file === 'string') { // Handle Base64 strings
+                    formData.append('file', file);
+                } else { // Handle File objects
+                    formData.append('file', file);
+                }
                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
                 try {
@@ -1855,6 +1770,7 @@
         }
         
         let editingAdId = null; 
+        let stagedFiles = []; // To hold files from upload OR camera
 
         async function handleAdSubmit(event) {
             event.preventDefault();
@@ -1874,26 +1790,23 @@
                 const description = document.getElementById('ad-description').value.trim();
                 const price = document.getElementById('ad-price').value;
                 const categoryName = document.getElementById('category-select').value;
-                const categoryId = categoryMapping[categoryName]; // Convert name to ID
-                const files = document.getElementById('file-upload').files;
+                const categoryId = categoryMapping[categoryName];
                 
-                if (!title || !description || !price || !categoryName) {
-                    throw new Error("Please fill out all required fields.");
+                if (!title || !price || !categoryName) {
+                    throw new Error("Please fill out all required fields: Title, Price, and Category.");
                 }
                 if (!categoryId) {
                     throw new Error("Invalid category selected.");
                 }
-                if (description.split(/\s+/).filter(w => w.length > 0).length < 50) {
-                    throw new Error("Description must be at least 50 words.");
-                }
-                if (/(\+?\d{1,4}?[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?[\d\-.\s]{7,10}/g.test(title + description)) {
-                    throw new Error("Phone numbers are not allowed in title or description.");
-                }
-
+               
                 let imageUrls = [];
-                if (files.length > 0) {
-                    imageUrls = await uploadFilesToCloudinary(files);
-                    if (imageUrls.length !== files.length) {
+                if (stagedFiles.length > 0) {
+                    const filesToUpload = stagedFiles.map(file => {
+                        // Cloudinary upload preset can handle base64 strings directly
+                        return typeof file.data === 'string' ? file.data : file.file;
+                    });
+                    imageUrls = await uploadFilesToCloudinary(filesToUpload);
+                    if (imageUrls.length !== stagedFiles.length) {
                         throw new Error('Some images failed to upload. Please try again.');
                     }
                 }
@@ -1919,26 +1832,27 @@
 
                 if (error) throw error;
                 
-                // --- SUCCESS PATH ---
                 if(editingAdId) {
                     showToast('Ad updated successfully!', 'success');
                 } else {
                     showPostSuccessModal();
                 }
-
+                stagedFiles = []; // Clear staged files after successful submission
                 hideSellModal();
-                fetchAndDisplayMyAds();
+                await fetchAndDisplayMyAds();
 
             } catch (error) {
-                // --- ERROR PATH ---
-                console.error('Error during ad submission:', error);
-                showToast(error.message || 'Failed to post ad.', 'error');
+                console.error('Detailed error during ad submission:', error);
+                if (error.message.includes("violates row-level security policy")) {
+                    showToast('Posting failed: Please check Row Level Security policies on your listings table in Supabase.', 'error');
+                } else {
+                    showToast(error.message || 'Failed to post ad.', 'error');
+                }
             } finally {
                 postButton.disabled = false;
                 postButton.innerHTML = originalButtonText;
             }
         }
-        window.handleAdSubmit = handleAdSubmit;
 
         async function handleEditAd(adId) {
             try {
@@ -1966,7 +1880,6 @@
                 showToast('Could not load ad details for editing.', 'error');
             }
         }
-        window.handleEditAd = handleEditAd;
 
         async function handleDeleteAd(adId) {
             try {
@@ -1982,7 +1895,6 @@
                  showToast('Failed to delete ad.', 'error');
             }
         }
-        window.handleDeleteAd = handleDeleteAd;
 
         async function fetchAndDisplayMyAds() {
             const adsGrid = document.getElementById('my-ads-grid');
@@ -2039,7 +1951,6 @@
                 adsGrid.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading ads.</p>`;
             }
         }
-        window.fetchAndDisplayMyAds = fetchAndDisplayMyAds;
 
         async function fetchAndDisplayListings(categoryName) {
             const listingGrid = document.getElementById('listing-grid');
@@ -2088,17 +1999,22 @@
             }
         }
 
-        function updateImagePreviews(event) {
+        function handleFileUpload(event) {
+            stagedFiles = Array.from(event.target.files).map(file => ({ type: 'file', file: file }));
+            renderImagePreviews();
+        }
+
+        function renderImagePreviews() {
             const previewContainer = document.getElementById('image-preview-container');
             previewContainer.innerHTML = '';
-            const files = event.target.files;
-            if (files.length > 8) {
+            if (stagedFiles.length > 8) {
                 showToast("You can only upload a maximum of 8 images.", 'error');
-                event.target.value = ''; // Clear the selection
-                return;
+                stagedFiles = stagedFiles.slice(0, 8);
             }
-            for (const file of files) {
+            stagedFiles.forEach((fileWrapper, index) => {
                 const reader = new FileReader();
+                const file = fileWrapper.type === 'base64' ? dataURLtoFile(fileWrapper.data, `capture${index}.jpg`) : fileWrapper.file;
+                
                 reader.onload = function(e) {
                     const previewWrapper = document.createElement('div');
                     previewWrapper.className = 'relative w-24 h-24';
@@ -2111,26 +2027,22 @@
                     previewContainer.appendChild(previewWrapper);
                 }
                 reader.readAsDataURL(file);
-            }
+            });
         }
-        window.updateImagePreviews = updateImagePreviews;
 
         async function renderProductDetailPage(adId) {
             const container = document.getElementById('product-detail-container');
             container.innerHTML = loadingSpinnerHTML;
             try {
-                // Step 1: Fetch the listing itself.
                 const { data: ad, error: adError } = await supabase.from('listings').select('*').eq('id', adId).single();
                 
                 if (adError || !ad) { throw adError || new Error("Ad not found"); }
 
-                // Step 2: Fetch the seller's profile using the user_id from the listing.
                 let seller;
                 const { data: sellerData, error: sellerError } = await supabase.from('profiles').select('*').eq('id', ad.user_id).single();
 
                 if (sellerError) {
                     console.warn("Could not fetch seller profile, using default:", sellerError);
-                    // Create a default seller profile if one isn't found, to prevent crashes.
                     seller = { id: 'unknown', first_name: 'Unknown', last_name: 'Seller', created_at: ad.created_at };
                 } else {
                     seller = sellerData;
@@ -2260,9 +2172,233 @@
             }
         }
 
+        async function generateAdDescription(event) {
+            event.preventDefault();
+            const adTitle = document.getElementById('ad-title').value.trim();
+            const categorySelect = document.getElementById('category-select');
+            const categoryName = categorySelect.options[categorySelect.selectedIndex].text;
+            const descriptionTextarea = document.getElementById('ad-description');
+            const generateButton = event.target;
+
+            if (!adTitle) {
+                showToast('Please enter an Ad Title first to generate a description.', 'error');
+                return;
+            }
+
+            const originalButtonText = generateButton.innerHTML;
+            generateButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Generating...`;
+            generateButton.disabled = true;
+
+            try {
+                const apiKey = ""; // Canvas will provide this
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const systemPrompt = "You are an expert copywriter for a local online marketplace. Your goal is to write clear, friendly, and persuasive ad descriptions that help items sell quickly. Do not use markdown or formatting. Just provide the plain text for the description.";
+                const userQuery = `Write a short and appealing ad description for an item with the following details:\nCategory: ${categoryName}\nTitle: "${adTitle}"`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    },
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API call failed with status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const generatedText = candidate.content.parts[0].text;
+                    descriptionTextarea.value = generatedText;
+                    showToast('Description generated!', 'success');
+                } else {
+                    throw new Error('No content generated in API response.');
+                }
+
+            } catch (error) {
+                console.error('Error generating ad description:', error);
+                showToast('Could not generate description. Please try again.', 'error');
+            } finally {
+                generateButton.innerHTML = originalButtonText;
+                generateButton.disabled = false;
+            }
+        }
+
+        let cameraStream = null;
+
+        async function openCamera(event) {
+            event.preventDefault();
+            const cameraView = document.getElementById('camera-view');
+            const video = document.getElementById('camera-stream');
+            cameraView.classList.remove('hidden');
+            try {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    video.srcObject = cameraStream;
+                } else {
+                    throw new Error('Camera not supported on this browser.');
+                }
+            } catch (err) {
+                console.error("Error accessing camera:", err);
+                showToast('Could not access camera. Please ensure permissions are granted.', 'error');
+                closeCamera();
+            }
+        }
+        
+        function closeCamera(event) {
+            if(event) event.preventDefault();
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('camera-view').classList.add('hidden');
+        }
+
+        async function captureImage(event) {
+            event.preventDefault();
+            const video = document.getElementById('camera-stream');
+            const canvas = document.getElementById('camera-canvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const base64ImageData = canvas.toDataURL('image/jpeg');
+            stagedFiles.push({ type: 'base64', data: base64ImageData });
+            renderImagePreviews();
+            
+            closeCamera();
+            await analyzeImageWithAI(base64ImageData.split(',')[1]); // Send without the prefix
+        }
+
+        function dataURLtoFile(dataurl, filename) {
+            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new File([u8arr], filename, {type:mime});
+        }
+        
+        async function analyzeImageWithAI(base64ImageData) {
+            showToast('🤖 AI is analyzing your image...', 'info');
+            
+            try {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const validCategories = ['cars', 'property', 'mobiles', 'bikes', 'electronics', 'commercial_vehicles', 'furniture', 'fashion', 'pets', 'services'];
+                const prompt = `Analyze this image of an item for sale. Provide a JSON object with 'category', 'title', and 'description'. The 'category' must be one of these exact values: ${validCategories.join(', ')}. The 'title' should be a short, catchy title. The 'description' should be a helpful summary.`;
+                
+                const payload = {
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
+                        ]
+                    }],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "category": { "type": "STRING" },
+                                "title": { "type": "STRING" },
+                                "description": { "type": "STRING" }
+                            },
+                            required: ["category", "title", "description"]
+                        }
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const parsedJson = JSON.parse(candidate.content.parts[0].text);
+                    
+                    if (validCategories.includes(parsedJson.category)) {
+                        document.getElementById('category-select').value = parsedJson.category;
+                        updateAttributeFields(); // Important to update UI for the new category
+                    } else {
+                        console.warn(`AI suggested an invalid category: ${parsedJson.category}`);
+                    }
+                    document.getElementById('ad-title').value = parsedJson.title;
+                    document.getElementById('ad-description').value = parsedJson.description;
+                    showToast('✅ AI analysis complete!', 'success');
+                } else {
+                    throw new Error('Could not parse AI response.');
+                }
+            } catch (error) {
+                console.error('Error analyzing image with AI:', error);
+                showToast('AI analysis failed. Please fill in the details manually.', 'error');
+            }
+        }
+
+
+        // --- EXPOSE FUNCTIONS TO GLOBAL SCOPE ---
+        const functionsToExpose = {
+            showHomepage, showListingPage, showLoginModal, showSellModal, toggleNotifications,
+            markNotificationsAsRead, showUserProfilePage, showMyAdsPage, showPlaceholderPage,
+            showHelpPage, logout, searchFromHome, goBack, showComingSoonPage, showProductDetailPage,
+            hideSellModal, hideLoginModal, showTncModal, hideTncModal, updateAttributeFields,
+            handlePropertyTypeChange, showReraInfo, togglePostButton, openChatWindow,
+            closeChatWindow, toggleMute, switchAuthForm, handleLogin, loginWithGoogle,
+            handleRegister, handlePasswordReset, handleProfilePictureChange, showEditProfilePage,
+            handleProfileUpdate, handleEditAd, handleDeleteAd, showPremiumListingPage,
+            hideAdSuccessModal, handleFileUpload, fetchAndDisplayMyAds, generateAdDescription,
+            openCamera, closeCamera, captureImage
+        };
+        Object.keys(functionsToExpose).forEach(funcName => {
+            window[funcName] = functionsToExpose[funcName];
+        });
+
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
+            document.getElementById('chat-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const input = document.getElementById('chat-input');
+                const messageText = input.value.trim();
+                const { data: { user } } = await supabase.auth.getUser();
+
+                if (messageText && currentRoomId && user) {
+                    appendMessage(messageText, 'sent', false);
+                    input.value = '';
+
+                    try {
+                        const { error } = await supabase.from('chat_messages').insert({
+                            room_id: currentRoomId,
+                            sender_id: user.id,
+                            receiver_id: currentReceiverId,
+                            content: messageText
+                        });
+                        if (error) throw error;
+                    } catch (error) {
+                         console.error("Error sending message:", error);
+                         showToast("Message failed to send.", "error");
+                    }
+                }
+            });
+
             loadCategories();
             showHomepage(); // Show homepage on initial load
         });
@@ -2270,7 +2406,4 @@
     </script>
 </body>
 </html>
-" and want to apply the following change:
-
-Registration is working now I'm facing issue while I try to use my Google ID to authenticate. I'm getting a blank screen. Please update the code to make it work.
 

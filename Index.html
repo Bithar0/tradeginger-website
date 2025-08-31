@@ -1587,7 +1587,12 @@
                 if (error) {
                     throw error;
                 }
-                window.location.reload(); 
+                // Manually reset the UI to a logged-out state without reloading the page.
+                // The onAuthStateChange listener will also fire, ensuring consistency.
+                updateUIForGuest();
+                window.navigationHistory = [];
+                showPage('homepage', false);
+                showToast('You have been logged out successfully.', 'success');
             } catch (error) {
                 console.error('Error logging out:', error);
                 showToast('Logout failed: ' + error.message, 'error');
@@ -1802,7 +1807,6 @@
                 let imageUrls = [];
                 if (stagedFiles.length > 0) {
                     const filesToUpload = stagedFiles.map(file => {
-                        // Cloudinary upload preset can handle base64 strings directly
                         return typeof file.data === 'string' ? file.data : file.file;
                     });
                     imageUrls = await uploadFilesToCloudinary(filesToUpload);
@@ -1837,17 +1841,27 @@
                 } else {
                     showPostSuccessModal();
                 }
-                stagedFiles = []; // Clear staged files after successful submission
+                stagedFiles = [];
                 hideSellModal();
                 await fetchAndDisplayMyAds();
 
             } catch (error) {
                 console.error('Detailed error during ad submission:', error);
+                 let errorMessage = error.message || 'Failed to post ad. Please try again.';
+
                 if (error.message.includes("violates row-level security policy")) {
-                    showToast('Posting failed: Please check Row Level Security policies on your listings table in Supabase.', 'error');
-                } else {
-                    showToast(error.message || 'Failed to post ad.', 'error');
+                    errorMessage = 'Posting failed due to database security rules. Please check your Supabase settings.';
+                    // DEV NOTE: To fix, go to Supabase > Authentication > Policies > listings table
+                    // and create a new policy for INSERT, for authenticated users.
+                } else if (error.message.includes('violates not-null constraint') && error.message.includes('subcategory_id')) {
+                    errorMessage = 'Posting failed: A "Sub-Category" is required. The backend was updated, but the form is not sending this yet.';
+                     // DEV NOTE: To fix, make the 'subcategory_id' column in the 'listings' table optional (allow nulls).
+                    // SQL FIX: ALTER TABLE public.listings ALTER COLUMN subcategory_id DROP NOT NULL;
+                } else if (error.code) { 
+                    errorMessage = `Database Error: ${error.message}`;
                 }
+                
+                showToast(errorMessage, 'error');
             } finally {
                 postButton.disabled = false;
                 postButton.innerHTML = originalButtonText;

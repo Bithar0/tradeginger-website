@@ -237,7 +237,7 @@
                 <div class="max-w-4xl mx-auto bg-white rounded-full p-2 flex items-center shadow-2xl">
                     <div class="flex-grow flex items-center border-r-2 border-gray-200">
                         <i class="fas fa-map-marker-alt text-gray-400 mx-3"></i>
-                        <input id="location-search" type="text" placeholder="Enter Pin Code or City" class="w-full bg-transparent text-gray-700 focus:outline-none">
+                        <input id="location-search" type="text" placeholder="Enter City or Pincode" class="w-full bg-transparent text-gray-700 focus:outline-none">
                     </div>
                     <div class="flex-grow flex items-center ml-2">
                          <i class="fas fa-search text-gray-400 mx-3"></i>
@@ -333,7 +333,7 @@
                     <p>You agree not to list, upload, post, transmit, or share any content that:</p>
                     <ul class="list-disc list-inside space-y-1">
                         <li>Is unlawful, fraudulent, defamatory, obscene, or sexually explicit.</li>
-                        <li>Violates any law or regulation in force in India, including but not limited to the sale of illegal goods, weapons, or narcotics.</li>
+                        <li>Violates any law or regulation in force in India, including but not to the sale of illegal goods, weapons, or narcotics.</li>
                         <li>Infringes upon any third party’s intellectual property rights (e.g., copyright, trademarks) or other proprietary rights.</li>
                         <li>Contains any computer virus, malware, or other malicious code.</li>
                         <li>Is misleading, deceptive, or constitutes unfair trade practice under the Consumer Protection Act, 2019.</li>
@@ -385,7 +385,7 @@
 
                     <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">8. Miscellaneous</h2>
                     <h3 class="text-xl font-semibold mt-4">8.1. Termination</h3>
-                    <p>We reserve the right to terminate your access to the Website at our sole discretion, without notice, for any reason, including but not limited to a breach of these Terms.</p>
+                    <p>We reserve the right to terminate your access to the Website at our sole discretion, without notice, for any reason, including but not to a breach of these Terms.</p>
                     <h3 class="text-xl font-semibold mt-4">8.2. Changes to Terms</h3>
                     <p>We may modify these Terms at any time by posting the revised Terms on the Website. Your continued use of the Website after such a posting constitutes your acceptance of the revised Terms.</p>
                 </div>
@@ -604,6 +604,31 @@
                         </select>
                     </div>
                     <div id="category-attributes" class="space-y-4 border-t pt-4 mt-4"></div>
+                    <!-- START: Location Fields Added -->
+                    <div class="border-t pt-6 mt-6 space-y-6">
+                        <h3 class="text-xl font-bold text-gray-900">Confirm your Location</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="ad-state" class="label-style">State*</label>
+                                <select id="ad-state" onchange="populateCities(this.value)" class="mt-1 block w-full input-style" required>
+                                    <option value="">Select State</option>
+                                    <!-- States will be populated by JS -->
+                                </select>
+                            </div>
+                            <div>
+                                <label for="ad-city" class="label-style">City*</label>
+                                <select id="ad-city" class="mt-1 block w-full input-style" required>
+                                    <option value="">Select City</option>
+                                    <!-- Cities will be populated based on State selection -->
+                                </select>
+                            </div>
+                        </div>
+                         <div>
+                            <label for="ad-pincode" class="label-style">Pincode (Optional)</label>
+                            <input type="text" id="ad-pincode" placeholder="e.g., 122001" class="mt-1 block w-full input-style">
+                        </div>
+                    </div>
+                    <!-- END: Location Fields Added -->
                     <div class="border-t pt-6 mt-6 space-y-6">
                         <div>
                             <label class="label-style">Ad Title*</label>
@@ -689,7 +714,7 @@
                 <p>You agree not to list, upload, post, transmit, or share any content that:</p>
                 <ul class="list-disc list-inside space-y-1 pl-4">
                     <li>Is unlawful, fraudulent, defamatory, obscene, or sexually explicit.</li>
-                    <li>Violates any law or regulation in force in India, including but not limited to the sale of illegal goods, weapons, or narcotics.</li>
+                    <li>Violates any law or regulation in force in India, including but not to the sale of illegal goods, weapons, or narcotics.</li>
                     <li>Infringes upon any third party’s intellectual property rights (e.g., copyright, trademarks) or other proprietary rights.</li>
                     <li>Contains any computer virus, malware, or other malicious code.</li>
                     <li>Is misleading, deceptive, or constitutes unfair trade practice under the Consumer Protection Act, 2019.</li>
@@ -741,7 +766,7 @@
 
                 <h3 class="text-xl font-semibold mt-4">8. Miscellaneous</h3>
                 <h4 class="font-semibold mt-2">8.1. Termination</h4>
-                <p>We reserve the right to terminate your access to the Website at our sole discretion, without notice, for any reason, including but not limited to a breach of these Terms.</p>
+                <p>We reserve the right to terminate your access to the Website at our sole discretion, without notice, for any reason, including but not to a breach of these Terms.</p>
                  <h4 class="font-semibold mt-2">8.2. Changes to Terms</h4>
                 <p>We may modify these Terms at any time by posting the revised Terms on the Website. Your continued use of the Website after such a posting constitutes your acceptance of the revised Terms.</p>
             </div>
@@ -923,6 +948,7 @@
         // --- Page Navigation & State Management ---
         window.navigationHistory = [];
         let postLoginAction = null;
+        let allStates = [], allCities = []; // To store location data
 
         const pageDivs = {
             homepage: document.getElementById('homepage'),
@@ -986,19 +1012,16 @@
         async function showHomepage(event) { 
             if(event) event.preventDefault(); 
             const { data: { session } } = await supabase.auth.getSession();
-            // Clear search bars on homepage navigation
-            document.getElementById('location-search').value = '';
-            document.getElementById('keyword-search').value = '';
             window.navigationHistory = []; 
             showPage('homepage', !!session?.user); 
         }
         
-        async function showListingPage(event, categoryKey) { 
+        async function showListingPage(event, categoryKey, filters = {}) { 
             if(event) event.preventDefault(); 
             const { data: { session } } = await supabase.auth.getSession();
             showPage('listingpage', !!session?.user); 
-            updateListingPage(categoryKey); 
-            await fetchAndDisplayListings(categoryKey);
+            updateListingPage(categoryKey, filters); 
+            await fetchAndDisplayListings(categoryKey, filters);
         }
 
         async function showHelpPage(event) { 
@@ -1059,12 +1082,15 @@
         
         function showDashboardPage(event) { if(event) event.preventDefault(); showPage('dashboardpage', true); }
         
-        function searchFromHome(event) {
+        async function searchFromHome(event) {
             if (event) event.preventDefault();
-            const locationValue = document.getElementById('location-search').value;
-            showListingPage(event, 'cars'); // Default to cars for search
-            document.getElementById('location-filter').value = locationValue;
-            showToast(`Searching for items near "${locationValue}"`, 'info');
+            const locationValue = document.getElementById('location-search').value.trim();
+            const keyword = document.getElementById('keyword-search').value.trim();
+            const filters = {};
+            if (locationValue) filters.location = locationValue;
+            if (keyword) filters.keyword = keyword;
+
+            await showListingPage(event, 'cars', filters); // Default to cars for search
         }
 
         // --- Modal Control ---
@@ -1233,25 +1259,30 @@
             `;
         }
 
-        function updateListingPage(categoryKey) {
+        function updateListingPage(categoryKey, filters = {}) {
             const sidebar = document.getElementById('filter-sidebar');
             const title = document.getElementById('listing-page-title');
-            const filters = filterData[categoryKey] || filterData.default;
+            const filtersForCategory = filterData[categoryKey] || filterData.default;
 
             let sidebarHTML = `
                 <div class="bg-white p-4 rounded-lg shadow">
                     <h2 class="text-xl font-bold mb-4">Filters</h2>
                     <div class="mb-4">
                         <h3 class="font-semibold mb-2 text-sm">Location</h3>
-                        <div class="relative">
-                            <input id="location-filter" type="text" class="w-full border rounded-md p-2 text-sm pr-8">
-                            <i class="fas fa-map-marker-alt absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400"></i>
+                        <div class="space-y-2">
+                             <select id="filter-state" onchange="populateFilterCities(this.value)" class="w-full border rounded-md p-2 text-sm">
+                                <option value="">All States</option>
+                                ${allStates.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+                            </select>
+                            <select id="filter-city" class="w-full border rounded-md p-2 text-sm">
+                                <option value="">All Cities</option>
+                            </select>
                         </div>
                     </div>
-                    ${filters.map(createFilterSection).join('')}
+                    ${filtersForCategory.map(createFilterSection).join('')}
                     <div class="border-t pt-4 mt-4 space-y-2">
-                         <button onclick="console.log('Filters Applied!')" class="w-full bg-theme-primary text-white p-2 rounded-md font-semibold hover:bg-theme-primary-dark text-sm">Apply Filters</button>
-                         <button onclick="updateListingPage('${categoryKey}')" class="w-full bg-gray-200 text-gray-700 p-2 rounded-md font-semibold hover:bg-gray-300 text-sm">Reset</button>
+                         <button onclick="applyFilters('${categoryKey}')" class="w-full bg-theme-primary text-white p-2 rounded-md font-semibold hover:bg-theme-primary-dark text-sm">Apply Filters</button>
+                         <button onclick="resetFilters('${categoryKey}')" class="w-full bg-gray-200 text-gray-700 p-2 rounded-md font-semibold hover:bg-gray-300 text-sm">Reset</button>
                     </div>
                 </div>
             `;
@@ -1259,10 +1290,25 @@
             sidebar.innerHTML = sidebarHTML;
             title.innerText = `Fresh Recommendations in ${categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1)}`;
             
-            const locationFilter = document.getElementById('location-filter');
-            if (locationFilter) {
-                locationFilter.value = document.getElementById('location-search').value || "Gurugram, Haryana";
+            if (filters.location) {
+                // This part is tricky as location is a string. We will handle city/state ID filters from the sidebar.
             }
+        }
+        
+        function applyFilters(categoryKey) {
+            const cityId = document.getElementById('filter-city').value;
+            const filters = {};
+            if (cityId) {
+                filters.city_id = cityId;
+            }
+            fetchAndDisplayListings(categoryKey, filters);
+            showToast('Filters applied!', 'info');
+        }
+
+        function resetFilters(categoryKey) {
+            updateListingPage(categoryKey);
+            fetchAndDisplayListings(categoryKey);
+            showToast('Filters reset.', 'info');
         }
         
         function togglePostButton() {
@@ -1686,7 +1732,8 @@
                     throw error;
                 }
                 updateUIForGuest();
-                await showHomepage(event); // This ensures the homepage is reset correctly
+                window.navigationHistory = [];
+                showPage('homepage', false);
                 showToast('You have been logged out successfully.', 'success');
             } catch (error) {
                 console.error('Error logging out:', error);
@@ -1701,9 +1748,8 @@
                 if (user) {
                     startNotificationPolling();
                     if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-                        // After any sign-in (including OAuth redirect), hide the modal and go to homepage
                         hideLoginModal();
-                        await showHomepage(); // This ensures search bars are cleared
+                        showPage('homepage', true);
                     }
                     
                     await updateUIForUser(user);
@@ -1892,9 +1938,11 @@
                 const price = document.getElementById('ad-price').value;
                 const categoryName = document.getElementById('category-select').value;
                 const categoryId = categoryMapping[categoryName];
+                const cityId = document.getElementById('ad-city').value;
+                const pincode = document.getElementById('ad-pincode').value.trim();
                 
-                if (!title || !price || !categoryName) {
-                    throw new Error("Please fill out all required fields: Title, Price, and Category.");
+                if (!title || !price || !categoryName || !cityId) {
+                    throw new Error("Please fill out all required fields: Title, Price, Category, and Location.");
                 }
                 if (!categoryId) {
                     throw new Error("Invalid category selected.");
@@ -1910,7 +1958,8 @@
                         throw new Error('Some images failed to upload. Please try again.');
                     }
                 }
-
+                
+                const cityName = allCities.find(c => c.id == cityId)?.name || 'Not specified';
                 const listingData = {
                     user_id: user.id,
                     category_id: categoryId,
@@ -1918,7 +1967,9 @@
                     description: description,
                     price: parseFloat(price),
                     image_urls: imageUrls,
-                    location: document.getElementById('location-search').value || 'Not specified'
+                    location: cityName, // Legacy location field
+                    city_id: parseInt(cityId),
+                    pincode: pincode || null,
                 };
 
                 let error;
@@ -1947,12 +1998,13 @@
 
                 if (error.message.includes("violates row-level security policy")) {
                     errorMessage = 'Posting failed due to database security rules. Please check your Supabase settings.';
+                    // DEV NOTE: To fix, go to Supabase > Authentication > Policies > listings table
+                    // and create a new policy for INSERT, for authenticated users.
                 } else if (error.message.includes('violates not-null constraint') && error.message.includes('subcategory_id')) {
-                    errorMessage = 'Posting failed: A "Sub-Category" is required. Please ask to have this column made optional in the database.';
-                } else if (error.code === 'PGRST204') {
-                     errorMessage = `Database Error: The 'category_id' column is missing from the 'listings' table. Please run the SQL command provided in the code comments to fix this.`;
-                }
-                else if (error.code) { 
+                    errorMessage = 'Posting failed: A "Sub-Category" is required. The backend was updated, but the form is not sending this yet.';
+                     // DEV NOTE: To fix, make the 'subcategory_id' column in the 'listings' table optional (allow nulls).
+                    // SQL FIX: ALTER TABLE public.listings ALTER COLUMN subcategory_id DROP NOT NULL;
+                } else if (error.code) { 
                     errorMessage = `Database Error: ${error.message}`;
                 }
                 
@@ -1968,7 +2020,7 @@
                 editingAdId = adId;
                 const { data: ad, error } = await supabase
                     .from('listings')
-                    .select('*')
+                    .select('*, cities(*)')
                     .eq('id', adId)
                     .single();
                 
@@ -1980,6 +2032,20 @@
                 document.getElementById('ad-description').value = ad.description;
                 document.getElementById('ad-price').value = ad.price;
                 
+                // Populate location
+                if (ad.city_id && ad.cities) {
+                    const stateId = ad.cities.state_id;
+                    const cityId = ad.city_id;
+                    const adStateSelect = document.getElementById('ad-state');
+                    adStateSelect.value = stateId;
+                    populateCities(stateId);
+                    // Use a timeout to ensure cities are populated before setting the value
+                    setTimeout(() => {
+                        document.getElementById('ad-city').value = cityId;
+                    }, 100);
+                }
+                document.getElementById('ad-pincode').value = ad.pincode || '';
+
                 document.querySelector('#sellModal .text-2xl').textContent = 'Edit Your Ad';
                 document.getElementById('post-ad-button').textContent = 'Update Ad';
                 
@@ -1991,17 +2057,17 @@
         }
 
         async function handleDeleteAd(adId) {
-            try {
-                if (!confirm('Are you sure you want to delete this ad? This action cannot be undone.')) {
-                     return;
+            const isConfirmed = confirm("Are you sure you want to delete this ad? This action cannot be undone.");
+            if (isConfirmed) {
+                try {
+                    const { error } = await supabase.from('listings').delete().eq('id', adId);
+                    if (error) throw error;
+                    showToast('Ad deleted successfully.', 'success');
+                    await fetchAndDisplayMyAds(); // Refresh the ad list
+                } catch (error) {
+                    console.error("Error deleting ad:", error);
+                    showToast('Failed to delete ad: ' + error.message, 'error');
                 }
-                const { error } = await supabase.from('listings').delete().eq('id', adId);
-                if (error) throw error;
-                showToast('Ad deleted successfully!', 'success');
-                fetchAndDisplayMyAds();
-            } catch (error) {
-                 console.error('Error deleting ad:', error);
-                 showToast('Failed to delete ad.', 'error');
             }
         }
 
@@ -2011,13 +2077,13 @@
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) {
-                    showLoginModal();
+                    adsGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">Please log in to see your ads.</p>`;
                     return;
                 }
 
                 const { data: ads, error } = await supabase
                     .from('listings')
-                    .select('*')
+                    .select('*, cities(name)')
                     .eq('user_id', user.id);
 
                 if (error) throw error;
@@ -2036,6 +2102,7 @@
                 }
 
                 ads.forEach((ad) => {
+                    const locationText = ad.cities ? ad.cities.name : ad.location || 'N/A';
                     const adCard = `
                         <div class="bg-white rounded-lg shadow-md overflow-hidden">
                             <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="Product Image" class="w-full h-48 object-cover">
@@ -2043,7 +2110,7 @@
                                 <h3 class="font-bold text-lg mb-2">₹ ${ad.price.toLocaleString('en-IN')}</h3>
                                 <p class="text-gray-600 text-sm mb-4 truncate">${ad.title}</p>
                                 <div class="flex justify-between items-center text-xs text-gray-500">
-                                    <span>${ad.location || 'N/A'}</span>
+                                    <span>${locationText}</span>
                                     <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">Active</span>
                                 </div>
                                 <div class="mt-4 flex gap-2">
@@ -2061,28 +2128,48 @@
             }
         }
 
-        async function fetchAndDisplayListings(categoryName) {
+        async function fetchAndDisplayListings(categoryName, filters = {}) {
             const listingGrid = document.getElementById('listing-grid');
             listingGrid.innerHTML = loadingSpinnerHTML;
             
             const categoryId = categoryMapping[categoryName];
             
             try {
-                const { data: ads, error } = await supabase
+                let query = supabase
                     .from('listings')
-                    .select('*')
-                    .eq('category_id', categoryId);
+                    .select('*, cities(name)');
+                    
+                if (categoryId) {
+                    query = query.eq('category_id', categoryId);
+                }
+                
+                if (filters.city_id) {
+                    query = query.eq('city_id', filters.city_id);
+                }
+                
+                if (filters.keyword) {
+                    query = query.ilike('title', `%${filters.keyword}%`);
+                }
+
+                if (filters.location) {
+                    // This is a simple text search on the legacy location column.
+                    // For a more robust search, you'd need a more complex query or a database function.
+                    query = query.ilike('location', `%${filters.location}%`);
+                }
+
+                const { data: ads, error } = await query;
 
                 if (error) throw error;
 
                 listingGrid.innerHTML = '';
 
                 if (!ads || ads.length === 0) {
-                    listingGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">No listings found in this category yet.</p>`;
+                    listingGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">No listings found for your criteria.</p>`;
                     return;
                 }
 
                 ads.forEach((ad) => {
+                    const locationText = ad.cities ? ad.cities.name : ad.location;
                     const adCard = `
                     <a href="#" onclick="showProductDetailPage(event, ${ad.id})" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300 relative">
                         ${ad.is_premium ? '<span class="absolute top-2 right-2 bg-theme-accent text-white text-xs font-bold px-2 py-1 rounded">Premium</span>' : ''}
@@ -2094,7 +2181,7 @@
                             </div>
                             <p class="text-gray-600 text-sm truncate">${ad.title}</p>
                             <div class="flex justify-between text-xs text-gray-500 mt-2">
-                                <span>${ad.location}</span>
+                                <span>${locationText}</span>
                                 <span>${ad.created_at ? new Date(ad.created_at).toLocaleDateString() : 'Recently'}</span>
                             </div>
                         </div>
@@ -2143,18 +2230,18 @@
             const container = document.getElementById('product-detail-container');
             container.innerHTML = loadingSpinnerHTML;
             try {
-                const { data: ad, error: adError } = await supabase.from('listings').select('*').eq('id', adId).single();
+                const { data: ad, error: adError } = await supabase.from('listings').select('*, cities(name, states(name))').eq('id', adId).single();
                 
                 if (adError || !ad) { throw adError || new Error("Ad not found"); }
 
                 let seller;
                 const { data: sellerData, error: sellerError } = await supabase.from('profiles').select('*').eq('id', ad.user_id).single();
 
-                if (sellerError) {
+                if (sellerError && sellerError.code !== 'PGRST116') {
                     console.warn("Could not fetch seller profile, using default:", sellerError);
                     seller = { id: 'unknown', first_name: 'Unknown', last_name: 'Seller', created_at: ad.created_at };
                 } else {
-                    seller = sellerData;
+                    seller = sellerData || { id: 'unknown', first_name: 'Unknown', last_name: 'Seller', created_at: ad.created_at };
                 }
 
                 const creationDate = seller.created_at ? new Date(seller.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'a while';
@@ -2167,6 +2254,8 @@
                     .limit(4);
                 
                 if(similarAdsError) { console.warn("Could not fetch similar ads:", similarAdsError); }
+                
+                const locationText = ad.cities ? `${ad.cities.name}, ${ad.cities.states.name}` : (ad.location || 'India');
 
                 const similarAdsHTML = similarAds && similarAds.length > 0 ? similarAds.map(similarAd => `
                     <a href="#" onclick="showProductDetailPage(event, ${similarAd.id})" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
@@ -2193,7 +2282,7 @@
                                     <h2 class="text-3xl font-bold mb-2">₹ ${ad.price.toLocaleString('en-IN')}</h2>
                                     <p class="text-lg text-gray-600">${ad.title}</p>
                                     <div class="flex justify-between text-sm text-gray-500 mt-2">
-                                        <span>${ad.location}</span>
+                                        <span>${locationText}</span>
                                         <span>Posted ${new Date(ad.created_at).toLocaleDateString()}</span>
                                     </div>
                                 </div>
@@ -2240,7 +2329,7 @@
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) throw new Error("User not logged in.");
 
-                const { data: ads, error } = await supabase.from('listings').select('*').eq('user_id', user.id).limit(6);
+                const { data: ads, error } = await supabase.from('listings').select('*, cities(name)').eq('user_id', user.id).limit(6);
                 
                 if (error) throw error;
 
@@ -2461,6 +2550,40 @@
             }
         }
 
+        // --- NEW: Location Functions ---
+        async function fetchAndPopulateLocations() {
+            try {
+                const { data: statesData, error: statesError } = await supabase.from('states').select('id, name').order('name');
+                if (statesError) throw statesError;
+                allStates = statesData;
+
+                const { data: citiesData, error: citiesError } = await supabase.from('cities').select('id, name, state_id').order('name');
+                if (citiesError) throw citiesError;
+                allCities = citiesData;
+
+                const stateSelect = document.getElementById('ad-state');
+                stateSelect.innerHTML = '<option value="">Select State</option>'; // Reset
+                allStates.forEach(state => {
+                    stateSelect.innerHTML += `<option value="${state.id}">${state.name}</option>`;
+                });
+
+            } catch (error) {
+                console.error("Error fetching locations:", error);
+                showToast("Could not load location data from the database.", "error");
+            }
+        }
+
+        function populateCities(stateId) {
+            const citySelect = document.getElementById('ad-city');
+            citySelect.innerHTML = '<option value="">Select City</option>'; // Reset cities
+            if (!stateId) return;
+
+            const filteredCities = allCities.filter(city => city.state_id == stateId);
+            filteredCities.forEach(city => {
+                citySelect.innerHTML += `<option value="${city.id}">${city.name}</option>`;
+            });
+        }
+
 
         // --- EXPOSE FUNCTIONS TO GLOBAL SCOPE ---
         const functionsToExpose = {
@@ -2473,7 +2596,7 @@
             handleRegister, handlePasswordReset, handleProfilePictureChange, showEditProfilePage,
             handleProfileUpdate, handleEditAd, handleDeleteAd, showPremiumListingPage,
             hideAdSuccessModal, handleFileUpload, fetchAndDisplayMyAds, generateAdDescription,
-            openCamera, closeCamera, captureImage
+            openCamera, closeCamera, captureImage, populateCities // <-- Added populateCities
         };
         Object.keys(functionsToExpose).forEach(funcName => {
             window[funcName] = functionsToExpose[funcName];
@@ -2481,7 +2604,7 @@
 
 
         // --- Initial Load ---
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
             document.getElementById('chat-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -2509,11 +2632,11 @@
             });
 
             loadCategories();
+            await fetchAndPopulateLocations(); // <-- Fetch locations on load
             showHomepage(); // Show homepage on initial load
         });
 
     </script>
 </body>
 </html>
-
 

@@ -932,6 +932,7 @@
         window.navigationHistory = [];
         let postLoginAction = null;
         let allStates = [], allCities = []; // To store location data
+        let stagedProfilePic = null; // To hold the new profile picture file
 
         const pageDivs = {
             homepage: document.getElementById('homepage'),
@@ -1585,6 +1586,7 @@
         function handleProfilePictureChange(event) {
             const file = event.target.files[0];
             if (file) {
+                stagedProfilePic = file;
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const imageUrl = e.target.result;
@@ -1782,9 +1784,6 @@
 
         async function updateUIForUser(user) {
             try {
-                const fullName = `${user.user_metadata.first_name || user.user_metadata.full_name || ''} ${user.user_metadata.last_name || ''}`.trim() || user.email;
-                const profilePicUrl = user.user_metadata.avatar_url || `https://placehold.co/96x96/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
-
                 const { data: userProfileData, error } = await supabase
                     .from('profiles')
                     .select('*')
@@ -1794,6 +1793,9 @@
                 if (error && error.code !== 'PGRST116') {
                     throw error;
                 }
+
+                const fullName = `${userProfileData?.first_name || user.user_metadata.first_name || ''} ${userProfileData?.last_name || user.user_metadata.last_name || ''}`.trim() || user.email;
+                const profilePicUrl = userProfileData?.avatar_url || user.user_metadata.avatar_url || `https://placehold.co/96x96/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
 
                 // Update Header
                 document.getElementById('header-profile-pic').src = profilePicUrl;
@@ -1834,44 +1836,62 @@
                 showToast('You must be logged in to update your profile.', 'error');
                 return;
             }
-
-            const newName = document.getElementById('edit-profile-name-input').value.trim();
-            const newPhone = document.getElementById('edit-profile-phone-input').value.trim();
-            const newAbout = document.getElementById('edit-profile-about-input').value.trim();
-            const newFirstName = newName.split(' ')[0] || '';
-            const newLastName = newName.split(' ').slice(1).join(' ') || '';
-
-            if (!newName) {
-                showToast('Name cannot be empty.', 'error');
-                return;
-            }
             
+            const saveButton = event.target;
+            saveButton.disabled = true;
+            saveButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Saving...`;
+
             try {
-                // Update Supabase Auth user metadata
-                const { error: updateUserError } = await supabase.auth.updateUser({
-                    data: { first_name: newFirstName, last_name: newLastName }
-                });
-                if (updateUserError) throw updateUserError;
-                
-                // Update public profiles table
-                const { error } = await supabase
+                const newName = document.getElementById('edit-profile-name-input').value.trim();
+                const newPhone = document.getElementById('edit-profile-phone-input').value.trim();
+                const newAbout = document.getElementById('edit-profile-about-input').value.trim();
+                const newFirstName = newName.split(' ')[0] || '';
+                const newLastName = newName.split(' ').slice(1).join(' ') || '';
+
+                if (!newName) {
+                    throw new Error('Name cannot be empty.');
+                }
+
+                let newAvatarUrl = null;
+                if (stagedProfilePic) {
+                    const uploadedUrls = await uploadFilesToCloudinary([stagedProfilePic]);
+                    if (uploadedUrls && uploadedUrls.length > 0) {
+                        newAvatarUrl = uploadedUrls[0];
+                    } else {
+                        throw new Error('Profile picture failed to upload.');
+                    }
+                }
+
+                const authUpdateData = { data: { first_name: newFirstName, last_name: newLastName } };
+                const profileUpdateData = { mobile: newPhone, about: newAbout, first_name: newFirstName, last_name: newLastName };
+
+                if (newAvatarUrl) {
+                    authUpdateData.data.avatar_url = newAvatarUrl;
+                    profileUpdateData.avatar_url = newAvatarUrl;
+                }
+
+                // Update public profiles table first
+                const { error: profileError } = await supabase
                     .from('profiles')
-                    .update({ 
-                        mobile: newPhone, 
-                        about: newAbout,
-                        first_name: newFirstName,
-                        last_name: newLastName
-                    })
+                    .update(profileUpdateData)
                     .eq('id', user.id);
+                if (profileError) throw profileError;
                 
-                if (error) throw error;
+                // Then update Supabase Auth user metadata
+                const { data: {user: updatedAuthUser}, error: authError } = await supabase.auth.updateUser(authUpdateData);
+                if (authError) throw authError;
 
                 showToast('Profile updated successfully!', 'success');
-                await updateUIForUser(user);
+                stagedProfilePic = null; // Clear staged file
+                await updateUIForUser(updatedAuthUser); // Use the freshly updated auth user object
                 showUserProfilePage(event);
+
             } catch (error) {
                 console.error("Error updating profile:", error);
                 showToast('Failed to update profile: ' + error.message, 'error');
+            } finally {
+                saveButton.disabled = false;
+                saveButton.innerHTML = 'Save changes';
             }
         }
         

@@ -1763,17 +1763,26 @@
                              setTimeout(() => showProductDetailPage(null, actionToPerform.adId), 0);
                         }
                     }
-                } else {
-                    if (notificationSubscription) await supabase.removeChannel(notificationSubscription);
-                    if (chatSubscription) await supabase.removeChannel(chatSubscription);
+                } else { // user is null
+                    // Clean up subscriptions
+                    if (notificationSubscription) {
+                        await supabase.removeChannel(notificationSubscription);
+                        notificationSubscription = null;
+                    }
+                    if (chatSubscription) {
+                        await supabase.removeChannel(chatSubscription);
+                        chatSubscription = null;
+                    }
                     
-                    updateUIForGuest();
+                    // For a clean logout, first switch to the logged-out view, then reset UI elements.
                     if (event === 'SIGNED_OUT') {
                         window.navigationHistory = [];
-                        showPage('homepage', false);
+                        showPage('homepage', false); 
+                        updateUIForGuest();
                         showToast('You have been logged out successfully.', 'success');
-                    } else {
+                    } else { // Handles initial load when there's no session
                         showPage('homepage', false);
+                        updateUIForGuest();
                     }
                 }
             } catch (error) {
@@ -2796,4 +2805,5 @@
     </script>
 </body>
 </html>
+
 

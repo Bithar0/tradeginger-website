@@ -543,7 +543,7 @@
                 <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
                 <h1 class="text-3xl font-bold">My Chats</h1>
             </div>
-            <div id="my-chats-list" class="bg-white p-4 rounded-lg shadow-md max-w-4xl mx-auto">
+            <div id="my-chats-list" class="bg-white rounded-lg shadow-md max-w-4xl mx-auto overflow-hidden">
                 <!-- Chat list will be dynamically loaded here -->
             </div>
         </main>
@@ -1092,6 +1092,150 @@
             await fetchAndDisplayMyChats();
         }
 
+        async function fetchAndDisplayMyChats() {
+            const chatListContainer = document.getElementById('my-chats-list');
+            chatListContainer.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
+
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    throw new Error("User not logged in.");
+                }
+
+                // Step 1: Fetch chat rooms
+                const { data: rooms, error: roomsError } = await supabase
+                    .from('chat_rooms')
+                    .select(`id, listing_id, buyer_id, seller_id`)
+                    .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+                    .order('created_at', { ascending: false });
+
+                if (roomsError) throw roomsError;
+
+                if (!rooms || rooms.length === 0) {
+                    chatListContainer.innerHTML = `
+                        <div class="text-center p-8">
+                            <i class="fas fa-comments text-5xl text-gray-300 mb-4"></i>
+                            <h3 class="text-xl font-bold">No chats yet</h3>
+                            <p class="text-gray-500">Start a conversation with a seller to see it here.</p>
+                        </div>`;
+                    return;
+                }
+
+                // Step 2: Collect all unique user and listing IDs
+                const userIds = new Set();
+                const listingIds = new Set();
+                rooms.forEach(room => {
+                    userIds.add(room.buyer_id);
+                    userIds.add(room.seller_id);
+                    listingIds.add(room.listing_id);
+                });
+
+                // Step 3: Fetch all required profiles and listings in parallel
+                const [profilesResponse, listingsResponse] = await Promise.all([
+                    supabase.from('profiles').select(`id, first_name, last_name, avatar_url`).in('id', Array.from(userIds)),
+                    supabase.from('listings').select(`id, title, image_urls`).in('id', Array.from(listingIds))
+                ]);
+
+                const { data: profiles, error: profilesError } = profilesResponse;
+                if (profilesError) throw profilesError;
+
+                const { data: listings, error: listingsError } = listingsResponse;
+                if (listingsError) throw listingsError;
+
+                // Step 4: Map profiles and listings into easy-to-access objects
+                const profilesMap = new Map(profiles.map(p => [p.id, p]));
+                const listingsMap = new Map(listings.map(l => [l.id, l]));
+
+                chatListContainer.innerHTML = ''; // Clear loader
+
+                // Step 5: Render the chat list by combining the data
+                rooms.forEach(room => {
+                    const isUserTheBuyer = user.id === room.buyer_id;
+                    const otherUserId = isUserTheBuyer ? room.seller_id : room.buyer_id;
+                    
+                    const otherUser = profilesMap.get(otherUserId);
+                    const ad = listingsMap.get(room.listing_id);
+
+                    if (!otherUser || !ad) {
+                        console.warn("Skipping a chat room due to missing related data (ad or other user). Room ID:", room.id);
+                        return; 
+                    }
+
+                    const otherUserName = `${otherUser.first_name || ''} ${otherUser.last_name || ''}`.trim() || 'User';
+                    const adImage = ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/80x80/E2E8F0/4A5568?text=Ad';
+
+                    const chatItemHTML = `
+                        <div class="flex items-center justify-between p-4 border-b hover:bg-gray-50 transition-colors duration-200">
+                            <div class="flex items-center gap-4 flex-1 min-w-0">
+                                <img src="${adImage}" alt="${ad.title}" class="w-16 h-16 object-cover rounded-md flex-shrink-0">
+                                <div class="min-w-0">
+                                    <p class="font-bold text-gray-800 truncate">${ad.title}</p>
+                                    <p class="text-sm text-gray-600 truncate">Chat with ${otherUserName}</p>
+                                </div>
+                            </div>
+                            <button onclick="openChatFromListPage(${room.id}, '${otherUser.id}', '${otherUserName.replace(/'/g, "\\'")}', ${ad.id})" class="bg-theme-accent text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-theme-accent-dark flex-shrink-0 ml-4">
+                                Open Chat
+                            </button>
+                        </div>
+                    `;
+                    chatListContainer.innerHTML += chatItemHTML;
+                });
+
+            } catch (error) {
+                console.error("Error fetching my chats:", error);
+                chatListContainer.innerHTML = `<p class="text-center text-red-500 p-4">Error loading chats: ${error.message}</p>`;
+            }
+        }
+
+        async function openChatFromListPage(roomId, otherUserId, otherUserName, adId) {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    showToast("Please log in to chat.", 'info');
+                    showLoginModal();
+                    return;
+                }
+
+                if (chatSubscription) {
+                    await supabase.removeChannel(chatSubscription);
+                    chatSubscription = null;
+                }
+
+                currentReceiverId = otherUserId;
+                currentRoomId = roomId;
+
+                document.getElementById('chat-seller-name').innerText = otherUserName;
+                document.getElementById('chat-ad-id').innerText = `Ad ID: ${adId}`;
+                document.getElementById('chat-window').classList.remove('hidden');
+                document.getElementById('chat-notification-dot').classList.add('hidden');
+
+                await fetchInitialMessages(roomId);
+
+                chatSubscription = supabase.channel(`chat_room_${roomId}`)
+                    .on('postgres_changes', {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'chat_messages',
+                        filter: `room_id=eq.${roomId}`
+                    }, (payload) => {
+                        if (payload.new.sender_id !== user.id) {
+                            appendMessage(payload.new.content, 'received', true);
+                        }
+                    })
+                    .subscribe((status, err) => {
+                        if (status === 'SUBSCRIBED') {
+                            console.log('Successfully subscribed to chat room from list page:', roomId);
+                        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                            console.error('Chat subscription error:', err);
+                            showToast('Chat connection error. Please refresh.', 'error');
+                        }
+                    });
+
+            } catch(error) {
+                console.error("Error opening chat from list page:", error);
+                showToast("Could not open chat.", "error");
+            }
+        }
 
         // --- Modal Control ---
         async function showSellModal(event) { 
@@ -1481,8 +1625,16 @@
 
         async function fetchAndDisplayNotifications() {
             const notificationList = document.getElementById('notification-list');
+            const noNotificationsMessage = document.getElementById('no-notifications-message');
+
+            // --- FIX: Check if elements exist before trying to modify them ---
+            if (!notificationList || !noNotificationsMessage) {
+                console.error("Notification UI elements ('notification-list' or 'no-notifications-message') not found in the DOM.");
+                return; // Exit function to prevent crash
+            }
+            
             notificationList.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
-            document.getElementById('no-notifications-message').classList.add('hidden');
+            noNotificationsMessage.classList.add('hidden');
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) {
@@ -1502,30 +1654,33 @@
                 notificationList.innerHTML = '';
 
                 if (!notifications || notifications.length === 0) {
-                    document.getElementById('no-notifications-message').classList.remove('hidden');
+                    noNotificationsMessage.classList.remove('hidden');
                 } else {
                      notifications.forEach(notif => {
-                        const icon = notif.type === 'new_message' ? 'fa-comment-dots' : 'fa-info-circle';
-                        const isUnreadClass = !notif.is_read ? 'bg-blue-50' : '';
-                        const timeAgo = new Date(notif.created_at).toLocaleString();
+                         const icon = notif.type === 'new_message' ? 'fa-comment-dots' : 'fa-info-circle';
+                         const isUnreadClass = !notif.is_read ? 'bg-blue-50' : '';
+                         const timeAgo = new Date(notif.created_at).toLocaleString();
 
-                        const notifHTML = `
-                            <a href="#" class="block p-4 text-sm hover:bg-gray-50 ${isUnreadClass}">
-                                <div class="flex items-start gap-3">
-                                    <i class="fas ${icon} text-gray-400 mt-1"></i>
-                                    <div>
-                                        <p class="font-semibold">${notif.content}</p>
-                                        <p class="text-xs text-gray-500">${timeAgo}</p>
-                                    </div>
-                                </div>
-                            </a>
-                        `;
-                        notificationList.innerHTML += notifHTML;
-                     });
+                         const notifHTML = `
+                             <a href="#" class="block p-4 text-sm hover:bg-gray-50 ${isUnreadClass}">
+                                 <div class="flex items-start gap-3">
+                                     <i class="fas ${icon} text-gray-400 mt-1"></i>
+                                     <div>
+                                         <p class="font-semibold">${notif.content}</p>
+                                         <p class="text-xs text-gray-500">${timeAgo}</p>
+                                     </div>
+                                 </div>
+                             </a>
+                         `;
+                         notificationList.innerHTML += notifHTML;
+                      });
                 }
             } catch(error) {
                  console.error("Error fetching notifications:", error);
-                 notificationList.innerHTML = `<p class="p-4 text-sm text-red-500 text-center">Could not load notifications.</p>`;
+                 // Check again in case notificationList became invalid
+                 if(notificationList) {
+                    notificationList.innerHTML = `<p class="p-4 text-sm text-red-500 text-center">Could not load notifications.</p>`;
+                 }
             }
         }
         
@@ -2257,7 +2412,7 @@
            const locationText = ad.cities ? ad.cities.name : ad.location;
            return `
            <div class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300 relative">
-               <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
+                <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
                    <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${ad.title}" class="w-full h-48 object-cover">
                </a>
                <button onclick="handleFavoriteClick(event, ${ad.id})" class="absolute top-2 right-2 p-2 rounded-full bg-white bg-opacity-75 z-10 hover:bg-gray-100 transition-colors">
@@ -2468,33 +2623,33 @@
 
                 if (!ads || ads.length === 0) {
                      container.innerHTML = `
-                         <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                             <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
-                             <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
-                             <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
-                             <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
-                         </div>
-                       `;
+                          <div class="bg-white p-8 rounded-lg shadow-md text-center">
+                               <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
+                               <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
+                               <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
+                               <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
+                          </div>
+                        `;
                 } else {
                      const adsGridHTML = ads.map(ad => `
-                         <a href="#" onclick="showProductDetailPage(event, ${ad.id})" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
-                             <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=Ad'}" alt="Product" class="w-full h-40 object-cover">
-                             <div class="p-3">
-                                 <h3 class="font-bold text-md mb-1">₹ ${ad.price.toLocaleString('en-IN')}</h3>
-                                 <p class="text-gray-600 text-xs truncate">${ad.title}</p>
-                             </div>
-                         </a>
+                          <a href="#" onclick="showProductDetailPage(event, ${ad.id})" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
+                               <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=Ad'}" alt="Product" class="w-full h-40 object-cover">
+                               <div class="p-3">
+                                   <h3 class="font-bold text-md mb-1">₹ ${ad.price.toLocaleString('en-IN')}</h3>
+                                   <p class="text-gray-600 text-xs truncate">${ad.title}</p>
+                               </div>
+                          </a>
                         `).join('');
                      container.innerHTML = `
-                         <div class="bg-white p-6 rounded-lg shadow-md">
-                             <div class="flex justify-between items-center mb-4">
-                                 <h3 class="text-xl font-bold">Your Active Ads</h3>
-                                 <a href="#" onclick="showMyAdsPage(event)" class="text-sm font-semibold text-theme-accent hover:underline">View All</a>
-                             </div>
-                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                ${adsGridHTML}
-                             </div>
-                         </div>
+                          <div class="bg-white p-6 rounded-lg shadow-md">
+                               <div class="flex justify-between items-center mb-4">
+                                   <h3 class="text-xl font-bold">Your Active Ads</h3>
+                                   <a href="#" onclick="showMyAdsPage(event)" class="text-sm font-semibold text-theme-accent hover:underline">View All</a>
+                               </div>
+                               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                   ${adsGridHTML}
+                               </div>
+                          </div>
                         `;
                 }
             } catch (error) {
@@ -2754,7 +2909,7 @@
             handleProfileUpdate, handleEditAd, handleDeleteAd,
             hideAdSuccessModal, handleFileUpload, fetchAndDisplayMyAds, generateAdDescription,
             openCamera, closeCamera, captureImage, populateCities, populateFilterCities, applyFilters, resetFilters,
-            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage
+            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage, openChatFromListPage
         };
         Object.keys(functionsToExpose).forEach(funcName => {
             window[funcName] = functionsToExpose[funcName];

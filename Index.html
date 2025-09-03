@@ -2,6 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- START: Hardening - Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self'; 
+        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com; 
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; 
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; 
+        img-src 'self' https: data:; 
+        connect-src 'self' https://crepnlidfdoskighdhdt.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://crepnlidfdoskighdhdt.supabase.co;
+        frame-src 'self';
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    <!-- END: Hardening - Content Security Policy -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TradeGinger - Buy & Sell Locally</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -162,7 +176,7 @@
                     </a>
                     <div class="hidden md:flex items-center border-2 rounded-full p-1 w-96">
                         <i class="fas fa-search text-gray-400 mx-3"></i>
-                        <input id="header-search-input" type="text" placeholder="Search for cars, mobiles..." class="w-full bg-transparent focus:outline-none text-sm">
+                        <input id="header-search-input" type="text" placeholder="Search for cars, mobiles..." class="w-full bg-transparent focus:outline-none text-sm" autocomplete="nope">
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -234,16 +248,13 @@
             <div class="container mx-auto px-4 text-center relative z-10">
                 <h1 class="text-4xl md:text-5xl font-extrabold mb-4">TradeGinger</h1>
                 <p class="text-lg md:text-xl mb-8">Find the best deals near you</p>
-                <div class="max-w-4xl mx-auto bg-white rounded-full p-2 flex items-center shadow-2xl">
-                    <div class="flex-grow flex items-center border-r-2 border-gray-200">
-                        <i class="fas fa-map-marker-alt text-gray-400 mx-3"></i>
-                        <input id="location-search" type="text" placeholder="Enter City or Pincode" class="w-full bg-transparent text-gray-700 focus:outline-none">
-                    </div>
-                    <div class="flex-grow flex items-center ml-2">
+                <!-- --- SIMPLIFIED SEARCH BAR --- -->
+                <div class="max-w-2xl mx-auto bg-white rounded-full p-2 flex items-center shadow-2xl">
+                    <div class="flex-grow flex items-center">
                          <i class="fas fa-search text-gray-400 mx-3"></i>
-                        <input id="keyword-search" type="text" placeholder="Search for cars, mobiles, and more..." class="w-full bg-transparent text-gray-700 focus:outline-none">
+                        <input id="hero-search-input" type="text" placeholder="Search for anything... (e.g., 'iPhone in Mumbai')" class="w-full bg-transparent text-gray-700 focus:outline-none" autocomplete="nope">
                     </div>
-                    <button onclick="searchFromHome(event)" class="bg-theme-accent text-white rounded-full px-6 py-3 font-semibold hover:bg-theme-accent-dark transition duration-300">
+                    <button onclick="searchFromHome(event)" class="bg-theme-accent text-white rounded-full px-6 py-3 font-semibold hover:bg-theme-accent-dark transition duration-300 flex-shrink-0">
                         Search
                     </button>
                 </div>
@@ -889,6 +900,14 @@
 
         let supabase;
         
+        // --- START: Hardening - Input Sanitization ---
+        function sanitizeHTML(str) {
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
+        }
+        // --- END: Hardening - Input Sanitization ---
+
         function showToast(message, type = 'info') {
             const toast = document.getElementById('toast-notification');
             toast.textContent = message;
@@ -1071,13 +1090,13 @@
         
         async function searchFromHome(event) {
             if (event) event.preventDefault();
-            const locationValue = document.getElementById('location-search').value.trim();
-            const keyword = document.getElementById('keyword-search').value.trim();
+            const keyword = document.getElementById('hero-search-input').value.trim();
             const filters = {};
-            if (locationValue) filters.location = locationValue;
-            if (keyword) filters.keyword = keyword;
-
-            await showListingPage(event, 'cars', filters); // Default to cars for search
+            if (keyword) {
+                filters.keyword = keyword;
+            }
+            // Use 'all' as the category to search across everything
+            await showListingPage(event, 'all', filters);
         }
         
         async function showMyFavoritesPage(event) {
@@ -1432,7 +1451,11 @@
             `;
 
             sidebar.innerHTML = sidebarHTML;
-            title.innerText = `Fresh Recommendations in ${categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1)}`;
+            if (categoryKey === 'all') {
+                title.innerText = filters.keyword ? `Search results for "${filters.keyword}"` : 'All Listings';
+            } else {
+                title.innerText = `Fresh Recommendations in ${categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1)}`;
+            }
             
             if (filters.location) {
                 // This part is tricky as location is a string. We will handle city/state ID filters from the sidebar.
@@ -1875,18 +1898,23 @@
         }
         
         async function logout(event) {
-            if(event) event.preventDefault();
+            if (event) event.preventDefault();
             
-            // Force immediate UI update to guest state for better UX
-            showPage('homepage', false);
-            updateUIForGuest();
-            window.navigationHistory = [];
+            // Immediately hide the logged-in header for instant feedback.
+            headers.loggedIn.classList.add('hidden');
+            headers.loggedOut.classList.remove('hidden');
 
             try {
                 const { error } = await supabase.auth.signOut();
-                if (error) throw error;
-                // The onAuthStateChange listener will also fire, confirming this state.
-                showToast('You have been logged out successfully.', 'success');
+                if (error) {
+                    // If sign-out fails, revert the UI and show an error.
+                    headers.loggedIn.classList.remove('hidden');
+                    headers.loggedOut.classList.add('hidden');
+                    throw error;
+                }
+                // Force a page reload on successful sign-out. This is the most 
+                // reliable way to clear all application state and prevent UI bugs.
+                window.location.reload();
             } catch (error) {
                 console.error('Error logging out:', error);
                 showToast('Logout failed: ' + error.message, 'error');
@@ -1906,7 +1934,7 @@
                         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}`}, 
                         (payload) => {
                             document.getElementById('main-notification-dot').classList.remove('hidden');
-                            if (!isMuted) { try { Tone.start(); synth.triggerAttackRelease("G5", "8n"); } catch(e){ console.warn("Could not play sound", e) }}
+                            if (!isMuted) { try { Tone.start(); synth.triggerAttackRelease("G5", "8n"); } catch(e){ console.warn("Could not play sound", e); } }
                         })
                         .subscribe();
 
@@ -2319,6 +2347,37 @@
         }
         
         // --- FAVORITES LOGIC ---
+        // --- IMPORTANT SUPABASE SETUP FOR FAVORITES ---
+        // For the "Add to Favorite" feature to work, you MUST enable Row Level Security (RLS)
+        // on your 'favorites' table and create policies. Go to your Supabase project, open the
+        // SQL Editor, and run the following commands one by one:
+        /*
+        
+        -- 1. Enable RLS on the favorites table
+        ALTER TABLE public.favorites ENABLE ROW LEVEL SECURITY;
+
+        -- 2. Create a policy that allows users to view their OWN favorites
+        CREATE POLICY "Enable read access for own user"
+        ON public.favorites
+        AS PERMISSIVE FOR SELECT
+        TO authenticated
+        USING ((auth.uid() = user_id));
+
+        -- 3. Create a policy that allows users to add a favorite FOR THEMSELVES
+        CREATE POLICY "Enable insert for own user"
+        ON public.favorites
+        AS PERMISSIVE FOR INSERT
+        TO authenticated
+        WITH CHECK ((auth.uid() = user_id));
+        
+        -- 4. Create a policy that allows users to remove their OWN favorites
+        CREATE POLICY "Enable delete for own user"
+        ON public.favorites
+        AS PERMISSIVE FOR DELETE
+        TO authenticated
+        USING ((auth.uid() = user_id));
+
+        */
         let userFavorites = new Set();
         async function fetchUserFavorites() {
             try {
@@ -2381,7 +2440,13 @@
                 }
             } catch (error) {
                 console.error("Error updating favorite:", error);
-                showToast('Could not update favorites. Please try again.', 'error');
+                // --- FIX: Add specific error message for RLS policy failure ---
+                let errorMessage = 'Could not update favorites. Please try again.';
+                if (error.message && error.message.includes("violates row-level security policy")) {
+                    errorMessage = 'Favorites feature is not enabled. Please contact support.';
+                    console.error("FAVORITES RLS POLICY ERROR: The user does not have permission to insert/delete from the 'favorites' table. Please ensure the RLS policies provided in the code comments are active on your Supabase project.");
+                }
+                showToast(errorMessage, 'error');
             } finally {
                 if (heartButton) {
                      heartButton.disabled = false;
@@ -2469,12 +2534,8 @@
                 }
                 
                 if (filters.keyword) {
-                    query = query.ilike('title', `%${filters.keyword}%`);
-                }
-
-                if (filters.location) {
-                    // This is a simple text search on the legacy location column.
-                    query = query.ilike('location', `%${filters.location}%`);
+                    const searchPattern = `%${filters.keyword}%`;
+                    query = query.or(`title.ilike.${searchPattern},location.ilike.${searchPattern}`);
                 }
 
                 const { data: ads, error } = await query;
@@ -2944,8 +3005,8 @@
                     const keyword = e.target.value.trim();
                     if (keyword) {
                         e.preventDefault(); 
-                        // Default to 'cars' category for a general search, but pass the keyword
-                        await showListingPage(null, 'cars', { keyword: keyword }); 
+                        // Default to 'all' category for a general search, but pass the keyword
+                        await showListingPage(null, 'all', { keyword: keyword }); 
                     }
                 }
             });
@@ -2991,7 +3052,5 @@
     </script>
 </body>
 </html>
-
-
 
 

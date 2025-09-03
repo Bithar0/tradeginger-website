@@ -1,0 +1,24 @@
+# netlify.toml
+# This file configures your Netlify hosting settings.
+# Place it in the root of your GitHub repository.
+
+# Redirect and rewrite rules
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Custom headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Prevents clickjacking attacks
+    X-Frame-Options = "DENY"
+    # Prevents MIME-sniffing attacks
+    X-Content-Type-Options = "nosniff"
+    # Controls how much referrer information is sent
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Enables XSS protection in older browsers
+    X-XSS-Protection = "1; mode=block"
+    # Tells browsers to only use HTTPS
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"

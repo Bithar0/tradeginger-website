@@ -18,7 +18,7 @@
             background-color: #f8f9fa; /* Softer, off-white background */
         }
         .hero-section {
-            background: linear-gradient(rgba(26, 32, 44, 0.7), rgba(26, 32, 44, 0.7)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=2069&auto=format&fit=crop') no-repeat center center;
+            background: linear-gradient(rgba(26, 32, 44, 0.7), rgba(26, 32, 44, 0.7)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1600&auto=format&fit=crop') no-repeat center center;
             background-size: cover;
             position: relative;
             overflow: hidden;
@@ -162,7 +162,7 @@
                     </a>
                     <div class="hidden md:flex items-center border-2 rounded-full p-1 w-96">
                         <i class="fas fa-search text-gray-400 mx-3"></i>
-                        <input type="text" placeholder="Search for cars, mobiles..." class="w-full bg-transparent focus:outline-none text-sm">
+                        <input id="header-search-input" type="text" placeholder="Search for cars, mobiles..." class="w-full bg-transparent focus:outline-none text-sm">
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -1132,7 +1132,7 @@
 
                 // Step 3: Fetch all required profiles and listings in parallel
                 const [profilesResponse, listingsResponse] = await Promise.all([
-                    supabase.from('profiles').select(`id, first_name, last_name, avatar_url`).in('id', Array.from(userIds)),
+                    supabase.from('profiles').select(`id, first_name, last_name`).in('id', Array.from(userIds)),
                     supabase.from('listings').select(`id, title, image_urls`).in('id', Array.from(listingIds))
                 ]);
 
@@ -1838,6 +1838,9 @@
             try {
                 const { error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
+                    options: {
+                        redirectTo: window.location.href // Redirect back to the current page after login
+                    }
                 });
                 if (error) throw error;
             } catch (error) {
@@ -1873,12 +1876,17 @@
         
         async function logout(event) {
             if(event) event.preventDefault();
+            
+            // Force immediate UI update to guest state for better UX
+            showPage('homepage', false);
+            updateUIForGuest();
+            window.navigationHistory = [];
+
             try {
                 const { error } = await supabase.auth.signOut();
-                if (error) {
-                    throw error;
-                }
-                // onAuthStateChange will handle UI updates
+                if (error) throw error;
+                // The onAuthStateChange listener will also fire, confirming this state.
+                showToast('You have been logged out successfully.', 'success');
             } catch (error) {
                 console.error('Error logging out:', error);
                 showToast('Logout failed: ' + error.message, 'error');
@@ -1890,6 +1898,7 @@
             try {
                 const user = session?.user;
                 if (user) {
+                    await fetchUserFavorites(); // Fetch user's favorites on login/session refresh
                     // --- MANAGE REALTIME SUBSCRIPTIONS ---
                     if (notificationSubscription) await supabase.removeChannel(notificationSubscription);
                     fetchInitialNotificationCount(user.id);
@@ -1919,7 +1928,7 @@
                         }
                     }
                 } else { // user is null
-                    // Clean up subscriptions
+                    // Clean up subscriptions if they exist
                     if (notificationSubscription) {
                         await supabase.removeChannel(notificationSubscription);
                         notificationSubscription = null;
@@ -1929,16 +1938,10 @@
                         chatSubscription = null;
                     }
                     
-                    // For a clean logout, first switch to the logged-out view, then reset UI elements.
-                    if (event === 'SIGNED_OUT') {
-                        window.navigationHistory = [];
-                        showPage('homepage', false); 
-                        updateUIForGuest();
-                        showToast('You have been logged out successfully.', 'success');
-                    } else { // Handles initial load when there's no session
-                        showPage('homepage', false);
-                        updateUIForGuest();
-                    }
+                    // This block now handles all cases where there is no user (initial load or after logout).
+                    // It ensures the UI is always in a clean, logged-out state.
+                    showPage('homepage', false);
+                    updateUIForGuest();
                 }
             } catch (error) {
                 console.error("Error in onAuthStateChange:", error);
@@ -2345,12 +2348,22 @@
             }
 
             const heartButton = event.currentTarget;
-            const heartIcon = heartButton.querySelector('i');
-            const isFavorited = userFavorites.has(adId);
-
+            if (!heartButton) {
+                console.warn("handleFavoriteClick was called without a valid button target.");
+                return;
+            }
+            
             heartButton.disabled = true;
 
             try {
+                const heartIcon = heartButton.querySelector('i');
+                if (!heartIcon) {
+                    console.warn("Could not find heart icon inside the favorite button.");
+                    return; // Exit if the icon isn't there
+                }
+                
+                const isFavorited = userFavorites.has(adId);
+
                 if (isFavorited) {
                     const { error } = await supabase.from('favorites').delete().match({ user_id: user.id, listing_id: adId });
                     if (error) throw error;
@@ -2370,7 +2383,9 @@
                 console.error("Error updating favorite:", error);
                 showToast('Could not update favorites. Please try again.', 'error');
             } finally {
-                heartButton.disabled = false;
+                if (heartButton) {
+                     heartButton.disabled = false;
+                }
             }
         }
         
@@ -2518,6 +2533,9 @@
             const container = document.getElementById('product-detail-container');
             container.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
             try {
+                // Ensure user's favorites are loaded before rendering the page
+                await fetchUserFavorites();
+
                 const { data: ad, error: adError } = await supabase.from('listings').select('*, cities(name, states(name))').eq('id', adId).single();
                 
                 if (adError || !ad) { throw adError || new Error("Ad not found"); }
@@ -2919,6 +2937,19 @@
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
+            
+            // Add search functionality to the header search bar
+            document.getElementById('header-search-input').addEventListener('keypress', async function(e) {
+                if (e.key === 'Enter') {
+                    const keyword = e.target.value.trim();
+                    if (keyword) {
+                        e.preventDefault(); 
+                        // Default to 'cars' category for a general search, but pass the keyword
+                        await showListingPage(null, 'cars', { keyword: keyword }); 
+                    }
+                }
+            });
+
             document.getElementById('chat-form').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const input = document.getElementById('chat-input');
@@ -2960,4 +2991,7 @@
     </script>
 </body>
 </html>
+
+
+
 

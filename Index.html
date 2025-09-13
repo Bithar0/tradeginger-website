@@ -850,6 +850,13 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
+        // --- START: Hardening - URL Cleanup on Load ---
+        // Clean the URL hash from OAuth redirects immediately to prevent re-triggering auth flows.
+        if (window.location.hash.includes('access_token') || window.location.hash.includes('type=')) {
+            window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+        }
+        // --- END: Hardening - URL Cleanup on Load ---
+
         // --- Supabase Configuration for "My Project" ---
         const SUPABASE_URL = 'https://crepnlidfdoskighdhdt.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyZXBubGlkZmRvc2tpZ2hkaGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4Mjg3MzYsImV4cCI6MjA2ODQwNDczNn0.SjrYMGxuIFDsSZpPBm6a_ZveuI_gef80o03TNESJlDw';
@@ -1820,10 +1827,6 @@
 
         // --- Auth State Listener ---
         supabase.auth.onAuthStateChange(async (event, session) => {
-            // If the URL has auth-related fragments from a redirect, clean them to prevent issues.
-            if (window.location.hash.includes('access_token') || window.location.hash.includes('type=')) {
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
             try {
                 const user = session?.user;
                 if (user) {
@@ -2108,7 +2111,7 @@
                     description: description,
                     price: parseFloat(price),
                     image_urls: finalImageUrls,
-                    location: cityName, // Legacy location field
+                    location: cityName, 
                     city_id: parseInt(cityId),
                     pincode: pincode || null,
                     attributes: attributes
@@ -2159,7 +2162,7 @@
                 
                 const { data: ad, error } = await supabase
                     .from('listings')
-                    .select('*, cities(*)')
+                    .select('*, cities!city_id(*)')
                     .eq('id', adId)
                     .single();
                 
@@ -2247,7 +2250,7 @@
 
                 const { data: ads, error } = await supabase
                     .from('listings')
-                    .select('*, cities(name)')
+                    .select('*, cities!city_id(name)')
                     .eq('user_id', user.id);
 
                 if (error) throw error;
@@ -2376,7 +2379,7 @@
 
                 const { data: ads, error } = await supabase
                     .from('favorites')
-                    .select('listings(*, cities(name))')
+                    .select('listings(*, cities!city_id(name))')
                     .eq('user_id', user.id);
 
                 if (error) throw error;
@@ -2436,7 +2439,7 @@
             try {
                 let query = supabase
                     .from('listings')
-                    .select('*, cities(name)');
+                    .select('*, cities!city_id(name)');
                     
                 if (categoryId) {
                     query = query.eq('category_id', categoryId);
@@ -2545,7 +2548,7 @@
             try {
                 await fetchUserFavorites();
 
-                const { data: ad, error: adError } = await supabase.from('listings').select('*, cities(name, states(name))').eq('id', adId).single();
+                const { data: ad, error: adError } = await supabase.from('listings').select('*, cities!city_id(name, states(name))').eq('id', adId).single();
                 
                 if (adError || !ad) { throw adError || new Error("Ad not found"); }
 
@@ -2564,7 +2567,7 @@
 
                 const { data: similarAds, error: similarAdsError } = await supabase
                     .from('listings')
-                    .select('*, cities(name)')
+                    .select('*, cities!city_id(name)')
                     .eq('category_id', ad.category_id)
                     .neq('id', adId)
                     .limit(4);
@@ -2643,7 +2646,7 @@
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) throw new Error("User not logged in.");
 
-                const { data: ads, error } = await supabase.from('listings').select('*, cities(name)').eq('user_id', user.id).limit(6);
+                const { data: ads, error } = await supabase.from('listings').select('*, cities!city_id(name)').eq('user_id', user.id).limit(6);
                 
                 if (error) throw error;
 
@@ -3081,4 +3084,5 @@
     </script>
 </body>
 </html>
+
 

@@ -785,16 +785,9 @@
             <!-- Right Side -->
             <div class="w-full md:w-2/3 bg-white p-8 flex flex-col justify-center relative overflow-y-auto">
                 <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
-                <div id="login-form" class="w-full max-w-sm mx-auto">
+                <div id="login-form" class="w-full max-w-sm mx-auto text-center">
                     <h2 class="text-2xl font-bold text-center mb-2">Login or Sign Up</h2>
-                    <p class="text-center text-gray-500 mb-6">Enter your email to sign in or create an account.</p>
-                    <input id="login-email" type="email" placeholder="Enter your email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
-                    <button onclick="sendMagicLink(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-6 font-semibold hover:bg-theme-primary-dark">Send Magic Link</button>
-                    <div class="my-6 flex items-center">
-                        <div class="flex-grow border-t border-gray-300"></div>
-                        <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
-                        <div class="flex-grow border-t border-gray-300"></div>
-                    </div>
+                    <p class="text-center text-gray-500 mb-8">Continue with your Google account to get started.</p>
                     <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
                         <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
                         <span class="font-semibold">Continue with Google</span>
@@ -1717,42 +1710,6 @@
         }
         
         // --- Authentication Logic (Supabase) ---
-        async function sendMagicLink(event) {
-            event.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            if (!email) {
-                showToast('Please enter your email address.', 'error');
-                return;
-            }
-
-            const loginButton = event.currentTarget;
-            loginButton.disabled = true;
-            loginButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sending...`;
-
-            try {
-                const { error } = await supabase.auth.signInWithOtp({
-                    email: email,
-                    options: {
-                        shouldCreateUser: true,
-                        emailRedirectTo: window.location.href,
-                    },
-                });
-                if (error) throw error;
-                hideLoginModal();
-                showToast('Check your email for the magic link!', 'success');
-            } catch (error) {
-                console.error("Error sending magic link:", error);
-                if (error.message && error.message.includes('captcha verification')) {
-                     showToast("Could not send link. Please check Supabase CAPTCHA settings.", "error");
-                } else {
-                     showToast('Error sending link: ' + error.message, 'error');
-                }
-            } finally {
-                loginButton.disabled = false;
-                loginButton.innerHTML = 'Send Magic Link';
-            }
-        }
-
         async function loginWithGoogle(event) {
             event.preventDefault();
             try {
@@ -1825,26 +1782,8 @@
                         })
                         .subscribe();
 
-                    if (event === 'SIGNED_IN') {
+                    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
                         hideLoginModal();
-                        
-                        const { data: userProfileData } = await supabase
-                            .from('profiles')
-                            .select('first_name')
-                            .eq('id', user.id)
-                            .single();
-                        
-                        const provider = user.app_metadata.provider;
-                        
-                        if (userProfileData && !userProfileData.first_name && provider === 'email') {
-                            showToast('Welcome to TradeGinger! Please complete your profile.', 'info');
-                            showPage('editprofilepage', true);
-                            await updateUIForUser(user);
-                            return; 
-                        }
-                    }
-                    
-                    if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
                         showPage(window.navigationHistory.length > 0 ? window.navigationHistory[window.navigationHistory.length - 1] : 'homepage', true);
                     }
                     
@@ -2922,7 +2861,6 @@
         window.hideLoginModal = function () {
             document.getElementById("loginModal").classList.add("hidden");
         };
-        window.sendMagicLink = sendMagicLink;
         window.loginWithGoogle = loginWithGoogle;
 
 
@@ -2981,3 +2919,4 @@
     </script>
 </body>
 </html>
+

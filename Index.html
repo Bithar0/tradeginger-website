@@ -586,6 +586,9 @@
                             <option value="">Select a Category</option>
                         </select>
                     </div>
+                    <!-- Sub-category dropdown will be inserted here -->
+                    <div id="subcategory-container" class="space-y-4"></div>
+
                     <div id="category-attributes" class="space-y-4 border-t pt-4 mt-4"></div>
                     <!-- START: Location Fields Added -->
                     <div class="border-t pt-6 mt-6 space-y-6">
@@ -903,7 +906,7 @@
         // --- Page Navigation & State Management ---
         window.navigationHistory = [];
         let postLoginAction = null;
-        let allStates = [], allCities = []; // To store location data
+        let allStates = [], allCities = [], allSubcategories = []; // To store location and subcategory data
         let stagedProfilePic = null; // To hold the new profile picture file
         let locationDataPromise = null; // To prevent race conditions
 
@@ -1271,10 +1274,10 @@
             property: `<h3 class="text-xl font-bold text-gray-900 mb-4">Property Details</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="label-style">Type*</label><select class="input-style w-full" onchange="handlePropertyTypeChange(this)"><option>Apartment</option><option>Builder Floor</option><option>House & Villa</option><option>Plot</option><option>Land</option></select></div><div id="land-subcategory-container" class="hidden"><label class="label-style">Land Sub Category*</label><select class="input-style w-full"><option>Agriculture</option><option>Residential</option><option>Commercial</option><option>Industrial</option></select></div><div><label class="label-style">Bedrooms*</label><select class="input-style w-full"><option>1</option><option>2</option><option>3</option><option>4+</option></select></div><div><label class="label-style">Bathrooms*</label><select class="input-style w-full"><option>1</option><option>2</option><option>3+</option></select></div><div><label class="label-style">Furnishing*</label><select class="input-style w-full"><option>Furnished</option><option>Semi-Furnished</option><option>Unfurnished</option></select></div><div><label class="label-style">Listed By*</label><select class="input-style w-full"><option>Owner</option><option>Dealer</option><option>Builder</option></select></div><div><label class="label-style">Super Builtup area (ft²)*</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Carpet Area (ft²)*</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Maintenance (Monthly)</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Total Floors</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Floor No</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Car Parking</label><select class="input-style w-full"><option>0</option><option>1</option><option>2+</option></select></div><div><label class="label-style">Facing</label><select class="input-style w-full"><option>North</option><option>South</option><option>East</option><option>West</option><option>North-East</option></select></div></div><div class="mt-4"><label class="label-style">RERA No. (Optional)</label><div class="flex items-center"><input type="text" placeholder="Enter RERA registration number" class="input-style w-full"><i onclick="showReraInfo()" class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer" title="What is RERA?"></i></div></div>`,
             mobiles: `<h3 class="text-xl font-bold text-gray-900 mb-4">Mobile Details</h3><div><label class="label-style">Brand*</label><select class="input-style w-full"><option>Apple</option><option>Samsung</option><option>Xiaomi</option><option>OnePlus</option><option>Realme</option><option>Vivo</option><option>Oppo</option><option>Other</option></select></div>`,
             bikes: `<h3 class="text-xl font-bold text-gray-900 mb-4">Bike Details</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="label-style">Brand*</label><select class="input-style w-full"><option>Ather Energy</option><option>Bajaj</option><option>Benelli</option><option>BMW</option><option>Ducati</option><option>Harley-Davidson</option><option>Hero</option><option>Honda</option><option>Husqvarna</option><option>Indian</option><option>Jawa</option><option>Kawasaki</option><option>KTM</option><option>Ola Electric</option><option>Revolt</option><option>Royal Enfield</option><option>Suzuki</option><option>Triumph</option><option>TVS</option><option>Yamaha</option><option>Yezdi</option><option>Other</option></select></div><div><label class="label-style">Model*</label><input type="text" placeholder="e.g., Pulsar, Splendor, Classic 350, 450X" class="input-style w-full"></div><div><label class="label-style">Year*</label><select class="input-style w-full">${yearDropdown}</select></div><div><label class="label-style">KM Driven*</label><input type="number" class="input-style w-full"></div></div>`,
-            electronics: `<h3 class="text-xl font-bold text-gray-900 mb-4">Electronics & Appliances</h3><div class="space-y-4"><div id="electronics-subtype-container"><label class="label-style">Type*</label><select id="electronics-subtype" class="input-style w-full"><option>TVs, Video - Audio</option><option>Kitchen & Other Appliances</option><option>Computers & Laptops</option><option>Cameras & Lenses</option><option>Games & Entertainment</option><option>Fridges</option><option>Washing Machines</option></select></div></div>`,
+            electronics: ``, // This will be handled by the sub-category logic
             commercial_vehicles: `<h3 class="text-xl font-bold text-gray-900 mb-4">Commercial Vehicle Details</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Trucks</option><option>Buses</option><option>Vans</option><option>Taxis</option><option>Other</option></select></div><div><label class="label-style">Year*</label><select class="input-style w-full">${yearDropdown}</select></div></div>`,
-            furniture: `<h3 class="text-xl font-bold text-gray-900 mb-4">Furniture Details</h3><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Sofa & Dining</option><option>Beds & Wardrobes</option><option>Home Decor & Garden</option><option>Kids Furniture</option><option>Other Household Items</option></select></div>`,
-            fashion: `<h3 class="text-xl font-bold text-gray-900 mb-4">Fashion Details</h3><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Men</option><option>Women</option><option>Kids</option></select></div>`,
+            furniture: ``, // This will be handled by the sub-category logic
+            fashion: ``, // This will be handled by the sub-category logic
             pets: `<h3 class="text-xl font-bold text-gray-900 mb-4">Pet Details</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Dogs</option><option>Cats</option><option>Fishes</option><option>Birds</option><option>Other Pets</option></select></div><div><label class="label-style">Breed</label><input type="text" placeholder="e.g., Labrador, Persian" class="input-style w-full"></div></div>`,
             services: `<h3 class="text-xl font-bold text-gray-900 mb-4">Service Details</h3><div><label class="label-style">Type*</label><input type="text" placeholder="e.g., Electronics & Computer Repair, Education & Classes" class="input-style w-full"></div>`
         };
@@ -1283,9 +1286,36 @@
         document.head.appendChild(style);
         
         function updateAttributeFields() {
-            const category = document.getElementById('category-select').value;
-            const container = document.getElementById('category-attributes');
-            container.innerHTML = (category && attributeTemplates[category]) ? attributeTemplates[category] : '<p class="text-gray-500 text-center py-4">Please select a category to see relevant options.</p>';
+            const categoryKey = document.getElementById('category-select').value;
+            const categoryId = categoryMapping[categoryKey];
+            const subcategoryContainer = document.getElementById('subcategory-container');
+            const attributesContainer = document.getElementById('category-attributes');
+            
+            // Clear previous fields
+            subcategoryContainer.innerHTML = '';
+            attributesContainer.innerHTML = '';
+
+            if (!categoryId) {
+                attributesContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Please select a category to see relevant options.</p>';
+                return;
+            }
+
+            // Find and populate sub-categories if they exist
+            const relevantSubcategories = allSubcategories.filter(sub => sub.category_id === categoryId);
+            if (relevantSubcategories.length > 0) {
+                const options = relevantSubcategories.map(sub => `<option value="${sub.id}">${sub.name}</option>`).join('');
+                subcategoryContainer.innerHTML = `
+                    <div>
+                        <label class="label-style">Sub-Category*</label>
+                        <select id="ad-subcategory" class="mt-1 block w-full input-style" required>
+                            <option value="">Select Sub-Category</option>
+                            ${options}
+                        </select>
+                    </div>`;
+            }
+
+            // Populate main attribute fields
+            attributesContainer.innerHTML = (categoryKey && attributeTemplates[categoryKey]) ? attributeTemplates[categoryKey] : '';
         }
 
         function handlePropertyTypeChange(selectElement) {
@@ -2030,11 +2060,16 @@
                 const price = document.getElementById('ad-price').value;
                 const categoryName = document.getElementById('category-select').value;
                 const categoryId = categoryMapping[categoryName];
+                const subcategorySelect = document.getElementById('ad-subcategory');
+                const subcategoryId = subcategorySelect ? subcategorySelect.value : null;
                 const cityId = document.getElementById('ad-city').value;
                 const pincode = document.getElementById('ad-pincode').value.trim();
                 
                 if (!title || !price || !categoryName || !cityId) {
                     throw new Error("Please fill out all required fields: Title, Price, Category, and Location.");
+                }
+                 if (subcategorySelect && !subcategoryId) {
+                    throw new Error("Please select a Sub-Category.");
                 }
                 if (!categoryId) {
                     throw new Error("Invalid category selected.");
@@ -2068,6 +2103,7 @@
                 const listingData = {
                     user_id: user.id,
                     category_id: categoryId,
+                    subcategory_id: subcategoryId ? parseInt(subcategoryId) : null,
                     title: title,
                     description: description,
                     price: parseFloat(price),
@@ -2104,7 +2140,7 @@
                 if (error.message.includes("violates row-level security policy")) {
                     errorMessage = 'Posting failed due to database security rules. Please check your Supabase settings.';
                 } else if (error.message.includes('violates not-null constraint') && error.message.includes('subcategory_id')) {
-                    errorMessage = 'Posting failed: A "Sub-Category" is required. The backend was updated, but the form is not sending this yet.';
+                    errorMessage = 'Posting failed: A "Sub-Category" is required. Please select one from the dropdown.';
                 } else if (error.code) { 
                     errorMessage = `Database Error: ${error.message}`;
                 }
@@ -2152,8 +2188,12 @@
                 }
                 document.getElementById('ad-pincode').value = ad.pincode || '';
 
-                // Populate attributes after a short delay to allow DOM update
+                // Populate attributes and subcategory after a short delay to allow DOM update
                 setTimeout(() => {
+                    if (ad.subcategory_id) {
+                        const subcatSelect = document.getElementById('ad-subcategory');
+                        if (subcatSelect) subcatSelect.value = ad.subcategory_id;
+                    }
                     if (ad.attributes) {
                         const attributeContainer = document.getElementById('category-attributes');
                         Object.entries(ad.attributes).forEach(([key, value]) => {
@@ -2815,7 +2855,19 @@
             }
         }
 
-        // --- Location Functions ---
+        // --- Location & Subcategory Functions ---
+        async function fetchAllSubcategories() {
+            try {
+                const { data, error } = await supabase.from('subcategories').select('id, name, category_id');
+                if (error) throw error;
+                allSubcategories = data || [];
+                console.log(`Loaded ${allSubcategories.length} subcategories.`);
+            } catch (error) {
+                console.error("Error fetching subcategories:", error);
+                showToast("Could not load sub-category data.", "error");
+            }
+        }
+
         function fetchAndPopulateLocations() {
             // This pattern prevents fetching the data multiple times.
             if (!locationDataPromise) {
@@ -2846,7 +2898,6 @@
             }
             return locationDataPromise;
         }
-
 
         function populateCities(stateId) {
             const citySelect = document.getElementById('ad-city');
@@ -3022,10 +3073,12 @@
             document.getElementById('confirm-cancel-btn').addEventListener('click', hideConfirmModal);
 
             loadCategories();
-            // Start fetching locations immediately on page load
+            // Start fetching data immediately on page load
+            fetchAllSubcategories();
             fetchAndPopulateLocations();
         });
 
     </script>
 </body>
 </html>
+

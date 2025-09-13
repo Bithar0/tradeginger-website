@@ -905,6 +905,7 @@
         let postLoginAction = null;
         let allStates = [], allCities = []; // To store location data
         let stagedProfilePic = null; // To hold the new profile picture file
+        let locationDataPromise = null; // To prevent race conditions
 
         const pageDivs = {
             homepage: document.getElementById('homepage'),
@@ -1214,6 +1215,7 @@
             if(event) event.preventDefault();
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
+                await fetchAndPopulateLocations(); // Ensure locations are ready before showing modal
                 document.getElementById('sellModal').classList.remove('hidden'); 
             } else {
                 postLoginAction = { action: 'sellItem' };
@@ -1351,9 +1353,8 @@
 
         async function updateListingPage(categoryKey, filters = {}) {
             // Ensure location data is loaded before building the sidebar
-            if (allStates.length === 0 || allCities.length === 0) {
-                await fetchAndPopulateLocations();
-            }
+            await fetchAndPopulateLocations();
+
             const sidebar = document.getElementById('filter-sidebar');
             const title = document.getElementById('listing-page-title');
             const filtersForCategory = filterData[categoryKey] || filterData.default;
@@ -1386,10 +1387,6 @@
                 title.innerText = filters.keyword ? `Search results for "${filters.keyword}"` : 'All Listings';
             } else {
                 title.innerText = `Fresh Recommendations in ${categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1)}`;
-            }
-            
-            if (filters.location) {
-                // This part is tricky as location is a string. We will handle city/state ID filters from the sidebar.
             }
         }
         
@@ -1720,7 +1717,7 @@
                 const { error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.href
+                        redirectTo: window.location.origin + window.location.pathname // Clean URL for redirect
                     }
                 });
                 if (error) throw error;
@@ -1728,8 +1725,6 @@
                 console.error('Error with Google login:', error);
                 if (error.message.includes("redirect_uri")) {
                      showToast('Google login failed: Check your Supabase Redirect URL settings.', 'error');
-                } else if (error.message.includes("full_name is not defined")) {
-                    showToast('Google login failed: Ensure "full_name" is available.', 'error');
                 } else {
                      showToast('Google login failed. Please try again.', 'error');
                 }
@@ -1751,7 +1746,7 @@
                 const { error } = await supabase.auth.signInWithOtp({
                     email: email,
                     options: {
-                        emailRedirectTo: window.location.href, // Redirect back to the same page after login
+                        emailRedirectTo: window.location.origin + window.location.pathname, // Clean URL for redirect
                     },
                 });
 
@@ -1795,6 +1790,10 @@
 
         // --- Auth State Listener ---
         supabase.auth.onAuthStateChange(async (event, session) => {
+            // If the URL has auth-related fragments from a redirect, clean them to prevent issues.
+            if (window.location.hash.includes('access_token') || window.location.hash.includes('type=')) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
             try {
                 const user = session?.user;
                 if (user) {
@@ -2817,27 +2816,37 @@
         }
 
         // --- Location Functions ---
-        async function fetchAndPopulateLocations() {
-            try {
-                const { data: statesData, error: statesError } = await supabase.from('states').select('id, name').order('name');
-                if (statesError) throw statesError;
-                allStates = statesData;
+        function fetchAndPopulateLocations() {
+            // This pattern prevents fetching the data multiple times.
+            if (!locationDataPromise) {
+                locationDataPromise = (async () => {
+                    try {
+                        const { data: statesData, error: statesError } = await supabase.from('states').select('id, name').order('name');
+                        if (statesError) throw statesError;
+                        allStates = statesData || []; // Ensure it's an array even if null
 
-                const { data: citiesData, error: citiesError } = await supabase.from('cities').select('id, name, state_id').order('name');
-                if (citiesError) throw citiesError;
-                allCities = citiesData;
+                        const { data: citiesData, error: citiesError } = await supabase.from('cities').select('id, name, state_id').order('name');
+                        if (citiesError) throw citiesError;
+                        allCities = citiesData || []; // Ensure it's an array even if null
 
-                const stateSelect = document.getElementById('ad-state');
-                stateSelect.innerHTML = '<option value="">Select State</option>'; // Reset
-                allStates.forEach(state => {
-                    stateSelect.innerHTML += `<option value="${state.id}">${state.name}</option>`;
-                });
+                        // Populate the main ad form states dropdown once data is fetched.
+                        const stateSelect = document.getElementById('ad-state');
+                        stateSelect.innerHTML = '<option value="">Select State</option>'; // Reset
+                        allStates.forEach(state => {
+                            stateSelect.innerHTML += `<option value="${state.id}">${state.name}</option>`;
+                        });
+                        console.log(`Loaded ${allStates.length} states and ${allCities.length} cities.`);
 
-            } catch (error) {
-                console.error("Error fetching locations:", error);
-                showToast("Could not load location data from the database.", "error");
+                    } catch (error) {
+                        console.error("Error fetching locations:", error);
+                        showToast("Could not load location data from the database.", "error");
+                        locationDataPromise = null; // Reset promise to allow retrying
+                    }
+                })();
             }
+            return locationDataPromise;
         }
+
 
         function populateCities(stateId) {
             const citySelect = document.getElementById('ad-city');
@@ -3013,10 +3022,10 @@
             document.getElementById('confirm-cancel-btn').addEventListener('click', hideConfirmModal);
 
             loadCategories();
-            await fetchAndPopulateLocations();
+            // Start fetching locations immediately on page load
+            fetchAndPopulateLocations();
         });
 
     </script>
 </body>
 </html>
-

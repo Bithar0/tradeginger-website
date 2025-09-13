@@ -11,6 +11,7 @@
         img-src 'self' https: data:; 
         connect-src 'self' https://crepnlidfdoskighdhdt.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://crepnlidfdoskighdhdt.supabase.co;
         frame-src 'self';
+        frame-ancestors 'self';
         object-src 'none';
         base-uri 'self';
         form-action 'self';
@@ -155,7 +156,7 @@
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <a href="#" onclick="showLoginModal(event)" class="text-sm font-medium text-gray-700 hover:text-theme-accent mr-4">Login</a>
+                    <a href="#" onclick="showLoginModal(event)" class="text-sm font-medium text-gray-700 hover:text-theme-accent mr-4">Login / Register</a>
                     <button onclick="showSellModal()" class="flex items-center bg-theme-accent text-white px-4 py-2 rounded-full shadow-lg hover:bg-theme-accent-dark transition duration-300">
                         <i class="fas fa-plus-circle mr-2"></i>
                         SELL
@@ -180,10 +181,10 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                     <button onclick="showMyChatsPage(event)" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700" title="My Chats">
+                   <button onclick="showMyChatsPage(event)" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700" title="My Chats">
                          <i class="fas fa-comment-dots text-xl"></i>
                          <span id="chat-notification-dot" class="hidden notification-dot"></span>
-                     </button>
+                   </button>
                     <div class="relative">
                         <button onclick="toggleNotifications()" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700">
                             <i class="far fa-bell text-xl"></i>
@@ -365,20 +366,20 @@
                     <h3 class="text-xl font-semibold mt-4">4.2. Limitation of Liability</h3>
                     <p>To the maximum extent permitted by law, TradeGinger, its affiliates, officers, directors, and employees shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from:</p>
                      <ul class="list-disc list-inside space-y-1">
-                         <li>Your use or inability to use the Website.</li>
-                         <li>Any unauthorized access to or use of your personal information.</li>
-                         <li>Any content posted by a user or third party on the Website.</li>
-                         <li>Any claims arising from the transactions between buyers and sellers.</li>
-                    </ul>
+                          <li>Your use or inability to use the Website.</li>
+                          <li>Any unauthorized access to or use of your personal information.</li>
+                          <li>Any content posted by a user or third party on the Website.</li>
+                          <li>Any claims arising from the transactions between buyers and sellers.</li>
+                     </ul>
 
                     <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">5. Indemnification</h2>
                     <p>You agree to indemnify, defend, and hold harmless TradeGinger, its officers, directors, employees, and agents from and against any and all claims, liabilities, damages, losses, and expenses, including reasonable legal fees, arising out of or in connection with:</p>
                      <ul class="list-disc list-inside space-y-1">
-                         <li>Your use of the Website.</li>
-                         <li>Your violation of these Terms.</li>
-                         <li>Your infringement of any intellectual property or other right of any person or entity.</li>
-                         <li>Any transaction or dispute between you and another user.</li>
-                    </ul>
+                          <li>Your use of the Website.</li>
+                          <li>Your violation of these Terms.</li>
+                          <li>Your infringement of any intellectual property or other right of any person or entity.</li>
+                          <li>Any transaction or dispute between you and another user.</li>
+                     </ul>
 
                     <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">6. Privacy and Data Protection</h2>
                     <h3 class="text-xl font-semibold mt-4">6.1. Privacy Policy</h3>
@@ -648,7 +649,7 @@
                                             <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple accept="image/*" onchange="handleFileUpload(event)">
                                         </label>
                                         <p class="pl-1">or</p>
-                                        <button type="button" onclick="openCamera(event)" class="ml-1 relative cursor-pointer bg-white rounded-md font-medium text-theme-accent hover\:text-theme-accent">Take a picture</button>
+                                        <button type="button" onclick="openCamera(event)" class="ml-1 relative cursor-pointer bg-white rounded-md font-medium text-theme-accent hover\:text-theme-accent">Take a Picture with AI</button>
                                     </div>
                                     <p class="text-xs text-gray-500">PNG, JPG up to 5MB</p>
                                 </div>
@@ -784,14 +785,9 @@
             </div>
             <!-- Right Side -->
             <div class="w-full md:w-2/3 bg-white p-8 flex flex-col justify-center relative overflow-y-auto">
-                <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
-                <div id="login-form" class="w-full max-w-sm mx-auto text-center">
-                    <h2 class="text-2xl font-bold text-center mb-2">Login or Sign Up</h2>
-                    <p class="text-center text-gray-500 mb-8">Continue with your Google account to get started.</p>
-                    <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
-                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
-                        <span class="font-semibold">Continue with Google</span>
-                    </button>
+                <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">×</button>
+                <div id="login-container" class="w-full max-w-sm mx-auto">
+                    <!-- This container's content will be swapped -->
                 </div>
             </div>
         </div>
@@ -1266,7 +1262,7 @@
             }
             return options;
         }
-        const yearDropdown = generateYearOptions(1990, 2025);
+        const yearDropdown = generateYearOptions(1990, new Date().getFullYear());
 
         const attributeTemplates = {
             cars: `<h3 class="text-xl font-bold text-gray-900 mb-4">Car Details</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="label-style">Brand*</label><select class="input-style w-full"><option>Maruti Suzuki</option><option>Hyundai</option><option>Tata</option><option>Mahindra</option><option>Kia</option><option>Toyota</option><option>Honda</option><option>Volkswagen</option><option>Skoda</option><option>MG</option><option>Renault</option><option>Nissan</option><option>Jeep</option><option>Citroen</option><option>Isuzu</option><option>Mercedes-Benz</option><option>BMW</option><option>Audi</option><option>Jaguar</option><option>Land Rover</option><option>Volvo</option><option>Other</option></select></div><div><label class="label-style">Model*</label><input type="text" placeholder="e.g., Swift, Creta, Nexon" class="input-style w-full"></div><div><label class="label-style">Variant*</label><input type="text" placeholder="e.g., VXI, SX, XZ+" class="input-style w-full"></div><div><label class="label-style">Year*</label><select class="input-style w-full">${yearDropdown}</select></div><div><label class="label-style">Fuel*</label><select class="input-style w-full"><option>Petrol</option><option>Diesel</option><option>CNG & Hybrids</option><option>Electric</option><option>LPG</option></select></div><div><label class="label-style">Transmission*</label><select class="input-style w-full"><option>Manual</option><option>Automatic</option></select></div><div><label class="label-style">KM Driven*</label><input type="number" placeholder="e.g., 25000" class="input-style w-full"></div><div><label class="label-style">No. of Owners*</label><select class="input-style w-full"><option>1st</option><option>2nd</option><option>3rd</option><option>4th+</option></select></div></div><div><label class="label-style">Condition</label><div class="flex space-x-4 mt-1"><label class="flex items-center"><input type="radio" name="condition" class="mr-2 h-4 w-4"> Non-Accidental</label><label class="flex items-center"><input type="radio" name="condition" class="mr-2 h-4 w-4"> Accidental</label></div></div>`,
@@ -1302,44 +1298,27 @@
         // --- Filter Data and Logic ---
         const filterData = {
             cars: [
-                { title: 'Budget', type: 'range' },
-                { title: 'Brand', type: 'checkbox', options: ['Maruti Suzuki', 'Hyundai', 'Honda', 'Tata', 'Mahindra', 'Toyota', 'Ford', 'Renault', 'Volkswagen', 'BMW', 'Mercedes-Benz', 'Audi'] },
-                { title: 'Model Year', type: 'range' },
-                { title: 'KMs Driven', type: 'range' },
-                { title: 'Fuel Type', type: 'checkbox', options: ['Petrol', 'Diesel', 'CNG', 'LPG', 'Electric', 'Hybrid'] },
-                { title: 'Transmission', type: 'radio', name: 'transmission', options: ['Manual', 'Automatic'] },
-                { title: 'No. of Owners', type: 'checkbox', options: ['1st', '2nd', '3rd', '4th+'] },
-                { title: 'Posted By', type: 'checkbox', options: ['Individual', 'Dealer'] }
+                { title: 'Budget', type: 'range', key: 'price' },
+                { title: 'Brand', type: 'checkbox', key: 'Brand', options: ['Maruti Suzuki', 'Hyundai', 'Honda', 'Tata', 'Mahindra', 'Toyota', 'Ford', 'Renault', 'Volkswagen', 'BMW', 'Mercedes-Benz', 'Audi'] },
+                { title: 'Model Year', type: 'range', key: 'Year' },
+                { title: 'KMs Driven', type: 'range', key: 'KM Driven' },
+                { title: 'Fuel Type', type: 'checkbox', key: 'Fuel', options: ['Petrol', 'Diesel', 'CNG', 'LPG', 'Electric', 'Hybrid'] },
+                { title: 'Transmission', type: 'radio', name: 'transmission', key: 'Transmission', options: ['Manual', 'Automatic'] },
+                { title: 'No. of Owners', type: 'checkbox', key: 'No. of Owners', options: ['1st', '2nd', '3rd', '4th+'] },
             ],
             property: [
-                { title: 'Budget', type: 'range' },
-                { title: 'Property Type', type: 'checkbox', options: ['Apartment', 'Builder Floor', 'House & Villa', 'Plot', 'Commercial Office', 'Shop/Showroom'] },
-                { title: 'Bedrooms (BHK)', type: 'checkbox', options: ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'] },
-                { title: 'Furnishing', type: 'radio', name: 'furnishing', options: ['Furnished', 'Semi-Furnished', 'Unfurnished'] },
-                { title: 'Construction Status', type: 'radio', name: 'construction', options: ['Ready to Move', 'Under Construction'] },
-                { title: 'Listed By', type: 'checkbox', options: ['Owner', 'Dealer', 'Builder'] },
-                { title: 'Area (Sq. Ft.)', type: 'range' }
+                { title: 'Budget', type: 'range', key: 'price' },
+                { title: 'Property Type', type: 'checkbox', key: 'Type', options: ['Apartment', 'Builder Floor', 'House & Villa', 'Plot', 'Commercial Office', 'Shop/Showroom'] },
+                { title: 'Bedrooms (BHK)', type: 'checkbox', key: 'Bedrooms', options: ['1', '2', '3', '4+'] },
+                { title: 'Furnishing', type: 'radio', name: 'furnishing', key: 'Furnishing', options: ['Furnished', 'Semi-Furnished', 'Unfurnished'] },
+                { title: 'Listed By', type: 'checkbox', key: 'Listed By', options: ['Owner', 'Dealer', 'Builder'] },
             ],
             mobiles: [
-                { title: 'Price', type: 'range' },
-                { title: 'Brand', type: 'checkbox', options: ['Apple', 'Samsung', 'Xiaomi', 'OnePlus', 'Realme', 'Vivo', 'Oppo'] },
-                { title: 'RAM', type: 'checkbox', options: ['4 GB', '6 GB', '8 GB', '12 GB+'] },
-                { title: 'Operating System', type: 'radio', name: 'os', options: ['Android', 'iOS'] }
-            ],
-            furniture: [
-                { title: 'Price', type: 'range' },
-                { title: 'Furniture Type', type: 'checkbox', options: ['Sofa Sets', 'Bed Sets', 'Dining Tables', 'Office Chairs', 'Wardrobes', 'TV Units'] },
-                { title: 'Material', type: 'checkbox', options: ['Solid Wood (Teak)', 'Solid Wood (Sheesham)', 'Engineered Wood', 'Metal', 'Plastic'] },
-                { title: 'Condition', type: 'radio', name: 'condition', options: ['Brand New', 'Gently Used', 'Heavily Used'] }
-            ],
-            pets: [
-                { title: 'Animal Type', type: 'select', options: ['Dogs', 'Cats', 'Birds', 'Fish & Aquariums'] },
-                { title: 'Breed', type: 'text', placeholder: 'e.g., Labrador, Persian Cat' },
-                { title: 'Age', type: 'range' },
-                { title: 'Posted By', type: 'radio', name: 'pet_poster', options: ['Owner', 'Breeder'] }
+                { title: 'Price', type: 'range', key: 'price' },
+                { title: 'Brand', type: 'checkbox', key: 'Brand', options: ['Apple', 'Samsung', 'Xiaomi', 'OnePlus', 'Realme', 'Vivo', 'Oppo'] },
             ],
             default: [
-                { title: 'Price', type: 'range' }
+                { title: 'Price', type: 'range', key: 'price' }
             ]
         };
 
@@ -1349,22 +1328,16 @@
                 optionsHTML = `<div class="mt-2 flex items-center space-x-2"><input type="number" placeholder="Min" class="w-full border rounded-md p-2 text-sm"><span>to</span><input type="number" placeholder="Max" class="w-full border rounded-md p-2 text-sm"></div>`;
             } else if (filter.type === 'checkbox') {
                 optionsHTML = `<div class="mt-2 space-y-2 text-xs">` +
-                    filter.options.map(opt => `<label class="flex items-center font-normal"><input type="checkbox" class="h-4 w-4 text-theme-accent border-gray-300 rounded focus:ring-theme-accent"> <span class="ml-2">${opt}</span></label>`).join('') +
+                    filter.options.map(opt => `<label class="flex items-center font-normal"><input type="checkbox" value="${opt}" class="h-4 w-4 text-theme-accent border-gray-300 rounded focus:ring-theme-accent"> <span class="ml-2">${opt}</span></label>`).join('') +
                     `</div>`;
             } else if (filter.type === 'radio') {
                  optionsHTML = `<div class="mt-2 space-y-2 text-xs">` +
-                    filter.options.map(opt => `<label class="flex items-center font-normal"><input type="radio" name="${filter.name}" class="h-4 w-4 text-theme-accent border-gray-300 focus:ring-theme-accent"> <span class="ml-2">${opt}</span></label>`).join('') +
+                    filter.options.map(opt => `<label class="flex items-center font-normal"><input type="radio" name="${filter.name}" value="${opt}" class="h-4 w-4 text-theme-accent border-gray-300 focus:ring-theme-accent"> <span class="ml-2">${opt}</span></label>`).join('') +
                     `</div>`;
-            } else if (filter.type === 'select') {
-                optionsHTML = `<div class="mt-2"><select class="input-style w-full text-sm">` +
-                    filter.options.map(opt => `<option>${opt}</option>`).join('') +
-                    `</select></div>`;
-            } else if (filter.type === 'text') {
-                 optionsHTML = `<div class="mt-2"><input type="text" placeholder="${filter.placeholder}" class="input-style w-full text-sm"></div>`;
             }
 
             return `
-                <div class="border-t py-3">
+                <div class="border-t py-3" data-key="${filter.key}" data-type="${filter.type}">
                     <details open>
                         <summary class="font-semibold text-sm cursor-pointer flex justify-between items-center hover:text-theme-accent">
                             <span>${filter.title}</span>
@@ -1410,18 +1383,41 @@
             } else {
                 title.innerText = `Fresh Recommendations in ${categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1)}`;
             }
-            
-            if (filters.location) {
-                // This part is tricky as location is a string. We will handle city/state ID filters from the sidebar.
-            }
         }
         
         function applyFilters(categoryKey) {
-            const cityId = document.getElementById('filter-city').value;
+            const sidebar = document.getElementById('filter-sidebar');
             const filters = {};
-            if (cityId) {
-                filters.city_id = cityId;
-            }
+
+            // Location
+            const cityId = sidebar.querySelector('#filter-city').value;
+            if (cityId) filters.city_id = cityId;
+
+            const filterSections = sidebar.querySelectorAll('[data-key]');
+            filterSections.forEach(section => {
+                const key = section.dataset.key;
+                const type = section.dataset.type;
+
+                if (type === 'range') {
+                    const inputs = section.querySelectorAll('input[type="number"]');
+                    const min = inputs[0].value;
+                    const max = inputs[1].value;
+                    if (min || max) filters[key] = {};
+                    if (min) filters[key].min = parseFloat(min);
+                    if (max) filters[key].max = parseFloat(max);
+                } else if (type === 'checkbox') {
+                    const checked = section.querySelectorAll('input:checked');
+                    if (checked.length > 0) {
+                        filters[key] = Array.from(checked).map(cb => cb.value);
+                    }
+                } else if (type === 'radio') {
+                    const checked = section.querySelector('input:checked');
+                    if (checked) {
+                        filters[key] = checked.value;
+                    }
+                }
+            });
+            
             fetchAndDisplayListings(categoryKey, filters);
             showToast('Filters applied!', 'info');
         }
@@ -1634,22 +1630,22 @@
                     noNotificationsMessage.classList.remove('hidden');
                 } else {
                      notifications.forEach(notif => {
-                         const icon = notif.type === 'new_message' ? 'fa-comment-dots' : 'fa-info-circle';
-                         const isUnreadClass = !notif.is_read ? 'bg-blue-50' : '';
-                         const timeAgo = formatTimeAgo(notif.created_at);
+                          const icon = notif.type === 'new_message' ? 'fa-comment-dots' : 'fa-info-circle';
+                          const isUnreadClass = !notif.is_read ? 'bg-blue-50' : '';
+                          const timeAgo = formatTimeAgo(notif.created_at);
 
-                         const notifHTML = `
-                             <a href="#" class="block p-4 text-sm hover:bg-gray-50 ${isUnreadClass}">
-                                 <div class="flex items-start gap-3">
-                                     <i class="fas ${icon} text-gray-400 mt-1"></i>
-                                     <div>
-                                         <p class="font-semibold">${sanitizeHTML(notif.content)}</p>
-                                         <p class="text-xs text-gray-500">${timeAgo}</p>
-                                     </div>
-                                 </div>
-                             </a>
-                         `;
-                         notificationList.innerHTML += notifHTML;
+                          const notifHTML = `
+                              <a href="#" class="block p-4 text-sm hover:bg-gray-50 ${isUnreadClass}">
+                                   <div class="flex items-start gap-3">
+                                        <i class="fas ${icon} text-gray-400 mt-1"></i>
+                                        <div>
+                                             <p class="font-semibold">${sanitizeHTML(notif.content)}</p>
+                                             <p class="text-xs text-gray-500">${timeAgo}</p>
+                                        </div>
+                                   </div>
+                              </a>
+                          `;
+                          notificationList.innerHTML += notifHTML;
                       });
                 }
             } catch(error) {
@@ -1729,6 +1725,43 @@
                 } else {
                      showToast('Google login failed. Please try again.', 'error');
                 }
+            }
+        }
+
+        async function handleMagicLink(event) {
+            event.preventDefault();
+            const emailInput = document.getElementById('login-email');
+            const loginContainer = document.getElementById('login-container');
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                showToast('Please enter your email address.', 'error');
+                return;
+            }
+
+            try {
+                const { error } = await supabase.auth.signInWithOtp({
+                    email: email,
+                    options: {
+                        emailRedirectTo: window.location.href, // Redirect back to the same page after login
+                    },
+                });
+
+                if (error) throw error;
+
+                // Hide the form and show a success message
+                loginContainer.innerHTML = `
+                    <div class="text-center">
+                        <i class="fas fa-paper-plane text-4xl text-green-500 mb-4"></i>
+                        <h2 class="text-2xl font-bold mb-2">Check your email</h2>
+                        <p class="text-gray-600">A magic login link has been sent to <strong>${sanitizeHTML(email)}</strong>.</p>
+                        <p class="text-gray-500 text-sm mt-4">You can close this window now.</p>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Magic link error:', error);
+                showToast(`Could not send magic link: ${error.message}`, 'error');
             }
         }
         
@@ -1999,6 +2032,17 @@
                 if (!categoryId) {
                     throw new Error("Invalid category selected.");
                 }
+
+                // Scrape attributes
+                const attributes = {};
+                const attributeContainer = document.getElementById('category-attributes');
+                attributeContainer.querySelectorAll('label').forEach(label => {
+                    const key = label.textContent.replace('*', '').trim();
+                    const input = label.nextElementSibling;
+                    if (key && input && (input.tagName === 'INPUT' || input.tagName === 'SELECT')) {
+                        attributes[key] = input.value;
+                    }
+                });
                 
                 const existingUrls = stagedFiles.filter(f => f.type === 'url').map(f => f.data);
                 const newFilesToUpload = stagedFiles.filter(f => f.type !== 'url').map(f => (f.type === 'base64' ? f.data : f.file));
@@ -2024,6 +2068,7 @@
                     location: cityName, // Legacy location field
                     city_id: parseInt(cityId),
                     pincode: pincode || null,
+                    attributes: attributes
                 };
 
                 let error;
@@ -2099,6 +2144,21 @@
                     }, 100);
                 }
                 document.getElementById('ad-pincode').value = ad.pincode || '';
+
+                // Populate attributes after a short delay to allow DOM update
+                setTimeout(() => {
+                    if (ad.attributes) {
+                        const attributeContainer = document.getElementById('category-attributes');
+                        Object.entries(ad.attributes).forEach(([key, value]) => {
+                           attributeContainer.querySelectorAll('label').forEach(label => {
+                               if (label.textContent.replace('*', '').trim() === key) {
+                                   const input = label.nextElementSibling;
+                                   if (input) input.value = value;
+                               }
+                           });
+                        });
+                    }
+                }, 200);
 
                 document.querySelector('#sellModal .text-2xl').textContent = 'Edit Your Ad';
                 document.getElementById('post-ad-button').textContent = 'Update Ad';
@@ -2298,23 +2358,23 @@
            const locationText = ad.cities ? ad.cities.name : ad.location;
            return `
            <div class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300 relative">
-                <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
-                   <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${ad.title}" class="w-full h-48 object-cover">
+               <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
+                  <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${ad.title}" class="w-full h-48 object-cover">
                </a>
-               <button onclick="handleFavoriteClick(event, ${ad.id})" class="absolute top-2 right-2 p-2 rounded-full bg-white bg-opacity-75 z-10 hover:bg-gray-100 transition-colors">
-                   <i class="${userFavorites.has(ad.id) ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400'}"></i>
-               </button>
-               ${ad.is_premium ? '<span class="absolute top-2 left-2 bg-theme-accent text-white text-xs font-bold px-2 py-1 rounded z-10">Premium</span>' : ''}
-               <div class="p-4">
-                   <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
-                       <h3 class="font-bold text-lg mb-2 truncate">₹ ${ad.price.toLocaleString('en-IN')}</h3>
-                       <p class="text-gray-600 text-sm truncate">${ad.title}</p>
-                       <div class="flex justify-between text-xs text-gray-500 mt-2">
-                           <span>${locationText}</span>
-                           <span>${formatTimeAgo(ad.created_at)}</span>
-                       </div>
-                   </a>
-               </div>
+              <button onclick="handleFavoriteClick(event, ${ad.id})" class="absolute top-2 right-2 p-2 rounded-full bg-white bg-opacity-75 z-10 hover:bg-gray-100 transition-colors">
+                  <i class="${userFavorites.has(ad.id) ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400'}"></i>
+              </button>
+              ${ad.is_premium ? '<span class="absolute top-2 left-2 bg-theme-accent text-white text-xs font-bold px-2 py-1 rounded z-10">Premium</span>' : ''}
+              <div class="p-4">
+                  <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
+                      <h3 class="font-bold text-lg mb-2 truncate">₹ ${ad.price.toLocaleString('en-IN')}</h3>
+                      <p class="text-gray-600 text-sm truncate">${ad.title}</p>
+                      <div class="flex justify-between text-xs text-gray-500 mt-2">
+                          <span>${locationText}</span>
+                          <span>${formatTimeAgo(ad.created_at)}</span>
+                      </div>
+                  </a>
+              </div>
            </div>`;
         }
 
@@ -2338,6 +2398,26 @@
                 if (filters.city_id) {
                     query = query.eq('city_id', filters.city_id);
                 }
+
+                if (filters.price) {
+                    if (filters.price.min) query = query.gte('price', filters.price.min);
+                    if (filters.price.max) query = query.lte('price', filters.price.max);
+                }
+
+                // Handle attribute filters
+                Object.keys(filters).forEach(key => {
+                    if (key !== 'price' && key !== 'city_id' && key !== 'keyword') {
+                        const value = filters[key];
+                        if (Array.isArray(value)) { // Checkbox
+                            query = query.in(`attributes->>${key}`, value);
+                        } else if (typeof value === 'object' && (value.min || value.max)) { // Range
+                             if(value.min) query = query.gte(`attributes->>${key}`, value.min);
+                             if(value.max) query = query.lte(`attributes->>${key}`, value.max);
+                        } else { // Radio
+                            query = query.eq(`attributes->>${key}`, value);
+                        }
+                    }
+                });
                 
                 if (filters.keyword) {
                     const searchPattern = `%${filters.keyword}%`;
@@ -2395,7 +2475,7 @@
                 removeBtn.className = 'absolute top-1 right-1 bg-red-600 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold leading-none z-10 hover:bg-red-700';
                 removeBtn.innerHTML = '&times;';
                 removeBtn.onclick = () => removeStagedFile(index);
-
+                
                 previewWrapper.appendChild(img);
                 previewWrapper.appendChild(removeBtn);
                 previewContainer.appendChild(previewWrapper);
@@ -2437,7 +2517,7 @@
 
                 const { data: similarAds, error: similarAdsError } = await supabase
                     .from('listings')
-                    .select('*')
+                    .select('*, cities(name)')
                     .eq('category_id', ad.category_id)
                     .neq('id', adId)
                     .limit(4);
@@ -2446,25 +2526,23 @@
                 
                 const locationText = ad.cities ? `${ad.cities.name}, ${ad.cities.states.name}` : (ad.location || 'India');
 
-                const similarAdsHTML = similarAds && similarAds.length > 0 ? similarAds.map(similarAd => `
-                    <a href="#" onclick="showProductDetailPage(event, ${similarAd.id})" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
-                        <img src="${similarAd.image_urls && similarAd.image_urls.length > 0 ? similarAd.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=Ad'}" alt="Product" class="w-full h-40 object-cover">
-                        <div class="p-3">
-                            <h3 class="font-bold text-md mb-1">₹ ${similarAd.price.toLocaleString('en-IN')}</h3>
-                            <p class="text-gray-600 text-xs truncate">${similarAd.title}</p>
-                        </div>
-                    </a>
-                `).join('') : '<p class="col-span-full text-gray-500">No similar ads found.</p>';
+                const imageThumbnailsHTML = ad.image_urls && ad.image_urls.length > 1 ? `
+                    <div class="flex gap-2 mt-4 overflow-x-auto">
+                        ${ad.image_urls.map(url => `<img src="${url}" class="h-20 w-20 object-cover rounded-md cursor-pointer border-2 border-transparent hover:border-theme-accent" onclick="changeMainProductImage('${url}')">`).join('')}
+                    </div>
+                ` : '';
+                
+                const similarAdsHTML = similarAds && similarAds.length > 0 ? similarAds.map(similarAd => createAdCard(similarAd)).join('') : '<p class="col-span-full text-gray-500">No similar ads found.</p>';
                 
                 const pageHTML = `
                     <div class="flex items-center gap-4 mb-4">
                         <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
-                        <h1 class="text-2xl font-bold">Product Details</h1>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <div class="flex flex-col md:flex-row gap-8">
                             <div class="w-full md:w-2/3">
                                 <img id="main-product-image" src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/800x600/CBD5E0/4A5568?text=Product'}" alt="Main Product Image" class="w-full h-auto rounded-lg shadow-lg">
+                                ${imageThumbnailsHTML}
                             </div>
                             <div class="w-full md:w-1/3">
                                 <div class="border-b pb-4 mb-4">
@@ -2525,31 +2603,31 @@
                 if (!ads || ads.length === 0) {
                      container.innerHTML = `
                           <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                               <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
-                               <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
-                               <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
-                               <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
+                                <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
+                                <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
+                                <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
+                                <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
                           </div>
                         `;
                 } else {
                      const adsGridHTML = ads.map(ad => `
                           <a href="#" onclick="showProductDetailPage(event, ${ad.id})" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
-                               <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=Ad'}" alt="Product" class="w-full h-40 object-cover">
-                               <div class="p-3">
-                                   <h3 class="font-bold text-md mb-1">₹ ${ad.price.toLocaleString('en-IN')}</h3>
-                                   <p class="text-gray-600 text-xs truncate">${ad.title}</p>
-                               </div>
+                                <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=Ad'}" alt="Product" class="w-full h-40 object-cover">
+                                <div class="p-3">
+                                    <h3 class="font-bold text-md mb-1">₹ ${ad.price.toLocaleString('en-IN')}</h3>
+                                    <p class="text-gray-600 text-xs truncate">${ad.title}</p>
+                                </div>
                           </a>
                         `).join('');
                      container.innerHTML = `
                           <div class="bg-white p-6 rounded-lg shadow-md">
-                               <div class="flex justify-between items-center mb-4">
-                                   <h3 class="text-xl font-bold">Your Active Ads</h3>
-                                   <a href="#" onclick="showMyAdsPage(event)" class="text-sm font-semibold text-theme-accent hover:underline">View All</a>
-                               </div>
-                               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                   ${adsGridHTML}
-                               </div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-xl font-bold">Your Active Ads</h3>
+                                    <a href="#" onclick="showMyAdsPage(event)" class="text-sm font-semibold text-theme-accent hover:underline">View All</a>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    ${adsGridHTML}
+                                </div>
                           </div>
                         `;
                 }
@@ -2666,15 +2744,6 @@
             closeCamera();
             await analyzeImageWithAI(base64ImageData.split(',')[1]); // Send without the prefix
         }
-
-        function dataURLtoFile(dataurl, filename) {
-            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-            while(n--){
-                u8arr[n] = bstr.charCodeAt(n);
-            }
-            return new File([u8arr], filename, {type:mime});
-        }
         
         async function analyzeImageWithAI(base64ImageData) {
             showToast('🤖 AI is analyzing your image...', 'info');
@@ -2783,6 +2852,10 @@
                 citySelect.innerHTML += `<option value="${city.id}">${city.name}</option>`;
             });
         }
+        
+        function changeMainProductImage(url) {
+            document.getElementById('main-product-image').src = url;
+        }
 
         // --- Time Formatting ---
         function formatTimeAgo(dateString) {
@@ -2835,6 +2908,24 @@
             confirmCallback = null;
         }
 
+        // --- LOGIN MODAL UI ---
+        const loginFormHTML = `
+            <div id="login-form">
+                <h2 class="text-2xl font-bold text-center mb-2">Login or Sign Up</h2>
+                <p class="text-center text-gray-500 mb-6">Enter your email to get started.</p>
+                <input id="login-email" type="email" placeholder="Enter Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent mb-4">
+                <button onclick="handleMagicLink(event)" class="w-full bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">Send Magic Link</button>
+                <div class="my-6 flex items-center">
+                    <div class="flex-grow border-t border-gray-300"></div>
+                    <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
+                    <div class="flex-grow border-t border-gray-300"></div>
+                </div>
+                <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
+                    <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
+                    <span class="font-semibold">Continue with Google</span>
+                </button>
+            </div>`;
+
         // --- EXPOSE FUNCTIONS TO GLOBAL SCOPE ---
         const functionsToExpose = {
             showHomepage, showListingPage, showSellModal, toggleNotifications,
@@ -2847,7 +2938,8 @@
             handleProfileUpdate, handleEditAd, handleDeleteAd,
             hideAdSuccessModal, handleFileUpload, fetchAndDisplayMyAds, generateAdDescription,
             openCamera, closeCamera, captureImage, populateCities, populateFilterCities, applyFilters, resetFilters,
-            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage, openChatFromListPage
+            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage, openChatFromListPage, changeMainProductImage,
+            loginWithGoogle, handleMagicLink
         };
         Object.keys(functionsToExpose).forEach(funcName => {
             window[funcName] = functionsToExpose[funcName];
@@ -2856,12 +2948,12 @@
         // Add modal and auth functions to window scope to ensure they are accessible from HTML onclick
         window.showLoginModal = function (event) {
             if (event) event.preventDefault();
+            document.getElementById("login-container").innerHTML = loginFormHTML;
             document.getElementById("loginModal").classList.remove("hidden");
         };
         window.hideLoginModal = function () {
             document.getElementById("loginModal").classList.add("hidden");
         };
-        window.loginWithGoogle = loginWithGoogle;
 
 
         // --- Initial Load ---
@@ -2919,4 +3011,3 @@
     </script>
 </body>
 </html>
-

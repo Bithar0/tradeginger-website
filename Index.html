@@ -345,7 +345,7 @@
                     <p>You agree not to list, upload, post, transmit, or share any content that:</p>
                     <ul class="list-disc list-inside space-y-1">
                         <li>Is unlawful, fraudulent, defamatory, obscene, or sexually explicit.</li>
-                        <li>Violates any law or regulation in force in India, including but not to the sale of illegal goods, weapons, or narcotics.</li>
+                        <li>Violates any law or regulation in force in India, including but not limited to the sale of illegal goods, weapons, or narcotics.</li>
                         <li>Infringes upon any third party’s intellectual property rights (e.g., copyright, trademarks) or other proprietary rights.</li>
                         <li>Contains any computer virus, malware, or other malicious code.</li>
                         <li>Is misleading, deceptive, or constitutes unfair trade practice under the Consumer Protection Act, 2019.</li>
@@ -397,7 +397,7 @@
 
                     <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">8. Miscellaneous</h2>
                     <h3 class="text-xl font-semibold mt-4">8.1. Termination</h3>
-                    <p>We reserve the right to terminate your access to the Website at our sole discretion, without notice, for any reason, including but not to a breach of these Terms.</p>
+                    <p>We reserve the right to terminate your access to the Website at our sole discretion, without notice, for any reason, including but not limited to a breach of these Terms.</p>
                     <h3 class="text-xl font-semibold mt-4">8.2. Changes to Terms</h3>
                     <p>We may modify these Terms at any time by posting the revised Terms on the Website. Your continued use of the Website after such a posting constitutes your acceptance of the revised Terms.</p>
                 </div>
@@ -700,7 +700,7 @@
                 <p>You agree not to list, upload, post, transmit, or share any content that:</p>
                 <ul class="list-disc list-inside space-y-1 pl-4">
                     <li>Is unlawful, fraudulent, defamatory, obscene, or sexually explicit.</li>
-                    <li>Violates any law or regulation in force in India, including but not to the sale of illegal goods, weapons, or narcotics.</li>
+                    <li>Violates any law or regulation in force in India, including but not limited to the sale of illegal goods, weapons, or narcotics.</li>
                     <li>Infringes upon any third party’s intellectual property rights (e.g., copyright, trademarks) or other proprietary rights.</li>
                     <li>Contains any computer virus, malware, or other malicious code.</li>
                     <li>Is misleading, deceptive, or constitutes unfair trade practice under the Consumer Protection Act, 2019.</li>
@@ -752,7 +752,7 @@
 
                 <h3 class="text-xl font-semibold mt-4">8. Miscellaneous</h3>
                 <h4 class="font-semibold mt-2">8.1. Termination</h4>
-                <p>We reserve the right to terminate your access to the Website at our sole discretion, without notice, for any reason, including but not to a breach of these Terms.</p>
+                <p>We reserve the right to terminate your access to the Website at our sole discretion, without notice, for any reason, including but not limited to a breach of these Terms.</p>
                  <h4 class="font-semibold mt-2">8.2. Changes to Terms</h4>
                 <p>We may modify these Terms at any time by posting the revised Terms on the Website. Your continued use of the Website after such a posting constitutes your acceptance of the revised Terms.</p>
             </div>
@@ -888,13 +888,13 @@
         } catch (error) {
             console.error("Error creating Supabase client:", error);
              document.body.innerHTML = `
-                <div class="fixed inset-0 bg-red-100 text-red-800 flex items-center justify-center p-8 z-50">
-                    <div class="text-center">
-                        <h1 class="text-2xl font-bold mb-4">Application Configuration Error</h1>
-                        <p>The application could not connect to the backend.</p>
-                        <p class="mt-2 font-semibold">Please update the <strong>SUPABASE_URL</strong> and <strong>SUPABASE_ANON_KEY</strong> variables in the script tag in <strong>index.html</strong> with the correct credentials from your 'My Project' dashboard in Supabase.</p>
-                    </div>
-                </div>
+                 <div class="fixed inset-0 bg-red-100 text-red-800 flex items-center justify-center p-8 z-50">
+                     <div class="text-center">
+                         <h1 class="text-2xl font-bold mb-4">Application Configuration Error</h1>
+                         <p>The application could not connect to the backend.</p>
+                         <p class="mt-2 font-semibold">Please update the <strong>SUPABASE_URL</strong> and <strong>SUPABASE_ANON_KEY</strong> variables in the script tag in <strong>index.html</strong> with the correct credentials from your 'My Project' dashboard in Supabase.</p>
+                     </div>
+                 </div>
             `;
             throw new Error("Supabase is not configured.");
         }
@@ -1403,9 +1403,9 @@
                         <h3 class="font-semibold mb-2 text-sm">Location</h3>
                         <div class="space-y-2">
                              <select id="filter-state" onchange="populateFilterCities(this.value)" class="w-full border rounded-md p-2 text-sm">
-                                <option value="">All States</option>
-                                ${allStates.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
-                            </select>
+                                 <option value="">All States</option>
+                                 ${allStates.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+                             </select>
                             <select id="filter-city" class="w-full border rounded-md p-2 text-sm">
                                 <option value="">All Cities</option>
                             </select>
@@ -3084,5 +3084,4 @@
     </script>
 </body>
 </html>
-
 

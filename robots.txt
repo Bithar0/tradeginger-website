@@ -21,4 +21,4 @@ Disallow: /edit-profile
 Sitemap Location
 Provide the full URL to the sitemap.xml file.
 -----------------------------------------------------------------------------
-Sitemap: https://www.google.com/search?q=https://www.tradeginger.com/sitemap.xml
+Sitemap: https://www.google.com/url?sa=E&source=gmail&q=https://www.tradeginger.com/sitemap.xml

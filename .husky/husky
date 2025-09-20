@@ -1,3 +1,0 @@
-npm init -y
-npm install husky --save-dev
-npx husky install

@@ -1,12 +1,6 @@
 /* 
-  # --- Strong Content Security Policy (CSP) ---
-  # - No more unsafe-inline (prevents XSS)
-  # - Added nonce support (for inline scripts if you have them)
-  # - Added require-trusted-types-for 'script'
-  # - Moved CSP to header (more secure than meta tag)
-
   Content-Security-Policy: default-src 'self';
-    script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com https://unpkg.com blob: 'nonce-<RANDOM_NONCE>';
+    script-src 'self' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com https://unpkg.com blob: 'nonce-__NONCE__';
     style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
     img-src 'self' data: https:;
     font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
@@ -18,7 +12,6 @@
     form-action 'self';
     require-trusted-types-for 'script';
 
-  # --- Additional Security Headers ---
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Embedder-Policy: require-corp
   X-Frame-Options: DENY

@@ -2,6 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- SEO and Accessibility: Added a descriptive meta description -->
+    <meta name="description" content="Find the best local deals on cars, mobiles, property, and more on TradeGinger. Buy and sell used goods in your community safely and easily.">
+    
+    <!-- Performance: Preload critical resources -->
+    <link rel="preload" href="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=85&w=1200&auto=format&fit=crop" as="image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self'; 
         script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com; 
@@ -17,18 +26,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TradeGinger - Buy & Sell Locally</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    
+    <!-- Performance: Asynchronously load non-critical CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    
+    <!-- Performance: Defer non-critical JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" defer></script>
+    
+    <!-- 
+      SERVER-SIDE OPTIMIZATION NOTES:
+      1. Caching: For best performance, configure your web server (e.g., Netlify, Vercel, Nginx) to set long cache-control headers for static assets.
+         Example: `Cache-Control: public, max-age=31536000, immutable` for fonts, icons, and versioned JS/CSS.
+      2. TTFB (Time to First Byte): To improve TTFB, consider upgrading your hosting plan, using a global CDN, or optimizing backend database queries if they are slow. This is a server-side concern.
+    -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f7fafc;
         }
         .hero-section {
-            background: linear-gradient(rgba(26, 32, 44, 0.7), rgba(26, 32, 44, 0.7)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1600&auto=format&fit=crop') no-repeat center center;
+            background: linear-gradient(rgba(26, 32, 44, 0.7), rgba(26, 32, 44, 0.7)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=85&w=1200&auto=format&fit=crop') no-repeat center center;
             background-size: cover;
             position: relative;
             overflow: hidden;
@@ -201,13 +221,13 @@
                     </div>
                     <div class="relative profile-button">
                         <button class="flex items-center space-x-2">
-                            <img id="header-profile-pic" class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" alt="User profile">
+                            <img id="header-profile-pic" class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" alt="User profile" width="32" height="32">
                             <i class="fas fa-chevron-down text-xs"></i>
                         </button>
                         <div class="profile-dropdown absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-50 overflow-hidden">
                             <div class="p-4">
                                 <div class="flex items-center gap-3">
-                                    <img id="dropdown-profile-pic" class="h-12 w-12 rounded-full object-cover" src="https://placehold.co/48x48/0A2342/D4AF37?text=U" alt="User profile">
+                                    <img id="dropdown-profile-pic" class="h-12 w-12 rounded-full object-cover" src="https://placehold.co/48x48/0A2342/D4AF37?text=U" alt="User profile" width="48" height="48">
                                     <div>
                                         <p id="dropdown-username" class="font-semibold text-gray-800">Unknown</p>
                                         <a href="#" onclick="showUserProfilePage(event)" class="text-sm text-theme-accent hover:underline">View and edit profile</a>
@@ -262,22 +282,28 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
                     <div class="space-y-4">
                         <h3 class="text-xl font-semibold mb-4 theme-primary text-center">Marketplace</h3>
-                        <a href="#" onclick="showListingPage(event, 'mobiles')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-mobile-alt text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Mobiles</span></a>
-                        <a href="#" onclick="showListingPage(event, 'electronics')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-tv text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Electronics</span></a>
-                        <a href="#" onclick="showListingPage(event, 'furniture')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-couch text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Furniture</span></a>
-                        <a href="#" onclick="showListingPage(event, 'fashion')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-tshirt text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Fashion</span></a>
-                        <a href="#" onclick="showListingPage(event, 'pets')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-dog text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Pets</span></a>
+                        <ul class="space-y-3">
+                            <li><a href="#" onclick="showListingPage(event, 'mobiles')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-mobile-alt text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Mobiles</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'electronics')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-tv text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Electronics</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'furniture')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-couch text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Furniture</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'fashion')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-tshirt text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Fashion</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'pets')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-dog text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Pets</span></a></li>
+                        </ul>
                     </div>
                      <div class="space-y-4">
                         <h3 class="text-xl font-semibold mb-4 theme-primary text-center">Vehicles</h3>
-                        <a href="#" onclick="showListingPage(event, 'cars')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-car text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Cars</span></a>
-                        <a href="#" onclick="showListingPage(event, 'bikes')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-motorcycle text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Bikes</span></a>
-                        <a href="#" onclick="showListingPage(event, 'commercial_vehicles')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-truck text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Commercial</span></a>
+                        <ul class="space-y-3">
+                            <li><a href="#" onclick="showListingPage(event, 'cars')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-car text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Cars</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'bikes')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-motorcycle text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Bikes</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'commercial_vehicles')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-truck text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Commercial</span></a></li>
+                        </ul>
                     </div>
                      <div class="space-y-4">
                         <h3 class="text-xl font-semibold mb-4 theme-primary text-center">Real Estate</h3>
-                        <a href="#" onclick="showListingPage(event, 'property')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-building text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">For Sale: Houses & Apartments</span></a>
-                        <a href="#" onclick="showListingPage(event, 'property')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-sign text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">For Rent: Houses & Apartments</span></a>
+                        <ul class="space-y-3">
+                            <li><a href="#" onclick="showListingPage(event, 'property')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-building text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">For Sale: Houses & Apartments</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'property')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-sign text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">For Rent: Houses & Apartments</span></a></li>
+                        </ul>
                     </div>
                 </div>
             </section>
@@ -431,7 +457,7 @@
             <div class="flex flex-col md:flex-row gap-8">
                 <div class="w-full md:w-1/4">
                     <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                        <img id="profile-page-pic" class="h-24 w-24 rounded-full object-cover mx-auto mb-4" src="https://placehold.co/96x96/0A2342/D4AF37?text=M" alt="User profile">
+                        <img id="profile-page-pic" class="h-24 w-24 rounded-full object-cover mx-auto mb-4" src="https://placehold.co/96x96/0A2342/D4AF37?text=M" alt="User profile" width="96" height="96">
                         <h2 id="profile-page-username" class="text-2xl font-bold">Manas</h2>
                         <p id="profile-page-member-since" class="text-sm text-gray-500">Member since Sep 2014</p>
                         <div class="text-left text-sm mt-4">
@@ -465,7 +491,7 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">Profile picture</h3>
                         <div class="flex items-center gap-4">
-                             <img id="profile-pic-preview" class="h-24 w-24 rounded-full object-cover" src="https://placehold.co/96x96/0A2342/D4AF37?text=M" alt="User profile">
+                             <img id="profile-pic-preview" class="h-24 w-24 rounded-full object-cover" src="https://placehold.co/96x96/0A2342/D4AF37?text=M" alt="User profile" width="96" height="96">
                              <input type="file" id="profile-pic-upload" class="hidden" accept="image/*" onchange="handleProfilePictureChange(event)">
                              <button onclick="document.getElementById('profile-pic-upload').click()" class="border border-gray-300 px-4 py-2 rounded-md text-sm font-semibold hover:bg-gray-50">Change Picture</button>
                         </div>
@@ -2152,7 +2178,7 @@
                 if (!ads || ads.length === 0) {
                     adsGrid.innerHTML = `
                         <div class="col-span-full bg-white p-8 rounded-lg shadow-md text-center">
-                            <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
+                            <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4" width="300" height="200" loading="lazy" decoding="async">
                             <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
                             <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
                             <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
@@ -2164,7 +2190,7 @@
                     const locationText = ad.cities ? ad.cities.name : ad.location || 'N/A';
                     return `
                         <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                            <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="Product Image" class="w-full h-48 object-cover">
+                            <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${sanitizeHTML(ad.title)}" class="w-full h-48 object-cover" width="400" height="300" loading="lazy" decoding="async">
                             <div class="p-4">
                                 <h3 class="font-bold text-lg mb-2">₹ ${ad.price.toLocaleString('en-IN')}</h3>
                                 <p class="text-gray-600 text-sm mb-4 truncate">${sanitizeHTML(ad.title)}</p>
@@ -2292,7 +2318,7 @@
            return `
            <div class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300 relative">
                <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
-                  <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${sanitizeHTML(ad.title)}" class="w-full h-48 object-cover">
+                  <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${sanitizeHTML(ad.title)}" class="w-full h-48 object-cover" width="400" height="300" loading="lazy" decoding="async">
                </a>
               <button onclick="handleFavoriteClick(event, ${ad.id})" class="absolute top-2 right-2 p-2 rounded-full bg-white bg-opacity-75 z-10 hover:bg-gray-100 transition-colors">
                   <i class="${userFavorites.has(ad.id) ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400'}"></i>
@@ -2371,7 +2397,7 @@
             const previewsHTML = stagedFiles.map((fileWrapper, index) => {
                 const file = fileWrapper.type === 'base64' ? dataURLtoFile(fileWrapper.data, `capture${index}.jpg`) : fileWrapper.file;
                 return `<div class="relative w-24 h-24">
-                            <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover rounded-md border">
+                            <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover rounded-md border" width="96" height="96">
                         </div>`;
             }).join('');
             previewContainer.innerHTML = previewsHTML;
@@ -2420,7 +2446,7 @@
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <div class="flex flex-col md:flex-row gap-8">
                             <div class="w-full md:w-2/3">
-                                <img id="main-product-image" src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/800x600/CBD5E0/4A5568?text=Product'}" alt="Main Product Image" class="w-full h-auto rounded-lg shadow-lg">
+                                <img id="main-product-image" src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/800x600/CBD5E0/4A5568?text=Product'}" alt="${sanitizeHTML(ad.title)}" class="w-full h-auto rounded-lg shadow-lg" width="800" height="600">
                             </div>
                             <div class="w-full md:w-1/3">
                                 <div class="border-b pb-4 mb-4">
@@ -2434,7 +2460,7 @@
                                 <div class="border-b pb-4 mb-4">
                                     <h3 class="text-xl font-semibold mb-2">Seller Details</h3>
                                     <div class="flex items-center gap-4">
-                                        <img class="h-16 w-16 rounded-full object-cover" src="https://placehold.co/64x64/0A2342/D4AF37?text=${(seller.first_name || 'S').charAt(0)}" alt="Seller profile">
+                                        <img class="h-16 w-16 rounded-full object-cover" src="https://placehold.co/64x64/0A2342/D4AF37?text=${(seller.first_name || 'S').charAt(0)}" alt="Seller profile" width="64" height="64">
                                         <div>
                                             <p class="font-bold text-lg">${sanitizeHTML(seller.first_name)} ${sanitizeHTML(seller.last_name)}</p>
                                             <p class="text-sm text-gray-500">Member since ${creationDate}</p>
@@ -2481,7 +2507,7 @@
                 if (!ads || ads.length === 0) {
                      container.innerHTML = `
                           <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                                <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
+                                <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4" width="300" height="200" loading="lazy" decoding="async">
                                 <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
                                 <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
                                 <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
@@ -2818,6 +2844,18 @@
             await fetchAndPopulateLocations();
         });
 
+    </script>
+    <!-- RUM / Web Vitals Tracking -->
+    <script type="module">
+        import { onCLS, onINP, onLCP } from 'https://unpkg.com/web-vitals@4?module';
+
+        function logVitals({ name, value, id }) {
+            console.log(`[Web Vitals] ${name}:`, { value: `${Math.round(value)}ms`, id });
+        }
+
+        onCLS(logVitals);
+        onINP(logVitals);
+        onLCP(logVitals);
     </script>
 </body>
 </html>

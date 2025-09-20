@@ -25,7 +25,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fa; /* Softer, off-white background */
+            background-color: #f7fafc;
         }
         .hero-section {
             background: linear-gradient(rgba(26, 32, 44, 0.7), rgba(26, 32, 44, 0.7)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1600&auto=format&fit=crop') no-repeat center center;
@@ -33,9 +33,15 @@
             position: relative;
             overflow: hidden;
         }
+        .product-card {
+             background-color: white;
+             border: 1px solid #e2e8f0;
+             transition: all 0.3s ease;
+        }
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #b79438;
         }
         #sellModal .modal-content::-webkit-scrollbar, #loginModal .modal-content::-webkit-scrollbar, #tncModal .modal-content::-webkit-scrollbar, #chat-messages::-webkit-scrollbar, #notification-list::-webkit-scrollbar { width: 8px; }
         #sellModal .modal-content::-webkit-scrollbar-track, #loginModal .modal-content::-webkit-scrollbar-track, #tncModal .modal-content::-webkit-scrollbar-track, #chat-messages::-webkit-scrollbar-track, #notification-list::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -46,9 +52,9 @@
         .profile-dropdown, .category-dropdown, #notification-dropdown { display: none; }
         .profile-button:focus-within .profile-dropdown, .category-item:hover > .category-dropdown { display: block; }
 
-        /* --- NEW Professional & Classy Theme Colors --- */
-        .theme-primary { color: #1a202c; /* Deep Charcoal */ }
-        .theme-accent { color: #b79438; /* Refined Gold */ }
+        /* --- Professional & Classy Theme Colors --- */
+        .theme-primary { color: #1a202c; }
+        .theme-accent { color: #b79438; }
         .bg-theme-primary { background-color: #1a202c; }
         .hover\:bg-theme-primary-dark:hover { background-color: #11151c; }
         .bg-theme-accent { background-color: #b79438; }
@@ -64,8 +70,8 @@
             justify-content: center;
             width: 35px;
             height: 35px;
-            background-color: #1a202c; /* New Primary */
-            color: #b79438; /* New Accent */
+            background-color: #1a202c;
+            color: #b79438;
             border-radius: 50%;
             font-size: 1rem;
             box-shadow: 0 0 0 2px #f8f9fa, 0 0 0 3px #aaa, inset 0 1px 3px rgba(0,0,0,0.4);
@@ -113,8 +119,8 @@
 
         /* Loading Spinner */
         .loader {
-            border: 4px solid #f3f3f3; /* Light grey */
-            border-top: 4px solid #b79438; /* Refined Gold */
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #b79438;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -128,7 +134,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 200px; /* Adjust as needed */
+            min-height: 200px;
             width: 100%;
         }
     </style>
@@ -252,32 +258,26 @@
         </section>
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <section class="mb-12">
-                <h2 class="text-2xl font-bold mb-6 text-center">Browse by Category</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                    <div>
-                        <h3 class="text-xl font-semibold mb-4 theme-primary">Marketplace</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <a href="#" onclick="showListingPage(event, 'mobiles')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-mobile-alt text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Mobiles</span></a>
-                            <a href="#" onclick="showListingPage(event, 'laptops')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-laptop text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Laptops</span></a>
-                            <a href="#" onclick="showListingPage(event, 'furniture')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-couch text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Furniture</span></a>
-                            <a href="#" onclick="showListingPage(event, 'fashion')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-tshirt text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Fashion</span></a>
-                            <a href="#" onclick="showListingPage(event, 'pets')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-dog text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Pets</span></a>
-                        </div>
+                <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">Browse by Category</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-semibold mb-4 theme-primary text-center">Marketplace</h3>
+                        <a href="#" onclick="showListingPage(event, 'mobiles')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-mobile-alt text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Mobiles</span></a>
+                        <a href="#" onclick="showListingPage(event, 'electronics')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-tv text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Electronics</span></a>
+                        <a href="#" onclick="showListingPage(event, 'furniture')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-couch text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Furniture</span></a>
+                        <a href="#" onclick="showListingPage(event, 'fashion')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-tshirt text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Fashion</span></a>
+                        <a href="#" onclick="showListingPage(event, 'pets')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-dog text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Pets</span></a>
                     </div>
-                     <div>
-                        <h3 class="text-xl font-semibold mb-4 theme-primary">Vehicles</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <a href="#" onclick="showListingPage(event, 'cars')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-car text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Cars</span></a>
-                             <a href="#" onclick="showListingPage(event, 'bikes')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-motorcycle text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Bikes</span></a>
-                            <a href="#" onclick="showListingPage(event, 'commercial_vehicles')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-truck text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Commercial</span></a>
-                        </div>
+                     <div class="space-y-4">
+                        <h3 class="text-xl font-semibold mb-4 theme-primary text-center">Vehicles</h3>
+                        <a href="#" onclick="showListingPage(event, 'cars')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-car text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Cars</span></a>
+                        <a href="#" onclick="showListingPage(event, 'bikes')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-motorcycle text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Bikes</span></a>
+                        <a href="#" onclick="showListingPage(event, 'commercial_vehicles')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-truck text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Commercial</span></a>
                     </div>
-                     <div>
-                        <h3 class="text-xl font-semibold mb-4 theme-primary">Real Estate</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <a href="#" onclick="showListingPage(event, 'property')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-building text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">For Sale</span></a>
-                            <a href="#" onclick="showListingPage(event, 'property')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-sign text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">For Rent</span></a>
-                        </div>
+                     <div class="space-y-4">
+                        <h3 class="text-xl font-semibold mb-4 theme-primary text-center">Real Estate</h3>
+                        <a href="#" onclick="showListingPage(event, 'property')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-building text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">For Sale: Houses & Apartments</span></a>
+                        <a href="#" onclick="showListingPage(event, 'property')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-sign text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">For Rent: Houses & Apartments</span></a>
                     </div>
                 </div>
             </section>
@@ -287,15 +287,15 @@
     <div id="listingpage" class="hidden">
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex flex-col md:flex-row gap-8">
-                <aside id="filter-sidebar" class="w-full md:w-1/3">
-                    </aside>
-                <section class="w-full md:w-2/3">
-                    <div class="flex items-center gap-4 mb-4">
+                <aside id="filter-sidebar" class="w-full md:w-1/4 lg:w-1/5">
+                </aside>
+                <section class="w-full md:w-3/4 lg:w-4/5">
+                    <div class="flex items-center gap-4 mb-6">
                         <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
-                        <h1 id="listing-page-title" class="text-2xl font-bold"></h1>
+                        <h1 id="listing-page-title" class="text-3xl font-bold text-gray-800"></h1>
                     </div>
-                    <div id="listing-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        </div>
+                    <div id="listing-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    </div>
                 </section>
             </div>
         </main>
@@ -745,42 +745,12 @@
             </div>
             <div class="w-full md:w-2/3 bg-white p-8 flex flex-col justify-center relative overflow-y-auto">
                 <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
-                <div id="login-form" class="w-full max-w-sm mx-auto">
-                    <div class="flex border-b mb-4">
-                        <button id="login-tab" class="flex-1 py-2 font-semibold border-b-2 border-theme-accent" onclick="switchAuthForm('login')">Login</button>
-                        <button id="register-tab" class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('register')">Register</button>
-                    </div>
-                    <h2 class="text-2xl font-bold text-center mb-2">Login to TradeGinger</h2>
-                    <p class="text-center text-gray-500 mb-6">Please provide your Email and Password</p>
-                    <input id="login-email" type="email" placeholder="Enter Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
-                    <input id="login-password" type="password" placeholder="Enter Password" class="w-full border-2 border-gray-300 p-3 rounded-md mt-4 focus:outline-none focus:border-theme-accent">
-                    <div class="text-right mt-2">
-                        <a href="#" onclick="switchAuthForm('forgot')" class="text-sm text-theme-accent hover:underline">Forgot Password?</a>
-                    </div>
-                    <button onclick="handleLogin(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Continue</button>
-                    <div class="my-6 flex items-center">
-                        <div class="flex-grow border-t border-gray-300"></div>
-                        <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
-                        <div class="flex-grow border-t border-gray-300"></div>
-                    </div>
-                    <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
-                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
-                        <span class="font-semibold">Login with Google</span>
-                    </button>
-                     <p class="text-center mt-4 text-sm">Don't have an account? <a href="#" onclick="switchAuthForm('register')" class="font-semibold text-theme-accent">Register</a></p>
-                </div>
-
-                <div id="register-form" class="w-full max-w-sm mx-auto hidden">
-                    <div class="flex border-b mb-4">
-                        <button id="login-tab-reg" class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('login')">Login</button>
-                        <button id="register-tab-reg" class="flex-1 py-2 font-semibold border-b-2 border-theme-accent" onclick="switchAuthForm('register')">Register</button>
-                    </div>
-                    <h2 class="text-2xl font-bold text-center mb-2">Sign In / Register</h2>
-                    <p class="text-center text-gray-500 mb-6">Enter your email to receive a magic link to sign in.</p>
-                    <div class="space-y-4">
-                        <input id="register-email" type="email" placeholder="Enter your email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
-                        <button id="register-button" onclick="handleRegister(event)" class="w-full bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">Send Magic Link</button>
-                    </div>
+                
+                <div id="auth-form" class="w-full max-w-sm mx-auto">
+                    <h2 class="text-2xl font-bold text-center mb-2">Sign In or Register</h2>
+                    <p class="text-center text-gray-500 mb-6">Enter your email below to receive a magic link, or continue with Google.</p>
+                    <input id="auth-email" type="email" placeholder="Enter your email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                    <button id="magic-link-button" onclick="handleMagicLinkLogin(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Continue with Email</button>
                     <div class="my-6 flex items-center">
                         <div class="flex-grow border-t border-gray-300"></div>
                         <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
@@ -790,18 +760,6 @@
                         <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
                         <span class="font-semibold">Continue with Google</span>
                     </button>
-                    <p class="text-center mt-4 text-sm">Already have an account? <a href="#" onclick="switchAuthForm('login')" class="font-semibold text-theme-accent">Login with Password</a></p>
-                </div>
-                <div id="forgot-password-form" class="w-full max-w-sm mx-auto hidden">
-                     <div class="flex border-b mb-4">
-                        <button class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('login')">Login</button>
-                        <button class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('register')">Register</button>
-                    </div>
-                   <h2 class="text-2xl font-bold text-center mb-2">Reset Password</h2>
-                   <p class="text-center text-gray-500 mb-6">Enter your email to receive a password reset link.</p>
-                   <input id="reset-email" type="email" placeholder="Enter your registered Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
-                   <button onclick="handlePasswordReset(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Send Reset Link</button>
-                    <p class="text-center mt-4 text-sm"><a href="#" onclick="switchAuthForm('login')" class="font-semibold text-theme-accent">Back to Login</a></p>
                 </div>
             </div>
         </div>
@@ -864,6 +822,9 @@
         
         // --- START: Hardening - Input Sanitization ---
         function sanitizeHTML(str) {
+            if (str === null || str === undefined) {
+                return '';
+            }
             const temp = document.createElement('div');
             temp.textContent = str;
             return temp.innerHTML;
@@ -900,7 +861,18 @@
         
         // --- Cloudinary Configuration for STORAGE ---
         const CLOUDINARY_CLOUD_NAME = 'dcxhenppn';
-        const CLOUDINARY_UPLOAD_PRESET = 'marketplace_preset';
+        const CLOUDINARY_UPLOAD_PRESET = 'Tradeginger';
+
+        // --- Supabase RLS Policies for Listings ---
+        // IMPORTANT: To prevent "Error fetching listings", ensure public read access is enabled on your 'listings' table.
+        /*
+        CREATE POLICY "Enable public read access for all listings"
+        ON public.listings
+        AS PERMISSIVE FOR SELECT
+        TO public
+        USING (true);
+        */
+
 
         // --- Category Mapping ---
         const categoryMapping = {
@@ -912,8 +884,9 @@
         // --- Page Navigation & State Management ---
         window.navigationHistory = [];
         let postLoginAction = null;
-        let allStates = [], allCities = []; // To store location data
-        let stagedProfilePic = null; // To hold the new profile picture file
+        let allStates = [], allCities = []; 
+        let stagedProfilePic = null; 
+        let isNavigating = false; // --- FIX: Global flag to prevent rapid navigation ---
 
         const pageDivs = {
             homepage: document.getElementById('homepage'),
@@ -970,18 +943,24 @@
         
         async function goBack(event) {
             if (event) event.preventDefault();
-            if (window.navigationHistory.length > 0) {
-                const previousPage = window.navigationHistory.pop();
-                const { data, error } = await supabase.auth.getSession();
-                if (error) {
-                    console.error("Error getting session in goBack:", error);
-                    showPage(previousPage, false, true); // default to logged out
-                    return;
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                if (window.navigationHistory.length > 0) {
+                    const previousPage = window.navigationHistory.pop();
+                    const { data, error } = await supabase.auth.getSession();
+                    if (error) {
+                        console.error("Error getting session in goBack:", error);
+                        showPage(previousPage, false, true);
+                        return;
+                    }
+                    const isLoggedIn = !!data.session?.user;
+                    showPage(previousPage, isLoggedIn, true);
+                } else {
+                    await showHomepage(event);
                 }
-                const isLoggedIn = !!data.session?.user;
-                showPage(previousPage, isLoggedIn, true);
-            } else {
-                await showHomepage(event);
+            } finally {
+                isNavigating = false;
             }
         }
 
@@ -993,11 +972,17 @@
         }
         
         async function showListingPage(event, categoryKey, filters = {}) { 
-            if(event) event.preventDefault(); 
-            const { data: { session } } = await supabase.auth.getSession();
-            showPage('listingpage', !!session?.user); 
-            updateListingPage(categoryKey, filters); 
-            await fetchAndDisplayListings(categoryKey, filters);
+            if(event) event.preventDefault();
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                showPage('listingpage', !!session?.user); 
+                updateListingPage(categoryKey, filters); 
+                await fetchAndDisplayListings(categoryKey, filters);
+            } finally {
+                isNavigating = false;
+            }
         }
 
         async function showHelpPage(event) { 
@@ -1010,23 +995,27 @@
         
         async function showProductDetailPage(event, adId) { 
             if (event) event.preventDefault();
-            
-            const { data: { user } } = await supabase.auth.getUser();
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                const showPageAction = async () => {
+                    showPage('productdetailpage', true);
+                    if (adId) {
+                        await renderProductDetailPage(adId);
+                    } else {
+                        document.getElementById('product-detail-container').innerHTML = `<p class="text-center text-red-500">Error: No product ID provided.</p>`;
+                    }
+                };
 
-            const showPageAction = async () => {
-                showPage('productdetailpage', true);
-                if (adId) {
-                    await renderProductDetailPage(adId);
+                if (user) {
+                     await showPageAction();
                 } else {
-                    document.getElementById('product-detail-container').innerHTML = `<p class="text-center text-red-500">Error: No product ID provided.</p>`;
+                    postLoginAction = { action: 'viewProduct', adId: adId };
+                    showLoginModal(event);
                 }
-            };
-
-            if (user) {
-                 await showPageAction();
-            } else {
-                postLoginAction = { action: 'viewProduct', adId: adId };
-                showLoginModal(event);
+            } finally {
+                isNavigating = false;
             }
         }
         
@@ -1057,7 +1046,6 @@
             if (keyword) {
                 filters.keyword = keyword;
             }
-            // Use 'all' as the category to search across everything
             await showListingPage(event, 'all', filters);
         }
         
@@ -1083,7 +1071,6 @@
                     throw new Error("User not logged in.");
                 }
 
-                // Step 1: Fetch chat rooms
                 const { data: rooms, error: roomsError } = await supabase
                     .from('chat_rooms')
                     .select(`id, listing_id, buyer_id, seller_id`)
@@ -1102,7 +1089,6 @@
                     return;
                 }
 
-                // Step 2: Collect all unique user and listing IDs
                 const userIds = new Set();
                 const listingIds = new Set();
                 rooms.forEach(room => {
@@ -1111,7 +1097,6 @@
                     listingIds.add(room.listing_id);
                 });
 
-                // Step 3: Fetch all required profiles and listings in parallel
                 const [profilesResponse, listingsResponse] = await Promise.all([
                     supabase.from('profiles').select(`id, first_name, last_name`).in('id', Array.from(userIds)),
                     supabase.from('listings').select(`id, title, image_urls`).in('id', Array.from(listingIds))
@@ -1123,17 +1108,13 @@
                 const { data: listings, error: listingsError } = listingsResponse;
                 if (listingsError) throw listingsError;
 
-                // Step 4: Map profiles and listings into easy-to-access objects
                 const profilesMap = new Map(profiles.map(p => [p.id, p]));
                 const listingsMap = new Map(listings.map(l => [l.id, l]));
-
-                chatListContainer.innerHTML = ''; // Clear loader
-
-                // Step 5: Render the chat list by combining the data
+                
+                let chatsHTML = '';
                 rooms.forEach(room => {
                     const isUserTheBuyer = user.id === room.buyer_id;
                     const otherUserId = isUserTheBuyer ? room.seller_id : room.buyer_id;
-                    
                     const otherUser = profilesMap.get(otherUserId);
                     const ad = listingsMap.get(room.listing_id);
 
@@ -1145,22 +1126,22 @@
                     const otherUserName = `${otherUser.first_name || ''} ${otherUser.last_name || ''}`.trim() || 'User';
                     const adImage = ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/80x80/E2E8F0/4A5568?text=Ad';
 
-                    const chatItemHTML = `
+                    chatsHTML += `
                         <div class="flex items-center justify-between p-4 border-b hover:bg-gray-50 transition-colors duration-200">
                             <div class="flex items-center gap-4 flex-1 min-w-0">
-                                <img src="${adImage}" alt="${ad.title}" class="w-16 h-16 object-cover rounded-md flex-shrink-0">
+                                <img src="${adImage}" alt="${sanitizeHTML(ad.title)}" class="w-16 h-16 object-cover rounded-md flex-shrink-0">
                                 <div class="min-w-0">
-                                    <p class="font-bold text-gray-800 truncate">${ad.title}</p>
-                                    <p class="text-sm text-gray-600 truncate">Chat with ${otherUserName}</p>
+                                    <p class="font-bold text-gray-800 truncate">${sanitizeHTML(ad.title)}</p>
+                                    <p class="text-sm text-gray-600 truncate">Chat with ${sanitizeHTML(otherUserName)}</p>
                                 </div>
                             </div>
-                            <button onclick="openChatFromListPage(${room.id}, '${otherUser.id}', '${otherUserName.replace(/'/g, "\\'")}', ${ad.id})" class="bg-theme-accent text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-theme-accent-dark flex-shrink-0 ml-4">
+                            <button onclick="openChatFromListPage(${room.id}, '${otherUser.id}', '${sanitizeHTML(otherUserName.replace(/'/g, "\\'"))}', ${ad.id})" class="bg-theme-accent text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-theme-accent-dark flex-shrink-0 ml-4">
                                 Open Chat
                             </button>
                         </div>
                     `;
-                    chatListContainer.innerHTML += chatItemHTML;
                 });
+                chatListContainer.innerHTML = chatsHTML;
 
             } catch (error) {
                 console.error("Error fetching my chats:", error);
@@ -1467,7 +1448,7 @@
             const bgColor = type === 'sent' ? 'bg-theme-accent text-white' : 'bg-gray-200 text-gray-800';
             
             messageElement.className = `flex ${alignment}`;
-            messageElement.innerHTML = `<div class="max-w-xs px-3 py-2 rounded-lg ${bgColor}">${text}</div>`;
+            messageElement.innerHTML = `<div class="max-w-xs px-3 py-2 rounded-lg ${bgColor}">${sanitizeHTML(text)}</div>`;
             
             messagesDiv.appendChild(messageElement);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -1544,7 +1525,6 @@
                 
                 await fetchInitialMessages(roomId);
 
-                // --- REALTIME LOGIC ---
                 chatSubscription = supabase.channel(`chat_room_${roomId}`)
                     .on('postgres_changes', {
                         event: 'INSERT',
@@ -1612,10 +1592,9 @@
             const notificationList = document.getElementById('notification-list');
             const noNotificationsMessage = document.getElementById('no-notifications-message');
 
-            // --- FIX: Check if elements exist before trying to modify them ---
             if (!notificationList || !noNotificationsMessage) {
-                console.error("Notification UI elements ('notification-list' or 'no-notifications-message') not found in the DOM.");
-                return; // Exit function to prevent crash
+                console.error("Notification UI elements not found.");
+                return;
             }
             
             notificationList.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
@@ -1636,8 +1615,7 @@
                 
                 if (error) throw error;
                 
-                notificationList.innerHTML = '';
-
+                let notificationsHTML = '';
                 if (!notifications || notifications.length === 0) {
                     noNotificationsMessage.classList.remove('hidden');
                 } else {
@@ -1646,23 +1624,22 @@
                           const isUnreadClass = !notif.is_read ? 'bg-blue-50' : '';
                           const timeAgo = new Date(notif.created_at).toLocaleString();
 
-                          const notifHTML = `
+                          notificationsHTML += `
                               <a href="#" class="block p-4 text-sm hover:bg-gray-50 ${isUnreadClass}">
                                    <div class="flex items-start gap-3">
                                        <i class="fas ${icon} text-gray-400 mt-1"></i>
                                        <div>
-                                           <p class="font-semibold">${notif.content}</p>
+                                           <p class="font-semibold">${sanitizeHTML(notif.content)}</p>
                                            <p class="text-xs text-gray-500">${timeAgo}</p>
                                        </div>
                                    </div>
                               </a>
                           `;
-                          notificationList.innerHTML += notifHTML;
                       });
                 }
+                notificationList.innerHTML = notificationsHTML;
             } catch(error) {
                  console.error("Error fetching notifications:", error);
-                 // Check again in case notificationList became invalid
                  if(notificationList) {
                     notificationList.innerHTML = `<p class="p-4 text-sm text-red-500 text-center">Could not load notifications.</p>`;
                  }
@@ -1700,26 +1677,7 @@
 
             if (isOpening) {
                 await fetchAndDisplayNotifications();
-                // Mark as read after a delay so the user can see what was new
                 setTimeout(() => markNotificationsAsRead(null, false), 2000);
-            }
-        }
-
-        function switchAuthForm(form) {
-            const loginForm = document.getElementById('login-form');
-            const registerForm = document.getElementById('register-form');
-            const forgotForm = document.getElementById('forgot-password-form');
-            
-            loginForm.classList.add('hidden');
-            registerForm.classList.add('hidden');
-            forgotForm.classList.add('hidden');
-
-            if (form === 'login') {
-                loginForm.classList.remove('hidden');
-            } else if (form === 'register') {
-                registerForm.classList.remove('hidden');
-            } else if (form === 'forgot') {
-                forgotForm.classList.remove('hidden');
             }
         }
         
@@ -1738,27 +1696,23 @@
         
         // --- Authentication Logic (Supabase) ---
 
-        // START: MODIFIED FUNCTION
-        async function handleRegister(event) {
+        async function handleMagicLinkLogin(event) {
             event.preventDefault();
-            const registerButton = document.getElementById('register-button');
-            const email = document.getElementById('register-email').value.trim();
+            const magicLinkButton = document.getElementById('magic-link-button');
+            const email = document.getElementById('auth-email').value.trim();
 
             if (!email) {
                 showToast('Please enter your email address.', 'error');
                 return;
             }
 
-            registerButton.disabled = true;
-            registerButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sending...`;
+            magicLinkButton.disabled = true;
+            magicLinkButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sending...`;
 
             try {
                 const { error } = await supabase.auth.signInWithOtp({
                     email: email,
                     options: {
-                        // This will create a new user if one doesn't exist.
-                        // For a better first-time user experience, you might redirect
-                        // to a profile-setup page after login.
                         emailRedirectTo: window.location.href,
                     },
                 });
@@ -1766,40 +1720,14 @@
                 if (error) throw error;
 
                 showToast('Check your email for the magic link to sign in!', 'success');
-                // Hide the modal or switch to a "check your email" message
                 hideLoginModal();
 
             } catch (err) {
                 console.error("Magic Link error:", err);
                 showToast("Failed to send magic link: " + (err.message || "Unknown error"), "error");
             } finally {
-                registerButton.disabled = false;
-                registerButton.innerHTML = 'Send Magic Link';
-            }
-        }
-        // END: MODIFIED FUNCTION
-
-        async function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value.trim();
-
-            if (!email || !password) {
-                showToast('Please enter both email and password.', 'error');
-                return;
-            }
-
-            try {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password,
-                });
-                if (error) throw error;
-                hideLoginModal();
-                showToast('Login successful!', 'success');
-            } catch (error) {
-                console.error("Error logging in:", error);
-                showToast('Error logging in: ' + error.message, 'error');
+                magicLinkButton.disabled = false;
+                magicLinkButton.innerHTML = 'Continue with Email';
             }
         }
 
@@ -1809,7 +1737,7 @@
                 const { error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.href // Redirect back to the current page after login
+                        redirectTo: window.location.href
                     }
                 });
                 if (error) throw error;
@@ -1822,47 +1750,19 @@
                 }
             }
         }
-
-        async function handlePasswordReset(event) {
-            event.preventDefault();
-            const email = document.getElementById('reset-email').value.trim();
-
-            if (!email) {
-                showToast('Please enter your email address.', 'error');
-                return;
-            }
-
-            try {
-                const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.href, // Optional: where to redirect after password reset
-                });
-
-                if (error) throw error;
-                showToast('Password reset link sent! Please check your email.', 'success');
-                switchAuthForm('login');
-            } catch (error) {
-                console.error("Error sending password reset email:", error);
-                showToast('Error: ' + error.message, 'error');
-            }
-        }
         
         async function logout(event) {
             if (event) event.preventDefault();
-            
-            // Immediately hide the logged-in header for instant feedback.
             headers.loggedIn.classList.add('hidden');
             headers.loggedOut.classList.remove('hidden');
 
             try {
                 const { error } = await supabase.auth.signOut();
                 if (error) {
-                    // If sign-out fails, revert the UI and show an error.
                     headers.loggedIn.classList.remove('hidden');
                     headers.loggedOut.classList.add('hidden');
                     throw error;
                 }
-                // Force a page reload on successful sign-out. This is the most 
-                // reliable way to clear all application state and prevent UI bugs.
                 window.location.reload();
             } catch (error) {
                 console.error('Error logging out:', error);
@@ -1875,8 +1775,7 @@
             try {
                 const user = session?.user;
                 if (user) {
-                    await fetchUserFavorites(); // Fetch user's favorites on login/session refresh
-                    // --- MANAGE REALTIME SUBSCRIPTIONS ---
+                    await fetchUserFavorites();
                     if (notificationSubscription) await supabase.removeChannel(notificationSubscription);
                     fetchInitialNotificationCount(user.id);
                     notificationSubscription = supabase.channel(`notifications_${user.id}`)
@@ -1904,8 +1803,7 @@
                              setTimeout(() => showProductDetailPage(null, actionToPerform.adId), 0);
                         }
                     }
-                } else { // user is null
-                    // Clean up subscriptions if they exist
+                } else { 
                     if (notificationSubscription) {
                         await supabase.removeChannel(notificationSubscription);
                         notificationSubscription = null;
@@ -1914,9 +1812,6 @@
                         await supabase.removeChannel(chatSubscription);
                         chatSubscription = null;
                     }
-                    
-                    // This block now handles all cases where there is no user (initial load or after logout).
-                    // It ensures the UI is always in a clean, logged-out state.
                     showPage('homepage', false);
                     updateUIForGuest();
                 }
@@ -1941,18 +1836,13 @@
                 const fullName = `${userProfileData?.first_name || user.user_metadata.full_name || ''} ${userProfileData?.last_name || ''}`.trim() || user.email;
                 const profilePicUrl = userProfileData?.avatar_url || user.user_metadata.avatar_url || `https://placehold.co/96x96/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
 
-                // Update Header
                 document.getElementById('header-profile-pic').src = profilePicUrl;
                 document.getElementById('dropdown-profile-pic').src = profilePicUrl;
                 document.getElementById('dropdown-username').innerText = fullName;
-
-                // Update Profile Page
                 document.getElementById('profile-page-pic').src = profilePicUrl;
                 document.getElementById('profile-page-username').innerText = fullName;
                 const creationDate = user.created_at ? new Date(user.created_at) : new Date();
                 document.getElementById('profile-page-member-since').innerText = `Member since ${creationDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
-
-                // Update Edit Profile Page
                 document.getElementById('profile-pic-preview').src = profilePicUrl;
                 document.getElementById('edit-profile-name-input').value = fullName;
                 document.getElementById('edit-profile-email-input').value = user.email || '';
@@ -2014,20 +1904,18 @@
                     profileUpdateData.avatar_url = newAvatarUrl;
                 }
 
-                // Update public profiles table first
                 const { error: profileError } = await supabase
                     .from('profiles')
                     .update(profileUpdateData)
                     .eq('id', user.id);
                 if (profileError) throw profileError;
                 
-                // Then update Supabase Auth user metadata
                 const { data: {user: updatedAuthUser}, error: authError } = await supabase.auth.updateUser(authUpdateData);
                 if (authError) throw authError;
 
                 showToast('Profile updated successfully!', 'success');
-                stagedProfilePic = null; // Clear staged file
-                await updateUIForUser(updatedAuthUser); // Use the freshly updated auth user object
+                stagedProfilePic = null;
+                await updateUIForUser(updatedAuthUser);
                 showUserProfilePage(event);
 
             } catch (error) {
@@ -2081,7 +1969,7 @@
         }
         
         let editingAdId = null; 
-        let stagedFiles = []; // To hold files from upload OR camera
+        let stagedFiles = []; 
 
         async function handleAdSubmit(event) {
             event.preventDefault();
@@ -2123,7 +2011,19 @@
                     }
                 }
                 
-                const cityName = allCities.find(c => c.id == cityId)?.name || 'Not specified';
+                let cityName;
+                let finalCityId;
+
+                if (cityId === 'other') {
+                    finalCityId = null;
+                    const stateId = document.getElementById('ad-state').value;
+                    const selectedState = allStates.find(s => s.id == stateId);
+                    cityName = selectedState ? selectedState.name : 'Not specified';
+                } else {
+                    finalCityId = parseInt(cityId);
+                    cityName = allCities.find(c => c.id == cityId)?.name || 'Not specified';
+                }
+                
                 const listingData = {
                     user_id: user.id,
                     category_id: categoryId,
@@ -2131,8 +2031,8 @@
                     description: description,
                     price: parseFloat(price),
                     image_urls: imageUrls,
-                    location: cityName, // Legacy location field
-                    city_id: parseInt(cityId),
+                    location: cityName,
+                    city_id: finalCityId,
                     pincode: pincode || null,
                 };
 
@@ -2162,12 +2062,8 @@
 
                 if (error.message.includes("violates row-level security policy")) {
                     errorMessage = 'Posting failed due to database security rules. Please check your Supabase settings.';
-                    // DEV NOTE: To fix, go to Supabase > Authentication > Policies > listings table
-                    // and create a new policy for INSERT, for authenticated users.
                 } else if (error.message.includes('violates not-null constraint') && error.message.includes('subcategory_id')) {
                     errorMessage = 'Posting failed: A "Sub-Category" is required. The backend was updated, but the form is not sending this yet.';
-                     // DEV NOTE: To fix, make the 'subcategory_id' column in the 'listings' table optional (allow nulls).
-                    // SQL FIX: ALTER TABLE public.listings ALTER COLUMN subcategory_id DROP NOT NULL;
                 } else if (error.code) { 
                     errorMessage = `Database Error: ${error.message}`;
                 }
@@ -2196,14 +2092,12 @@
                 document.getElementById('ad-description').value = ad.description;
                 document.getElementById('ad-price').value = ad.price;
                 
-                // Populate location
                 if (ad.city_id && ad.cities) {
                     const stateId = ad.cities.state_id;
                     const cityId = ad.city_id;
                     const adStateSelect = document.getElementById('ad-state');
                     adStateSelect.value = stateId;
                     populateCities(stateId);
-                    // Use a timeout to ensure cities are populated before setting the value
                     setTimeout(() => {
                         document.getElementById('ad-city').value = cityId;
                     }, 100);
@@ -2224,7 +2118,7 @@
             showConfirmModal(
                 'Delete Ad',
                 'Are you sure you want to delete this ad? This action cannot be undone.',
-                async () => { // This is the onConfirm callback
+                async () => {
                     try {
                         const { error } = await supabase.from('listings').delete().eq('id', adId);
                         if (error) throw error;
@@ -2254,9 +2148,7 @@
                     .eq('user_id', user.id);
 
                 if (error) throw error;
-
-                adsGrid.innerHTML = '';
-
+                
                 if (!ads || ads.length === 0) {
                     adsGrid.innerHTML = `
                         <div class="col-span-full bg-white p-8 rounded-lg shadow-md text-center">
@@ -2267,17 +2159,17 @@
                         </div>`;
                     return;
                 }
-
-                ads.forEach((ad) => {
+                
+                const adsHTML = ads.map(ad => {
                     const locationText = ad.cities ? ad.cities.name : ad.location || 'N/A';
-                    const adCard = `
+                    return `
                         <div class="bg-white rounded-lg shadow-md overflow-hidden">
                             <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="Product Image" class="w-full h-48 object-cover">
                             <div class="p-4">
                                 <h3 class="font-bold text-lg mb-2">₹ ${ad.price.toLocaleString('en-IN')}</h3>
-                                <p class="text-gray-600 text-sm mb-4 truncate">${ad.title}</p>
+                                <p class="text-gray-600 text-sm mb-4 truncate">${sanitizeHTML(ad.title)}</p>
                                 <div class="flex justify-between items-center text-xs text-gray-500">
-                                    <span>${locationText}</span>
+                                    <span>${sanitizeHTML(locationText)}</span>
                                     <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">Active</span>
                                 </div>
                                 <div class="mt-4 flex gap-2">
@@ -2286,8 +2178,8 @@
                                 </div>
                             </div>
                         </div>`;
-                    adsGrid.innerHTML += adCard;
-                });
+                }).join('');
+                adsGrid.innerHTML = adsHTML;
             } catch (error) {
                 console.error("Error fetching user's ads:", error);
                 showToast("Could not fetch your ads.", 'error');
@@ -2296,37 +2188,6 @@
         }
         
         // --- FAVORITES LOGIC ---
-        // --- IMPORTANT SUPABASE SETUP FOR FAVORITES ---
-        // For the "Add to Favorite" feature to work, you MUST enable Row Level Security (RLS)
-        // on your 'favorites' table and create policies. Go to your Supabase project, open the
-        // SQL Editor, and run the following commands one by one:
-        /*
-        
-        -- 1. Enable RLS on the favorites table
-        ALTER TABLE public.favorites ENABLE ROW LEVEL SECURITY;
-
-        -- 2. Create a policy that allows users to view their OWN favorites
-        CREATE POLICY "Enable read access for own user"
-        ON public.favorites
-        AS PERMISSIVE FOR SELECT
-        TO authenticated
-        USING ((auth.uid() = user_id));
-
-        -- 3. Create a policy that allows users to add a favorite FOR THEMSELVES
-        CREATE POLICY "Enable insert for own user"
-        ON public.favorites
-        AS PERMISSIVE FOR INSERT
-        TO authenticated
-        WITH CHECK ((auth.uid() = user_id));
-        
-        -- 4. Create a policy that allows users to remove their OWN favorites
-        CREATE POLICY "Enable delete for own user"
-        ON public.favorites
-        AS PERMISSIVE FOR DELETE
-        TO authenticated
-        USING ((auth.uid() = user_id));
-
-        */
         let userFavorites = new Set();
         async function fetchUserFavorites() {
             try {
@@ -2346,7 +2207,7 @@
 
         async function handleFavoriteClick(event, adId) {
             event.preventDefault();
-            event.stopPropagation(); // Prevent navigating to product page
+            event.stopPropagation();
 
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
@@ -2356,19 +2217,13 @@
             }
 
             const heartButton = event.currentTarget;
-            if (!heartButton) {
-                console.warn("handleFavoriteClick was called without a valid button target.");
-                return;
-            }
+            if (!heartButton) return;
             
             heartButton.disabled = true;
 
             try {
                 const heartIcon = heartButton.querySelector('i');
-                if (!heartIcon) {
-                    console.warn("Could not find heart icon inside the favorite button.");
-                    return; // Exit if the icon isn't there
-                }
+                if (!heartIcon) return;
                 
                 const isFavorited = userFavorites.has(adId);
 
@@ -2389,11 +2244,9 @@
                 }
             } catch (error) {
                 console.error("Error updating favorite:", error);
-                // --- FIX: Add specific error message for RLS policy failure ---
                 let errorMessage = 'Could not update favorites. Please try again.';
                 if (error.message && error.message.includes("violates row-level security policy")) {
                     errorMessage = 'Favorites feature is not enabled. Please contact support.';
-                    console.error("FAVORITES RLS POLICY ERROR: The user does not have permission to insert/delete from the 'favorites' table. Please ensure the RLS policies provided in the code comments are active on your Supabase project.");
                 }
                 showToast(errorMessage, 'error');
             } finally {
@@ -2417,7 +2270,6 @@
 
                 if (error) throw error;
                 
-                favoritesGrid.innerHTML = '';
                 const favoriteAds = ads.map(fav => fav.listings).filter(Boolean);
 
                 if (favoriteAds.length === 0) {
@@ -2425,11 +2277,9 @@
                     return;
                 }
 
-                await fetchUserFavorites(); // Ensure favorites set is up to date
-
-                favoriteAds.forEach(ad => {
-                    favoritesGrid.innerHTML += createAdCard(ad);
-                });
+                await fetchUserFavorites();
+                const favoritesHTML = favoriteAds.map(ad => createAdCard(ad)).join('');
+                favoritesGrid.innerHTML = favoritesHTML;
 
             } catch (error) {
                  console.error("Error fetching favorites:", error);
@@ -2442,7 +2292,7 @@
            return `
            <div class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300 relative">
                <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
-                  <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${ad.title}" class="w-full h-48 object-cover">
+                  <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${sanitizeHTML(ad.title)}" class="w-full h-48 object-cover">
                </a>
               <button onclick="handleFavoriteClick(event, ${ad.id})" class="absolute top-2 right-2 p-2 rounded-full bg-white bg-opacity-75 z-10 hover:bg-gray-100 transition-colors">
                   <i class="${userFavorites.has(ad.id) ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400'}"></i>
@@ -2451,9 +2301,9 @@
               <div class="p-4">
                   <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
                       <h3 class="font-bold text-lg mb-2 truncate">₹ ${ad.price.toLocaleString('en-IN')}</h3>
-                      <p class="text-gray-600 text-sm truncate">${ad.title}</p>
+                      <p class="text-gray-600 text-sm truncate">${sanitizeHTML(ad.title)}</p>
                       <div class="flex justify-between text-xs text-gray-500 mt-2">
-                          <span>${locationText}</span>
+                          <span>${sanitizeHTML(locationText)}</span>
                           <span>${ad.created_at ? new Date(ad.created_at).toLocaleDateString() : 'Recently'}</span>
                       </div>
                   </a>
@@ -2491,16 +2341,14 @@
 
                 if (error) throw error;
 
-                listingGrid.innerHTML = '';
-
                 if (!ads || ads.length === 0) {
                     listingGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">No listings found for your criteria.</p>`;
                     return;
                 }
 
-                ads.forEach((ad) => {
-                    listingGrid.innerHTML += createAdCard(ad);
-                });
+                const adsHTML = ads.map(ad => createAdCard(ad)).join('');
+                listingGrid.innerHTML = adsHTML;
+
             } catch(error) {
                  console.error("Error fetching listings:", error);
                  showToast("Could not fetch listings.", 'error');
@@ -2520,30 +2368,19 @@
                 showToast("You can only upload a maximum of 8 images.", 'error');
                 stagedFiles = stagedFiles.slice(0, 8);
             }
-            stagedFiles.forEach((fileWrapper, index) => {
-                const reader = new FileReader();
+            const previewsHTML = stagedFiles.map((fileWrapper, index) => {
                 const file = fileWrapper.type === 'base64' ? dataURLtoFile(fileWrapper.data, `capture${index}.jpg`) : fileWrapper.file;
-                
-                reader.onload = function(e) {
-                    const previewWrapper = document.createElement('div');
-                    previewWrapper.className = 'relative w-24 h-24';
-                    
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'w-full h-full object-cover rounded-md border';
-                    
-                    previewWrapper.appendChild(img);
-                    previewContainer.appendChild(previewWrapper);
-                }
-                reader.readAsDataURL(file);
-            });
+                return `<div class="relative w-24 h-24">
+                            <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover rounded-md border">
+                        </div>`;
+            }).join('');
+            previewContainer.innerHTML = previewsHTML;
         }
 
         async function renderProductDetailPage(adId) {
             const container = document.getElementById('product-detail-container');
             container.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
             try {
-                // Ensure user's favorites are loaded before rendering the page
                 await fetchUserFavorites();
 
                 const { data: ad, error: adError } = await supabase.from('listings').select('*, cities(name, states(name))').eq('id', adId).single();
@@ -2573,15 +2410,7 @@
                 
                 const locationText = ad.cities ? `${ad.cities.name}, ${ad.cities.states.name}` : (ad.location || 'India');
 
-                const similarAdsHTML = similarAds && similarAds.length > 0 ? similarAds.map(similarAd => `
-                    <a href="#" onclick="showProductDetailPage(event, ${similarAd.id})" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
-                        <img src="${similarAd.image_urls && similarAd.image_urls.length > 0 ? similarAd.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=Ad'}" alt="Product" class="w-full h-40 object-cover">
-                        <div class="p-3">
-                            <h3 class="font-bold text-md mb-1">₹ ${similarAd.price.toLocaleString('en-IN')}</h3>
-                            <p class="text-gray-600 text-xs truncate">${similarAd.title}</p>
-                        </div>
-                    </a>
-                `).join('') : '<p class="col-span-full text-gray-500">No similar ads found.</p>';
+                const similarAdsHTML = similarAds && similarAds.length > 0 ? similarAds.map(similarAd => createAdCard(similarAd)).join('') : '<p class="col-span-full text-gray-500">No similar ads found.</p>';
                 
                 const pageHTML = `
                     <div class="flex items-center gap-4 mb-4">
@@ -2596,9 +2425,9 @@
                             <div class="w-full md:w-1/3">
                                 <div class="border-b pb-4 mb-4">
                                     <h2 class="text-3xl font-bold mb-2">₹ ${ad.price.toLocaleString('en-IN')}</h2>
-                                    <p class="text-lg text-gray-600">${ad.title}</p>
+                                    <p class="text-lg text-gray-600">${sanitizeHTML(ad.title)}</p>
                                     <div class="flex justify-between text-sm text-gray-500 mt-2">
-                                        <span>${locationText}</span>
+                                        <span>${sanitizeHTML(locationText)}</span>
                                         <span>Posted ${new Date(ad.created_at).toLocaleDateString()}</span>
                                     </div>
                                 </div>
@@ -2607,11 +2436,11 @@
                                     <div class="flex items-center gap-4">
                                         <img class="h-16 w-16 rounded-full object-cover" src="https://placehold.co/64x64/0A2342/D4AF37?text=${(seller.first_name || 'S').charAt(0)}" alt="Seller profile">
                                         <div>
-                                            <p class="font-bold text-lg">${seller.first_name} ${seller.last_name}</p>
+                                            <p class="font-bold text-lg">${sanitizeHTML(seller.first_name)} ${sanitizeHTML(seller.last_name)}</p>
                                             <p class="text-sm text-gray-500">Member since ${creationDate}</p>
                                         </div>
                                     </div>
-                                    <button onclick="openChatWindow('${seller.first_name}', ${ad.id}, '${seller.id}')" class="w-full mt-4 bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">
+                                    <button onclick="openChatWindow('${sanitizeHTML(seller.first_name)}', ${ad.id}, '${seller.id}')" class="w-full mt-4 bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">
                                         <i class="fas fa-comments mr-2"></i>Chat with Seller
                                     </button>
                                 </div>
@@ -2623,7 +2452,7 @@
                         </div>
                         <div class="mt-8 border-t pt-6">
                             <h3 class="text-xl font-semibold mb-4">Description</h3>
-                            <p class="text-gray-700 leading-relaxed">${ad.description}</p>
+                            <p class="text-gray-700 leading-relaxed">${sanitizeHTML(ad.description)}</p>
                         </div>
                         <div class="mt-8 border-t pt-6">
                             <h3 class="text-xl font-semibold mb-4">Similar Ads</h3>
@@ -2659,15 +2488,7 @@
                           </div>
                         `;
                 } else {
-                     const adsGridHTML = ads.map(ad => `
-                          <a href="#" onclick="showProductDetailPage(event, ${ad.id})" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
-                                <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=Ad'}" alt="Product" class="w-full h-40 object-cover">
-                                <div class="p-3">
-                                    <h3 class="font-bold text-md mb-1">₹ ${ad.price.toLocaleString('en-IN')}</h3>
-                                    <p class="text-gray-600 text-xs truncate">${ad.title}</p>
-                                </div>
-                          </a>
-                        `).join('');
+                     const adsGridHTML = ads.map(ad => createAdCard(ad)).join('');
                      container.innerHTML = `
                           <div class="bg-white p-6 rounded-lg shadow-md">
                                 <div class="flex justify-between items-center mb-4">
@@ -2704,7 +2525,7 @@
             generateButton.disabled = true;
 
             try {
-                const apiKey = ""; // Canvas will provide this
+                const apiKey = "";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
 
                 const systemPrompt = "You are an expert copywriter for a local online marketplace. Your goal is to write clear, friendly, and persuasive ad descriptions that help items sell quickly. Do not use markdown or formatting. Just provide the plain text for the description.";
@@ -2723,24 +2544,21 @@
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    throw new Error(`API call failed with status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
 
                 const result = await response.json();
                 const candidate = result.candidates?.[0];
-
+                
                 if (candidate && candidate.content?.parts?.[0]?.text) {
                     const generatedText = candidate.content.parts[0].text;
                     descriptionTextarea.value = generatedText;
                     showToast('Description generated!', 'success');
                 } else {
-                    throw new Error('No content generated in API response.');
+                    throw new Error('Could not parse AI response.');
                 }
-
             } catch (error) {
                 console.error('Error generating ad description:', error);
-                showToast('Could not generate description. Please try again.', 'error');
+                showToast('AI analysis failed. Please fill in the details manually.', 'error');
             } finally {
                 generateButton.innerHTML = originalButtonText;
                 generateButton.disabled = false;
@@ -2791,7 +2609,7 @@
             renderImagePreviews();
             
             closeCamera();
-            await analyzeImageWithAI(base64ImageData.split(',')[1]); // Send without the prefix
+            await analyzeImageWithAI(base64ImageData.split(',')[1]);
         }
 
         function dataURLtoFile(dataurl, filename) {
@@ -2834,14 +2652,13 @@
                 const candidate = result.candidates?.[0];
                 
                 if (candidate && candidate.content?.parts?.[0]?.text) {
-                    // Gemini might wrap the JSON in markdown, so we need to clean it
                     const rawText = candidate.content.parts[0].text;
                     const jsonText = rawText.replace(/```json\n?|\n?```/g, '').trim();
                     const parsedJson = JSON.parse(jsonText);
                     
                     if (validCategories.includes(parsedJson.category)) {
                         document.getElementById('category-select').value = parsedJson.category;
-                        updateAttributeFields(); // Important to update UI for the new category
+                        updateAttributeFields();
                     } else {
                         console.warn(`AI suggested an invalid category: ${parsedJson.category}`);
                     }
@@ -2857,7 +2674,7 @@
             }
         }
 
-        // --- NEW: Location Functions ---
+        // --- Location Functions ---
         async function fetchAndPopulateLocations() {
             try {
                 const { data: statesData, error: statesError } = await supabase.from('states').select('id, name').order('name');
@@ -2869,7 +2686,7 @@
                 allCities = citiesData;
 
                 const stateSelect = document.getElementById('ad-state');
-                stateSelect.innerHTML = '<option value="">Select State</option>'; // Reset
+                stateSelect.innerHTML = '<option value="">Select State</option>';
                 allStates.forEach(state => {
                     stateSelect.innerHTML += `<option value="${state.id}">${state.name}</option>`;
                 });
@@ -2882,22 +2699,37 @@
 
         function populateCities(stateId) {
             const citySelect = document.getElementById('ad-city');
-            citySelect.innerHTML = '<option value="">Select City</option>'; // Reset cities
+            citySelect.innerHTML = '<option value="">Select City</option>';
             if (!stateId) return;
 
             const filteredCities = allCities.filter(city => city.state_id == stateId);
-            filteredCities.forEach(city => {
+            
+            if (filteredCities.length === 0) {
+                citySelect.innerHTML += `<option value="other">Other / Not Listed</option>`;
+                return;
+            }
+
+            const uniqueCities = [...new Map(filteredCities.map(item => [item['id'], item])).values()];
+
+            uniqueCities.forEach(city => {
                 citySelect.innerHTML += `<option value="${city.id}">${city.name}</option>`;
             });
         }
         
         function populateFilterCities(stateId) {
             const citySelect = document.getElementById('filter-city');
-            citySelect.innerHTML = '<option value="">All Cities</option>'; // Reset cities
+            citySelect.innerHTML = '<option value="">All Cities</option>';
             if (!stateId) return;
 
             const filteredCities = allCities.filter(city => city.state_id == stateId);
-            filteredCities.forEach(city => {
+
+            if (filteredCities.length === 0) {
+                return;
+            }
+
+            const uniqueCities = [...new Map(filteredCities.map(item => [item['id'], item])).values()];
+            
+            uniqueCities.forEach(city => {
                 citySelect.innerHTML += `<option value="${city.id}">${city.name}</option>`;
             });
         }
@@ -2923,8 +2755,8 @@
             showHelpPage, logout, searchFromHome, goBack, showComingSoonPage, showProductDetailPage,
             hideSellModal, hideLoginModal, showTncModal, hideTncModal, updateAttributeFields,
             handlePropertyTypeChange, showReraInfo, togglePostButton, openChatWindow,
-            closeChatWindow, toggleMute, switchAuthForm, handleLogin, loginWithGoogle,
-            handleRegister, handlePasswordReset, handleProfilePictureChange, showEditProfilePage,
+            closeChatWindow, toggleMute, handleMagicLinkLogin, loginWithGoogle,
+            handleProfilePictureChange, showEditProfilePage,
             handleProfileUpdate, handleEditAd, handleDeleteAd,
             hideAdSuccessModal, handleFileUpload, fetchAndDisplayMyAds, generateAdDescription,
             openCamera, closeCamera, captureImage, populateCities, populateFilterCities, applyFilters, resetFilters,
@@ -2939,13 +2771,11 @@
         document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
             
-            // Add search functionality to the header search bar
             document.getElementById('header-search-input').addEventListener('keypress', async function(e) {
                 if (e.key === 'Enter') {
                     const keyword = e.target.value.trim();
                     if (keyword) {
                         e.preventDefault(); 
-                        // Default to 'all' category for a general search, but pass the keyword
                         await showListingPage(null, 'all', { keyword: keyword }); 
                     }
                 }
@@ -2976,7 +2806,6 @@
                 }
             });
             
-            // Confirm modal listeners
             document.getElementById('confirm-ok-btn').addEventListener('click', () => {
                 if (typeof confirmCallback === 'function') {
                     confirmCallback();
@@ -2986,9 +2815,10 @@
             document.getElementById('confirm-cancel-btn').addEventListener('click', hideConfirmModal);
 
             loadCategories();
-            await fetchAndPopulateLocations(); // <-- Fetch locations on load
+            await fetchAndPopulateLocations();
         });
 
     </script>
 </body>
 </html>
+

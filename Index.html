@@ -1,50 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>My Website</title>
-    <!-- CSS links -->
-    <link rel="stylesheet" href="style.css">
-    <!-- JS scripts -->
-    <script src="script.js" defer></script>
-</head>
-
-    <meta charset="UTF-8">
-    <!-- SEO and Accessibility: Added a descriptive meta description -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tradeginger - Buy and Sell</title>
+    <link rel="icon" href="https://placehold.co/16x16/b79438/FFFFFF?text=T" type="image/x-icon">
+    
+    <!-- SEO and Accessibility -->
     <meta name="description" content="Find the best local deals on cars, mobiles, property, and more on TradeGinger. Buy and sell used goods in your community safely and easily.">
     
-    <!-- Performance: Preload critical resources -->
+    <!-- Performance Optimizations -->
     <link rel="preload" href="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=85&w=1200&auto=format&fit=crop" as="image">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-
-    <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self'; 
-    script-src 'self' 'unsafe-inline' 'blob:' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com; 
-    style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; 
-    font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; 
-    img-src 'self' https: data:; 
-    connect-src 'self' https://crepnlidfdoskighdhdt.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://crepnlidfdoskighdhdt.supabase.co;
-    frame-src 'self';
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
-">
-
-    ">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradeGinger - Buy & Sell Locally</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Performance: Asynchronously load non-critical CSS -->
+    <!-- Fonts and Icons (Loaded Asynchronously) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
-    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     
-    <!-- Performance: Defer non-critical JavaScript -->
+    <!-- JavaScript Libraries (Deferred) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" defer></script>
     
     <!-- 
@@ -65,9 +43,9 @@
             overflow: hidden;
         }
         .product-card {
-             background-color: white;
-             border: 1px solid #e2e8f0;
-             transition: all 0.3s ease;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
         }
         .product-card:hover {
             transform: translateY(-5px);
@@ -211,10 +189,10 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                     <button onclick="showMyChatsPage(event)" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700" title="My Chats">
-                         <i class="fas fa-comment-dots text-xl"></i>
-                         <span id="chat-notification-dot" class="hidden notification-dot"></span>
-                     </button>
+                       <button onclick="showMyChatsPage(event)" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700" title="My Chats">
+                           <i class="fas fa-comment-dots text-xl"></i>
+                           <span id="chat-notification-dot" class="hidden notification-dot"></span>
+                       </button>
                     <div class="relative">
                         <button onclick="toggleNotifications()" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700">
                             <i class="far fa-bell text-xl"></i>
@@ -449,7 +427,7 @@
     
     <div id="productdetailpage" class="hidden">
         <main id="product-detail-container" class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            </main>
+        </main>
     </div>
 
     <div id="myadspage" class="hidden">
@@ -459,7 +437,7 @@
                 <h1 class="text-3xl font-bold">My Ads</h1>
             </div>
             <div id="my-ads-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                </div>
+            </div>
         </main>
     </div>
 
@@ -486,7 +464,7 @@
                     </div>
                 </div>
                 <div id="profile-ads-container" class="w-full md:w-3/4">
-                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -552,7 +530,7 @@
                 <h1 class="text-3xl font-bold">My Favorites</h1>
             </div>
             <div id="my-favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                </div>
+            </div>
         </main>
     </div>
 
@@ -563,7 +541,7 @@
                 <h1 class="text-3xl font-bold">My Chats</h1>
             </div>
             <div id="my-chats-list" class="bg-white rounded-lg shadow-md max-w-4xl mx-auto overflow-hidden">
-                </div>
+            </div>
         </main>
     </div>
 
@@ -884,7 +862,7 @@
             supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         } catch (error) {
             console.error("Error creating Supabase client:", error);
-             document.body.innerHTML = `
+              document.body.innerHTML = `
                 <div class="fixed inset-0 bg-red-100 text-red-800 flex items-center justify-center p-8 z-50">
                     <div class="text-center">
                         <h1 class="text-2xl font-bold mb-4">Application Configuration Error</h1>
@@ -923,7 +901,10 @@
         let postLoginAction = null;
         let allStates = [], allCities = []; 
         let stagedProfilePic = null; 
-        let isNavigating = false; // --- FIX: Global flag to prevent rapid navigation ---
+        
+        // FIX: Added a global flag to prevent multiple navigation functions from running at the same time.
+        // This stops the page from becoming unresponsive if links are clicked too quickly.
+        let isNavigating = false;
 
         const pageDivs = {
             homepage: document.getElementById('homepage'),
@@ -980,7 +961,7 @@
         
         async function goBack(event) {
             if (event) event.preventDefault();
-            if (isNavigating) return;
+            if (isNavigating) return; // FIX: Prevent navigation if already in progress
             isNavigating = true;
             try {
                 if (window.navigationHistory.length > 0) {
@@ -997,7 +978,7 @@
                     await showHomepage(event);
                 }
             } finally {
-                isNavigating = false;
+                isNavigating = false; // FIX: Release the navigation lock
             }
         }
 
@@ -1010,7 +991,7 @@
         
         async function showListingPage(event, categoryKey, filters = {}) { 
             if(event) event.preventDefault();
-            if (isNavigating) return;
+            if (isNavigating) return; // FIX: Prevent navigation if already in progress
             isNavigating = true;
             try {
                 const { data: { session } } = await supabase.auth.getSession();
@@ -1018,7 +999,7 @@
                 updateListingPage(categoryKey, filters); 
                 await fetchAndDisplayListings(categoryKey, filters);
             } finally {
-                isNavigating = false;
+                isNavigating = false; // FIX: Release the navigation lock
             }
         }
 
@@ -1032,7 +1013,7 @@
         
         async function showProductDetailPage(event, adId) { 
             if (event) event.preventDefault();
-            if (isNavigating) return;
+            if (isNavigating) return; // FIX: Prevent navigation if already in progress
             isNavigating = true;
             try {
                 const { data: { user } } = await supabase.auth.getUser();
@@ -1052,7 +1033,7 @@
                     showLoginModal(event);
                 }
             } finally {
-                isNavigating = false;
+                isNavigating = false; // FIX: Release the navigation lock
             }
         }
         
@@ -1672,13 +1653,13 @@
                                    </div>
                               </a>
                           `;
-                      });
+                     });
                 }
                 notificationList.innerHTML = notificationsHTML;
             } catch(error) {
                  console.error("Error fetching notifications:", error);
                  if(notificationList) {
-                    notificationList.innerHTML = `<p class="p-4 text-sm text-red-500 text-center">Could not load notifications.</p>`;
+                     notificationList.innerHTML = `<p class="p-4 text-sm text-red-500 text-center">Could not load notifications.</p>`;
                  }
             }
         }
@@ -2329,7 +2310,7 @@
            return `
            <div class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300 relative">
                <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
-                  <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${sanitizeHTML(ad.title)}" class="w-full h-48 object-cover" width="400" height="300" loading="lazy" decoding="async">
+                 <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${sanitizeHTML(ad.title)}" class="w-full h-48 object-cover" width="400" height="300" loading="lazy" decoding="async">
                </a>
               <button onclick="handleFavoriteClick(event, ${ad.id})" class="absolute top-2 right-2 p-2 rounded-full bg-white bg-opacity-75 z-10 hover:bg-gray-100 transition-colors">
                   <i class="${userFavorites.has(ad.id) ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400'}"></i>
@@ -2518,25 +2499,25 @@
                 if (!ads || ads.length === 0) {
                      container.innerHTML = `
                           <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                                <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4" width="300" height="200" loading="lazy" decoding="async">
-                                <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
-                                <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
-                                <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
+                              <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4" width="300" height="200" loading="lazy" decoding="async">
+                              <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
+                              <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
+                              <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
                           </div>
-                        `;
+                      `;
                 } else {
                      const adsGridHTML = ads.map(ad => createAdCard(ad)).join('');
                      container.innerHTML = `
                           <div class="bg-white p-6 rounded-lg shadow-md">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-xl font-bold">Your Active Ads</h3>
-                                    <a href="#" onclick="showMyAdsPage(event)" class="text-sm font-semibold text-theme-accent hover:underline">View All</a>
-                                </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    ${adsGridHTML}
-                                </div>
+                              <div class="flex justify-between items-center mb-4">
+                                  <h3 class="text-xl font-bold">Your Active Ads</h3>
+                                  <a href="#" onclick="showMyAdsPage(event)" class="text-sm font-semibold text-theme-accent hover:underline">View All</a>
+                              </div>
+                              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                  ${adsGridHTML}
+                              </div>
                           </div>
-                        `;
+                      `;
                 }
             } catch (error) {
                 console.error("Error rendering profile ads:", error);
@@ -2786,7 +2767,7 @@
         }
 
         // --- EXPOSE FUNCTIONS TO GLOBAL SCOPE ---
-        const functionsToExpose = {
+            const functionsToExpose = {
             showHomepage, showListingPage, showLoginModal, showSellModal, toggleNotifications,
             markNotificationsAsRead, showUserProfilePage, showMyAdsPage, showPlaceholderPage,
             showHelpPage, logout, searchFromHome, goBack, showComingSoonPage, showProductDetailPage,
@@ -2856,20 +2837,6 @@
         });
 
     </script>
-    <!-- RUM / Web Vitals Tracking -->
-    <script type="module">
-        import { onCLS, onINP, onLCP } from 'https://unpkg.com/web-vitals@4?module';
-
-        function logVitals({ name, value, id }) {
-            console.log(`[Web Vitals] ${name}:`, { value: `${Math.round(value)}ms`, id });
-        }
-
-        onCLS(logVitals);
-        onINP(logVitals);
-        onLCP(logVitals);
-    </script>
 </body>
 </html>
-
-
 

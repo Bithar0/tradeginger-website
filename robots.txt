@@ -1,0 +1,24 @@
+=============================================================================
+robots.txt for https://www.tradeginger.com/
+Last Updated: 2025-09-20
+=============================================================================
+Allow all web crawlers access to the site.
+User-agent: *
+Allow: /
+
+-----------------------------------------------------------------------------
+Disallow crawling of user-specific, private, or non-public pages.
+This prevents search engines from indexing user profiles, chats, and other
+account-specific pages that have no SEO value.
+-----------------------------------------------------------------------------
+Disallow: /my-ads
+Disallow: /my-favorites
+Disallow: /my-chats
+Disallow: /profile
+Disallow: /edit-profile
+
+-----------------------------------------------------------------------------
+Sitemap Location
+Provide the full URL to the sitemap.xml file.
+-----------------------------------------------------------------------------
+Sitemap: https://www.google.com/search?q=https://www.tradeginger.com/sitemap.xml

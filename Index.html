@@ -425,6 +425,18 @@
         </main>
     </div>
     
+    <div id="b2bpage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto text-center">
+                <div class="flex items-center justify-center gap-4 mb-6">
+                    <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                    <h1 class="text-3xl font-bold theme-primary">B2B Advertising</h1>
+                </div>
+                <p class="mt-4 text-lg text-gray-700">For paid and premium listings, reach out to us on <a href="mailto:sales@tradeginger.com" class="text-theme-accent hover:underline">sales@tradeginger.com</a></p>
+            </div>
+        </main>
+    </div>
+
     <div id="productdetailpage" class="hidden">
         <main id="product-detail-container" class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         </main>
@@ -541,17 +553,16 @@
                 <h1 class="text-3xl font-bold">My Chats</h1>
             </div>
             <div id="my-chats-list" class="bg-white rounded-lg shadow-md max-w-4xl mx-auto overflow-hidden">
-            </div>
+                </div>
         </main>
     </div>
 
     <footer class="bg-gray-800 text-white mt-12">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div><h3 class="font-bold mb-4">Popular Categories</h3><ul><li class="mb-2"><a href="#" onclick="showListingPage(event, 'cars')" class="hover:text-theme-accent">Cars</a></li><li class="mb-2"><a href="#" onclick="showListingPage(event, 'mobiles')" class="hover:text-theme-accent">Mobiles</a></li></ul></div>
-                <div><h3 class="font-bold mb-4">About Us</h3><ul><li class="mb-2"><a href="#" onclick="showComingSoonPage(event)" class="hover:text-theme-accent">About TradeGinger</a></li><li class="mb-2"><a href="#" onclick="showComingSoonPage(event)" class="hover:text-theme-accent">Careers</a></li></ul></div>
-                <div><h3 class="font-bold mb-4">TradeGinger</h3><ul><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Help</a></li><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Legal & Privacy</a></li></ul></div>
-                <div><h3 class="font-bold mb-4">Follow Us</h3><div class="flex space-x-4"><a href="#" onclick="showComingSoonPage(event)" class="text-2xl hover:text-theme-accent"><i class="fab fa-facebook-f"></i></a><a href="#" onclick="showComingSoonPage(event)" class="text-2xl hover:text-theme-accent"><i class="fab fa-twitter"></i></a><a href="#" onclick="showComingSoonPage(event)" class="text-2xl hover:text-theme-accent"><i class="fab fa-instagram"></i></a></div></div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                <div><h3 class="font-bold mb-4">About Us</h3><ul><li class="mb-2"><a href="#" onclick="showComingSoonPage(event)" class="hover:text-theme-accent">Careers</a></li><li class="mb-2"><a href="#" onclick="showB2BPage(event)" class="hover:text-theme-accent">B2B Advertising</a></li></ul></div>
+                <div><h3 class="font-bold mb-4">TradeGinger</h3><ul><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Help</a></li><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Legal & Privacy</a></li><li class="mb-2"><span>Contact us - Sales@tradeginger.com</span></li></ul></div>
+                <div><img src="https://res.cloudinary.com/dcxhenppn/image/upload/v1758373119/tradeginger_qr_abft9t.png" alt="TradeGinger QR Code" class="w-36 h-36 rounded-md"></div>
             </div>
             <div class="text-center text-gray-400 mt-8 pt-8 border-t border-gray-700">&copy; 2025 TradeGinger. All rights reserved.</div>
         </div>
@@ -918,6 +929,7 @@
             editprofilepage: document.getElementById('editprofilepage'),
             myfavoritespage: document.getElementById('myfavoritespage'),
             mychatspage: document.getElementById('mychatspage'),
+            b2bpage: document.getElementById('b2bpage'),
         };
         const headers = {
             loggedOut: document.getElementById('header-logged-out'),
@@ -961,7 +973,7 @@
         
         async function goBack(event) {
             if (event) event.preventDefault();
-            if (isNavigating) return; // FIX: Prevent navigation if already in progress
+            if (isNavigating) return;
             isNavigating = true;
             try {
                 if (window.navigationHistory.length > 0) {
@@ -978,20 +990,26 @@
                     await showHomepage(event);
                 }
             } finally {
-                isNavigating = false; // FIX: Release the navigation lock
+                isNavigating = false;
             }
         }
 
         async function showHomepage(event) { 
             if(event) event.preventDefault(); 
-            const { data: { session } } = await supabase.auth.getSession();
-            window.navigationHistory = []; 
-            showPage('homepage', !!session?.user); 
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                window.navigationHistory = []; 
+                showPage('homepage', !!session?.user); 
+            } finally {
+                isNavigating = false;
+            }
         }
         
         async function showListingPage(event, categoryKey, filters = {}) { 
             if(event) event.preventDefault();
-            if (isNavigating) return; // FIX: Prevent navigation if already in progress
+            if (isNavigating) return;
             isNavigating = true;
             try {
                 const { data: { session } } = await supabase.auth.getSession();
@@ -999,21 +1017,37 @@
                 updateListingPage(categoryKey, filters); 
                 await fetchAndDisplayListings(categoryKey, filters);
             } finally {
-                isNavigating = false; // FIX: Release the navigation lock
+                isNavigating = false;
             }
         }
 
         async function showHelpPage(event) { 
             if(event) event.preventDefault(); 
-            const { data: { session } } = await supabase.auth.getSession();
-            showPage('helppage', !!session?.user); 
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                showPage('helppage', !!session?.user); 
+            } finally {
+                isNavigating = false;
+            }
         }
         
-        function showPlaceholderPage(event) { if(event) event.preventDefault(); showPage('placeholderpage', true); }
+        async function showPlaceholderPage(event) { 
+            if(event) event.preventDefault(); 
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                showPage('placeholderpage', !!session?.user); 
+            } finally {
+                isNavigating = false;
+            }
+        }
         
         async function showProductDetailPage(event, adId) { 
             if (event) event.preventDefault();
-            if (isNavigating) return; // FIX: Prevent navigation if already in progress
+            if (isNavigating) return;
             isNavigating = true;
             try {
                 const { data: { user } } = await supabase.auth.getUser();
@@ -1033,29 +1067,68 @@
                     showLoginModal(event);
                 }
             } finally {
-                isNavigating = false; // FIX: Release the navigation lock
+                isNavigating = false;
             }
         }
         
         async function showComingSoonPage(event) { 
             if(event) event.preventDefault(); 
-            const { data: { session } } = await supabase.auth.getSession();
-            showPage('comingsoonpage', !!session?.user); 
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                showPage('comingsoonpage', !!session?.user); 
+            } finally {
+                isNavigating = false;
+            }
         }
         
+        async function showB2BPage(event) {
+            if(event) event.preventDefault();
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                showPage('b2bpage', !!session?.user);
+            } finally {
+                isNavigating = false;
+            }
+        }
+
         async function showMyAdsPage(event) {
             if(event) event.preventDefault();
-            showPage('myadspage', true);
-            await fetchAndDisplayMyAds();
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                showPage('myadspage', true);
+                await fetchAndDisplayMyAds();
+            } finally {
+                isNavigating = false;
+            }
         }
 
         async function showUserProfilePage(event) { 
             if(event) event.preventDefault(); 
-            showPage('userprofilepage', true);
-            await renderProfileAds();
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                showPage('userprofilepage', true);
+                await renderProfileAds();
+            } finally {
+                isNavigating = false;
+            }
         }
         
-        function showEditProfilePage(event) { if(event) event.preventDefault(); showPage('editprofilepage', true); }
+        function showEditProfilePage(event) { 
+            if(event) event.preventDefault(); 
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                showPage('editprofilepage', true); 
+            } finally {
+                isNavigating = false;
+            }
+        }
         
         async function searchFromHome(event) {
             if (event) event.preventDefault();
@@ -1069,14 +1142,26 @@
         
         async function showMyFavoritesPage(event) {
              if (event) event.preventDefault();
-             showPage('myfavoritespage', true);
-             await fetchAndDisplayMyFavorites();
+             if (isNavigating) return;
+             isNavigating = true;
+             try {
+                showPage('myfavoritespage', true);
+                await fetchAndDisplayMyFavorites();
+             } finally {
+                isNavigating = false;
+             }
         }
         
         async function showMyChatsPage(event) {
             if (event) event.preventDefault();
-            showPage('mychatspage', true);
-            await fetchAndDisplayMyChats();
+            if (isNavigating) return;
+            isNavigating = true;
+            try {
+                showPage('mychatspage', true);
+                await fetchAndDisplayMyChats();
+            } finally {
+                isNavigating = false;
+            }
         }
 
         async function fetchAndDisplayMyChats() {
@@ -2767,7 +2852,7 @@
         }
 
         // --- EXPOSE FUNCTIONS TO GLOBAL SCOPE ---
-            const functionsToExpose = {
+        const functionsToExpose = {
             showHomepage, showListingPage, showLoginModal, showSellModal, toggleNotifications,
             markNotificationsAsRead, showUserProfilePage, showMyAdsPage, showPlaceholderPage,
             showHelpPage, logout, searchFromHome, goBack, showComingSoonPage, showProductDetailPage,
@@ -2778,7 +2863,7 @@
             handleProfileUpdate, handleEditAd, handleDeleteAd,
             hideAdSuccessModal, handleFileUpload, fetchAndDisplayMyAds, generateAdDescription,
             openCamera, closeCamera, captureImage, populateCities, populateFilterCities, applyFilters, resetFilters,
-            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage, openChatFromListPage
+            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage, openChatFromListPage, showB2BPage
         };
         Object.keys(functionsToExpose).forEach(funcName => {
             window[funcName] = functionsToExpose[funcName];
@@ -2839,4 +2924,13 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
 

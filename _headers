@@ -1,0 +1,19 @@
+```text
+font-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net;
+connect-src 'self' https://*.supabase.co https://*.supabase.in https://generativelanguage.googleapis.com;
+worker-src 'self' blob:;
+object-src 'none';
+frame-ancestors 'none';
+base-uri 'self';
+form-action 'self';
+require-trusted-types-for 'script';
+
+
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+```

@@ -1,0 +1,21 @@
+robots.txt for tradeginger.com
+This file tells search engine crawlers which pages or files they can or cannot request from your site.
+User-agent: *
+
+The asterisk (*) means these rules apply to all web crawlers (e.g., Googlebot, Bingbot).
+Allow crawlers to access the main parts of the site.
+It's generally best to allow crawling by default and then block specific sections.
+Allow: /
+
+Disallow user-specific pages that should not be indexed by search engines.
+These pages contain private information and have no value in search results.
+Disallow: /myadspage
+Disallow: /myfavoritespage
+Disallow: /mychatspage
+Disallow: /userprofilepage
+Disallow: /editprofilepage
+
+It is a highly recommended best practice to point crawlers to your sitemap.
+You should create a sitemap.xml file and upload it to your website's root directory.
+Replace "https://www.tradeginger.com" with your actual domain if it's different.
+Sitemap: https://www.google.com/url?sa=E&source=gmail&q=https://www.tradeginger.com/sitemap.xml

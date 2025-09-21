@@ -13,9 +13,36 @@
     <link rel="preload" href="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=85&w=1200&auto=format&fit=crop" as="image">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- 
+      SERVER-SIDE PERFORMANCE OPTIMIZATIONS (TTFB & COMPRESSION)
+
+      Your feedback on slow server response time (Time to First Byte - TTFB) is excellent.
+      While many optimizations are already in place on the client-side (like preloading and async loading),
+      TTFB and compression are configured on your hosting provider's side.
+
+      Here's how to address the points you raised:
+
+      1. SERVER RESPONSE TIME (TTFB):
+         - A slow TTFB (like the observed 1004ms) is often due to the hosting plan or server location.
+         - TO FIX: Consider using a hosting provider with a global CDN (Content Delivery Network), such as Vercel, Netlify, or Firebase Hosting. A CDN places copies of your site closer to your users, drastically reducing latency. If you are already on one, check their documentation for performance tiers or regions.
+
+      2. TEXT COMPRESSION:
+         - This shrinks your HTML, CSS, and JS files before they are sent to the browser.
+         - TO FIX: Most modern hosting providers (Vercel, Netlify, etc.) enable Gzip or Brotli compression automatically. If you are using your own server (like Nginx or Apache), you'll need to enable it in the server configuration.
+           - Nginx: `gzip on;`
+           - Apache: `AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript`
+
+      3. AVOIDING REDIRECTS:
+         - Good news! Your current setup as a single-page application already avoids unnecessary redirects for the initial load.
+
+      4. CACHING:
+         - For best performance, configure your web server to set long cache-control headers for static assets.
+         - Example: `Cache-Control: public, max-age=31536000, immutable` for fonts, icons, and versioned JS/CSS.
+    -->
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Deferred to prevent render-blocking) -->
+    <script src="https://cdn.tailwindcss.com" defer></script>
     
     <!-- Fonts and Icons (Loaded Asynchronously) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
@@ -25,12 +52,6 @@
     <!-- JavaScript Libraries (Deferred) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" defer></script>
     
-    <!-- 
-      SERVER-SIDE OPTIMIZATION NOTES:
-      1. Caching: For best performance, configure your web server (e.g., Netlify, Vercel, Nginx) to set long cache-control headers for static assets.
-         Example: `Cache-Control: public, max-age=31536000, immutable` for fonts, icons, and versioned JS/CSS.
-      2. TTFB (Time to First Byte): To improve TTFB, consider upgrading your hosting plan, using a global CDN, or optimizing backend database queries if they are slow. This is a server-side concern.
-    -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -557,6 +578,36 @@
         </main>
     </div>
 
+    <div id="registrationpage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-center mb-6">Create your Account</h2>
+                <form id="registrationForm" class="space-y-4">
+                    <div>
+                        <label for="reg-firstname" class="label-style">First Name*</label>
+                        <input type="text" id="reg-firstname" class="input-style w-full" required>
+                    </div>
+                    <div>
+                        <label for="reg-lastname" class="label-style">Last Name*</label>
+                        <input type="text" id="reg-lastname" class="input-style w-full" required>
+                    </div>
+                    <div>
+                        <label for="reg-email" class="label-style">Email Address*</label>
+                        <input type="email" id="reg-email" class="input-style w-full" required>
+                    </div>
+                     <div>
+                        <label for="reg-password" class="label-style">Password*</label>
+                        <input type="password" id="reg-password" class="input-style w-full" required>
+                    </div>
+                    <button type="submit" id="register-button" class="w-full bg-theme-accent text-white py-3 px-4 rounded-md font-semibold text-lg hover:bg-theme-accent-dark">Register</button>
+                </form>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    Already have an account? <a href="#" onclick="showLoginModal(event); hideRegistrationPage();" class="text-theme-accent hover:underline">Log in</a>
+                </p>
+            </div>
+        </main>
+    </div>
+
     <footer class="bg-gray-800 text-white mt-12">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
@@ -773,7 +824,7 @@
                 <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
                 
                 <div id="auth-form" class="w-full max-w-sm mx-auto">
-                    <h2 class="text-2xl font-bold text-center mb-2">Sign In or Register</h2>
+                    <h2 class="text-2xl font-bold text-center mb-2">Sign In</h2>
                     <p class="text-center text-gray-500 mb-6">Enter your email below to receive a magic link, or continue with Google.</p>
                     <input id="auth-email" type="email" placeholder="Enter your email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
                     <button id="magic-link-button" onclick="handleMagicLinkLogin(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Continue with Email</button>
@@ -786,6 +837,9 @@
                         <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
                         <span class="font-semibold">Continue with Google</span>
                     </button>
+                    <p class="text-center text-sm text-gray-600 mt-4">
+                        New to TradeGinger? <a href="#" onclick="showRegistrationPage(event)" class="text-theme-accent hover:underline">Create an account</a>
+                    </p>
                 </div>
             </div>
         </div>
@@ -950,6 +1004,7 @@
             myfavoritespage: document.getElementById('myfavoritespage'),
             mychatspage: document.getElementById('mychatspage'),
             b2bpage: document.getElementById('b2bpage'),
+            registrationpage: document.getElementById('registrationpage'),
         };
         const headers = {
             loggedOut: document.getElementById('header-logged-out'),
@@ -1343,7 +1398,7 @@
             document.getElementById('post-ad-button').textContent = 'Post Now';
         }
 
-        function showLoginModal(event) { if(event) event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); }
+        function showLoginModal(event) { if(event) event.preventDefault(); hideRegistrationPage(); document.getElementById('loginModal').classList.remove('hidden'); }
         
         function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
 
@@ -1356,6 +1411,17 @@
         function hideAdSuccessModal() { document.getElementById('adSuccessModal').classList.add('hidden'); }
         
         function showReraInfo() { showToast('RERA is a unique ID for real estate projects, ensuring transparency.', 'info'); }
+
+        function showRegistrationPage(event) {
+            if (event) event.preventDefault();
+            hideLoginModal();
+            const { data: { session } } = supabase.auth.getSession();
+            showPage('registrationpage', !!session?.user);
+        }
+
+        function hideRegistrationPage() {
+            pageDivs.registrationpage.classList.add('hidden');
+        }
 
         // --- Dynamic Form Logic ---
         const categoriesData = [
@@ -1873,6 +1939,58 @@
                 }
             }
         }
+
+        async function handleRegistration(event) {
+            event.preventDefault();
+            const registerButton = document.getElementById('register-button');
+            const firstName = document.getElementById('reg-firstname').value.trim();
+            const lastName = document.getElementById('reg-lastname').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+
+            if (!firstName || !lastName || !email || !password) {
+                showToast('Please fill out all fields.', 'error');
+                return;
+            }
+
+            registerButton.disabled = true;
+            registerButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Registering...`;
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            first_name: firstName,
+                            last_name: lastName,
+                        },
+                        emailRedirectTo: window.location.href,
+                    },
+                });
+
+                if (error) throw error;
+                
+                if (data.user && data.user.identities && data.user.identities.length === 0) {
+                     showToast('This email is already registered. Please log in.', 'info');
+                     showLoginModal();
+                     hideRegistrationPage();
+                } else {
+                    showToast('Registration successful! Please check your email to confirm your account.', 'success');
+                    hideRegistrationPage();
+                    showLoginModal();
+                }
+                
+
+            } catch (error) {
+                console.error("Registration error:", error);
+                showToast(`Registration failed: ${error.message}`, 'error');
+            } finally {
+                registerButton.disabled = false;
+                registerButton.innerHTML = 'Register';
+            }
+        }
+
         
         async function logout(event) {
             if (event) event.preventDefault();
@@ -2897,7 +3015,8 @@
             handleProfileUpdate, handleEditAd, handleDeleteAd,
             hideAdSuccessModal, handleFileUpload, fetchAndDisplayMyAds, generateAdDescription,
             openCamera, closeCamera, captureImage, populateCities, populateFilterCities, applyFilters, resetFilters,
-            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage, openChatFromListPage, showB2BPage
+            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage, openChatFromListPage, showB2BPage,
+            showRegistrationPage, hideRegistrationPage, handleRegistration
         };
         Object.keys(functionsToExpose).forEach(funcName => {
             window[funcName] = functionsToExpose[funcName];
@@ -2907,6 +3026,7 @@
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
+            document.getElementById('registrationForm').addEventListener('submit', handleRegistration);
             
             document.getElementById('header-search-input').addEventListener('keypress', async function(e) {
                 if (e.key === 'Enter') {

@@ -13,6 +13,33 @@
     <link rel="preload" href="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=85&w=1200&auto=format&fit=crop" as="image">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- 
+      SERVER-SIDE PERFORMANCE OPTIMIZATIONS (TTFB & COMPRESSION)
+
+      Your feedback on slow server response time (Time to First Byte - TTFB) is excellent.
+      While many optimizations are already in place on the client-side (like preloading and async loading),
+      TTFB and compression are configured on your hosting provider's side.
+
+      Here's how to address the points you raised:
+
+      1. SERVER RESPONSE TIME (TTFB):
+         - A slow TTFB (like the observed 1004ms) is often due to the hosting plan or server location.
+         - TO FIX: Consider using a hosting provider with a global CDN (Content Delivery Network), such as Vercel, Netlify, or Firebase Hosting. A CDN places copies of your site closer to your users, drastically reducing latency. If you are already on one, check their documentation for performance tiers or regions.
+
+      2. TEXT COMPRESSION:
+         - This shrinks your HTML, CSS, and JS files before they are sent to the browser.
+         - TO FIX: Most modern hosting providers (Vercel, Netlify, etc.) enable Gzip or Brotli compression automatically. If you are using your own server (like Nginx or Apache), you'll need to enable it in the server configuration.
+           - Nginx: `gzip on;`
+           - Apache: `AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript`
+
+      3. AVOIDING REDIRECTS:
+         - Good news! Your current setup as a single-page application already avoids unnecessary redirects for the initial load.
+
+      4. CACHING:
+         - For best performance, configure your web server to set long cache-control headers for static assets.
+         - Example: `Cache-Control: public, max-age=31536000, immutable` for fonts, icons, and versioned JS/CSS.
+    -->
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,12 +52,6 @@
     <!-- JavaScript Libraries (Deferred) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" defer></script>
     
-    <!-- 
-      SERVER-SIDE OPTIMIZATION NOTES:
-      1. Caching: For best performance, configure your web server (e.g., Netlify, Vercel, Nginx) to set long cache-control headers for static assets.
-         Example: `Cache-Control: public, max-age=31536000, immutable` for fonts, icons, and versioned JS/CSS.
-      2. TTFB (Time to First Byte): To improve TTFB, consider upgrading your hosting plan, using a global CDN, or optimizing backend database queries if they are slow. This is a server-side concern.
-    -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;

@@ -3,7 +3,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- START: Hardening - Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self'; 
         script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com; 
@@ -12,12 +11,10 @@
         img-src 'self' https: data:; 
         connect-src 'self' https://crepnlidfdoskighdhdt.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://crepnlidfdoskighdhdt.supabase.co;
         frame-src 'self';
-        frame-ancestors 'self';
         object-src 'none';
         base-uri 'self';
         form-action 'self';
     ">
-    <!-- END: Hardening - Content Security Policy -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TradeGinger - Buy & Sell Locally</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,9 +22,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Tone.js for notification sounds -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
-    <!-- Supabase Client Library is loaded via the module script below -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -141,7 +136,6 @@
 </head>
 <body class="text-gray-800">
 
-    <!-- Header Section (Logged-out state) -->
     <header id="header-logged-out" class="bg-white shadow-md sticky top-0 z-50">
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -157,7 +151,7 @@
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <a href="#" onclick="showLoginModal(event)" class="text-sm font-medium text-gray-700 hover:text-theme-accent mr-4">Login / Register</a>
+                    <a href="#" onclick="showLoginModal(event)" class="text-sm font-medium text-gray-700 hover:text-theme-accent mr-4">Login</a>
                     <button onclick="showSellModal()" class="flex items-center bg-theme-accent text-white px-4 py-2 rounded-full shadow-lg hover:bg-theme-accent-dark transition duration-300">
                         <i class="fas fa-plus-circle mr-2"></i>
                         SELL
@@ -167,7 +161,6 @@
         </nav>
     </header>
 
-    <!-- Header Section (Logged-in state) -->
     <header id="header-logged-in" class="bg-white shadow-md sticky top-0 z-50 hidden">
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -182,10 +175,10 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                   <button onclick="showMyChatsPage(event)" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700" title="My Chats">
+                     <button onclick="showMyChatsPage(event)" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700" title="My Chats">
                          <i class="fas fa-comment-dots text-xl"></i>
                          <span id="chat-notification-dot" class="hidden notification-dot"></span>
-                   </button>
+                     </button>
                     <div class="relative">
                         <button onclick="toggleNotifications()" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700">
                             <i class="far fa-bell text-xl"></i>
@@ -197,7 +190,6 @@
                                 <a href="#" onclick="markNotificationsAsRead(event, true)" class="text-xs font-normal text-theme-accent hover:underline">Mark all as read</a>
                             </div>
                             <div id="notification-list" class="divide-y max-h-80 overflow-y-auto">
-                                <!-- Dynamic notifications will be injected here -->
                                 <p id="no-notifications-message" class="p-4 text-sm text-gray-500 text-center hidden">You have no new notifications.</p>
                             </div>
                         </div>
@@ -234,10 +226,8 @@
         </nav>
     </header>
 
-    <!-- PAGE 1: Homepage -->
     <div id="homepage">
         <section class="hero-section text-white py-20">
-            <!-- Beer Cap Icons -->
             <div class="absolute top-4 left-4 flex space-x-3 z-20">
                 <a href="#" onclick="showListingPage(event, 'cars')" class="beer-cap" style="transform: rotate(-15deg);"><i class="fas fa-car"></i></a>
                 <a href="#" onclick="showListingPage(event, 'mobiles')" class="beer-cap" style="transform: rotate(10deg);"><i class="fas fa-mobile-alt"></i></a>
@@ -250,7 +240,6 @@
             <div class="container mx-auto px-4 text-center relative z-10">
                 <h1 class="text-4xl md:text-5xl font-extrabold mb-4">TradeGinger</h1>
                 <p class="text-lg md:text-xl mb-8">Find the best deals near you</p>
-                <!-- --- SIMPLIFIED SEARCH BAR --- -->
                 <div class="max-w-2xl mx-auto bg-white rounded-full p-2 flex items-center shadow-2xl">
                     <div class="flex-grow flex items-center">
                          <i class="fas fa-search text-gray-400 mx-3"></i>
@@ -266,7 +255,6 @@
             <section class="mb-12">
                 <h2 class="text-2xl font-bold mb-6 text-center">Browse by Category</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                    <!-- TradeGinger Goods -->
                     <div>
                         <h3 class="text-xl font-semibold mb-4 theme-primary">Marketplace</h3>
                         <div class="grid grid-cols-2 gap-4">
@@ -277,8 +265,7 @@
                             <a href="#" onclick="showListingPage(event, 'pets')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-dog text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Pets</span></a>
                         </div>
                     </div>
-                     <!-- Vehicles -->
-                    <div>
+                     <div>
                         <h3 class="text-xl font-semibold mb-4 theme-primary">Vehicles</h3>
                         <div class="grid grid-cols-2 gap-4">
                             <a href="#" onclick="showListingPage(event, 'cars')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-car text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Cars</span></a>
@@ -286,8 +273,7 @@
                             <a href="#" onclick="showListingPage(event, 'commercial_vehicles')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-truck text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Commercial</span></a>
                         </div>
                     </div>
-                     <!-- Real Estate -->
-                    <div>
+                     <div>
                         <h3 class="text-xl font-semibold mb-4 theme-primary">Real Estate</h3>
                         <div class="grid grid-cols-2 gap-4">
                             <a href="#" onclick="showListingPage(event, 'property')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-building text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">For Sale</span></a>
@@ -299,27 +285,23 @@
         </main>
     </div>
 
-    <!-- PAGE 2: Product Listing Page -->
     <div id="listingpage" class="hidden">
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex flex-col md:flex-row gap-8">
                 <aside id="filter-sidebar" class="w-full md:w-1/3">
-                    <!-- Dynamic Filters will be injected here by JavaScript -->
-                </aside>
+                    </aside>
                 <section class="w-full md:w-2/3">
                     <div class="flex items-center gap-4 mb-4">
                         <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
                         <h1 id="listing-page-title" class="text-2xl font-bold"></h1>
                     </div>
                     <div id="listing-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Dynamic Ads will be loaded here -->
-                    </div>
+                        </div>
                 </section>
             </div>
         </main>
     </div>
 
-    <!-- PAGE 3: Help Center -->
     <div id="helppage" class="hidden">
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
@@ -406,7 +388,6 @@
         </main>
     </div>
 
-    <!-- PAGE 4: Placeholder Page (Generic) -->
     <div id="placeholderpage" class="hidden">
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto text-center">
@@ -419,7 +400,6 @@
         </main>
     </div>
 
-    <!-- PAGE 5: Coming Soon Page (Alternative) -->
     <div id="comingsoonpage" class="hidden">
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto text-center">
@@ -431,14 +411,11 @@
         </main>
     </div>
     
-    <!-- PAGE 6: Product Detail Page -->
     <div id="productdetailpage" class="hidden">
         <main id="product-detail-container" class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- Dynamic content will be loaded here -->
-        </main>
+            </main>
     </div>
 
-    <!-- PAGE 7: My Ads Page -->
     <div id="myadspage" class="hidden">
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex items-center gap-4 mb-6">
@@ -446,12 +423,10 @@
                 <h1 class="text-3xl font-bold">My Ads</h1>
             </div>
             <div id="my-ads-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <!-- Ads will be dynamically inserted here -->
-            </div>
+                </div>
         </main>
     </div>
 
-    <!-- PAGE 8: User Profile Page -->
     <div id="userprofilepage" class="hidden">
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex flex-col md:flex-row gap-8">
@@ -475,13 +450,11 @@
                     </div>
                 </div>
                 <div id="profile-ads-container" class="w-full md:w-3/4">
-                    <!-- Dynamic user ads or empty state will be shown here -->
-                </div>
+                    </div>
             </div>
         </main>
     </div>
     
-    <!-- PAGE 9: Edit Profile Page -->
     <div id="editprofilepage" class="hidden">
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
@@ -516,15 +489,15 @@
                          <div>
                             <h3 class="text-lg font-semibold mb-2">Additional information</h3>
                              <div class="flex items-center justify-between p-4 border rounded-lg">
-                                <div class="flex items-center gap-3">
-                                    <i class="fab fa-google text-red-500 text-2xl"></i>
-                                    <div>
-                                        <p class="font-semibold">Google</p>
-                                        <p class="text-xs text-gray-500">Link your Google account to seamlessly use your contact list.</p>
-                                    </div>
-                                </div>
-                                <button class="border-2 border-red-500 text-red-500 px-4 py-1 rounded-full text-sm font-semibold hover:bg-red-50">Unlink</button>
-                            </div>
+                                 <div class="flex items-center gap-3">
+                                     <i class="fab fa-google text-red-500 text-2xl"></i>
+                                     <div>
+                                         <p class="font-semibold">Google</p>
+                                         <p class="text-xs text-gray-500">Link your Google account to seamlessly use your contact list.</p>
+                                     </div>
+                                 </div>
+                                 <button class="border-2 border-red-500 text-red-500 px-4 py-1 rounded-full text-sm font-semibold hover:bg-red-50">Unlink</button>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -536,7 +509,6 @@
         </main>
     </div>
 
-    <!-- PAGE 10: My Favorites Page -->
     <div id="myfavoritespage" class="hidden">
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex items-center gap-4 mb-6">
@@ -544,25 +516,21 @@
                 <h1 class="text-3xl font-bold">My Favorites</h1>
             </div>
             <div id="my-favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <!-- Favorite ads will be dynamically inserted here -->
-            </div>
+                </div>
         </main>
     </div>
 
-    <!-- PAGE 11: My Chats Page -->
     <div id="mychatspage" class="hidden">
-      <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="flex items-center gap-4 mb-6">
                 <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
                 <h1 class="text-3xl font-bold">My Chats</h1>
             </div>
             <div id="my-chats-list" class="bg-white rounded-lg shadow-md max-w-4xl mx-auto overflow-hidden">
-                <!-- Chat list will be dynamically loaded here -->
-            </div>
+                </div>
         </main>
     </div>
 
-    <!-- Universal Footer -->
     <footer class="bg-gray-800 text-white mt-12">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -575,7 +543,6 @@
         </div>
     </footer>
 
-    <!-- Universal Sell Item Modal -->
     <div id="sellModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full z-50 flex items-center justify-center">
         <div class="relative mx-auto border w-full max-w-3xl shadow-lg rounded-md bg-white">
             <div class="flex justify-between items-center p-4 border-b"><p class="text-2xl font-bold">Post Your Ad</p><div class="cursor-pointer z-50" onclick="hideSellModal()"><i class="fas fa-times text-xl"></i></div></div>
@@ -587,11 +554,7 @@
                             <option value="">Select a Category</option>
                         </select>
                     </div>
-                    <!-- Sub-category dropdown will be inserted here -->
-                    <div id="subcategory-container" class="space-y-4"></div>
-
                     <div id="category-attributes" class="space-y-4 border-t pt-4 mt-4"></div>
-                    <!-- START: Location Fields Added -->
                     <div class="border-t pt-6 mt-6 space-y-6">
                         <h3 class="text-xl font-bold text-gray-900">Confirm your Location</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -599,15 +562,13 @@
                                 <label for="ad-state" class="label-style">State*</label>
                                 <select id="ad-state" onchange="populateCities(this.value)" class="mt-1 block w-full input-style" required>
                                     <option value="">Select State</option>
-                                    <!-- States will be populated by JS -->
-                                </select>
+                                    </select>
                             </div>
                             <div>
                                 <label for="ad-city" class="label-style">City*</label>
                                 <select id="ad-city" class="mt-1 block w-full input-style" required>
                                     <option value="">Select City</option>
-                                    <!-- Cities will be populated based on State selection -->
-                                </select>
+                                    </select>
                             </div>
                         </div>
                          <div>
@@ -615,7 +576,6 @@
                             <input type="text" id="ad-pincode" placeholder="e.g., 122001" class="mt-1 block w-full input-style">
                         </div>
                     </div>
-                    <!-- END: Location Fields Added -->
                     <div class="border-t pt-6 mt-6 space-y-6">
                         <div>
                             <label class="label-style">Ad Title*</label>
@@ -673,7 +633,6 @@
         </div>
     </div>
     
-    <!-- T&C Modal -->
     <div id="tncModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 h-full w-full z-50 flex items-center justify-center">
         <div class="relative mx-auto border w-full max-w-2xl shadow-lg rounded-md bg-white">
             <div class="flex justify-between items-center p-4 border-b">
@@ -760,10 +719,8 @@
         </div>
     </div>
 
-    <!-- Login Modal -->
     <div id="loginModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 h-full w-full z-50 flex items-center justify-center p-4">
         <div class="relative w-full max-w-4xl mx-auto rounded-lg overflow-hidden flex flex-col md:flex-row" style="max-height: 90vh;">
-            <!-- Left Side -->
             <div class="w-full md:w-1/3 bg-theme-primary text-white p-8 space-y-8 hidden md:flex flex-col justify-center">
                 <div class="flex items-center gap-4">
                     <i class="fas fa-truck-loading text-2xl text-theme-accent"></i>
@@ -787,17 +744,70 @@
                     </div>
                 </div>
             </div>
-            <!-- Right Side -->
             <div class="w-full md:w-2/3 bg-white p-8 flex flex-col justify-center relative overflow-y-auto">
-                <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">×</button>
-                <div id="login-container" class="w-full max-w-sm mx-auto">
-                    <!-- This container's content will be swapped -->
+                <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+                <div id="login-form" class="w-full max-w-sm mx-auto">
+                    <div class="flex border-b mb-4">
+                        <button id="login-tab" class="flex-1 py-2 font-semibold border-b-2 border-theme-accent" onclick="switchAuthForm('login')">Login</button>
+                        <button id="register-tab" class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('register')">Register</button>
+                    </div>
+                    <h2 class="text-2xl font-bold text-center mb-2">Login to TradeGinger</h2>
+                    <p class="text-center text-gray-500 mb-6">Please provide your Email and Password</p>
+                    <input id="login-email" type="email" placeholder="Enter Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                    <input id="login-password" type="password" placeholder="Enter Password" class="w-full border-2 border-gray-300 p-3 rounded-md mt-4 focus:outline-none focus:border-theme-accent">
+                    <div class="text-right mt-2">
+                        <a href="#" onclick="switchAuthForm('forgot')" class="text-sm text-theme-accent hover:underline">Forgot Password?</a>
+                    </div>
+                    <button onclick="handleLogin(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Continue</button>
+                    <div class="my-6 flex items-center">
+                        <div class="flex-grow border-t border-gray-300"></div>
+                        <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
+                        <div class="flex-grow border-t border-gray-300"></div>
+                    </div>
+                    <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
+                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
+                        <span class="font-semibold">Login with Google</span>
+                    </button>
+                     <p class="text-center mt-4 text-sm">Don't have an account? <a href="#" onclick="switchAuthForm('register')" class="font-semibold text-theme-accent">Register</a></p>
+                </div>
+
+                <div id="register-form" class="w-full max-w-sm mx-auto hidden">
+                    <div class="flex border-b mb-4">
+                        <button id="login-tab-reg" class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('login')">Login</button>
+                        <button id="register-tab-reg" class="flex-1 py-2 font-semibold border-b-2 border-theme-accent" onclick="switchAuthForm('register')">Register</button>
+                    </div>
+                    <h2 class="text-2xl font-bold text-center mb-2">Sign In / Register</h2>
+                    <p class="text-center text-gray-500 mb-6">Enter your email to receive a magic link to sign in.</p>
+                    <div class="space-y-4">
+                        <input id="register-email" type="email" placeholder="Enter your email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                        <button id="register-button" onclick="handleRegister(event)" class="w-full bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">Send Magic Link</button>
+                    </div>
+                    <div class="my-6 flex items-center">
+                        <div class="flex-grow border-t border-gray-300"></div>
+                        <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
+                        <div class="flex-grow border-t border-gray-300"></div>
+                    </div>
+                    <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
+                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
+                        <span class="font-semibold">Continue with Google</span>
+                    </button>
+                    <p class="text-center mt-4 text-sm">Already have an account? <a href="#" onclick="switchAuthForm('login')" class="font-semibold text-theme-accent">Login with Password</a></p>
+                </div>
+                <div id="forgot-password-form" class="w-full max-w-sm mx-auto hidden">
+                     <div class="flex border-b mb-4">
+                        <button class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('login')">Login</button>
+                        <button class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('register')">Register</button>
+                    </div>
+                   <h2 class="text-2xl font-bold text-center mb-2">Reset Password</h2>
+                   <p class="text-center text-gray-500 mb-6">Enter your email to receive a password reset link.</p>
+                   <input id="reset-email" type="email" placeholder="Enter your registered Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                   <button onclick="handlePasswordReset(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Send Reset Link</button>
+                    <p class="text-center mt-4 text-sm"><a href="#" onclick="switchAuthForm('login')" class="font-semibold text-theme-accent">Back to Login</a></p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Chat Window -->
     <div id="chat-window" class="hidden fixed bottom-0 right-4 w-80 bg-white rounded-t-lg shadow-2xl z-50">
         <div class="flex justify-between items-center bg-theme-primary text-white p-2 rounded-t-lg">
             <div>
@@ -810,8 +820,7 @@
             </div>
         </div>
         <div id="chat-messages" class="h-64 p-4 overflow-y-auto space-y-4">
-            <!-- Messages will be injected here -->
-        </div>
+            </div>
         <div class="p-2 border-t">
             <form id="chat-form" class="flex items-center">
                 <input id="chat-input" type="text" placeholder="Type a message..." class="w-full border rounded-full py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent">
@@ -820,8 +829,7 @@
         </div>
     </div>
 
-     <!-- Ad Submission Success Modal -->
-    <div id="adSuccessModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 h-full w-full z-50 flex items-center justify-center">
+     <div id="adSuccessModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 h-full w-full z-50 flex items-center justify-center">
         <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-md bg-white text-center">
             <i class="fas fa-check-circle text-green-500 text-5xl mb-4"></i>
             <h3 class="text-2xl font-bold mb-2">Ad Submitted!</h3>
@@ -833,7 +841,6 @@
         </div>
     </div>
     
-    <!-- Custom Confirmation Modal -->
     <div id="confirmModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 h-full w-full z-[60] flex items-center justify-center p-4">
         <div class="relative mx-auto p-6 border w-full max-w-sm shadow-lg rounded-md bg-white text-center">
             <h3 id="confirm-title" class="text-xl font-bold mb-4">Are you sure?</h3>
@@ -845,18 +852,10 @@
         </div>
     </div>
 
-    <!-- Toast Notification Element -->
     <div id="toast-notification"></div>
 
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-        // --- START: Hardening - URL Cleanup on Load ---
-        // Clean the URL hash from OAuth redirects immediately to prevent re-triggering auth flows.
-        if (window.location.hash.includes('access_token') || window.location.hash.includes('type=')) {
-            window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
-        }
-        // --- END: Hardening - URL Cleanup on Load ---
 
         // --- Supabase Configuration for "My Project" ---
         const SUPABASE_URL = 'https://crepnlidfdoskighdhdt.supabase.co'; 
@@ -914,9 +913,8 @@
         // --- Page Navigation & State Management ---
         window.navigationHistory = [];
         let postLoginAction = null;
-        let allStates = [], allCities = [], allSubcategories = []; // To store location and subcategory data
+        let allStates = [], allCities = []; // To store location data
         let stagedProfilePic = null; // To hold the new profile picture file
-        let locationDataPromise = null; // To prevent race conditions
 
         const pageDivs = {
             homepage: document.getElementById('homepage'),
@@ -999,7 +997,7 @@
             if(event) event.preventDefault(); 
             const { data: { session } } = await supabase.auth.getSession();
             showPage('listingpage', !!session?.user); 
-            await updateListingPage(categoryKey, filters); 
+            updateListingPage(categoryKey, filters); 
             await fetchAndDisplayListings(categoryKey, filters);
         }
 
@@ -1226,7 +1224,6 @@
             if(event) event.preventDefault();
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                await fetchAndPopulateLocations(); // Ensure locations are ready before showing modal
                 document.getElementById('sellModal').classList.remove('hidden'); 
             } else {
                 postLoginAction = { action: 'sellItem' };
@@ -1237,13 +1234,16 @@
         function hideSellModal() { 
             document.getElementById('sellModal').classList.add('hidden'); 
             editingAdId = null;
-            stagedFiles = []; // Clear staged files
             document.getElementById('adForm').reset();
             document.getElementById('image-preview-container').innerHTML = '';
             document.querySelector('#sellModal .text-2xl').textContent = 'Post Your Ad';
             document.getElementById('post-ad-button').textContent = 'Post Now';
         }
+
+        function showLoginModal(event) { if(event) event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); }
         
+        function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+
         function showTncModal(event) { if(event) event.preventDefault(); document.getElementById('tncModal').classList.remove('hidden'); }
 
         function hideTncModal() { document.getElementById('tncModal').classList.add('hidden'); }
@@ -1275,17 +1275,17 @@
             }
             return options;
         }
-        const yearDropdown = generateYearOptions(1990, new Date().getFullYear());
+        const yearDropdown = generateYearOptions(1990, 2025);
 
         const attributeTemplates = {
             cars: `<h3 class="text-xl font-bold text-gray-900 mb-4">Car Details</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="label-style">Brand*</label><select class="input-style w-full"><option>Maruti Suzuki</option><option>Hyundai</option><option>Tata</option><option>Mahindra</option><option>Kia</option><option>Toyota</option><option>Honda</option><option>Volkswagen</option><option>Skoda</option><option>MG</option><option>Renault</option><option>Nissan</option><option>Jeep</option><option>Citroen</option><option>Isuzu</option><option>Mercedes-Benz</option><option>BMW</option><option>Audi</option><option>Jaguar</option><option>Land Rover</option><option>Volvo</option><option>Other</option></select></div><div><label class="label-style">Model*</label><input type="text" placeholder="e.g., Swift, Creta, Nexon" class="input-style w-full"></div><div><label class="label-style">Variant*</label><input type="text" placeholder="e.g., VXI, SX, XZ+" class="input-style w-full"></div><div><label class="label-style">Year*</label><select class="input-style w-full">${yearDropdown}</select></div><div><label class="label-style">Fuel*</label><select class="input-style w-full"><option>Petrol</option><option>Diesel</option><option>CNG & Hybrids</option><option>Electric</option><option>LPG</option></select></div><div><label class="label-style">Transmission*</label><select class="input-style w-full"><option>Manual</option><option>Automatic</option></select></div><div><label class="label-style">KM Driven*</label><input type="number" placeholder="e.g., 25000" class="input-style w-full"></div><div><label class="label-style">No. of Owners*</label><select class="input-style w-full"><option>1st</option><option>2nd</option><option>3rd</option><option>4th+</option></select></div></div><div><label class="label-style">Condition</label><div class="flex space-x-4 mt-1"><label class="flex items-center"><input type="radio" name="condition" class="mr-2 h-4 w-4"> Non-Accidental</label><label class="flex items-center"><input type="radio" name="condition" class="mr-2 h-4 w-4"> Accidental</label></div></div>`,
             property: `<h3 class="text-xl font-bold text-gray-900 mb-4">Property Details</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="label-style">Type*</label><select class="input-style w-full" onchange="handlePropertyTypeChange(this)"><option>Apartment</option><option>Builder Floor</option><option>House & Villa</option><option>Plot</option><option>Land</option></select></div><div id="land-subcategory-container" class="hidden"><label class="label-style">Land Sub Category*</label><select class="input-style w-full"><option>Agriculture</option><option>Residential</option><option>Commercial</option><option>Industrial</option></select></div><div><label class="label-style">Bedrooms*</label><select class="input-style w-full"><option>1</option><option>2</option><option>3</option><option>4+</option></select></div><div><label class="label-style">Bathrooms*</label><select class="input-style w-full"><option>1</option><option>2</option><option>3+</option></select></div><div><label class="label-style">Furnishing*</label><select class="input-style w-full"><option>Furnished</option><option>Semi-Furnished</option><option>Unfurnished</option></select></div><div><label class="label-style">Listed By*</label><select class="input-style w-full"><option>Owner</option><option>Dealer</option><option>Builder</option></select></div><div><label class="label-style">Super Builtup area (ft²)*</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Carpet Area (ft²)*</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Maintenance (Monthly)</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Total Floors</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Floor No</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Car Parking</label><select class="input-style w-full"><option>0</option><option>1</option><option>2+</option></select></div><div><label class="label-style">Facing</label><select class="input-style w-full"><option>North</option><option>South</option><option>East</option><option>West</option><option>North-East</option></select></div></div><div class="mt-4"><label class="label-style">RERA No. (Optional)</label><div class="flex items-center"><input type="text" placeholder="Enter RERA registration number" class="input-style w-full"><i onclick="showReraInfo()" class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer" title="What is RERA?"></i></div></div>`,
             mobiles: `<h3 class="text-xl font-bold text-gray-900 mb-4">Mobile Details</h3><div><label class="label-style">Brand*</label><select class="input-style w-full"><option>Apple</option><option>Samsung</option><option>Xiaomi</option><option>OnePlus</option><option>Realme</option><option>Vivo</option><option>Oppo</option><option>Other</option></select></div>`,
             bikes: `<h3 class="text-xl font-bold text-gray-900 mb-4">Bike Details</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="label-style">Brand*</label><select class="input-style w-full"><option>Ather Energy</option><option>Bajaj</option><option>Benelli</option><option>BMW</option><option>Ducati</option><option>Harley-Davidson</option><option>Hero</option><option>Honda</option><option>Husqvarna</option><option>Indian</option><option>Jawa</option><option>Kawasaki</option><option>KTM</option><option>Ola Electric</option><option>Revolt</option><option>Royal Enfield</option><option>Suzuki</option><option>Triumph</option><option>TVS</option><option>Yamaha</option><option>Yezdi</option><option>Other</option></select></div><div><label class="label-style">Model*</label><input type="text" placeholder="e.g., Pulsar, Splendor, Classic 350, 450X" class="input-style w-full"></div><div><label class="label-style">Year*</label><select class="input-style w-full">${yearDropdown}</select></div><div><label class="label-style">KM Driven*</label><input type="number" class="input-style w-full"></div></div>`,
-            electronics: ``, // This will be handled by the sub-category logic
+            electronics: `<h3 class="text-xl font-bold text-gray-900 mb-4">Electronics & Appliances</h3><div class="space-y-4"><div id="electronics-subtype-container"><label class="label-style">Type*</label><select id="electronics-subtype" class="input-style w-full"><option>TVs, Video - Audio</option><option>Kitchen & Other Appliances</option><option>Computers & Laptops</option><option>Cameras & Lenses</option><option>Games & Entertainment</option><option>Fridges</option><option>Washing Machines</option></select></div></div>`,
             commercial_vehicles: `<h3 class="text-xl font-bold text-gray-900 mb-4">Commercial Vehicle Details</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Trucks</option><option>Buses</option><option>Vans</option><option>Taxis</option><option>Other</option></select></div><div><label class="label-style">Year*</label><select class="input-style w-full">${yearDropdown}</select></div></div>`,
-            furniture: ``, // This will be handled by the sub-category logic
-            fashion: ``, // This will be handled by the sub-category logic
+            furniture: `<h3 class="text-xl font-bold text-gray-900 mb-4">Furniture Details</h3><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Sofa & Dining</option><option>Beds & Wardrobes</option><option>Home Decor & Garden</option><option>Kids Furniture</option><option>Other Household Items</option></select></div>`,
+            fashion: `<h3 class="text-xl font-bold text-gray-900 mb-4">Fashion Details</h3><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Men</option><option>Women</option><option>Kids</option></select></div>`,
             pets: `<h3 class="text-xl font-bold text-gray-900 mb-4">Pet Details</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Dogs</option><option>Cats</option><option>Fishes</option><option>Birds</option><option>Other Pets</option></select></div><div><label class="label-style">Breed</label><input type="text" placeholder="e.g., Labrador, Persian" class="input-style w-full"></div></div>`,
             services: `<h3 class="text-xl font-bold text-gray-900 mb-4">Service Details</h3><div><label class="label-style">Type*</label><input type="text" placeholder="e.g., Electronics & Computer Repair, Education & Classes" class="input-style w-full"></div>`
         };
@@ -1294,36 +1294,9 @@
         document.head.appendChild(style);
         
         function updateAttributeFields() {
-            const categoryKey = document.getElementById('category-select').value;
-            const categoryId = categoryMapping[categoryKey];
-            const subcategoryContainer = document.getElementById('subcategory-container');
-            const attributesContainer = document.getElementById('category-attributes');
-            
-            // Clear previous fields
-            subcategoryContainer.innerHTML = '';
-            attributesContainer.innerHTML = '';
-
-            if (!categoryId) {
-                attributesContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Please select a category to see relevant options.</p>';
-                return;
-            }
-
-            // Find and populate sub-categories if they exist
-            const relevantSubcategories = allSubcategories.filter(sub => sub.category_id === categoryId);
-            if (relevantSubcategories.length > 0) {
-                const options = relevantSubcategories.map(sub => `<option value="${sub.id}">${sub.name}</option>`).join('');
-                subcategoryContainer.innerHTML = `
-                    <div>
-                        <label class="label-style">Sub-Category*</label>
-                        <select id="ad-subcategory" class="mt-1 block w-full input-style" required>
-                            <option value="">Select Sub-Category</option>
-                            ${options}
-                        </select>
-                    </div>`;
-            }
-
-            // Populate main attribute fields
-            attributesContainer.innerHTML = (categoryKey && attributeTemplates[categoryKey]) ? attributeTemplates[categoryKey] : '';
+            const category = document.getElementById('category-select').value;
+            const container = document.getElementById('category-attributes');
+            container.innerHTML = (category && attributeTemplates[category]) ? attributeTemplates[category] : '<p class="text-gray-500 text-center py-4">Please select a category to see relevant options.</p>';
         }
 
         function handlePropertyTypeChange(selectElement) {
@@ -1338,27 +1311,44 @@
         // --- Filter Data and Logic ---
         const filterData = {
             cars: [
-                { title: 'Budget', type: 'range', key: 'price' },
-                { title: 'Brand', type: 'checkbox', key: 'Brand', options: ['Maruti Suzuki', 'Hyundai', 'Honda', 'Tata', 'Mahindra', 'Toyota', 'Ford', 'Renault', 'Volkswagen', 'BMW', 'Mercedes-Benz', 'Audi'] },
-                { title: 'Model Year', type: 'range', key: 'Year' },
-                { title: 'KMs Driven', type: 'range', key: 'KM Driven' },
-                { title: 'Fuel Type', type: 'checkbox', key: 'Fuel', options: ['Petrol', 'Diesel', 'CNG', 'LPG', 'Electric', 'Hybrid'] },
-                { title: 'Transmission', type: 'radio', name: 'transmission', key: 'Transmission', options: ['Manual', 'Automatic'] },
-                { title: 'No. of Owners', type: 'checkbox', key: 'No. of Owners', options: ['1st', '2nd', '3rd', '4th+'] },
+                { title: 'Budget', type: 'range' },
+                { title: 'Brand', type: 'checkbox', options: ['Maruti Suzuki', 'Hyundai', 'Honda', 'Tata', 'Mahindra', 'Toyota', 'Ford', 'Renault', 'Volkswagen', 'BMW', 'Mercedes-Benz', 'Audi'] },
+                { title: 'Model Year', type: 'range' },
+                { title: 'KMs Driven', type: 'range' },
+                { title: 'Fuel Type', type: 'checkbox', options: ['Petrol', 'Diesel', 'CNG', 'LPG', 'Electric', 'Hybrid'] },
+                { title: 'Transmission', type: 'radio', name: 'transmission', options: ['Manual', 'Automatic'] },
+                { title: 'No. of Owners', type: 'checkbox', options: ['1st', '2nd', '3rd', '4th+'] },
+                { title: 'Posted By', type: 'checkbox', options: ['Individual', 'Dealer'] }
             ],
             property: [
-                { title: 'Budget', type: 'range', key: 'price' },
-                { title: 'Property Type', type: 'checkbox', key: 'Type', options: ['Apartment', 'Builder Floor', 'House & Villa', 'Plot', 'Commercial Office', 'Shop/Showroom'] },
-                { title: 'Bedrooms (BHK)', type: 'checkbox', key: 'Bedrooms', options: ['1', '2', '3', '4+'] },
-                { title: 'Furnishing', type: 'radio', name: 'furnishing', key: 'Furnishing', options: ['Furnished', 'Semi-Furnished', 'Unfurnished'] },
-                { title: 'Listed By', type: 'checkbox', key: 'Listed By', options: ['Owner', 'Dealer', 'Builder'] },
+                { title: 'Budget', type: 'range' },
+                { title: 'Property Type', type: 'checkbox', options: ['Apartment', 'Builder Floor', 'House & Villa', 'Plot', 'Commercial Office', 'Shop/Showroom'] },
+                { title: 'Bedrooms (BHK)', type: 'checkbox', options: ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'] },
+                { title: 'Furnishing', type: 'radio', name: 'furnishing', options: ['Furnished', 'Semi-Furnished', 'Unfurnished'] },
+                { title: 'Construction Status', type: 'radio', name: 'construction', options: ['Ready to Move', 'Under Construction'] },
+                { title: 'Listed By', type: 'checkbox', options: ['Owner', 'Dealer', 'Builder'] },
+                { title: 'Area (Sq. Ft.)', type: 'range' }
             ],
             mobiles: [
-                { title: 'Price', type: 'range', key: 'price' },
-                { title: 'Brand', type: 'checkbox', key: 'Brand', options: ['Apple', 'Samsung', 'Xiaomi', 'OnePlus', 'Realme', 'Vivo', 'Oppo'] },
+                { title: 'Price', type: 'range' },
+                { title: 'Brand', type: 'checkbox', options: ['Apple', 'Samsung', 'Xiaomi', 'OnePlus', 'Realme', 'Vivo', 'Oppo'] },
+                { title: 'RAM', type: 'checkbox', options: ['4 GB', '6 GB', '8 GB', '12 GB+'] },
+                { title: 'Operating System', type: 'radio', name: 'os', options: ['Android', 'iOS'] }
+            ],
+            furniture: [
+                { title: 'Price', type: 'range' },
+                { title: 'Furniture Type', type: 'checkbox', options: ['Sofa Sets', 'Bed Sets', 'Dining Tables', 'Office Chairs', 'Wardrobes', 'TV Units'] },
+                { title: 'Material', type: 'checkbox', options: ['Solid Wood (Teak)', 'Solid Wood (Sheesham)', 'Engineered Wood', 'Metal', 'Plastic'] },
+                { title: 'Condition', type: 'radio', name: 'condition', options: ['Brand New', 'Gently Used', 'Heavily Used'] }
+            ],
+            pets: [
+                { title: 'Animal Type', type: 'select', options: ['Dogs', 'Cats', 'Birds', 'Fish & Aquariums'] },
+                { title: 'Breed', type: 'text', placeholder: 'e.g., Labrador, Persian Cat' },
+                { title: 'Age', type: 'range' },
+                { title: 'Posted By', type: 'radio', name: 'pet_poster', options: ['Owner', 'Breeder'] }
             ],
             default: [
-                { title: 'Price', type: 'range', key: 'price' }
+                { title: 'Price', type: 'range' }
             ]
         };
 
@@ -1368,16 +1358,22 @@
                 optionsHTML = `<div class="mt-2 flex items-center space-x-2"><input type="number" placeholder="Min" class="w-full border rounded-md p-2 text-sm"><span>to</span><input type="number" placeholder="Max" class="w-full border rounded-md p-2 text-sm"></div>`;
             } else if (filter.type === 'checkbox') {
                 optionsHTML = `<div class="mt-2 space-y-2 text-xs">` +
-                    filter.options.map(opt => `<label class="flex items-center font-normal"><input type="checkbox" value="${opt}" class="h-4 w-4 text-theme-accent border-gray-300 rounded focus:ring-theme-accent"> <span class="ml-2">${opt}</span></label>`).join('') +
+                    filter.options.map(opt => `<label class="flex items-center font-normal"><input type="checkbox" class="h-4 w-4 text-theme-accent border-gray-300 rounded focus:ring-theme-accent"> <span class="ml-2">${opt}</span></label>`).join('') +
                     `</div>`;
             } else if (filter.type === 'radio') {
                  optionsHTML = `<div class="mt-2 space-y-2 text-xs">` +
-                    filter.options.map(opt => `<label class="flex items-center font-normal"><input type="radio" name="${filter.name}" value="${opt}" class="h-4 w-4 text-theme-accent border-gray-300 focus:ring-theme-accent"> <span class="ml-2">${opt}</span></label>`).join('') +
+                    filter.options.map(opt => `<label class="flex items-center font-normal"><input type="radio" name="${filter.name}" class="h-4 w-4 text-theme-accent border-gray-300 focus:ring-theme-accent"> <span class="ml-2">${opt}</span></label>`).join('') +
                     `</div>`;
+            } else if (filter.type === 'select') {
+                optionsHTML = `<div class="mt-2"><select class="input-style w-full text-sm">` +
+                    filter.options.map(opt => `<option>${opt}</option>`).join('') +
+                    `</select></div>`;
+            } else if (filter.type === 'text') {
+                 optionsHTML = `<div class="mt-2"><input type="text" placeholder="${filter.placeholder}" class="input-style w-full text-sm"></div>`;
             }
 
             return `
-                <div class="border-t py-3" data-key="${filter.key}" data-type="${filter.type}">
+                <div class="border-t py-3">
                     <details open>
                         <summary class="font-semibold text-sm cursor-pointer flex justify-between items-center hover:text-theme-accent">
                             <span>${filter.title}</span>
@@ -1389,10 +1385,7 @@
             `;
         }
 
-        async function updateListingPage(categoryKey, filters = {}) {
-            // Ensure location data is loaded before building the sidebar
-            await fetchAndPopulateLocations();
-
+        function updateListingPage(categoryKey, filters = {}) {
             const sidebar = document.getElementById('filter-sidebar');
             const title = document.getElementById('listing-page-title');
             const filtersForCategory = filterData[categoryKey] || filterData.default;
@@ -1426,41 +1419,18 @@
             } else {
                 title.innerText = `Fresh Recommendations in ${categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1)}`;
             }
+            
+            if (filters.location) {
+                // This part is tricky as location is a string. We will handle city/state ID filters from the sidebar.
+            }
         }
         
         function applyFilters(categoryKey) {
-            const sidebar = document.getElementById('filter-sidebar');
+            const cityId = document.getElementById('filter-city').value;
             const filters = {};
-
-            // Location
-            const cityId = sidebar.querySelector('#filter-city').value;
-            if (cityId) filters.city_id = cityId;
-
-            const filterSections = sidebar.querySelectorAll('[data-key]');
-            filterSections.forEach(section => {
-                const key = section.dataset.key;
-                const type = section.dataset.type;
-
-                if (type === 'range') {
-                    const inputs = section.querySelectorAll('input[type="number"]');
-                    const min = inputs[0].value;
-                    const max = inputs[1].value;
-                    if (min || max) filters[key] = {};
-                    if (min) filters[key].min = parseFloat(min);
-                    if (max) filters[key].max = parseFloat(max);
-                } else if (type === 'checkbox') {
-                    const checked = section.querySelectorAll('input:checked');
-                    if (checked.length > 0) {
-                        filters[key] = Array.from(checked).map(cb => cb.value);
-                    }
-                } else if (type === 'radio') {
-                    const checked = section.querySelector('input:checked');
-                    if (checked) {
-                        filters[key] = checked.value;
-                    }
-                }
-            });
-            
+            if (cityId) {
+                filters.city_id = cityId;
+            }
             fetchAndDisplayListings(categoryKey, filters);
             showToast('Filters applied!', 'info');
         }
@@ -1488,7 +1458,6 @@
         const synth = new Tone.Synth().toDestination();
         let chatSubscription = null;
         let notificationSubscription = null;
-        let chatMessagesSubscription = null;
         let currentRoomId = null;
         let currentReceiverId = null;
         
@@ -1499,7 +1468,7 @@
             const bgColor = type === 'sent' ? 'bg-theme-accent text-white' : 'bg-gray-200 text-gray-800';
             
             messageElement.className = `flex ${alignment}`;
-            messageElement.innerHTML = `<div class="max-w-xs px-3 py-2 rounded-lg ${bgColor}">${sanitizeHTML(text)}</div>`;
+            messageElement.innerHTML = `<div class="max-w-xs px-3 py-2 rounded-lg ${bgColor}">${text}</div>`;
             
             messagesDiv.appendChild(messageElement);
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -1644,9 +1613,10 @@
             const notificationList = document.getElementById('notification-list');
             const noNotificationsMessage = document.getElementById('no-notifications-message');
 
+            // --- FIX: Check if elements exist before trying to modify them ---
             if (!notificationList || !noNotificationsMessage) {
                 console.error("Notification UI elements ('notification-list' or 'no-notifications-message') not found in the DOM.");
-                return;
+                return; // Exit function to prevent crash
             }
             
             notificationList.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
@@ -1675,16 +1645,16 @@
                      notifications.forEach(notif => {
                           const icon = notif.type === 'new_message' ? 'fa-comment-dots' : 'fa-info-circle';
                           const isUnreadClass = !notif.is_read ? 'bg-blue-50' : '';
-                          const timeAgo = formatTimeAgo(notif.created_at);
+                          const timeAgo = new Date(notif.created_at).toLocaleString();
 
                           const notifHTML = `
                               <a href="#" class="block p-4 text-sm hover:bg-gray-50 ${isUnreadClass}">
                                    <div class="flex items-start gap-3">
-                                        <i class="fas ${icon} text-gray-400 mt-1"></i>
-                                        <div>
-                                             <p class="font-semibold">${sanitizeHTML(notif.content)}</p>
-                                             <p class="text-xs text-gray-500">${timeAgo}</p>
-                                        </div>
+                                       <i class="fas ${icon} text-gray-400 mt-1"></i>
+                                       <div>
+                                           <p class="font-semibold">${notif.content}</p>
+                                           <p class="text-xs text-gray-500">${timeAgo}</p>
+                                       </div>
                                    </div>
                               </a>
                           `;
@@ -1693,6 +1663,7 @@
                 }
             } catch(error) {
                  console.error("Error fetching notifications:", error);
+                 // Check again in case notificationList became invalid
                  if(notificationList) {
                     notificationList.innerHTML = `<p class="p-4 text-sm text-red-500 text-center">Could not load notifications.</p>`;
                  }
@@ -1734,6 +1705,24 @@
                 setTimeout(() => markNotificationsAsRead(null, false), 2000);
             }
         }
+
+        function switchAuthForm(form) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const forgotForm = document.getElementById('forgot-password-form');
+            
+            loginForm.classList.add('hidden');
+            registerForm.classList.add('hidden');
+            forgotForm.classList.add('hidden');
+
+            if (form === 'login') {
+                loginForm.classList.remove('hidden');
+            } else if (form === 'register') {
+                registerForm.classList.remove('hidden');
+            } else if (form === 'forgot') {
+                forgotForm.classList.remove('hidden');
+            }
+        }
         
         function handleProfilePictureChange(event) {
             const file = event.target.files[0];
@@ -1749,13 +1738,79 @@
         }
         
         // --- Authentication Logic (Supabase) ---
+
+        // START: MODIFIED FUNCTION
+        async function handleRegister(event) {
+            event.preventDefault();
+            const registerButton = document.getElementById('register-button');
+            const email = document.getElementById('register-email').value.trim();
+
+            if (!email) {
+                showToast('Please enter your email address.', 'error');
+                return;
+            }
+
+            registerButton.disabled = true;
+            registerButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sending...`;
+
+            try {
+                const { error } = await supabase.auth.signInWithOtp({
+                    email: email,
+                    options: {
+                        // This will create a new user if one doesn't exist.
+                        // For a better first-time user experience, you might redirect
+                        // to a profile-setup page after login.
+                        emailRedirectTo: window.location.href,
+                    },
+                });
+
+                if (error) throw error;
+
+                showToast('Check your email for the magic link to sign in!', 'success');
+                // Hide the modal or switch to a "check your email" message
+                hideLoginModal();
+
+            } catch (err) {
+                console.error("Magic Link error:", err);
+                showToast("Failed to send magic link: " + (err.message || "Unknown error"), "error");
+            } finally {
+                registerButton.disabled = false;
+                registerButton.innerHTML = 'Send Magic Link';
+            }
+        }
+        // END: MODIFIED FUNCTION
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
+            if (!email || !password) {
+                showToast('Please enter both email and password.', 'error');
+                return;
+            }
+
+            try {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+                if (error) throw error;
+                hideLoginModal();
+                showToast('Login successful!', 'success');
+            } catch (error) {
+                console.error("Error logging in:", error);
+                showToast('Error logging in: ' + error.message, 'error');
+            }
+        }
+
         async function loginWithGoogle(event) {
             event.preventDefault();
             try {
                 const { error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.origin + window.location.pathname // Clean URL for redirect
+                        redirectTo: window.location.href // Redirect back to the current page after login
                     }
                 });
                 if (error) throw error;
@@ -1769,11 +1824,9 @@
             }
         }
 
-        async function handleMagicLink(event) {
+        async function handlePasswordReset(event) {
             event.preventDefault();
-            const emailInput = document.getElementById('login-email');
-            const loginContainer = document.getElementById('login-container');
-            const email = emailInput.value.trim();
+            const email = document.getElementById('reset-email').value.trim();
 
             if (!email) {
                 showToast('Please enter your email address.', 'error');
@@ -1781,44 +1834,36 @@
             }
 
             try {
-                const { error } = await supabase.auth.signInWithOtp({
-                    email: email,
-                    options: {
-                        emailRedirectTo: window.location.origin + window.location.pathname, // Clean URL for redirect
-                    },
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.href, // Optional: where to redirect after password reset
                 });
 
                 if (error) throw error;
-
-                // Hide the form and show a success message
-                loginContainer.innerHTML = `
-                    <div class="text-center">
-                        <i class="fas fa-paper-plane text-4xl text-green-500 mb-4"></i>
-                        <h2 class="text-2xl font-bold mb-2">Check your email</h2>
-                        <p class="text-gray-600">A magic login link has been sent to <strong>${sanitizeHTML(email)}</strong>.</p>
-                        <p class="text-gray-500 text-sm mt-4">You can close this window now.</p>
-                    </div>
-                `;
-
+                showToast('Password reset link sent! Please check your email.', 'success');
+                switchAuthForm('login');
             } catch (error) {
-                console.error('Magic link error:', error);
-                showToast(`Could not send magic link: ${error.message}`, 'error');
+                console.error("Error sending password reset email:", error);
+                showToast('Error: ' + error.message, 'error');
             }
         }
         
         async function logout(event) {
             if (event) event.preventDefault();
             
+            // Immediately hide the logged-in header for instant feedback.
             headers.loggedIn.classList.add('hidden');
             headers.loggedOut.classList.remove('hidden');
 
             try {
                 const { error } = await supabase.auth.signOut();
                 if (error) {
+                    // If sign-out fails, revert the UI and show an error.
                     headers.loggedIn.classList.remove('hidden');
                     headers.loggedOut.classList.add('hidden');
                     throw error;
                 }
+                // Force a page reload on successful sign-out. This is the most 
+                // reliable way to clear all application state and prevent UI bugs.
                 window.location.reload();
             } catch (error) {
                 console.error('Error logging out:', error);
@@ -1831,28 +1876,15 @@
             try {
                 const user = session?.user;
                 if (user) {
-                    await fetchUserFavorites(); 
+                    await fetchUserFavorites(); // Fetch user's favorites on login/session refresh
                     // --- MANAGE REALTIME SUBSCRIPTIONS ---
                     if (notificationSubscription) await supabase.removeChannel(notificationSubscription);
-                    if (chatMessagesSubscription) await supabase.removeChannel(chatMessagesSubscription);
-
                     fetchInitialNotificationCount(user.id);
-                    
                     notificationSubscription = supabase.channel(`notifications_${user.id}`)
                         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}`}, 
                         (payload) => {
                             document.getElementById('main-notification-dot').classList.remove('hidden');
                             if (!isMuted) { try { Tone.start(); synth.triggerAttackRelease("G5", "8n"); } catch(e){ console.warn("Could not play sound", e); } }
-                        })
-                        .subscribe();
-                    
-                    chatMessagesSubscription = supabase.channel(`public:chat_messages:receiver_id=eq.${user.id}`)
-                        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `receiver_id=eq.${user.id}`}, 
-                        (payload) => {
-                            if (document.getElementById('chat-window').classList.contains('hidden') || currentRoomId !== payload.new.room_id) {
-                                document.getElementById('chat-notification-dot').classList.remove('hidden');
-                                if (!isMuted) { try { Tone.start(); synth.triggerAttackRelease("A5", "8n"); } catch(e){ console.warn("Could not play chat sound", e); } }
-                            }
                         })
                         .subscribe();
 
@@ -1874,10 +1906,18 @@
                         }
                     }
                 } else { // user is null
-                    if (notificationSubscription) { await supabase.removeChannel(notificationSubscription); notificationSubscription = null; }
-                    if (chatSubscription) { await supabase.removeChannel(chatSubscription); chatSubscription = null; }
-                    if (chatMessagesSubscription) { await supabase.removeChannel(chatMessagesSubscription); chatMessagesSubscription = null; }
-
+                    // Clean up subscriptions if they exist
+                    if (notificationSubscription) {
+                        await supabase.removeChannel(notificationSubscription);
+                        notificationSubscription = null;
+                    }
+                    if (chatSubscription) {
+                        await supabase.removeChannel(chatSubscription);
+                        chatSubscription = null;
+                    }
+                    
+                    // This block now handles all cases where there is no user (initial load or after logout).
+                    // It ensures the UI is always in a clean, logged-out state.
                     showPage('homepage', false);
                     updateUIForGuest();
                 }
@@ -1899,7 +1939,7 @@
                     throw error;
                 }
 
-                const fullName = `${userProfileData?.first_name || user.user_metadata.first_name || ''} ${userProfileData?.last_name || user.user_metadata.last_name || ''}`.trim() || user.email;
+                const fullName = `${userProfileData?.first_name || user.user_metadata.full_name || ''} ${userProfileData?.last_name || ''}`.trim() || user.email;
                 const profilePicUrl = userProfileData?.avatar_url || user.user_metadata.avatar_url || `https://placehold.co/96x96/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
 
                 // Update Header
@@ -2042,8 +2082,7 @@
         }
         
         let editingAdId = null; 
-        // stagedFiles holds objects like { type: 'file' | 'base64' | 'url', data: File | base64String | urlString }
-        let stagedFiles = []; 
+        let stagedFiles = []; // To hold files from upload OR camera
 
         async function handleAdSubmit(event) {
             event.preventDefault();
@@ -2064,58 +2103,38 @@
                 const price = document.getElementById('ad-price').value;
                 const categoryName = document.getElementById('category-select').value;
                 const categoryId = categoryMapping[categoryName];
-                const subcategorySelect = document.getElementById('ad-subcategory');
-                const subcategoryId = subcategorySelect ? subcategorySelect.value : null;
                 const cityId = document.getElementById('ad-city').value;
                 const pincode = document.getElementById('ad-pincode').value.trim();
                 
                 if (!title || !price || !categoryName || !cityId) {
                     throw new Error("Please fill out all required fields: Title, Price, Category, and Location.");
                 }
-                 if (subcategorySelect && !subcategoryId) {
-                    throw new Error("Please select a Sub-Category.");
-                }
                 if (!categoryId) {
                     throw new Error("Invalid category selected.");
                 }
-
-                // Scrape attributes
-                const attributes = {};
-                const attributeContainer = document.getElementById('category-attributes');
-                attributeContainer.querySelectorAll('label').forEach(label => {
-                    const key = label.textContent.replace('*', '').trim();
-                    const input = label.nextElementSibling;
-                    if (key && input && (input.tagName === 'INPUT' || input.tagName === 'SELECT')) {
-                        attributes[key] = input.value;
-                    }
-                });
                 
-                const existingUrls = stagedFiles.filter(f => f.type === 'url').map(f => f.data);
-                const newFilesToUpload = stagedFiles.filter(f => f.type !== 'url').map(f => (f.type === 'base64' ? f.data : f.file));
-                
-                let newUploadedUrls = [];
-                if (newFilesToUpload.length > 0) {
-                    newUploadedUrls = await uploadFilesToCloudinary(newFilesToUpload);
-                    if (newUploadedUrls.length !== newFilesToUpload.length) {
-                        throw new Error('Some new images failed to upload.');
+                let imageUrls = [];
+                if (stagedFiles.length > 0) {
+                    const filesToUpload = stagedFiles.map(file => {
+                        return typeof file.data === 'string' ? file.data : file.file;
+                    });
+                    imageUrls = await uploadFilesToCloudinary(filesToUpload);
+                    if (imageUrls.length !== stagedFiles.length) {
+                        throw new Error('Some images failed to upload. Please try again.');
                     }
                 }
-                
-                const finalImageUrls = [...existingUrls, ...newUploadedUrls];
                 
                 const cityName = allCities.find(c => c.id == cityId)?.name || 'Not specified';
                 const listingData = {
                     user_id: user.id,
                     category_id: categoryId,
-                    subcategory_id: subcategoryId ? parseInt(subcategoryId) : null,
                     title: title,
                     description: description,
                     price: parseFloat(price),
-                    image_urls: finalImageUrls,
-                    location: cityName, 
+                    image_urls: imageUrls,
+                    location: cityName, // Legacy location field
                     city_id: parseInt(cityId),
                     pincode: pincode || null,
-                    attributes: attributes
                 };
 
                 let error;
@@ -2134,6 +2153,7 @@
                 } else {
                     showPostSuccessModal();
                 }
+                stagedFiles = [];
                 hideSellModal();
                 await fetchAndDisplayMyAds();
 
@@ -2143,8 +2163,12 @@
 
                 if (error.message.includes("violates row-level security policy")) {
                     errorMessage = 'Posting failed due to database security rules. Please check your Supabase settings.';
+                    // DEV NOTE: To fix, go to Supabase > Authentication > Policies > listings table
+                    // and create a new policy for INSERT, for authenticated users.
                 } else if (error.message.includes('violates not-null constraint') && error.message.includes('subcategory_id')) {
-                    errorMessage = 'Posting failed: A "Sub-Category" is required. Please select one from the dropdown.';
+                    errorMessage = 'Posting failed: A "Sub-Category" is required. The backend was updated, but the form is not sending this yet.';
+                     // DEV NOTE: To fix, make the 'subcategory_id' column in the 'listings' table optional (allow nulls).
+                    // SQL FIX: ALTER TABLE public.listings ALTER COLUMN subcategory_id DROP NOT NULL;
                 } else if (error.code) { 
                     errorMessage = `Database Error: ${error.message}`;
                 }
@@ -2159,11 +2183,9 @@
         async function handleEditAd(adId) {
             try {
                 editingAdId = adId;
-                stagedFiles = []; // Clear any previous files
-                
                 const { data: ad, error } = await supabase
                     .from('listings')
-                    .select('*, cities!city_id(*)')
+                    .select('*, cities(*)')
                     .eq('id', adId)
                     .single();
                 
@@ -2175,41 +2197,19 @@
                 document.getElementById('ad-description').value = ad.description;
                 document.getElementById('ad-price').value = ad.price;
                 
-                if (ad.image_urls && ad.image_urls.length > 0) {
-                    stagedFiles = ad.image_urls.map(url => ({ type: 'url', data: url }));
-                    renderImagePreviews();
-                }
-
+                // Populate location
                 if (ad.city_id && ad.cities) {
                     const stateId = ad.cities.state_id;
                     const cityId = ad.city_id;
                     const adStateSelect = document.getElementById('ad-state');
                     adStateSelect.value = stateId;
                     populateCities(stateId);
+                    // Use a timeout to ensure cities are populated before setting the value
                     setTimeout(() => {
                         document.getElementById('ad-city').value = cityId;
                     }, 100);
                 }
                 document.getElementById('ad-pincode').value = ad.pincode || '';
-
-                // Populate attributes and subcategory after a short delay to allow DOM update
-                setTimeout(() => {
-                    if (ad.subcategory_id) {
-                        const subcatSelect = document.getElementById('ad-subcategory');
-                        if (subcatSelect) subcatSelect.value = ad.subcategory_id;
-                    }
-                    if (ad.attributes) {
-                        const attributeContainer = document.getElementById('category-attributes');
-                        Object.entries(ad.attributes).forEach(([key, value]) => {
-                           attributeContainer.querySelectorAll('label').forEach(label => {
-                               if (label.textContent.replace('*', '').trim() === key) {
-                                   const input = label.nextElementSibling;
-                                   if (input) input.value = value;
-                               }
-                           });
-                        });
-                    }
-                }, 200);
 
                 document.querySelector('#sellModal .text-2xl').textContent = 'Edit Your Ad';
                 document.getElementById('post-ad-button').textContent = 'Update Ad';
@@ -2225,7 +2225,7 @@
             showConfirmModal(
                 'Delete Ad',
                 'Are you sure you want to delete this ad? This action cannot be undone.',
-                async () => {
+                async () => { // This is the onConfirm callback
                     try {
                         const { error } = await supabase.from('listings').delete().eq('id', adId);
                         if (error) throw error;
@@ -2251,7 +2251,7 @@
 
                 const { data: ads, error } = await supabase
                     .from('listings')
-                    .select('*, cities!city_id(name)')
+                    .select('*, cities(name)')
                     .eq('user_id', user.id);
 
                 if (error) throw error;
@@ -2296,6 +2296,38 @@
             }
         }
         
+        // --- FAVORITES LOGIC ---
+        // --- IMPORTANT SUPABASE SETUP FOR FAVORITES ---
+        // For the "Add to Favorite" feature to work, you MUST enable Row Level Security (RLS)
+        // on your 'favorites' table and create policies. Go to your Supabase project, open the
+        // SQL Editor, and run the following commands one by one:
+        /*
+        
+        -- 1. Enable RLS on the favorites table
+        ALTER TABLE public.favorites ENABLE ROW LEVEL SECURITY;
+
+        -- 2. Create a policy that allows users to view their OWN favorites
+        CREATE POLICY "Enable read access for own user"
+        ON public.favorites
+        AS PERMISSIVE FOR SELECT
+        TO authenticated
+        USING ((auth.uid() = user_id));
+
+        -- 3. Create a policy that allows users to add a favorite FOR THEMSELVES
+        CREATE POLICY "Enable insert for own user"
+        ON public.favorites
+        AS PERMISSIVE FOR INSERT
+        TO authenticated
+        WITH CHECK ((auth.uid() = user_id));
+        
+        -- 4. Create a policy that allows users to remove their OWN favorites
+        CREATE POLICY "Enable delete for own user"
+        ON public.favorites
+        AS PERMISSIVE FOR DELETE
+        TO authenticated
+        USING ((auth.uid() = user_id));
+
+        */
         let userFavorites = new Set();
         async function fetchUserFavorites() {
             try {
@@ -2315,7 +2347,7 @@
 
         async function handleFavoriteClick(event, adId) {
             event.preventDefault();
-            event.stopPropagation(); 
+            event.stopPropagation(); // Prevent navigating to product page
 
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
@@ -2336,7 +2368,7 @@
                 const heartIcon = heartButton.querySelector('i');
                 if (!heartIcon) {
                     console.warn("Could not find heart icon inside the favorite button.");
-                    return;
+                    return; // Exit if the icon isn't there
                 }
                 
                 const isFavorited = userFavorites.has(adId);
@@ -2358,6 +2390,7 @@
                 }
             } catch (error) {
                 console.error("Error updating favorite:", error);
+                // --- FIX: Add specific error message for RLS policy failure ---
                 let errorMessage = 'Could not update favorites. Please try again.';
                 if (error.message && error.message.includes("violates row-level security policy")) {
                     errorMessage = 'Favorites feature is not enabled. Please contact support.';
@@ -2380,7 +2413,7 @@
 
                 const { data: ads, error } = await supabase
                     .from('favorites')
-                    .select('listings(*, cities!city_id(name))')
+                    .select('listings(*, cities(name))')
                     .eq('user_id', user.id);
 
                 if (error) throw error;
@@ -2422,7 +2455,7 @@
                       <p class="text-gray-600 text-sm truncate">${ad.title}</p>
                       <div class="flex justify-between text-xs text-gray-500 mt-2">
                           <span>${locationText}</span>
-                          <span>${formatTimeAgo(ad.created_at)}</span>
+                          <span>${ad.created_at ? new Date(ad.created_at).toLocaleDateString() : 'Recently'}</span>
                       </div>
                   </a>
               </div>
@@ -2440,7 +2473,7 @@
             try {
                 let query = supabase
                     .from('listings')
-                    .select('*, cities!city_id(name)');
+                    .select('*, cities(name)');
                     
                 if (categoryId) {
                     query = query.eq('category_id', categoryId);
@@ -2449,26 +2482,6 @@
                 if (filters.city_id) {
                     query = query.eq('city_id', filters.city_id);
                 }
-
-                if (filters.price) {
-                    if (filters.price.min) query = query.gte('price', filters.price.min);
-                    if (filters.price.max) query = query.lte('price', filters.price.max);
-                }
-
-                // Handle attribute filters
-                Object.keys(filters).forEach(key => {
-                    if (key !== 'price' && key !== 'city_id' && key !== 'keyword') {
-                        const value = filters[key];
-                        if (Array.isArray(value)) { // Checkbox
-                            query = query.in(`attributes->>${key}`, value);
-                        } else if (typeof value === 'object' && (value.min || value.max)) { // Range
-                             if(value.min) query = query.gte(`attributes->>${key}`, value.min);
-                             if(value.max) query = query.lte(`attributes->>${key}`, value.max);
-                        } else { // Radio
-                            query = query.eq(`attributes->>${key}`, value);
-                        }
-                    }
-                });
                 
                 if (filters.keyword) {
                     const searchPattern = `%${filters.keyword}%`;
@@ -2497,13 +2510,7 @@
         }
 
         function handleFileUpload(event) {
-            const newFiles = Array.from(event.target.files).map(file => ({ type: 'file', file: file }));
-            stagedFiles = [...stagedFiles, ...newFiles];
-            renderImagePreviews();
-        }
-
-        function removeStagedFile(indexToRemove) {
-            stagedFiles.splice(indexToRemove, 1);
+            stagedFiles = Array.from(event.target.files).map(file => ({ type: 'file', file: file }));
             renderImagePreviews();
         }
 
@@ -2515,31 +2522,21 @@
                 stagedFiles = stagedFiles.slice(0, 8);
             }
             stagedFiles.forEach((fileWrapper, index) => {
-                const previewWrapper = document.createElement('div');
-                previewWrapper.className = 'relative w-24 h-24';
+                const reader = new FileReader();
+                const file = fileWrapper.type === 'base64' ? dataURLtoFile(fileWrapper.data, `capture${index}.jpg`) : fileWrapper.file;
                 
-                const img = document.createElement('img');
-                img.className = 'w-full h-full object-cover rounded-md border';
-
-                const removeBtn = document.createElement('button');
-                removeBtn.type = 'button'; // Prevent form submission
-                removeBtn.className = 'absolute top-1 right-1 bg-red-600 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs font-bold leading-none z-10 hover:bg-red-700';
-                removeBtn.innerHTML = '&times;';
-                removeBtn.onclick = () => removeStagedFile(index);
-                
-                previewWrapper.appendChild(img);
-                previewWrapper.appendChild(removeBtn);
-                previewContainer.appendChild(previewWrapper);
-
-                if (fileWrapper.type === 'url') {
-                    img.src = fileWrapper.data;
-                } else if (fileWrapper.type === 'file') {
-                    const reader = new FileReader();
-                    reader.onload = (e) => { img.src = e.target.result; };
-                    reader.readAsDataURL(fileWrapper.file);
-                } else if (fileWrapper.type === 'base64') {
-                    img.src = fileWrapper.data;
+                reader.onload = function(e) {
+                    const previewWrapper = document.createElement('div');
+                    previewWrapper.className = 'relative w-24 h-24';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'w-full h-full object-cover rounded-md border';
+                    
+                    previewWrapper.appendChild(img);
+                    previewContainer.appendChild(previewWrapper);
                 }
+                reader.readAsDataURL(file);
             });
         }
 
@@ -2547,9 +2544,10 @@
             const container = document.getElementById('product-detail-container');
             container.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
             try {
+                // Ensure user's favorites are loaded before rendering the page
                 await fetchUserFavorites();
 
-                const { data: ad, error: adError } = await supabase.from('listings').select('*, cities!city_id(name, states(name))').eq('id', adId).single();
+                const { data: ad, error: adError } = await supabase.from('listings').select('*, cities(name, states(name))').eq('id', adId).single();
                 
                 if (adError || !ad) { throw adError || new Error("Ad not found"); }
 
@@ -2562,13 +2560,12 @@
                 } else {
                     seller = sellerData || { id: 'unknown', first_name: 'Unknown', last_name: 'Seller', created_at: ad.created_at };
                 }
-                const sellerProfilePic = seller.avatar_url || `https://placehold.co/64x64/0A2342/D4AF37?text=${(seller.first_name || 'S').charAt(0).toUpperCase()}`;
 
                 const creationDate = seller.created_at ? new Date(seller.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'a while';
 
                 const { data: similarAds, error: similarAdsError } = await supabase
                     .from('listings')
-                    .select('*, cities!city_id(name)')
+                    .select('*')
                     .eq('category_id', ad.category_id)
                     .neq('id', adId)
                     .limit(4);
@@ -2577,23 +2574,25 @@
                 
                 const locationText = ad.cities ? `${ad.cities.name}, ${ad.cities.states.name}` : (ad.location || 'India');
 
-                const imageThumbnailsHTML = ad.image_urls && ad.image_urls.length > 1 ? `
-                    <div class="flex gap-2 mt-4 overflow-x-auto">
-                        ${ad.image_urls.map(url => `<img src="${url}" class="h-20 w-20 object-cover rounded-md cursor-pointer border-2 border-transparent hover:border-theme-accent" onclick="changeMainProductImage('${url}')">`).join('')}
-                    </div>
-                ` : '';
-                
-                const similarAdsHTML = similarAds && similarAds.length > 0 ? similarAds.map(similarAd => createAdCard(similarAd)).join('') : '<p class="col-span-full text-gray-500">No similar ads found.</p>';
+                const similarAdsHTML = similarAds && similarAds.length > 0 ? similarAds.map(similarAd => `
+                    <a href="#" onclick="showProductDetailPage(event, ${similarAd.id})" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
+                        <img src="${similarAd.image_urls && similarAd.image_urls.length > 0 ? similarAd.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=Ad'}" alt="Product" class="w-full h-40 object-cover">
+                        <div class="p-3">
+                            <h3 class="font-bold text-md mb-1">₹ ${similarAd.price.toLocaleString('en-IN')}</h3>
+                            <p class="text-gray-600 text-xs truncate">${similarAd.title}</p>
+                        </div>
+                    </a>
+                `).join('') : '<p class="col-span-full text-gray-500">No similar ads found.</p>';
                 
                 const pageHTML = `
                     <div class="flex items-center gap-4 mb-4">
                         <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                        <h1 class="text-2xl font-bold">Product Details</h1>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <div class="flex flex-col md:flex-row gap-8">
                             <div class="w-full md:w-2/3">
                                 <img id="main-product-image" src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/800x600/CBD5E0/4A5568?text=Product'}" alt="Main Product Image" class="w-full h-auto rounded-lg shadow-lg">
-                                ${imageThumbnailsHTML}
                             </div>
                             <div class="w-full md:w-1/3">
                                 <div class="border-b pb-4 mb-4">
@@ -2601,13 +2600,13 @@
                                     <p class="text-lg text-gray-600">${ad.title}</p>
                                     <div class="flex justify-between text-sm text-gray-500 mt-2">
                                         <span>${locationText}</span>
-                                        <span>Posted ${formatTimeAgo(ad.created_at)}</span>
+                                        <span>Posted ${new Date(ad.created_at).toLocaleDateString()}</span>
                                     </div>
                                 </div>
                                 <div class="border-b pb-4 mb-4">
                                     <h3 class="text-xl font-semibold mb-2">Seller Details</h3>
                                     <div class="flex items-center gap-4">
-                                        <img class="h-16 w-16 rounded-full object-cover" src="${sellerProfilePic}" alt="Seller profile">
+                                        <img class="h-16 w-16 rounded-full object-cover" src="https://placehold.co/64x64/0A2342/D4AF37?text=${(seller.first_name || 'S').charAt(0)}" alt="Seller profile">
                                         <div>
                                             <p class="font-bold text-lg">${seller.first_name} ${seller.last_name}</p>
                                             <p class="text-sm text-gray-500">Member since ${creationDate}</p>
@@ -2647,7 +2646,7 @@
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) throw new Error("User not logged in.");
 
-                const { data: ads, error } = await supabase.from('listings').select('*, cities!city_id(name)').eq('user_id', user.id).limit(6);
+                const { data: ads, error } = await supabase.from('listings').select('*, cities(name)').eq('user_id', user.id).limit(6);
                 
                 if (error) throw error;
 
@@ -2707,7 +2706,7 @@
 
             try {
                 const apiKey = ""; // Canvas will provide this
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
 
                 const systemPrompt = "You are an expert copywriter for a local online marketplace. Your goal is to write clear, friendly, and persuasive ad descriptions that help items sell quickly. Do not use markdown or formatting. Just provide the plain text for the description.";
                 const userQuery = `Write a short and appealing ad description for an item with the following details:\nCategory: ${categoryName}\nTitle: "${adTitle}"`;
@@ -2795,13 +2794,22 @@
             closeCamera();
             await analyzeImageWithAI(base64ImageData.split(',')[1]); // Send without the prefix
         }
+
+        function dataURLtoFile(dataurl, filename) {
+            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new File([u8arr], filename, {type:mime});
+        }
         
         async function analyzeImageWithAI(base64ImageData) {
             showToast('🤖 AI is analyzing your image...', 'info');
             
             try {
                 const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`;
 
                 const validCategories = ['cars', 'property', 'mobiles', 'bikes', 'electronics', 'commercial_vehicles', 'furniture', 'fashion', 'pets', 'services'];
                 const prompt = `Analyze this image of an item for sale. Provide a JSON object with 'category', 'title', and 'description'. The 'category' must be one of these exact values: ${validCategories.join(', ')}. The 'title' should be a short, catchy title. The 'description' should be a helpful summary.`;
@@ -2813,18 +2821,6 @@
                             { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
                         ]
                     }],
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: "OBJECT",
-                            properties: {
-                                "category": { "type": "STRING" },
-                                "title": { "type": "STRING" },
-                                "description": { "type": "STRING" }
-                            },
-                            required: ["category", "title", "description"]
-                        }
-                    }
                 };
 
                 const response = await fetch(apiUrl, {
@@ -2839,7 +2835,10 @@
                 const candidate = result.candidates?.[0];
                 
                 if (candidate && candidate.content?.parts?.[0]?.text) {
-                    const parsedJson = JSON.parse(candidate.content.parts[0].text);
+                    // Gemini might wrap the JSON in markdown, so we need to clean it
+                    const rawText = candidate.content.parts[0].text;
+                    const jsonText = rawText.replace(/```json\n?|\n?```/g, '').trim();
+                    const parsedJson = JSON.parse(jsonText);
                     
                     if (validCategories.includes(parsedJson.category)) {
                         document.getElementById('category-select').value = parsedJson.category;
@@ -2859,48 +2858,27 @@
             }
         }
 
-        // --- Location & Subcategory Functions ---
-        async function fetchAllSubcategories() {
+        // --- NEW: Location Functions ---
+        async function fetchAndPopulateLocations() {
             try {
-                const { data, error } = await supabase.from('subcategories').select('id, name, category_id');
-                if (error) throw error;
-                allSubcategories = data || [];
-                console.log(`Loaded ${allSubcategories.length} subcategories.`);
+                const { data: statesData, error: statesError } = await supabase.from('states').select('id, name').order('name');
+                if (statesError) throw statesError;
+                allStates = statesData;
+
+                const { data: citiesData, error: citiesError } = await supabase.from('cities').select('id, name, state_id').order('name');
+                if (citiesError) throw citiesError;
+                allCities = citiesData;
+
+                const stateSelect = document.getElementById('ad-state');
+                stateSelect.innerHTML = '<option value="">Select State</option>'; // Reset
+                allStates.forEach(state => {
+                    stateSelect.innerHTML += `<option value="${state.id}">${state.name}</option>`;
+                });
+
             } catch (error) {
-                console.error("Error fetching subcategories:", error);
-                showToast("Could not load sub-category data.", "error");
+                console.error("Error fetching locations:", error);
+                showToast("Could not load location data from the database.", "error");
             }
-        }
-
-        function fetchAndPopulateLocations() {
-            // This pattern prevents fetching the data multiple times.
-            if (!locationDataPromise) {
-                locationDataPromise = (async () => {
-                    try {
-                        const { data: statesData, error: statesError } = await supabase.from('states').select('id, name').order('name');
-                        if (statesError) throw statesError;
-                        allStates = statesData || []; // Ensure it's an array even if null
-
-                        const { data: citiesData, error: citiesError } = await supabase.from('cities').select('id, name, state_id').order('name');
-                        if (citiesError) throw citiesError;
-                        allCities = citiesData || []; // Ensure it's an array even if null
-
-                        // Populate the main ad form states dropdown once data is fetched.
-                        const stateSelect = document.getElementById('ad-state');
-                        stateSelect.innerHTML = '<option value="">Select State</option>'; // Reset
-                        allStates.forEach(state => {
-                            stateSelect.innerHTML += `<option value="${state.id}">${state.name}</option>`;
-                        });
-                        console.log(`Loaded ${allStates.length} states and ${allCities.length} cities.`);
-
-                    } catch (error) {
-                        console.error("Error fetching locations:", error);
-                        showToast("Could not load location data from the database.", "error");
-                        locationDataPromise = null; // Reset promise to allow retrying
-                    }
-                })();
-            }
-            return locationDataPromise;
         }
 
         function populateCities(stateId) {
@@ -2925,47 +2903,6 @@
             });
         }
         
-        function changeMainProductImage(url) {
-            document.getElementById('main-product-image').src = url;
-        }
-
-        // --- Time Formatting ---
-        function formatTimeAgo(dateString) {
-            if (!dateString) return '';
-            const date = new Date(dateString);
-            const now = new Date();
-            const seconds = Math.floor((now - date) / 1000);
-
-            let interval = seconds / 31536000;
-            if (interval > 1) {
-                const years = Math.floor(interval);
-                return `${years} year${years > 1 ? 's' : ''} ago`;
-            }
-            interval = seconds / 2592000;
-            if (interval > 1) {
-                const months = Math.floor(interval);
-                return `${months} month${months > 1 ? 's' : ''} ago`;
-            }
-            interval = seconds / 86400;
-            if (interval > 1) {
-                const days = Math.floor(interval);
-                return `${days} day${days > 1 ? 's' : ''} ago`;
-            }
-            interval = seconds / 3600;
-            if (interval > 1) {
-                const hours = Math.floor(interval);
-                return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-            }
-            interval = seconds / 60;
-            if (interval > 1) {
-                const minutes = Math.floor(interval);
-                return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-            }
-            if (seconds < 10) return "just now";
-            const s = Math.floor(seconds);
-            return `${s} second${s > 1 ? 's' : ''} ago`;
-        }
-        
         // --- CUSTOM CONFIRM MODAL ---
         let confirmCallback = null;
         function showConfirmModal(title, message, onConfirm) {
@@ -2980,63 +2917,36 @@
             confirmCallback = null;
         }
 
-        // --- LOGIN MODAL UI ---
-        const loginFormHTML = `
-            <div id="login-form">
-                <h2 class="text-2xl font-bold text-center mb-2">Login or Sign Up</h2>
-                <p class="text-center text-gray-500 mb-6">Enter your email to get started.</p>
-                <input id="login-email" type="email" placeholder="Enter Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent mb-4">
-                <button onclick="handleMagicLink(event)" class="w-full bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">Send Magic Link</button>
-                <div class="my-6 flex items-center">
-                    <div class="flex-grow border-t border-gray-300"></div>
-                    <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
-                    <div class="flex-grow border-t border-gray-300"></div>
-                </div>
-                <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
-                    <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
-                    <span class="font-semibold">Continue with Google</span>
-                </button>
-            </div>`;
-
         // --- EXPOSE FUNCTIONS TO GLOBAL SCOPE ---
         const functionsToExpose = {
-            showHomepage, showListingPage, showSellModal, toggleNotifications,
+            showHomepage, showListingPage, showLoginModal, showSellModal, toggleNotifications,
             markNotificationsAsRead, showUserProfilePage, showMyAdsPage, showPlaceholderPage,
             showHelpPage, logout, searchFromHome, goBack, showComingSoonPage, showProductDetailPage,
-            hideSellModal, showTncModal, hideTncModal, updateAttributeFields,
+            hideSellModal, hideLoginModal, showTncModal, hideTncModal, updateAttributeFields,
             handlePropertyTypeChange, showReraInfo, togglePostButton, openChatWindow,
-            closeChatWindow, toggleMute, 
-            handleProfilePictureChange, showEditProfilePage,
+            closeChatWindow, toggleMute, switchAuthForm, handleLogin, loginWithGoogle,
+            handleRegister, handlePasswordReset, handleProfilePictureChange, showEditProfilePage,
             handleProfileUpdate, handleEditAd, handleDeleteAd,
             hideAdSuccessModal, handleFileUpload, fetchAndDisplayMyAds, generateAdDescription,
             openCamera, closeCamera, captureImage, populateCities, populateFilterCities, applyFilters, resetFilters,
-            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage, openChatFromListPage, changeMainProductImage,
-            loginWithGoogle, handleMagicLink
+            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage, openChatFromListPage
         };
         Object.keys(functionsToExpose).forEach(funcName => {
             window[funcName] = functionsToExpose[funcName];
         });
-
-        // Add modal and auth functions to window scope to ensure they are accessible from HTML onclick
-        window.showLoginModal = function (event) {
-            if (event) event.preventDefault();
-            document.getElementById("login-container").innerHTML = loginFormHTML;
-            document.getElementById("loginModal").classList.remove("hidden");
-        };
-        window.hideLoginModal = function () {
-            document.getElementById("loginModal").classList.add("hidden");
-        };
 
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
             
+            // Add search functionality to the header search bar
             document.getElementById('header-search-input').addEventListener('keypress', async function(e) {
                 if (e.key === 'Enter') {
                     const keyword = e.target.value.trim();
                     if (keyword) {
                         e.preventDefault(); 
+                        // Default to 'all' category for a general search, but pass the keyword
                         await showListingPage(null, 'all', { keyword: keyword }); 
                     }
                 }
@@ -3077,13 +2987,9 @@
             document.getElementById('confirm-cancel-btn').addEventListener('click', hideConfirmModal);
 
             loadCategories();
-            // Start fetching data immediately on page load
-            fetchAllSubcategories();
-            fetchAndPopulateLocations();
+            await fetchAndPopulateLocations(); // <-- Fetch locations on load
         });
 
     </script>
 </body>
 </html>
-
-

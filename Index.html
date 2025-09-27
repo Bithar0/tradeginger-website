@@ -902,6 +902,28 @@
         USING (true);
         */
 
+        // --- Supabase RLS Policies for Profiles & Favorites ---
+        // IMPORTANT: Ensure users can manage their own profiles and favorites.
+        /*
+        -- Profiles Table
+        CREATE POLICY "Users can insert their own profile."
+        ON public.profiles FOR INSERT
+        TO authenticated
+        WITH CHECK (auth.uid() = id);
+
+        CREATE POLICY "Users can update their own profile."
+        ON public.profiles FOR UPDATE
+        TO authenticated
+        USING (auth.uid() = id);
+        
+        -- Favorites Table
+        CREATE POLICY "Users can manage their own favorites."
+        ON public.favorites FOR ALL
+        TO authenticated
+        USING (auth.uid() = user_id)
+        WITH CHECK (auth.uid() = user_id);
+        */
+
 
         // --- Category Mapping ---
         const categoryMapping = {
@@ -1804,6 +1826,38 @@
             try {
                 const user = session?.user;
                 if (user) {
+                    // --- START: New User Profile Creation ---
+                    // On successful sign-in, check if a profile exists. If not, create one.
+                    // This handles new user registration via magic link or OAuth.
+                    if (event === 'SIGNED_IN') {
+                        const { data: profile, error: profileError } = await supabase
+                            .from('profiles')
+                            .select('id')
+                            .eq('id', user.id)
+                            .single();
+
+                        // 'PGRST116' means no row was found, which indicates a new user.
+                        if (profileError && profileError.code === 'PGRST116') {
+                            const { error: insertError } = await supabase.from('profiles').insert({
+                                id: user.id,
+                                email: user.email,
+                                first_name: user.user_metadata?.full_name?.split(' ')[0] || '',
+                                last_name: user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+                                avatar_url: user.user_metadata?.avatar_url,
+                            });
+
+                            if (insertError) {
+                                console.error("Error creating new user profile:", insertError);
+                                showToast("Failed to set up your profile.", "error");
+                            } else {
+                                showToast("Welcome to TradeGinger!", "success");
+                            }
+                        } else if (profileError) {
+                            console.error("Error checking for user profile:", profileError);
+                        }
+                    }
+                    // --- END: New User Profile Creation ---
+
                     await fetchUserFavorites();
                     if (notificationSubscription) await supabase.removeChannel(notificationSubscription);
                     fetchInitialNotificationCount(user.id);
@@ -2865,6 +2919,7 @@
     </script>
 </body>
 </html>
+
 
 
 

@@ -1,1 +1,2995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self'; 
+        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com; 
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; 
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; 
+        img-src 'self' https: data:; 
+        connect-src 'self' https://crepnlidfdoskighdhdt.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://crepnlidfdoskighdhdt.supabase.co;
+        frame-src 'self';
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeGinger - Buy & Sell Locally</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa; /* Softer, off-white background */
+        }
+        .hero-section {
+            background: linear-gradient(rgba(26, 32, 44, 0.7), rgba(26, 32, 44, 0.7)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1600&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            overflow: hidden;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        #sellModal .modal-content::-webkit-scrollbar, #loginModal .modal-content::-webkit-scrollbar, #tncModal .modal-content::-webkit-scrollbar, #chat-messages::-webkit-scrollbar, #notification-list::-webkit-scrollbar { width: 8px; }
+        #sellModal .modal-content::-webkit-scrollbar-track, #loginModal .modal-content::-webkit-scrollbar-track, #tncModal .modal-content::-webkit-scrollbar-track, #chat-messages::-webkit-scrollbar-track, #notification-list::-webkit-scrollbar-track { background: #f1f1f1; }
+        #sellModal .modal-content::-webkit-scrollbar-thumb, #loginModal .modal-content::-webkit-scrollbar-thumb, #tncModal .modal-content::-webkit-scrollbar-thumb, #chat-messages::-webkit-scrollbar-thumb, #notification-list::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        #sellModal .modal-content::-webkit-scrollbar-thumb:hover, #loginModal .modal-content::-webkit-scrollbar-thumb:hover, #tncModal .modal-content::-webkit-scrollbar-thumb:hover, #notification-list::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        /* Dropdown CSS */
+        .profile-dropdown, .category-dropdown, #notification-dropdown { display: none; }
+        .profile-button:focus-within .profile-dropdown, .category-item:hover > .category-dropdown { display: block; }
+
+        /* --- NEW Professional & Classy Theme Colors --- */
+        .theme-primary { color: #1a202c; /* Deep Charcoal */ }
+        .theme-accent { color: #b79438; /* Refined Gold */ }
+        .bg-theme-primary { background-color: #1a202c; }
+        .hover\:bg-theme-primary-dark:hover { background-color: #11151c; }
+        .bg-theme-accent { background-color: #b79438; }
+        .hover\:bg-theme-accent-dark:hover { background-color: #a08130; }
+        .text-theme-accent { color: #b79438; }
+        .hover\:text-theme-accent:hover { color: #a08130; }
+        .focus\:ring-theme-accent:focus { --tw-ring-color: #b79438; }
+        .border-theme-accent { border-color: #b79438; }
+        
+        .beer-cap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background-color: #1a202c; /* New Primary */
+            color: #b79438; /* New Accent */
+            border-radius: 50%;
+            font-size: 1rem;
+            box-shadow: 0 0 0 2px #f8f9fa, 0 0 0 3px #aaa, inset 0 1px 3px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .beer-cap:hover {
+            transform: scale(1.1) rotate(5deg) !important;
+        }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] summary .accordion-icon { transform: rotate(180deg); }
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: red;
+        }
+        /* Toast Notification */
+        #toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+        }
+        #toast-notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -10px);
+        }
+        .toast-success { background-color: #28a745; }
+        .toast-error { background-color: #dc3545; }
+        .toast-info { background-color: #17a2b8; }
+
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #b79438; /* Refined Gold */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px; /* Adjust as needed */
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header id="header-logged-out" class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#" onclick="showHomepage(event)" class="text-2xl font-bold theme-primary">TradeGinger</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#" onclick="showListingPage(event, 'cars')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Cars</a>
+                        <a href="#" onclick="showListingPage(event, 'mobiles')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Mobiles</a>
+                        <a href="#" onclick="showListingPage(event, 'electronics')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Electronics</a>
+                        <a href="#" onclick="showListingPage(event, 'property')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Property</a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <a href="#" onclick="showLoginModal(event)" class="text-sm font-medium text-gray-700 hover:text-theme-accent mr-4">Login</a>
+                    <button onclick="showSellModal()" class="flex items-center bg-theme-accent text-white px-4 py-2 rounded-full shadow-lg hover:bg-theme-accent-dark transition duration-300">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        SELL
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <header id="header-logged-in" class="bg-white shadow-md sticky top-0 z-50 hidden">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-8">
+                    <a href="#" onclick="showHomepage(event)" class="text-2xl font-bold theme-primary">TradeGinger</a>
+                    <a href="#" onclick="showHomepage(event)" class="text-xl text-gray-500 hover:text-theme-accent" title="Home">
+                        <i class="fas fa-home"></i>
+                    </a>
+                    <div class="hidden md:flex items-center border-2 rounded-full p-1 w-96">
+                        <i class="fas fa-search text-gray-400 mx-3"></i>
+                        <input id="header-search-input" type="text" placeholder="Search for cars, mobiles..." class="w-full bg-transparent focus:outline-none text-sm" autocomplete="nope">
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                     <button onclick="showMyChatsPage(event)" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700" title="My Chats">
+                         <i class="fas fa-comment-dots text-xl"></i>
+                         <span id="chat-notification-dot" class="hidden notification-dot"></span>
+                     </button>
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700">
+                            <i class="far fa-bell text-xl"></i>
+                            <span id="main-notification-dot" class="hidden notification-dot"></span>
+                        </button>
+                        <div id="notification-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50 overflow-hidden">
+                            <div class="p-4 font-bold border-b flex justify-between items-center">
+                                <span>Notifications</span>
+                                <a href="#" onclick="markNotificationsAsRead(event, true)" class="text-xs font-normal text-theme-accent hover:underline">Mark all as read</a>
+                            </div>
+                            <div id="notification-list" class="divide-y max-h-80 overflow-y-auto">
+                                <p id="no-notifications-message" class="p-4 text-sm text-gray-500 text-center hidden">You have no new notifications.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative profile-button">
+                        <button class="flex items-center space-x-2">
+                            <img id="header-profile-pic" class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" alt="User profile">
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="profile-dropdown absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-50 overflow-hidden">
+                            <div class="p-4">
+                                <div class="flex items-center gap-3">
+                                    <img id="dropdown-profile-pic" class="h-12 w-12 rounded-full object-cover" src="https://placehold.co/48x48/0A2342/D4AF37?text=U" alt="User profile">
+                                    <div>
+                                        <p id="dropdown-username" class="font-semibold text-gray-800">Unknown</p>
+                                        <a href="#" onclick="showUserProfilePage(event)" class="text-sm text-theme-accent hover:underline">View and edit profile</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <nav class="border-t border-gray-100">
+                                <a href="#" onclick="showMyAdsPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-ad w-5 text-center text-gray-500"></i> My ADS</a>
+                                <a href="#" onclick="showMyFavoritesPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-heart w-5 text-center text-gray-500"></i> My Favorites</a>
+                                <a href="#" onclick="showMyChatsPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-comments w-5 text-center text-gray-500"></i> My Chats</a>
+                            </nav>
+                            <div class="border-t border-gray-100">
+                                <a href="#" onclick="showHelpPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-question-circle w-5 text-center text-gray-500"></i> Help</a>
+                                <a href="#" onclick="logout(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-sign-out-alt w-5 text-center text-gray-500"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="showSellModal()" class="flex items-center bg-theme-accent text-white px-4 py-2 rounded-full shadow-lg hover:bg-theme-accent-dark transition duration-300"><i class="fas fa-plus-circle mr-2"></i>SELL</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div id="homepage">
+        <section class="hero-section text-white py-20">
+            <div class="absolute top-4 left-4 flex space-x-3 z-20">
+                <a href="#" onclick="showListingPage(event, 'cars')" class="beer-cap" style="transform: rotate(-15deg);"><i class="fas fa-car"></i></a>
+                <a href="#" onclick="showListingPage(event, 'mobiles')" class="beer-cap" style="transform: rotate(10deg);"><i class="fas fa-mobile-alt"></i></a>
+                <a href="#" onclick="showListingPage(event, 'property')" class="beer-cap" style="transform: rotate(8deg);"><i class="fas fa-building"></i></a>
+                <a href="#" onclick="showListingPage(event, 'furniture')" class="beer-cap" style="transform: rotate(-12deg);"><i class="fas fa-couch"></i></a>
+                <a href="#" onclick="showListingPage(event, 'bikes')" class="beer-cap" style="transform: rotate(15deg);"><i class="fas fa-motorcycle"></i></a>
+                <a href="#" onclick="showListingPage(event, 'pets')" class="beer-cap" style="transform: rotate(-5deg);"><i class="fas fa-dog"></i></a>
+            </div>
+            
+            <div class="container mx-auto px-4 text-center relative z-10">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-4">TradeGinger</h1>
+                <p class="text-lg md:text-xl mb-8">Find the best deals near you</p>
+                <div class="max-w-2xl mx-auto bg-white rounded-full p-2 flex items-center shadow-2xl">
+                    <div class="flex-grow flex items-center">
+                         <i class="fas fa-search text-gray-400 mx-3"></i>
+                        <input id="hero-search-input" type="text" placeholder="Search for anything... (e.g., 'iPhone in Mumbai')" class="w-full bg-transparent text-gray-700 focus:outline-none" autocomplete="nope">
+                    </div>
+                    <button onclick="searchFromHome(event)" class="bg-theme-accent text-white rounded-full px-6 py-3 font-semibold hover:bg-theme-accent-dark transition duration-300 flex-shrink-0">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </section>
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-6 text-center">Browse by Category</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 theme-primary">Marketplace</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <a href="#" onclick="showListingPage(event, 'mobiles')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-mobile-alt text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Mobiles</span></a>
+                            <a href="#" onclick="showListingPage(event, 'laptops')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-laptop text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Laptops</span></a>
+                            <a href="#" onclick="showListingPage(event, 'furniture')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-couch text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Furniture</span></a>
+                            <a href="#" onclick="showListingPage(event, 'fashion')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-tshirt text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Fashion</span></a>
+                            <a href="#" onclick="showListingPage(event, 'pets')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-dog text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Pets</span></a>
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="text-xl font-semibold mb-4 theme-primary">Vehicles</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <a href="#" onclick="showListingPage(event, 'cars')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-car text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Cars</span></a>
+                             <a href="#" onclick="showListingPage(event, 'bikes')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-motorcycle text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Bikes</span></a>
+                            <a href="#" onclick="showListingPage(event, 'commercial_vehicles')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-truck text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">Commercial</span></a>
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="text-xl font-semibold mb-4 theme-primary">Real Estate</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <a href="#" onclick="showListingPage(event, 'property')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-building text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">For Sale</span></a>
+                            <a href="#" onclick="showListingPage(event, 'property')" class="p-4 bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300"><i class="fas fa-sign text-3xl text-theme-accent mb-2"></i><span class="block font-semibold text-sm">For Rent</span></a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="listingpage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row gap-8">
+                <aside id="filter-sidebar" class="w-full md:w-1/3">
+                    </aside>
+                <section class="w-full md:w-2/3">
+                    <div class="flex items-center gap-4 mb-4">
+                        <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                        <h1 id="listing-page-title" class="text-2xl font-bold"></h1>
+                    </div>
+                    <div id="listing-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="helppage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                <div class="prose max-w-none">
+                    <div class="flex items-center gap-4 mb-6">
+                        <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                        <h1 class="text-3xl font-bold">Help Center & Legal Information</h1>
+                    </div>
+                    <p class="mb-8">Welcome to tradeginger.com (the “Website”), a platform that facilitates the connection between buyers and sellers for various goods and services. The Website is owned and operated by TradeGinger Inc. (hereinafter referred to as “TradeGinger,” “we,” “us,” or “our”).</p>
+                    <p>By accessing or using this Website, you agree to be bound by these Terms and Conditions (the “Terms”), our Privacy Policy, and all other policies and guidelines incorporated by reference. If you do not agree to these Terms, you must not use or access this Website. These Terms constitute a legally binding agreement between you and TradeGinger.</p>
+                    
+                    <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">1. Nature of Our Services and Intermediary Status</h2>
+                    <h3 class="text-xl font-semibold mt-4">1.1. Platform as an Intermediary</h3>
+                    <p>TradeGinger is an online platform that acts as an “intermediary” as defined under the Information Technology Act, 2000. We provide a venue for users to list, browse, and respond to classified advertisements. We are not a party to any transaction between the users.</p>
+                    <h3 class="text-xl font-semibold mt-4">1.2. No Guarantee or Endorsement</h3>
+                    <p>We do not own, sell, or purchase any of the products or services listed on the Website. We do not endorse or make any representations regarding the accuracy, quality, or legality of the listings, the truth or accuracy of the user-generated content, or the ability of sellers to sell items or the ability of buyers to pay for items.</p>
+
+                    <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">2. User Obligations and Prohibited Activities</h2>
+                    <h3 class="text-xl font-semibold mt-4">2.1. Eligibility</h3>
+                    <p>To use this Website, you must be a resident of India, be at least 18 years old, and be legally capable of entering into a binding contract.</p>
+                    <h3 class="text-xl font-semibold mt-4">2.2. Account Responsibility</h3>
+                    <p>You are solely responsible for maintaining the confidentiality of your account information and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account.</p>
+                    <h3 class="text-xl font-semibold mt-4">2.3. Prohibited Content and Conduct</h3>
+                    <p>You agree not to list, upload, post, transmit, or share any content that:</p>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li>Is unlawful, fraudulent, defamatory, obscene, or sexually explicit.</li>
+                        <li>Violates any law or regulation in force in India, including but not to the sale of illegal goods, weapons, or narcotics.</li>
+                        <li>Infringes upon any third party’s intellectual property rights (e.g., copyright, trademarks) or other proprietary rights.</li>
+                        <li>Contains any computer virus, malware, or other malicious code.</li>
+                        <li>Is misleading, deceptive, or constitutes unfair trade practice under the Consumer Protection Act, 2019.</li>
+                        <li>Violates the Indecent Representation of Women (Prohibition) Act, 1986.</li>
+                    </ul>
+                    <h3 class="text-xl font-semibold mt-4">2.4. Due Diligence and Cooperation</h3>
+                    <p>You agree to cooperate with us and any law enforcement agency in the investigation of any suspected unlawful activity or violation of these Terms. We reserve the right to remove any listing or user account that violates these Terms without notice.</p>
+                    
+                    <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">3. Intellectual Property Rights</h2>
+                    <h3 class="text-xl font-semibold mt-4">3.1. Our IP</h3>
+                    <p>All content on the Website, including text, graphics, logos, and software, is the property of TradeGinger or its licensors and is protected by Indian and international copyright and trademark laws.</p>
+                    <h3 class="text-xl font-semibold mt-4">3.2. User-Generated Content</h3>
+                    <p>By submitting content to the Website, you grant us a worldwide, perpetual, irrevocable, royalty-free, and non-exclusive license to use, reproduce, modify, adapt, publish, and display such content on the Website and other related platforms. You warrant that you have all necessary rights to grant this license.</p>
+
+                    <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">4. Disclaimer of Warranties and Limitation of Liability</h2>
+                    <h3 class="text-xl font-semibold mt-4">4.1. As-Is Basis</h3>
+                    <p>The Website and all services are provided on an “as is” and “as available” basis. We make no warranties, express or implied, regarding the Website's operation or the information, content, or materials included.</p>
+                    <h3 class="text-xl font-semibold mt-4">4.2. Limitation of Liability</h3>
+                    <p>To the maximum extent permitted by law, TradeGinger, its affiliates, officers, directors, and employees shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from:</p>
+                     <ul class="list-disc list-inside space-y-1">
+                          <li>Your use or inability to use the Website.</li>
+                          <li>Any unauthorized access to or use of your personal information.</li>
+                          <li>Any content posted by a user or third party on the Website.</li>
+                          <li>Any claims arising from the transactions between buyers and sellers.</li>
+                     </ul>
+
+                    <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">5. Indemnification</h2>
+                    <p>You agree to indemnify, defend, and hold harmless TradeGinger, its officers, directors, employees, and agents from and against any and all claims, liabilities, damages, losses, and expenses, including reasonable legal fees, arising out of or in connection with:</p>
+                     <ul class="list-disc list-inside space-y-1">
+                          <li>Your use of the Website.</li>
+                          <li>Your violation of these Terms.</li>
+                          <li>Your infringement of any intellectual property or other right of any person or entity.</li>
+                          <li>Any transaction or dispute between you and another user.</li>
+                     </ul>
+
+                    <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">6. Privacy and Data Protection</h2>
+                    <h3 class="text-xl font-semibold mt-4">6.1. Privacy Policy</h3>
+                    <p>Your use of the Website is also governed by our Privacy Policy, which is incorporated into these Terms by reference. The Privacy Policy explains how we collect, use, and protect your personal data in accordance with the Digital Personal Data Protection Act, 2023.</p>
+                    <h3 class="text-xl font-semibold mt-4">6.2. Grievance Redressal</h3>
+                    <p>In compliance with the IT Act, 2000, and the DPDP Act, 2023, we have appointed a Grievance Officer. For any complaints or issues, please contact the Grievance Officer at Grievance Officer, grievance@tradeginger.com. We will acknowledge your complaint within 48 hours and endeavor to resolve it within one month.</p>
+
+                    <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">7. Governing Law and Dispute Resolution</h2>
+                    <h3 class="text-xl font-semibold mt-4">7.1. Governing Law</h3>
+                    <p>These Terms shall be governed by and construed in accordance with the laws of India, without regard to its conflict of law provisions.</p>
+                    <h3 class="text-xl font-semibold mt-4">7.2. Arbitration</h3>
+                    <p>Any dispute, controversy, or claim arising out of or in connection with these Terms, including any question regarding its existence, validity, or termination, shall be referred to and finally resolved by arbitration in accordance with the Arbitration and Conciliation Act, 1996. The arbitration shall be conducted by a single arbitrator appointed by mutual consent of the parties. The seat and venue of the arbitration shall be Gurugram, and the proceedings shall be conducted in the English language.</p>
+                    <h3 class="text-xl font-semibold mt-4">7.3. Jurisdiction</h3>
+                    <p>Subject to the arbitration clause, the courts in Gurugram shall have exclusive jurisdiction over any matter arising from these Terms.</p>
+
+                    <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">8. Miscellaneous</h2>
+                    <h3 class="text-xl font-semibold mt-4">8.1. Termination</h3>
+                    <p>We reserve the right to terminate your access to the Website at our sole discretion, without notice, for any reason, including but not to a breach of these Terms.</p>
+                    <h3 class="text-xl font-semibold mt-4">8.2. Changes to Terms</h3>
+                    <p>We may modify these Terms at any time by posting the revised Terms on the Website. Your continued use of the Website after such a posting constitutes your acceptance of the revised Terms.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="placeholderpage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto text-center">
+                 <div class="flex items-center justify-center gap-4 mb-6">
+                    <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                    <h1 class="text-3xl font-bold theme-primary">Coming Soon!</h1>
+                </div>
+                <p class="mt-4 text-lg text-gray-600">We are working hard on this feature and will be updating soon.</p>
+            </div>
+        </main>
+    </div>
+
+    <div id="comingsoonpage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto text-center">
+                 <div class="flex items-center justify-center gap-4 mb-6">
+                    <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                    <h1 class="text-3xl font-bold text-red-600">We would be Live soon</h1>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div id="productdetailpage" class="hidden">
+        <main id="product-detail-container" class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            </main>
+    </div>
+
+    <div id="myadspage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex items-center gap-4 mb-6">
+                <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                <h1 class="text-3xl font-bold">My Ads</h1>
+            </div>
+            <div id="my-ads-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                </div>
+        </main>
+    </div>
+
+    <div id="userprofilepage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="w-full md:w-1/4">
+                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                        <img id="profile-page-pic" class="h-24 w-24 rounded-full object-cover mx-auto mb-4" src="https://placehold.co/96x96/0A2342/D4AF37?text=M" alt="User profile">
+                        <h2 id="profile-page-username" class="text-2xl font-bold">Manas</h2>
+                        <p id="profile-page-member-since" class="text-sm text-gray-500">Member since Sep 2014</p>
+                        <div class="text-left text-sm mt-4">
+                            <p class="font-semibold mb-2">User verified with:</p>
+                            <div class="flex items-center gap-2 text-gray-600">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span>Phone</span>
+                            </div>
+                             <div class="flex items-center gap-2 text-gray-600">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span>Email</span>
+                            </div>
+                        </div>
+                        <button onclick="showEditProfilePage(event)" class="w-full mt-6 bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">Edit Profile</button>
+                    </div>
+                </div>
+                <div id="profile-ads-container" class="w-full md:w-3/4">
+                    </div>
+            </div>
+        </main>
+    </div>
+    
+    <div id="editprofilepage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+                <div class="flex items-center gap-4 mb-6 border-b pb-4">
+                    <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                    <h1 class="text-2xl font-bold">Edit Profile</h1>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">Profile picture</h3>
+                        <div class="flex items-center gap-4">
+                             <img id="profile-pic-preview" class="h-24 w-24 rounded-full object-cover" src="https://placehold.co/96x96/0A2342/D4AF37?text=M" alt="User profile">
+                             <input type="file" id="profile-pic-upload" class="hidden" accept="image/*" onchange="handleProfilePictureChange(event)">
+                             <button onclick="document.getElementById('profile-pic-upload').click()" class="border border-gray-300 px-4 py-2 rounded-md text-sm font-semibold hover:bg-gray-50">Change Picture</button>
+                        </div>
+                        <div class="mt-8">
+                            <h3 class="text-lg font-semibold mb-4">Basic information</h3>
+                            <div class="space-y-4">
+                                <input id="edit-profile-name-input" type="text" value="Manas" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                                <textarea id="edit-profile-about-input" placeholder="About me (optional)" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent h-24"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2">Contact information</h3>
+                             <div class="space-y-4">
+                                <input id="edit-profile-email-input" type="email" value="user@example.com" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent bg-gray-100" readonly>
+                                <input id="edit-profile-phone-input" type="tel" value="+919876543210" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                            </div>
+                        </div>
+                         <div>
+                            <h3 class="text-lg font-semibold mb-2">Additional information</h3>
+                             <div class="flex items-center justify-between p-4 border rounded-lg">
+                                 <div class="flex items-center gap-3">
+                                     <i class="fab fa-google text-red-500 text-2xl"></i>
+                                     <div>
+                                         <p class="font-semibold">Google</p>
+                                         <p class="text-xs text-gray-500">Link your Google account to seamlessly use your contact list.</p>
+                                     </div>
+                                 </div>
+                                 <button class="border-2 border-red-500 text-red-500 px-4 py-1 rounded-full text-sm font-semibold hover:bg-red-50">Unlink</button>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="flex justify-end gap-4 border-t pt-6 mt-8">
+                    <button onclick="showUserProfilePage(event)" class="text-gray-600 font-semibold hover:text-theme-primary">Discard</button>
+                    <button onclick="handleProfileUpdate(event)" class="bg-theme-primary text-white px-6 py-2 rounded-md font-semibold hover:bg-theme-primary-dark">Save changes</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="myfavoritespage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex items-center gap-4 mb-6">
+                <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                <h1 class="text-3xl font-bold">My Favorites</h1>
+            </div>
+            <div id="my-favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                </div>
+        </main>
+    </div>
+
+    <div id="mychatspage" class="hidden">
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex items-center gap-4 mb-6">
+                <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                <h1 class="text-3xl font-bold">My Chats</h1>
+            </div>
+            <div id="my-chats-list" class="bg-white rounded-lg shadow-md max-w-4xl mx-auto overflow-hidden">
+                </div>
+        </main>
+    </div>
+
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div><h3 class="font-bold mb-4">Popular Categories</h3><ul><li class="mb-2"><a href="#" onclick="showListingPage(event, 'cars')" class="hover:text-theme-accent">Cars</a></li><li class="mb-2"><a href="#" onclick="showListingPage(event, 'mobiles')" class="hover:text-theme-accent">Mobiles</a></li></ul></div>
+                <div><h3 class="font-bold mb-4">About Us</h3><ul><li class="mb-2"><a href="#" onclick="showComingSoonPage(event)" class="hover:text-theme-accent">About TradeGinger</a></li><li class="mb-2"><a href="#" onclick="showComingSoonPage(event)" class="hover:text-theme-accent">Careers</a></li></ul></div>
+                <div><h3 class="font-bold mb-4">TradeGinger</h3><ul><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Help</a></li><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Legal & Privacy</a></li></ul></div>
+                <div><h3 class="font-bold mb-4">Follow Us</h3><div class="flex space-x-4"><a href="#" onclick="showComingSoonPage(event)" class="text-2xl hover:text-theme-accent"><i class="fab fa-facebook-f"></i></a><a href="#" onclick="showComingSoonPage(event)" class="text-2xl hover:text-theme-accent"><i class="fab fa-twitter"></i></a><a href="#" onclick="showComingSoonPage(event)" class="text-2xl hover:text-theme-accent"><i class="fab fa-instagram"></i></a></div></div>
+            </div>
+            <div class="text-center text-gray-400 mt-8 pt-8 border-t border-gray-700">&copy; 2025 TradeGinger. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <div id="sellModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full z-50 flex items-center justify-center">
+        <div class="relative mx-auto border w-full max-w-3xl shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center p-4 border-b"><p class="text-2xl font-bold">Post Your Ad</p><div class="cursor-pointer z-50" onclick="hideSellModal()"><i class="fas fa-times text-xl"></i></div></div>
+            <div class="p-6 modal-content" style="max-height: 85vh; overflow-y: auto;">
+                <form id="adForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Category*</label>
+                        <select id="category-select" onchange="updateAttributeFields()" class="mt-1 block w-full input-style">
+                            <option value="">Select a Category</option>
+                        </select>
+                    </div>
+                    <div id="category-attributes" class="space-y-4 border-t pt-4 mt-4"></div>
+                    <div class="border-t pt-6 mt-6 space-y-6">
+                        <h3 class="text-xl font-bold text-gray-900">Confirm your Location</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="ad-state" class="label-style">State*</label>
+                                <select id="ad-state" onchange="populateCities(this.value)" class="mt-1 block w-full input-style" required>
+                                    <option value="">Select State</option>
+                                    </select>
+                            </div>
+                            <div>
+                                <label for="ad-city" class="label-style">City*</label>
+                                <select id="ad-city" class="mt-1 block w-full input-style" required>
+                                    <option value="">Select City</option>
+                                    </select>
+                            </div>
+                        </div>
+                         <div>
+                            <label for="ad-pincode" class="label-style">Pincode (Optional)</label>
+                            <input type="text" id="ad-pincode" placeholder="e.g., 122001" class="mt-1 block w-full input-style">
+                        </div>
+                    </div>
+                    <div class="border-t pt-6 mt-6 space-y-6">
+                        <div>
+                            <label class="label-style">Ad Title*</label>
+                            <input type="text" id="ad-title" class="mt-1 block w-full input-style" required>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center">
+                                <label class="label-style">Description</label>
+                                <button type="button" onclick="generateAdDescription(event)" class="text-xs bg-purple-100 text-purple-700 font-semibold px-2 py-1 rounded-md hover:bg-purple-200">✨ Generate with AI</button>
+                            </div>
+                            <textarea rows="4" id="ad-description" placeholder="Include condition, features, and reason for selling" class="mt-1 block w-full input-style"></textarea>
+                        </div>
+                        <div>
+                            <label class="label-style">Set a Price (₹)*</label>
+                            <input type="number" id="ad-price" placeholder="e.g., 15000" class="mt-1 block w-full input-style" required>
+                        </div>
+                        <div>
+                            <label class="label-style">Upload Photos</label>
+                            <div id="camera-view" class="hidden relative mb-4">
+                                <video id="camera-stream" class="w-full rounded-md" autoplay playsinline></video>
+                                <canvas id="camera-canvas" class="hidden"></canvas>
+                                <button type="button" onclick="captureImage(event)" class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-full h-16 w-16 flex items-center justify-center border-4 border-gray-300">
+                                    <div class="bg-red-500 h-12 w-12 rounded-full"></div>
+                                </button>
+                                <button type="button" onclick="closeCamera(event)" class="absolute top-2 right-2 bg-black bg-opacity-50 text-white rounded-full h-8 w-8 flex items-center justify-center">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                                <div class="space-y-1 text-center">
+                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
+                                    <div class="flex text-sm text-gray-600">
+                                        <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-theme-accent hover\:text-theme-accent">
+                                            <span>Upload a file</span>
+                                            <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple accept="image/*" onchange="handleFileUpload(event)">
+                                        </label>
+                                        <p class="pl-1">or</p>
+                                        <button type="button" onclick="openCamera(event)" class="ml-1 relative cursor-pointer bg-white rounded-md font-medium text-theme-accent hover\:text-theme-accent">Take a Picture with AI</button>
+                                    </div>
+                                    <p class="text-xs text-gray-500">PNG, JPG up to 5MB</p>
+                                </div>
+                            </div>
+                             <div id="image-preview-container" class="mt-4 flex flex-wrap gap-2"></div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input id="terms-checkbox" type="checkbox" onchange="togglePostButton()" class="h-4 w-4 text-theme-accent rounded focus:ring-theme-accent">
+                            <label for="terms-checkbox" class="text-xs text-gray-600">I have read all <a href="#" onclick="showTncModal(event)" class="underline text-theme-primary">T&C</a> AND I accepted the T&C*</label>
+                        </div>
+                    </div>
+                    <div class="pt-6 border-t">
+                        <button id="post-ad-button" type="submit" class="w-full bg-theme-accent text-white py-3 px-4 rounded-md font-semibold text-lg opacity-50 cursor-not-allowed" disabled>Post Now</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div id="tncModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 h-full w-full z-50 flex items-center justify-center">
+        <div class="relative mx-auto border w-full max-w-2xl shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center p-4 border-b">
+                <p class="text-2xl font-bold">Terms and Conditions</p>
+                <div class="cursor-pointer z-50" onclick="hideTncModal()">
+                    <i class="fas fa-times text-xl"></i>
+                </div>
+            </div>
+            <div class="p-6 modal-content prose prose-sm max-w-none" style="max-height: 70vh; overflow-y: auto;">
+                <p>Welcome to tradeginger.com (the “Website”), a platform that facilitates the connection between buyers and sellers for various goods and services. The Website is owned and operated by TradeGinger Inc. (hereinafter referred to as “TradeGinger,” “we,” “us,” or “our”).</p>
+                <p>By accessing or using this Website, you agree to be bound by these Terms and Conditions (the “Terms”), our Privacy Policy, and all other policies and guidelines incorporated by reference. If you do not agree to these Terms, you must not use or access this Website. These Terms constitute a legally binding agreement between you and TradeGinger.</p>
+                
+                <h3 class="text-xl font-semibold mt-4">1. Nature of Our Services and Intermediary Status</h3>
+                <h4 class="font-semibold mt-2">1.1. Platform as an Intermediary</h4>
+                <p>TradeGinger is an online platform that acts as an “intermediary” as defined under the Information Technology Act, 2000. We provide a venue for users to list, browse, and respond to classified advertisements. We are not a party to any transaction between the users.</p>
+                <h4 class="font-semibold mt-2">1.2. No Guarantee or Endorsement</h4>
+                <p>We do not own, sell, or purchase any of the products or services listed on the Website. We do not endorse or make any representations regarding the accuracy, quality, or legality of the listings, the truth or accuracy of the user-generated content, or the ability of sellers to sell items or the ability of buyers to pay for items.</p>
+
+                <h3 class="text-xl font-semibold mt-4">2. User Obligations and Prohibited Activities</h3>
+                 <h4 class="font-semibold mt-2">2.1. Eligibility</h4>
+                <p>To use this Website, you must be a resident of India, be at least 18 years old, and be legally capable of entering into a binding contract.</p>
+                <h4 class="font-semibold mt-2">2.2. Account Responsibility</h4>
+                <p>You are solely responsible for maintaining the confidentiality of your account information and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account.</p>
+                <h4 class="font-semibold mt-2">2.3. Prohibited Content and Conduct</h4>
+                <p>You agree not to list, upload, post, transmit, or share any content that:</p>
+                <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li>Is unlawful, fraudulent, defamatory, obscene, or sexually explicit.</li>
+                    <li>Violates any law or regulation in force in India, including but not to the sale of illegal goods, weapons, or narcotics.</li>
+                    <li>Infringes upon any third party’s intellectual property rights (e.g., copyright, trademarks) or other proprietary rights.</li>
+                    <li>Contains any computer virus, malware, or other malicious code.</li>
+                    <li>Is misleading, deceptive, or constitutes unfair trade practice under the Consumer Protection Act, 2019.</li>
+                    <li>Violates the Indecent Representation of Women (Prohibition) Act, 1986.</li>
+                </ul>
+                <h4 class="font-semibold mt-2">2.4. Due Diligence and Cooperation</h4>
+                <p>You agree to cooperate with us and any law enforcement agency in the investigation of any suspected unlawful activity or violation of these Terms. We reserve the right to remove any listing or user account that violates these Terms without notice.</p>
+                
+                <h3 class="text-xl font-semibold mt-4">3. Intellectual Property Rights</h3>
+                 <h4 class="font-semibold mt-2">3.1. Our IP</h4>
+                <p>All content on the Website, including text, graphics, logos, and software, is the property of TradeGinger or its licensors and is protected by Indian and international copyright and trademark laws.</p>
+                 <h4 class="font-semibold mt-2">3.2. User-Generated Content</h4>
+                <p>By submitting content to the Website, you grant us a worldwide, perpetual, irrevocable, royalty-free, and non-exclusive license to use, reproduce, modify, adapt, publish, and display such content on the Website and other related platforms. You warrant that you have all necessary rights to grant this license.</p>
+
+                <h3 class="text-xl font-semibold mt-4">4. Disclaimer of Warranties and Limitation of Liability</h3>
+                <h4 class="font-semibold mt-2">4.1. As-Is Basis</h4>
+                <p>The Website and all services are provided on an “as is” and “as available” basis. We make no warranties, express or implied, regarding the Website's operation or the information, content, or materials included.</p>
+                 <h4 class="font-semibold mt-2">4.2. Limitation of Liability</h4>
+                <p>To the maximum extent permitted by law, TradeGinger, its affiliates, officers, directors, and employees shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from:</p>
+                 <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li>Your use or inability to use the Website.</li>
+                    <li>Any unauthorized access to or use of your personal information.</li>
+                    <li>Any content posted by a user or third party on the Website.</li>
+                    <li>Any claims arising from the transactions between buyers and sellers.</li>
+                </ul>
+
+                <h3 class="text-xl font-semibold mt-4">5. Indemnification</h3>
+                <p>You agree to indemnify, defend, and hold harmless TradeGinger, its officers, directors, employees, and agents from and against any and all claims, liabilities, damages, losses, and expenses, including reasonable legal fees, arising out of or in connection with:</p>
+                 <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li>Your use of the Website.</li>
+                    <li>Your violation of these Terms.</li>
+                    <li>Your infringement of any intellectual property or other right of any person or entity.</li>
+                    <li>Any transaction or dispute between you and another user.</li>
+                </ul>
+
+                <h3 class="text-xl font-semibold mt-4">6. Privacy and Data Protection</h3>
+                 <h4 class="font-semibold mt-2">6.1. Privacy Policy</h4>
+                <p>Your use of the Website is also governed by our Privacy Policy, which is incorporated into these Terms by reference. The Privacy Policy explains how we collect, use, and protect your personal data in accordance with the Digital Personal Data Protection Act, 2023.</p>
+                 <h4 class="font-semibold mt-2">6.2. Grievance Redressal</h4>
+                <p>In compliance with the IT Act, 2000, and the DPDP Act, 2023, we have appointed a Grievance Officer. For any complaints or issues, please contact the Grievance Officer at Grievance Officer, grievance@tradeginger.com. We will acknowledge your complaint within 48 hours and endeavor to resolve it within one month.</p>
+
+                <h3 class="text-xl font-semibold mt-4">7. Governing Law and Dispute Resolution</h3>
+                <h4 class="font-semibold mt-2">7.1. Governing Law</h4>
+                <p>These Terms shall be governed by and construed in accordance with the laws of India, without regard to its conflict of law provisions.</p>
+                 <h4 class="font-semibold mt-2">7.2. Arbitration</h4>
+                <p>Any dispute, controversy, or claim arising out of or in connection with these Terms, including any question regarding its existence, validity, or termination, shall be referred to and finally resolved by arbitration in accordance with the Arbitration and Conciliation Act, 1996. The arbitration shall be conducted by a single arbitrator appointed by mutual consent of the parties. The seat and venue of the arbitration shall be Gurugram, and the proceedings shall be conducted in the English language.</p>
+                 <h4 class="font-semibold mt-2">7.3. Jurisdiction</h4>
+                <p>Subject to the arbitration clause, the courts in Gurugram shall have exclusive jurisdiction over any matter arising from these Terms.</p>
+
+                <h3 class="text-xl font-semibold mt-4">8. Miscellaneous</h3>
+                <h4 class="font-semibold mt-2">8.1. Termination</h4>
+                <p>We reserve the right to terminate your access to the Website at our sole discretion, without notice, for any reason, including but not to a breach of these Terms.</p>
+                 <h4 class="font-semibold mt-2">8.2. Changes to Terms</h4>
+                <p>We may modify these Terms at any time by posting the revised Terms on the Website. Your continued use of the Website after such a posting constitutes your acceptance of the revised Terms.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 h-full w-full z-50 flex items-center justify-center p-4">
+        <div class="relative w-full max-w-4xl mx-auto rounded-lg overflow-hidden flex flex-col md:flex-row" style="max-height: 90vh;">
+            <div class="w-full md:w-1/3 bg-theme-primary text-white p-8 space-y-8 hidden md:flex flex-col justify-center">
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-truck-loading text-2xl text-theme-accent"></i>
+                    <div>
+                        <h3 class="font-bold">Manage your orders</h3>
+                        <p class="text-sm text-gray-300">Track your orders, delivery and returns</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-comments-dollar text-2xl text-theme-accent"></i>
+                    <div>
+                        <h3 class="font-bold">Transact with buyers and sellers</h3>
+                        <p class="text-sm text-gray-300">Check and respond to chats, replies, offers and more</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-bell text-2xl text-theme-accent"></i>
+                    <div>
+                        <h3 class="font-bold">Personalized notifications and alerts</h3>
+                        <p class="text-sm text-gray-300">Get matching alerts for the products/services you are looking for</p>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-2/3 bg-white p-8 flex flex-col justify-center relative overflow-y-auto">
+                <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+                <div id="login-form" class="w-full max-w-sm mx-auto">
+                    <div class="flex border-b mb-4">
+                        <button id="login-tab" class="flex-1 py-2 font-semibold border-b-2 border-theme-accent" onclick="switchAuthForm('login')">Login</button>
+                        <button id="register-tab" class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('register')">Register</button>
+                    </div>
+                    <h2 class="text-2xl font-bold text-center mb-2">Login to TradeGinger</h2>
+                    <p class="text-center text-gray-500 mb-6">Please provide your Email and Password</p>
+                    <input id="login-email" type="email" placeholder="Enter Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                    <input id="login-password" type="password" placeholder="Enter Password" class="w-full border-2 border-gray-300 p-3 rounded-md mt-4 focus:outline-none focus:border-theme-accent">
+                    <div class="text-right mt-2">
+                        <a href="#" onclick="switchAuthForm('forgot')" class="text-sm text-theme-accent hover:underline">Forgot Password?</a>
+                    </div>
+                    <button onclick="handleLogin(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Continue</button>
+                    <div class="my-6 flex items-center">
+                        <div class="flex-grow border-t border-gray-300"></div>
+                        <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
+                        <div class="flex-grow border-t border-gray-300"></div>
+                    </div>
+                    <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
+                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
+                        <span class="font-semibold">Login with Google</span>
+                    </button>
+                     <p class="text-center mt-4 text-sm">Don't have an account? <a href="#" onclick="switchAuthForm('register')" class="font-semibold text-theme-accent">Register</a></p>
+                </div>
+
+                <div id="register-form" class="w-full max-w-sm mx-auto hidden">
+                    <div class="flex border-b mb-4">
+                        <button id="login-tab-reg" class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('login')">Login</button>
+                        <button id="register-tab-reg" class="flex-1 py-2 font-semibold border-b-2 border-theme-accent" onclick="switchAuthForm('register')">Register</button>
+                    </div>
+                    <h2 class="text-2xl font-bold text-center mb-2">Sign In / Register</h2>
+                    <p class="text-center text-gray-500 mb-6">Enter your email to receive a magic link to sign in.</p>
+                    <div class="space-y-4">
+                        <input id="register-email" type="email" placeholder="Enter your email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                        <button id="register-button" onclick="handleRegister(event)" class="w-full bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">Send Magic Link</button>
+                    </div>
+                    <div class="my-6 flex items-center">
+                        <div class="flex-grow border-t border-gray-300"></div>
+                        <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
+                        <div class="flex-grow border-t border-gray-300"></div>
+                    </div>
+                    <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
+                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
+                        <span class="font-semibold">Continue with Google</span>
+                    </button>
+                    <p class="text-center mt-4 text-sm">Already have an account? <a href="#" onclick="switchAuthForm('login')" class="font-semibold text-theme-accent">Login with Password</a></p>
+                </div>
+                <div id="forgot-password-form" class="w-full max-w-sm mx-auto hidden">
+                     <div class="flex border-b mb-4">
+                        <button class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('login')">Login</button>
+                        <button class="flex-1 py-2 text-gray-500" onclick="switchAuthForm('register')">Register</button>
+                    </div>
+                   <h2 class="text-2xl font-bold text-center mb-2">Reset Password</h2>
+                   <p class="text-center text-gray-500 mb-6">Enter your email to receive a password reset link.</p>
+                   <input id="reset-email" type="email" placeholder="Enter your registered Email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
+                   <button onclick="handlePasswordReset(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Send Reset Link</button>
+                    <p class="text-center mt-4 text-sm"><a href="#" onclick="switchAuthForm('login')" class="font-semibold text-theme-accent">Back to Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-window" class="hidden fixed bottom-0 right-4 w-80 bg-white rounded-t-lg shadow-2xl z-50">
+        <div class="flex justify-between items-center bg-theme-primary text-white p-2 rounded-t-lg">
+            <div>
+                <p id="chat-seller-name" class="font-bold text-sm"></p>
+                <p id="chat-ad-id" class="text-xs"></p>
+            </div>
+            <div>
+                <button id="mute-btn" onclick="toggleMute()" class="mr-2 hover:text-theme-accent"><i class="fas fa-volume-up"></i></button>
+                <button onclick="closeChatWindow()" class="hover:text-red-400"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div id="chat-messages" class="h-64 p-4 overflow-y-auto space-y-4">
+            </div>
+        <div class="p-2 border-t">
+            <form id="chat-form" class="flex items-center">
+                <input id="chat-input" type="text" placeholder="Type a message..." class="w-full border rounded-full py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent">
+                <button type="submit" class="ml-2 bg-theme-accent text-white rounded-full h-8 w-8 flex items-center justify-center"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+
+     <div id="adSuccessModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 h-full w-full z-50 flex items-center justify-center">
+        <div class="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-md bg-white text-center">
+            <i class="fas fa-check-circle text-green-500 text-5xl mb-4"></i>
+            <h3 class="text-2xl font-bold mb-2">Ad Submitted!</h3>
+            <p class="text-gray-600 mb-6">Your ad is under processing and will be live soon.</p>
+            <div class="space-y-4">
+                <button onclick="showPlaceholderPage(event); hideAdSuccessModal();" class="w-full bg-theme-accent text-white p-3 rounded-md font-semibold hover:bg-theme-accent-dark">For Paid Listing Click here</button>
+                <button onclick="hideAdSuccessModal()" class="w-full bg-gray-200 text-gray-700 p-2 rounded-md font-semibold hover:bg-gray-300">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="confirmModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 h-full w-full z-[60] flex items-center justify-center p-4">
+        <div class="relative mx-auto p-6 border w-full max-w-sm shadow-lg rounded-md bg-white text-center">
+            <h3 id="confirm-title" class="text-xl font-bold mb-4">Are you sure?</h3>
+            <p id="confirm-message" class="text-gray-600 mb-6">This action cannot be undone.</p>
+            <div class="flex justify-center gap-4">
+                <button id="confirm-cancel-btn" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-md font-semibold hover:bg-gray-300">Cancel</button>
+                <button id="confirm-ok-btn" class="bg-red-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-red-700">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-notification"></div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        // --- Supabase Configuration for "My Project" ---
+        const SUPABASE_URL = 'https://crepnlidfdoskighdhdt.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyZXBubGlkZmRvc2tpZ2hkaGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4Mjg3MzYsImV4cCI6MjA2ODQwNDczNn0.SjrYMGxuIFDsSZpPBm6a_ZveuI_gef80o03TNESJlDw';
+
+        let supabase;
+        
+        // --- START: Hardening - Input Sanitization ---
+        function sanitizeHTML(str) {
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
+        }
+        // --- END: Hardening - Input Sanitization ---
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast-notification');
+            toast.textContent = message;
+            toast.className = `toast-${type} show`;
+            setTimeout(() => {
+                toast.className = toast.className.replace('show', '');
+            }, 5000);
+        }
+        
+        try {
+            if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
+                throw new Error("Supabase credentials are placeholders. Please update them in index.html.");
+            }
+            supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (error) {
+            console.error("Error creating Supabase client:", error);
+             document.body.innerHTML = `
+                <div class="fixed inset-0 bg-red-100 text-red-800 flex items-center justify-center p-8 z-50">
+                    <div class="text-center">
+                        <h1 class="text-2xl font-bold mb-4">Application Configuration Error</h1>
+                        <p>The application could not connect to the backend.</p>
+                        <p class="mt-2 font-semibold">Please update the <strong>SUPABASE_URL</strong> and <strong>SUPABASE_ANON_KEY</strong> variables in the script tag in <strong>index.html</strong> with the correct credentials from your 'My Project' dashboard in Supabase.</p>
+                    </div>
+                </div>
+            `;
+            throw new Error("Supabase is not configured.");
+        }
+        
+        // --- Cloudinary Configuration for STORAGE ---
+        const CLOUDINARY_CLOUD_NAME = 'dcxhenppn';
+        const CLOUDINARY_UPLOAD_PRESET = 'marketplace_preset';
+
+        // --- Category Mapping ---
+        const categoryMapping = {
+            'cars': 1, 'property': 2, 'mobiles': 3, 'bikes': 4, 'electronics': 5,
+            'commercial_vehicles': 6, 'furniture': 7, 'fashion': 8, 'pets': 9, 'services': 10
+        };
+        const reverseCategoryMapping = Object.fromEntries(Object.entries(categoryMapping).map(a => a.reverse()));
+
+        // --- Page Navigation & State Management ---
+        window.navigationHistory = [];
+        let postLoginAction = null;
+        let allStates = [], allCities = []; // To store location data
+        let stagedProfilePic = null; // To hold the new profile picture file
+
+        const pageDivs = {
+            homepage: document.getElementById('homepage'),
+            listingpage: document.getElementById('listingpage'),
+            helppage: document.getElementById('helppage'),
+            placeholderpage: document.getElementById('placeholderpage'),
+            productdetailpage: document.getElementById('productdetailpage'),
+            comingsoonpage: document.getElementById('comingsoonpage'),
+            myadspage: document.getElementById('myadspage'),
+            userprofilepage: document.getElementById('userprofilepage'),
+            editprofilepage: document.getElementById('editprofilepage'),
+            myfavoritespage: document.getElementById('myfavoritespage'),
+            mychatspage: document.getElementById('mychatspage'),
+        };
+        const headers = {
+            loggedOut: document.getElementById('header-logged-out'),
+            loggedIn: document.getElementById('header-logged-in')
+        };
+        
+        const skeletonCardHTML = `
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden animate-pulse">
+            <div class="w-full h-48 bg-gray-300"></div>
+            <div class="p-4">
+                <div class="h-6 w-1/2 bg-gray-300 rounded mb-2"></div>
+                <div class="h-4 w-3/4 bg-gray-300 rounded mb-3"></div>
+                <div class="flex justify-between">
+                    <div class="h-3 w-1/3 bg-gray-300 rounded"></div>
+                    <div class="h-3 w-1/4 bg-gray-300 rounded"></div>
+                </div>
+            </div>
+        </div>`;
+
+        // --- Page Navigation Logic ---
+        function showPage(pageName, isLoggedIn, isBack = false) {
+            let currentPage = '';
+            for (const [name, div] of Object.entries(pageDivs)) {
+                if (div && !div.classList.contains('hidden')) {
+                    currentPage = name;
+                    break;
+                }
+            }
+
+            if (!isBack && currentPage && currentPage !== pageName) {
+                window.navigationHistory.push(currentPage);
+            }
+            
+            Object.values(pageDivs).forEach(div => { if(div) div.classList.add('hidden'); });
+            if (pageDivs[pageName]) pageDivs[pageName].classList.remove('hidden');
+
+            headers.loggedOut.classList.toggle('hidden', isLoggedIn);
+            headers.loggedIn.classList.toggle('hidden', !isLoggedIn);
+            window.scrollTo(0, 0);
+        }
+        
+        async function goBack(event) {
+            if (event) event.preventDefault();
+            if (window.navigationHistory.length > 0) {
+                const previousPage = window.navigationHistory.pop();
+                const { data, error } = await supabase.auth.getSession();
+                if (error) {
+                    console.error("Error getting session in goBack:", error);
+                    showPage(previousPage, false, true); // default to logged out
+                    return;
+                }
+                const isLoggedIn = !!data.session?.user;
+                showPage(previousPage, isLoggedIn, true);
+            } else {
+                await showHomepage(event);
+            }
+        }
+
+        async function showHomepage(event) { 
+            if(event) event.preventDefault(); 
+            const { data: { session } } = await supabase.auth.getSession();
+            window.navigationHistory = []; 
+            showPage('homepage', !!session?.user); 
+        }
+        
+        async function showListingPage(event, categoryKey, filters = {}) { 
+            if(event) event.preventDefault(); 
+            const { data: { session } } = await supabase.auth.getSession();
+            showPage('listingpage', !!session?.user); 
+            updateListingPage(categoryKey, filters); 
+            await fetchAndDisplayListings(categoryKey, filters);
+        }
+
+        async function showHelpPage(event) { 
+            if(event) event.preventDefault(); 
+            const { data: { session } } = await supabase.auth.getSession();
+            showPage('helppage', !!session?.user); 
+        }
+        
+        function showPlaceholderPage(event) { if(event) event.preventDefault(); showPage('placeholderpage', true); }
+        
+        async function showProductDetailPage(event, adId) { 
+            if (event) event.preventDefault();
+            
+            const { data: { user } } = await supabase.auth.getUser();
+
+            const showPageAction = async () => {
+                showPage('productdetailpage', true);
+                if (adId) {
+                    await renderProductDetailPage(adId);
+                } else {
+                    document.getElementById('product-detail-container').innerHTML = `<p class="text-center text-red-500">Error: No product ID provided.</p>`;
+                }
+            };
+
+            if (user) {
+                 await showPageAction();
+            } else {
+                postLoginAction = { action: 'viewProduct', adId: adId };
+                showLoginModal(event);
+            }
+        }
+        
+        async function showComingSoonPage(event) { 
+            if(event) event.preventDefault(); 
+            const { data: { session } } = await supabase.auth.getSession();
+            showPage('comingsoonpage', !!session?.user); 
+        }
+        
+        async function showMyAdsPage(event) {
+            if(event) event.preventDefault();
+            showPage('myadspage', true);
+            await fetchAndDisplayMyAds();
+        }
+
+        async function showUserProfilePage(event) { 
+            if(event) event.preventDefault(); 
+            showPage('userprofilepage', true);
+            await renderProfileAds();
+        }
+        
+        function showEditProfilePage(event) { if(event) event.preventDefault(); showPage('editprofilepage', true); }
+        
+        async function searchFromHome(event) {
+            if (event) event.preventDefault();
+            const keyword = document.getElementById('hero-search-input').value.trim();
+            const filters = {};
+            if (keyword) {
+                filters.keyword = keyword;
+            }
+            // Use 'all' as the category to search across everything
+            await showListingPage(event, 'all', filters);
+        }
+        
+        async function showMyFavoritesPage(event) {
+             if (event) event.preventDefault();
+             showPage('myfavoritespage', true);
+             await fetchAndDisplayMyFavorites();
+        }
+        
+        async function showMyChatsPage(event) {
+            if (event) event.preventDefault();
+            showPage('mychatspage', true);
+            await fetchAndDisplayMyChats();
+        }
+
+        async function fetchAndDisplayMyChats() {
+            const chatListContainer = document.getElementById('my-chats-list');
+            chatListContainer.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
+
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    throw new Error("User not logged in.");
+                }
+
+                // Step 1: Fetch chat rooms
+                const { data: rooms, error: roomsError } = await supabase
+                    .from('chat_rooms')
+                    .select(`id, listing_id, buyer_id, seller_id`)
+                    .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+                    .order('created_at', { ascending: false });
+
+                if (roomsError) throw roomsError;
+
+                if (!rooms || rooms.length === 0) {
+                    chatListContainer.innerHTML = `
+                        <div class="text-center p-8">
+                            <i class="fas fa-comments text-5xl text-gray-300 mb-4"></i>
+                            <h3 class="text-xl font-bold">No chats yet</h3>
+                            <p class="text-gray-500">Start a conversation with a seller to see it here.</p>
+                        </div>`;
+                    return;
+                }
+
+                // Step 2: Collect all unique user and listing IDs
+                const userIds = new Set();
+                const listingIds = new Set();
+                rooms.forEach(room => {
+                    userIds.add(room.buyer_id);
+                    userIds.add(room.seller_id);
+                    listingIds.add(room.listing_id);
+                });
+
+                // Step 3: Fetch all required profiles and listings in parallel
+                const [profilesResponse, listingsResponse] = await Promise.all([
+                    supabase.from('profiles').select(`id, first_name, last_name`).in('id', Array.from(userIds)),
+                    supabase.from('listings').select(`id, title, image_urls`).in('id', Array.from(listingIds))
+                ]);
+
+                const { data: profiles, error: profilesError } = profilesResponse;
+                if (profilesError) throw profilesError;
+
+                const { data: listings, error: listingsError } = listingsResponse;
+                if (listingsError) throw listingsError;
+
+                // Step 4: Map profiles and listings into easy-to-access objects
+                const profilesMap = new Map(profiles.map(p => [p.id, p]));
+                const listingsMap = new Map(listings.map(l => [l.id, l]));
+
+                chatListContainer.innerHTML = ''; // Clear loader
+
+                // Step 5: Render the chat list by combining the data
+                rooms.forEach(room => {
+                    const isUserTheBuyer = user.id === room.buyer_id;
+                    const otherUserId = isUserTheBuyer ? room.seller_id : room.buyer_id;
+                    
+                    const otherUser = profilesMap.get(otherUserId);
+                    const ad = listingsMap.get(room.listing_id);
+
+                    if (!otherUser || !ad) {
+                        console.warn("Skipping a chat room due to missing related data (ad or other user). Room ID:", room.id);
+                        return; 
+                    }
+
+                    const otherUserName = `${otherUser.first_name || ''} ${otherUser.last_name || ''}`.trim() || 'User';
+                    const adImage = ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/80x80/E2E8F0/4A5568?text=Ad';
+
+                    const chatItemHTML = `
+                        <div class="flex items-center justify-between p-4 border-b hover:bg-gray-50 transition-colors duration-200">
+                            <div class="flex items-center gap-4 flex-1 min-w-0">
+                                <img src="${adImage}" alt="${ad.title}" class="w-16 h-16 object-cover rounded-md flex-shrink-0">
+                                <div class="min-w-0">
+                                    <p class="font-bold text-gray-800 truncate">${ad.title}</p>
+                                    <p class="text-sm text-gray-600 truncate">Chat with ${otherUserName}</p>
+                                </div>
+                            </div>
+                            <button onclick="openChatFromListPage(${room.id}, '${otherUser.id}', '${otherUserName.replace(/'/g, "\\'")}', ${ad.id})" class="bg-theme-accent text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-theme-accent-dark flex-shrink-0 ml-4">
+                                Open Chat
+                            </button>
+                        </div>
+                    `;
+                    chatListContainer.innerHTML += chatItemHTML;
+                });
+
+            } catch (error) {
+                console.error("Error fetching my chats:", error);
+                chatListContainer.innerHTML = `<p class="text-center text-red-500 p-4">Error loading chats: ${error.message}</p>`;
+            }
+        }
+
+        async function openChatFromListPage(roomId, otherUserId, otherUserName, adId) {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    showToast("Please log in to chat.", 'info');
+                    showLoginModal();
+                    return;
+                }
+
+                if (chatSubscription) {
+                    await supabase.removeChannel(chatSubscription);
+                    chatSubscription = null;
+                }
+
+                currentReceiverId = otherUserId;
+                currentRoomId = roomId;
+
+                document.getElementById('chat-seller-name').innerText = otherUserName;
+                document.getElementById('chat-ad-id').innerText = `Ad ID: ${adId}`;
+                document.getElementById('chat-window').classList.remove('hidden');
+                document.getElementById('chat-notification-dot').classList.add('hidden');
+
+                await fetchInitialMessages(roomId);
+
+                chatSubscription = supabase.channel(`chat_room_${roomId}`)
+                    .on('postgres_changes', {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'chat_messages',
+                        filter: `room_id=eq.${roomId}`
+                    }, (payload) => {
+                        if (payload.new.sender_id !== user.id) {
+                            appendMessage(payload.new.content, 'received', true);
+                        }
+                    })
+                    .subscribe((status, err) => {
+                        if (status === 'SUBSCRIBED') {
+                            console.log('Successfully subscribed to chat room from list page:', roomId);
+                        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                            console.error('Chat subscription error:', err);
+                            showToast('Chat connection error. Please refresh.', 'error');
+                        }
+                    });
+
+            } catch(error) {
+                console.error("Error opening chat from list page:", error);
+                showToast("Could not open chat.", "error");
+            }
+        }
+
+        // --- Modal Control ---
+        async function showSellModal(event) { 
+            if(event) event.preventDefault();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                document.getElementById('sellModal').classList.remove('hidden'); 
+            } else {
+                postLoginAction = { action: 'sellItem' };
+                showLoginModal(event);
+            }
+        }
+
+        function hideSellModal() { 
+            document.getElementById('sellModal').classList.add('hidden'); 
+            editingAdId = null;
+            document.getElementById('adForm').reset();
+            document.getElementById('image-preview-container').innerHTML = '';
+            document.querySelector('#sellModal .text-2xl').textContent = 'Post Your Ad';
+            document.getElementById('post-ad-button').textContent = 'Post Now';
+        }
+
+        function showLoginModal(event) { if(event) event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); }
+        
+        function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+
+        function showTncModal(event) { if(event) event.preventDefault(); document.getElementById('tncModal').classList.remove('hidden'); }
+
+        function hideTncModal() { document.getElementById('tncModal').classList.add('hidden'); }
+
+        function showPostSuccessModal() { document.getElementById('adSuccessModal').classList.remove('hidden'); }
+
+        function hideAdSuccessModal() { document.getElementById('adSuccessModal').classList.add('hidden'); }
+        
+        function showReraInfo() { showToast('RERA is a unique ID for real estate projects, ensuring transparency.', 'info'); }
+
+        // --- Dynamic Form Logic ---
+        const categoriesData = [
+            { id: 'cars', name: 'Cars' },
+            { id: 'property', name: 'Property' },
+            { id: 'mobiles', name: 'Mobiles' },
+            { id: 'bikes', name: 'Bikes' },
+            { id: 'electronics', name: 'Electronics & Appliances' },
+            { id: 'commercial_vehicles', name: 'Commercial Vehicles' },
+            { id: 'furniture', name: 'Furniture' },
+            { id: 'fashion', name: 'Fashion' },
+            { id: 'pets', name: 'Pets' },
+            { id: 'services', name: 'Services' },
+        ];
+
+        function generateYearOptions(start, end) {
+            let options = '<option value="">Select Year</option>';
+            for (let year = end; year >= start; year--) {
+                options += `<option value="${year}">${year}</option>`;
+            }
+            return options;
+        }
+        const yearDropdown = generateYearOptions(1990, 2025);
+
+        const attributeTemplates = {
+            cars: `<h3 class="text-xl font-bold text-gray-900 mb-4">Car Details</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="label-style">Brand*</label><select class="input-style w-full"><option>Maruti Suzuki</option><option>Hyundai</option><option>Tata</option><option>Mahindra</option><option>Kia</option><option>Toyota</option><option>Honda</option><option>Volkswagen</option><option>Skoda</option><option>MG</option><option>Renault</option><option>Nissan</option><option>Jeep</option><option>Citroen</option><option>Isuzu</option><option>Mercedes-Benz</option><option>BMW</option><option>Audi</option><option>Jaguar</option><option>Land Rover</option><option>Volvo</option><option>Other</option></select></div><div><label class="label-style">Model*</label><input type="text" placeholder="e.g., Swift, Creta, Nexon" class="input-style w-full"></div><div><label class="label-style">Variant*</label><input type="text" placeholder="e.g., VXI, SX, XZ+" class="input-style w-full"></div><div><label class="label-style">Year*</label><select class="input-style w-full">${yearDropdown}</select></div><div><label class="label-style">Fuel*</label><select class="input-style w-full"><option>Petrol</option><option>Diesel</option><option>CNG & Hybrids</option><option>Electric</option><option>LPG</option></select></div><div><label class="label-style">Transmission*</label><select class="input-style w-full"><option>Manual</option><option>Automatic</option></select></div><div><label class="label-style">KM Driven*</label><input type="number" placeholder="e.g., 25000" class="input-style w-full"></div><div><label class="label-style">No. of Owners*</label><select class="input-style w-full"><option>1st</option><option>2nd</option><option>3rd</option><option>4th+</option></select></div></div><div><label class="label-style">Condition</label><div class="flex space-x-4 mt-1"><label class="flex items-center"><input type="radio" name="condition" class="mr-2 h-4 w-4"> Non-Accidental</label><label class="flex items-center"><input type="radio" name="condition" class="mr-2 h-4 w-4"> Accidental</label></div></div>`,
+            property: `<h3 class="text-xl font-bold text-gray-900 mb-4">Property Details</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="label-style">Type*</label><select class="input-style w-full" onchange="handlePropertyTypeChange(this)"><option>Apartment</option><option>Builder Floor</option><option>House & Villa</option><option>Plot</option><option>Land</option></select></div><div id="land-subcategory-container" class="hidden"><label class="label-style">Land Sub Category*</label><select class="input-style w-full"><option>Agriculture</option><option>Residential</option><option>Commercial</option><option>Industrial</option></select></div><div><label class="label-style">Bedrooms*</label><select class="input-style w-full"><option>1</option><option>2</option><option>3</option><option>4+</option></select></div><div><label class="label-style">Bathrooms*</label><select class="input-style w-full"><option>1</option><option>2</option><option>3+</option></select></div><div><label class="label-style">Furnishing*</label><select class="input-style w-full"><option>Furnished</option><option>Semi-Furnished</option><option>Unfurnished</option></select></div><div><label class="label-style">Listed By*</label><select class="input-style w-full"><option>Owner</option><option>Dealer</option><option>Builder</option></select></div><div><label class="label-style">Super Builtup area (ft²)*</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Carpet Area (ft²)*</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Maintenance (Monthly)</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Total Floors</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Floor No</label><input type="number" class="input-style w-full"></div><div><label class="label-style">Car Parking</label><select class="input-style w-full"><option>0</option><option>1</option><option>2+</option></select></div><div><label class="label-style">Facing</label><select class="input-style w-full"><option>North</option><option>South</option><option>East</option><option>West</option><option>North-East</option></select></div></div><div class="mt-4"><label class="label-style">RERA No. (Optional)</label><div class="flex items-center"><input type="text" placeholder="Enter RERA registration number" class="input-style w-full"><i onclick="showReraInfo()" class="fas fa-info-circle text-gray-500 ml-2 cursor-pointer" title="What is RERA?"></i></div></div>`,
+            mobiles: `<h3 class="text-xl font-bold text-gray-900 mb-4">Mobile Details</h3><div><label class="label-style">Brand*</label><select class="input-style w-full"><option>Apple</option><option>Samsung</option><option>Xiaomi</option><option>OnePlus</option><option>Realme</option><option>Vivo</option><option>Oppo</option><option>Other</option></select></div>`,
+            bikes: `<h3 class="text-xl font-bold text-gray-900 mb-4">Bike Details</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="label-style">Brand*</label><select class="input-style w-full"><option>Ather Energy</option><option>Bajaj</option><option>Benelli</option><option>BMW</option><option>Ducati</option><option>Harley-Davidson</option><option>Hero</option><option>Honda</option><option>Husqvarna</option><option>Indian</option><option>Jawa</option><option>Kawasaki</option><option>KTM</option><option>Ola Electric</option><option>Revolt</option><option>Royal Enfield</option><option>Suzuki</option><option>Triumph</option><option>TVS</option><option>Yamaha</option><option>Yezdi</option><option>Other</option></select></div><div><label class="label-style">Model*</label><input type="text" placeholder="e.g., Pulsar, Splendor, Classic 350, 450X" class="input-style w-full"></div><div><label class="label-style">Year*</label><select class="input-style w-full">${yearDropdown}</select></div><div><label class="label-style">KM Driven*</label><input type="number" class="input-style w-full"></div></div>`,
+            electronics: `<h3 class="text-xl font-bold text-gray-900 mb-4">Electronics & Appliances</h3><div class="space-y-4"><div id="electronics-subtype-container"><label class="label-style">Type*</label><select id="electronics-subtype" class="input-style w-full"><option>TVs, Video - Audio</option><option>Kitchen & Other Appliances</option><option>Computers & Laptops</option><option>Cameras & Lenses</option><option>Games & Entertainment</option><option>Fridges</option><option>Washing Machines</option></select></div></div>`,
+            commercial_vehicles: `<h3 class="text-xl font-bold text-gray-900 mb-4">Commercial Vehicle Details</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Trucks</option><option>Buses</option><option>Vans</option><option>Taxis</option><option>Other</option></select></div><div><label class="label-style">Year*</label><select class="input-style w-full">${yearDropdown}</select></div></div>`,
+            furniture: `<h3 class="text-xl font-bold text-gray-900 mb-4">Furniture Details</h3><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Sofa & Dining</option><option>Beds & Wardrobes</option><option>Home Decor & Garden</option><option>Kids Furniture</option><option>Other Household Items</option></select></div>`,
+            fashion: `<h3 class="text-xl font-bold text-gray-900 mb-4">Fashion Details</h3><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Men</option><option>Women</option><option>Kids</option></select></div>`,
+            pets: `<h3 class="text-xl font-bold text-gray-900 mb-4">Pet Details</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="label-style">Type*</label><select class="input-style w-full"><option>Dogs</option><option>Cats</option><option>Fishes</option><option>Birds</option><option>Other Pets</option></select></div><div><label class="label-style">Breed</label><input type="text" placeholder="e.g., Labrador, Persian" class="input-style w-full"></div></div>`,
+            services: `<h3 class="text-xl font-bold text-gray-900 mb-4">Service Details</h3><div><label class="label-style">Type*</label><input type="text" placeholder="e.g., Electronics & Computer Repair, Education & Classes" class="input-style w-full"></div>`
+        };
+        const style = document.createElement('style');
+        style.innerHTML = `.input-style { padding: 0.5rem 0.75rem; background-color: white; border: 1px solid #D1D5DB; border-radius: 0.375rem; } .input-style:focus { outline: none; ring: 2px; ring-offset: 2px; ring-color: #D4AF37; border-color: #D4AF37; } .label-style { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }`;
+        document.head.appendChild(style);
+        
+        function updateAttributeFields() {
+            const category = document.getElementById('category-select').value;
+            const container = document.getElementById('category-attributes');
+            container.innerHTML = (category && attributeTemplates[category]) ? attributeTemplates[category] : '<p class="text-gray-500 text-center py-4">Please select a category to see relevant options.</p>';
+        }
+
+        function handlePropertyTypeChange(selectElement) {
+            const landSubCategoryContainer = document.getElementById('land-subcategory-container');
+            if (selectElement.value === 'Land') {
+                landSubCategoryContainer.classList.remove('hidden');
+            } else {
+                landSubCategoryContainer.classList.add('hidden');
+            }
+        }
+
+        // --- Filter Data and Logic ---
+        const filterData = {
+            cars: [
+                { title: 'Budget', type: 'range' },
+                { title: 'Brand', type: 'checkbox', options: ['Maruti Suzuki', 'Hyundai', 'Honda', 'Tata', 'Mahindra', 'Toyota', 'Ford', 'Renault', 'Volkswagen', 'BMW', 'Mercedes-Benz', 'Audi'] },
+                { title: 'Model Year', type: 'range' },
+                { title: 'KMs Driven', type: 'range' },
+                { title: 'Fuel Type', type: 'checkbox', options: ['Petrol', 'Diesel', 'CNG', 'LPG', 'Electric', 'Hybrid'] },
+                { title: 'Transmission', type: 'radio', name: 'transmission', options: ['Manual', 'Automatic'] },
+                { title: 'No. of Owners', type: 'checkbox', options: ['1st', '2nd', '3rd', '4th+'] },
+                { title: 'Posted By', type: 'checkbox', options: ['Individual', 'Dealer'] }
+            ],
+            property: [
+                { title: 'Budget', type: 'range' },
+                { title: 'Property Type', type: 'checkbox', options: ['Apartment', 'Builder Floor', 'House & Villa', 'Plot', 'Commercial Office', 'Shop/Showroom'] },
+                { title: 'Bedrooms (BHK)', type: 'checkbox', options: ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'] },
+                { title: 'Furnishing', type: 'radio', name: 'furnishing', options: ['Furnished', 'Semi-Furnished', 'Unfurnished'] },
+                { title: 'Construction Status', type: 'radio', name: 'construction', options: ['Ready to Move', 'Under Construction'] },
+                { title: 'Listed By', type: 'checkbox', options: ['Owner', 'Dealer', 'Builder'] },
+                { title: 'Area (Sq. Ft.)', type: 'range' }
+            ],
+            mobiles: [
+                { title: 'Price', type: 'range' },
+                { title: 'Brand', type: 'checkbox', options: ['Apple', 'Samsung', 'Xiaomi', 'OnePlus', 'Realme', 'Vivo', 'Oppo'] },
+                { title: 'RAM', type: 'checkbox', options: ['4 GB', '6 GB', '8 GB', '12 GB+'] },
+                { title: 'Operating System', type: 'radio', name: 'os', options: ['Android', 'iOS'] }
+            ],
+            furniture: [
+                { title: 'Price', type: 'range' },
+                { title: 'Furniture Type', type: 'checkbox', options: ['Sofa Sets', 'Bed Sets', 'Dining Tables', 'Office Chairs', 'Wardrobes', 'TV Units'] },
+                { title: 'Material', type: 'checkbox', options: ['Solid Wood (Teak)', 'Solid Wood (Sheesham)', 'Engineered Wood', 'Metal', 'Plastic'] },
+                { title: 'Condition', type: 'radio', name: 'condition', options: ['Brand New', 'Gently Used', 'Heavily Used'] }
+            ],
+            pets: [
+                { title: 'Animal Type', type: 'select', options: ['Dogs', 'Cats', 'Birds', 'Fish & Aquariums'] },
+                { title: 'Breed', type: 'text', placeholder: 'e.g., Labrador, Persian Cat' },
+                { title: 'Age', type: 'range' },
+                { title: 'Posted By', type: 'radio', name: 'pet_poster', options: ['Owner', 'Breeder'] }
+            ],
+            default: [
+                { title: 'Price', type: 'range' }
+            ]
+        };
+
+        function createFilterSection(filter) {
+            let optionsHTML = '';
+            if (filter.type === 'range') {
+                optionsHTML = `<div class="mt-2 flex items-center space-x-2"><input type="number" placeholder="Min" class="w-full border rounded-md p-2 text-sm"><span>to</span><input type="number" placeholder="Max" class="w-full border rounded-md p-2 text-sm"></div>`;
+            } else if (filter.type === 'checkbox') {
+                optionsHTML = `<div class="mt-2 space-y-2 text-xs">` +
+                    filter.options.map(opt => `<label class="flex items-center font-normal"><input type="checkbox" class="h-4 w-4 text-theme-accent border-gray-300 rounded focus:ring-theme-accent"> <span class="ml-2">${opt}</span></label>`).join('') +
+                    `</div>`;
+            } else if (filter.type === 'radio') {
+                 optionsHTML = `<div class="mt-2 space-y-2 text-xs">` +
+                    filter.options.map(opt => `<label class="flex items-center font-normal"><input type="radio" name="${filter.name}" class="h-4 w-4 text-theme-accent border-gray-300 focus:ring-theme-accent"> <span class="ml-2">${opt}</span></label>`).join('') +
+                    `</div>`;
+            } else if (filter.type === 'select') {
+                optionsHTML = `<div class="mt-2"><select class="input-style w-full text-sm">` +
+                    filter.options.map(opt => `<option>${opt}</option>`).join('') +
+                    `</select></div>`;
+            } else if (filter.type === 'text') {
+                 optionsHTML = `<div class="mt-2"><input type="text" placeholder="${filter.placeholder}" class="input-style w-full text-sm"></div>`;
+            }
+
+            return `
+                <div class="border-t py-3">
+                    <details open>
+                        <summary class="font-semibold text-sm cursor-pointer flex justify-between items-center hover:text-theme-accent">
+                            <span>${filter.title}</span>
+                            <i class="fas fa-chevron-down accordion-icon transition-transform text-xs"></i>
+                        </summary>
+                        ${optionsHTML}
+                    </details>
+                </div>
+            `;
+        }
+
+        function updateListingPage(categoryKey, filters = {}) {
+            const sidebar = document.getElementById('filter-sidebar');
+            const title = document.getElementById('listing-page-title');
+            const filtersForCategory = filterData[categoryKey] || filterData.default;
+
+            let sidebarHTML = `
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h2 class="text-xl font-bold mb-4">Filters</h2>
+                    <div class="mb-4">
+                        <h3 class="font-semibold mb-2 text-sm">Location</h3>
+                        <div class="space-y-2">
+                             <select id="filter-state" onchange="populateFilterCities(this.value)" class="w-full border rounded-md p-2 text-sm">
+                                <option value="">All States</option>
+                                ${allStates.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+                            </select>
+                            <select id="filter-city" class="w-full border rounded-md p-2 text-sm">
+                                <option value="">All Cities</option>
+                            </select>
+                        </div>
+                    </div>
+                    ${filtersForCategory.map(createFilterSection).join('')}
+                    <div class="border-t pt-4 mt-4 space-y-2">
+                         <button onclick="applyFilters('${categoryKey}')" class="w-full bg-theme-primary text-white p-2 rounded-md font-semibold hover:bg-theme-primary-dark text-sm">Apply Filters</button>
+                         <button onclick="resetFilters('${categoryKey}')" class="w-full bg-gray-200 text-gray-700 p-2 rounded-md font-semibold hover:bg-gray-300 text-sm">Reset</button>
+                    </div>
+                </div>
+            `;
+
+            sidebar.innerHTML = sidebarHTML;
+            if (categoryKey === 'all') {
+                title.innerText = filters.keyword ? `Search results for "${filters.keyword}"` : 'All Listings';
+            } else {
+                title.innerText = `Fresh Recommendations in ${categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1)}`;
+            }
+            
+            if (filters.location) {
+                // This part is tricky as location is a string. We will handle city/state ID filters from the sidebar.
+            }
+        }
+        
+        function applyFilters(categoryKey) {
+            const cityId = document.getElementById('filter-city').value;
+            const filters = {};
+            if (cityId) {
+                filters.city_id = cityId;
+            }
+            fetchAndDisplayListings(categoryKey, filters);
+            showToast('Filters applied!', 'info');
+        }
+
+        function resetFilters(categoryKey) {
+            updateListingPage(categoryKey);
+            fetchAndDisplayListings(categoryKey);
+            showToast('Filters reset.', 'info');
+        }
+        
+        function togglePostButton() {
+            const checkbox = document.getElementById('terms-checkbox');
+            const button = document.getElementById('post-ad-button');
+            if (checkbox.checked) {
+                button.disabled = false;
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                button.disabled = true;
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // --- REALTIME CHAT & NOTIFICATIONS ---
+        let isMuted = false;
+        const synth = new Tone.Synth().toDestination();
+        let chatSubscription = null;
+        let notificationSubscription = null;
+        let currentRoomId = null;
+        let currentReceiverId = null;
+        
+        function appendMessage(text, type, playSound = false) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            const alignment = type === 'sent' ? 'justify-end' : 'justify-start';
+            const bgColor = type === 'sent' ? 'bg-theme-accent text-white' : 'bg-gray-200 text-gray-800';
+            
+            messageElement.className = `flex ${alignment}`;
+            messageElement.innerHTML = `<div class="max-w-xs px-3 py-2 rounded-lg ${bgColor}">${text}</div>`;
+            
+            messagesDiv.appendChild(messageElement);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            if (playSound && !isMuted) {
+                try {
+                    Tone.start();
+                    synth.triggerAttackRelease("C5", "8n");
+                } catch (e) {
+                    console.warn("Could not play sound:", e);
+                }
+            }
+        }
+
+        async function findOrCreateChatRoom(buyerId, sellerId, adId) {
+            try {
+                let { data: room, error } = await supabase
+                    .from('chat_rooms').select('id').eq('buyer_id', buyerId).eq('seller_id', sellerId).eq('listing_id', adId).single();
+                if (error && error.code !== 'PGRST116') { throw error; }
+                if (room) { return room.id; }
+                const { data: newRoom, error: insertError } = await supabase
+                    .from('chat_rooms').insert({ buyer_id: buyerId, seller_id: sellerId, listing_id: adId }).select().single();
+                if (insertError) { throw insertError; }
+                return newRoom.id;
+            } catch (error) {
+                console.error('Error in findOrCreateChatRoom:', error);
+                showToast('Error initializing chat.', 'error');
+                return null;
+            }
+        }
+
+        async function fetchInitialMessages(roomId) {
+            const messagesDiv = document.getElementById('chat-messages');
+            messagesDiv.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) throw new Error("User not logged in.");
+                const { data: messages, error } = await supabase.from('chat_messages').select('*').eq('room_id', roomId).order('created_at', { ascending: true });
+                if (error) throw error;
+                
+                messagesDiv.innerHTML = '';
+                messages.forEach(message => {
+                    appendMessage(message.content, message.sender_id === user.id ? 'sent' : 'received', false);
+                });
+            } catch (error) {
+                console.error('Error fetching initial messages:', error);
+                messagesDiv.innerHTML = `<p class="text-center text-red-500">Could not load messages.</p>`;
+            }
+        }
+
+        async function openChatWindow(sellerName, adId, sellerId) {
+            try {
+                const { data: { user: buyer } } = await supabase.auth.getUser();
+                if (!buyer || buyer.id === sellerId) {
+                    showToast(buyer ? "You cannot chat with yourself." : "Please log in to chat.", 'info');
+                    if(!buyer) showLoginModal();
+                    return;
+                }
+                
+                if (chatSubscription) {
+                    await supabase.removeChannel(chatSubscription);
+                    chatSubscription = null;
+                }
+
+                currentReceiverId = sellerId;
+                const roomId = await findOrCreateChatRoom(buyer.id, sellerId, adId);
+                if (!roomId) return; 
+                currentRoomId = roomId;
+
+                document.getElementById('chat-seller-name').innerText = sellerName;
+                document.getElementById('chat-ad-id').innerText = `Ad ID: ${adId}`;
+                document.getElementById('chat-window').classList.remove('hidden');
+                document.getElementById('chat-notification-dot').classList.add('hidden');
+                
+                await fetchInitialMessages(roomId);
+
+                // --- REALTIME LOGIC ---
+                chatSubscription = supabase.channel(`chat_room_${roomId}`)
+                    .on('postgres_changes', {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'chat_messages',
+                        filter: `room_id=eq.${roomId}`
+                    }, (payload) => {
+                        if (payload.new.sender_id !== buyer.id) {
+                            appendMessage(payload.new.content, 'received', true);
+                        }
+                    })
+                    .subscribe((status, err) => {
+                        if (status === 'SUBSCRIBED') {
+                            console.log('Successfully subscribed to chat room:', roomId);
+                        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                            console.error('Chat subscription error:', err);
+                            showToast('Chat connection error. Please refresh.', 'error');
+                        }
+                    });
+
+            } catch(error) {
+                console.error("Error opening chat window:", error);
+                showToast("Could not open chat.", "error");
+            }
+        }
+
+        async function closeChatWindow() {
+            document.getElementById('chat-window').classList.add('hidden');
+            if (chatSubscription) {
+                await supabase.removeChannel(chatSubscription);
+                chatSubscription = null;
+            }
+            currentRoomId = null;
+            currentReceiverId = null;
+            document.getElementById('chat-messages').innerHTML = '';
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const muteIcon = document.getElementById('mute-btn').querySelector('i');
+            muteIcon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+        }
+
+        async function fetchInitialNotificationCount(userId) {
+            try {
+                const { count, error } = await supabase
+                    .from('notifications')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('user_id', userId)
+                    .eq('is_read', false);
+                
+                if (error) throw error;
+                
+                if (count > 0) {
+                    document.getElementById('main-notification-dot').classList.remove('hidden');
+                } else {
+                    document.getElementById('main-notification-dot').classList.add('hidden');
+                }
+            } catch(error) {
+                console.error("Error fetching initial notification count:", error);
+            }
+        }
+
+        async function fetchAndDisplayNotifications() {
+            const notificationList = document.getElementById('notification-list');
+            const noNotificationsMessage = document.getElementById('no-notifications-message');
+
+            // --- FIX: Check if elements exist before trying to modify them ---
+            if (!notificationList || !noNotificationsMessage) {
+                console.error("Notification UI elements ('notification-list' or 'no-notifications-message') not found in the DOM.");
+                return; // Exit function to prevent crash
+            }
+            
+            notificationList.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
+            noNotificationsMessage.classList.add('hidden');
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    notificationList.innerHTML = '';
+                    return;
+                }
+
+                const { data: notifications, error } = await supabase
+                    .from('notifications')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+                
+                if (error) throw error;
+                
+                notificationList.innerHTML = '';
+
+                if (!notifications || notifications.length === 0) {
+                    noNotificationsMessage.classList.remove('hidden');
+                } else {
+                     notifications.forEach(notif => {
+                          const icon = notif.type === 'new_message' ? 'fa-comment-dots' : 'fa-info-circle';
+                          const isUnreadClass = !notif.is_read ? 'bg-blue-50' : '';
+                          const timeAgo = new Date(notif.created_at).toLocaleString();
+
+                          const notifHTML = `
+                              <a href="#" class="block p-4 text-sm hover:bg-gray-50 ${isUnreadClass}">
+                                   <div class="flex items-start gap-3">
+                                       <i class="fas ${icon} text-gray-400 mt-1"></i>
+                                       <div>
+                                           <p class="font-semibold">${notif.content}</p>
+                                           <p class="text-xs text-gray-500">${timeAgo}</p>
+                                       </div>
+                                   </div>
+                              </a>
+                          `;
+                          notificationList.innerHTML += notifHTML;
+                      });
+                }
+            } catch(error) {
+                 console.error("Error fetching notifications:", error);
+                 // Check again in case notificationList became invalid
+                 if(notificationList) {
+                    notificationList.innerHTML = `<p class="p-4 text-sm text-red-500 text-center">Could not load notifications.</p>`;
+                 }
+            }
+        }
+        
+        async function markNotificationsAsRead(event, forceRefresh = false) {
+            if(event) event.preventDefault();
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if(!user) return;
+
+                const { error } = await supabase
+                    .from('notifications')
+                    .update({ is_read: true })
+                    .eq('user_id', user.id)
+                    .eq('is_read', false);
+                
+                if (error) throw error;
+                
+                document.getElementById('main-notification-dot').classList.add('hidden');
+                if (forceRefresh) {
+                    await fetchAndDisplayNotifications();
+                }
+            } catch(error) {
+                 console.error("Error marking notifications as read:", error);
+            }
+        }
+
+        async function toggleNotifications() {
+            const dropdown = document.getElementById('notification-dropdown');
+            const isOpening = dropdown.style.display !== 'block';
+            
+            dropdown.style.display = isOpening ? 'block' : 'none';
+
+            if (isOpening) {
+                await fetchAndDisplayNotifications();
+                // Mark as read after a delay so the user can see what was new
+                setTimeout(() => markNotificationsAsRead(null, false), 2000);
+            }
+        }
+
+        function switchAuthForm(form) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const forgotForm = document.getElementById('forgot-password-form');
+            
+            loginForm.classList.add('hidden');
+            registerForm.classList.add('hidden');
+            forgotForm.classList.add('hidden');
+
+            if (form === 'login') {
+                loginForm.classList.remove('hidden');
+            } else if (form === 'register') {
+                registerForm.classList.remove('hidden');
+            } else if (form === 'forgot') {
+                forgotForm.classList.remove('hidden');
+            }
+        }
+        
+        function handleProfilePictureChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                stagedProfilePic = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    document.getElementById('profile-pic-preview').src = imageUrl;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // --- Authentication Logic (Supabase) ---
+
+        // START: MODIFIED FUNCTION
+        async function handleRegister(event) {
+            event.preventDefault();
+            const registerButton = document.getElementById('register-button');
+            const email = document.getElementById('register-email').value.trim();
+
+            if (!email) {
+                showToast('Please enter your email address.', 'error');
+                return;
+            }
+
+            registerButton.disabled = true;
+            registerButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sending...`;
+
+            try {
+                const { error } = await supabase.auth.signInWithOtp({
+                    email: email,
+                    options: {
+                        // This will create a new user if one doesn't exist.
+                        // For a better first-time user experience, you might redirect
+                        // to a profile-setup page after login.
+                        emailRedirectTo: window.location.href,
+                    },
+                });
+
+                if (error) throw error;
+
+                showToast('Check your email for the magic link to sign in!', 'success');
+                // Hide the modal or switch to a "check your email" message
+                hideLoginModal();
+
+            } catch (err) {
+                console.error("Magic Link error:", err);
+                showToast("Failed to send magic link: " + (err.message || "Unknown error"), "error");
+            } finally {
+                registerButton.disabled = false;
+                registerButton.innerHTML = 'Send Magic Link';
+            }
+        }
+        // END: MODIFIED FUNCTION
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
+            if (!email || !password) {
+                showToast('Please enter both email and password.', 'error');
+                return;
+            }
+
+            try {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+                if (error) throw error;
+                hideLoginModal();
+                showToast('Login successful!', 'success');
+            } catch (error) {
+                console.error("Error logging in:", error);
+                showToast('Error logging in: ' + error.message, 'error');
+            }
+        }
+
+        async function loginWithGoogle(event) {
+            event.preventDefault();
+            try {
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.href // Redirect back to the current page after login
+                    }
+                });
+                if (error) throw error;
+            } catch (error) {
+                console.error('Error with Google login:', error);
+                if (error.message.includes("redirect_uri")) {
+                     showToast('Google login failed: Check your Supabase Redirect URL settings.', 'error');
+                } else {
+                     showToast('Google login failed. Please try again.', 'error');
+                }
+            }
+        }
+
+        async function handlePasswordReset(event) {
+            event.preventDefault();
+            const email = document.getElementById('reset-email').value.trim();
+
+            if (!email) {
+                showToast('Please enter your email address.', 'error');
+                return;
+            }
+
+            try {
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.href, // Optional: where to redirect after password reset
+                });
+
+                if (error) throw error;
+                showToast('Password reset link sent! Please check your email.', 'success');
+                switchAuthForm('login');
+            } catch (error) {
+                console.error("Error sending password reset email:", error);
+                showToast('Error: ' + error.message, 'error');
+            }
+        }
+        
+        async function logout(event) {
+            if (event) event.preventDefault();
+            
+            // Immediately hide the logged-in header for instant feedback.
+            headers.loggedIn.classList.add('hidden');
+            headers.loggedOut.classList.remove('hidden');
+
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) {
+                    // If sign-out fails, revert the UI and show an error.
+                    headers.loggedIn.classList.remove('hidden');
+                    headers.loggedOut.classList.add('hidden');
+                    throw error;
+                }
+                // Force a page reload on successful sign-out. This is the most 
+                // reliable way to clear all application state and prevent UI bugs.
+                window.location.reload();
+            } catch (error) {
+                console.error('Error logging out:', error);
+                showToast('Logout failed: ' + error.message, 'error');
+            }
+        }
+
+        // --- Auth State Listener ---
+        supabase.auth.onAuthStateChange(async (event, session) => {
+            try {
+                const user = session?.user;
+                if (user) {
+                    await fetchUserFavorites(); // Fetch user's favorites on login/session refresh
+                    // --- MANAGE REALTIME SUBSCRIPTIONS ---
+                    if (notificationSubscription) await supabase.removeChannel(notificationSubscription);
+                    fetchInitialNotificationCount(user.id);
+                    notificationSubscription = supabase.channel(`notifications_${user.id}`)
+                        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}`}, 
+                        (payload) => {
+                            document.getElementById('main-notification-dot').classList.remove('hidden');
+                            if (!isMuted) { try { Tone.start(); synth.triggerAttackRelease("G5", "8n"); } catch(e){ console.warn("Could not play sound", e); } }
+                        })
+                        .subscribe();
+
+                    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+                        hideLoginModal();
+                        showPage(window.navigationHistory.length > 0 ? window.navigationHistory[window.navigationHistory.length - 1] : 'homepage', true);
+                    }
+                    
+                    await updateUIForUser(user);
+                    
+                    if (postLoginAction) {
+                        const actionToPerform = postLoginAction;
+                        postLoginAction = null; 
+
+                        if (actionToPerform.action === 'sellItem') {
+                             showSellModal();
+                        } else if (actionToPerform.action === 'viewProduct' && actionToPerform.adId) {
+                             setTimeout(() => showProductDetailPage(null, actionToPerform.adId), 0);
+                        }
+                    }
+                } else { // user is null
+                    // Clean up subscriptions if they exist
+                    if (notificationSubscription) {
+                        await supabase.removeChannel(notificationSubscription);
+                        notificationSubscription = null;
+                    }
+                    if (chatSubscription) {
+                        await supabase.removeChannel(chatSubscription);
+                        chatSubscription = null;
+                    }
+                    
+                    // This block now handles all cases where there is no user (initial load or after logout).
+                    // It ensures the UI is always in a clean, logged-out state.
+                    showPage('homepage', false);
+                    updateUIForGuest();
+                }
+            } catch (error) {
+                console.error("Error in onAuthStateChange:", error);
+                showToast("There was an error managing your session.", "error");
+            }
+        });
+
+        async function updateUIForUser(user) {
+            try {
+                const { data: userProfileData, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (error && error.code !== 'PGRST116') {
+                    throw error;
+                }
+
+                const fullName = `${userProfileData?.first_name || user.user_metadata.full_name || ''} ${userProfileData?.last_name || ''}`.trim() || user.email;
+                const profilePicUrl = userProfileData?.avatar_url || user.user_metadata.avatar_url || `https://placehold.co/96x96/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
+
+                // Update Header
+                document.getElementById('header-profile-pic').src = profilePicUrl;
+                document.getElementById('dropdown-profile-pic').src = profilePicUrl;
+                document.getElementById('dropdown-username').innerText = fullName;
+
+                // Update Profile Page
+                document.getElementById('profile-page-pic').src = profilePicUrl;
+                document.getElementById('profile-page-username').innerText = fullName;
+                const creationDate = user.created_at ? new Date(user.created_at) : new Date();
+                document.getElementById('profile-page-member-since').innerText = `Member since ${creationDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
+
+                // Update Edit Profile Page
+                document.getElementById('profile-pic-preview').src = profilePicUrl;
+                document.getElementById('edit-profile-name-input').value = fullName;
+                document.getElementById('edit-profile-email-input').value = user.email || '';
+                if(userProfileData) {
+                    document.getElementById('edit-profile-phone-input').value = userProfileData.mobile || '';
+                    document.getElementById('edit-profile-about-input').value = userProfileData.about || '';
+                }
+            } catch(error) {
+                console.error("Error updating user UI:", error);
+                showToast("Could not load your profile details.", "error");
+            }
+        }
+
+        function updateUIForGuest() {
+            const placeholderPic = 'https://placehold.co/40x40/E2E8F0/4A5568?text=U';
+            document.getElementById('header-profile-pic').src = placeholderPic;
+            document.getElementById('dropdown-profile-pic').src = placeholderPic;
+            document.getElementById('dropdown-username').innerText = 'Unknown';
+        }
+
+        async function handleProfileUpdate(event) {
+            event.preventDefault();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                showToast('You must be logged in to update your profile.', 'error');
+                return;
+            }
+            
+            const saveButton = event.target;
+            saveButton.disabled = true;
+            saveButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Saving...`;
+
+            try {
+                const newName = document.getElementById('edit-profile-name-input').value.trim();
+                const newPhone = document.getElementById('edit-profile-phone-input').value.trim();
+                const newAbout = document.getElementById('edit-profile-about-input').value.trim();
+                const newFirstName = newName.split(' ')[0] || '';
+                const newLastName = newName.split(' ').slice(1).join(' ') || '';
+
+                if (!newName) {
+                    throw new Error('Name cannot be empty.');
+                }
+
+                let newAvatarUrl = null;
+                if (stagedProfilePic) {
+                    const uploadedUrls = await uploadFilesToCloudinary([stagedProfilePic]);
+                    if (uploadedUrls && uploadedUrls.length > 0) {
+                        newAvatarUrl = uploadedUrls[0];
+                    } else {
+                        throw new Error('Profile picture failed to upload.');
+                    }
+                }
+
+                const authUpdateData = { data: { first_name: newFirstName, last_name: newLastName } };
+                const profileUpdateData = { mobile: newPhone, about: newAbout, first_name: newFirstName, last_name: newLastName };
+
+                if (newAvatarUrl) {
+                    authUpdateData.data.avatar_url = newAvatarUrl;
+                    profileUpdateData.avatar_url = newAvatarUrl;
+                }
+
+                // Update public profiles table first
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .update(profileUpdateData)
+                    .eq('id', user.id);
+                if (profileError) throw profileError;
+                
+                // Then update Supabase Auth user metadata
+                const { data: {user: updatedAuthUser}, error: authError } = await supabase.auth.updateUser(authUpdateData);
+                if (authError) throw authError;
+
+                showToast('Profile updated successfully!', 'success');
+                stagedProfilePic = null; // Clear staged file
+                await updateUIForUser(updatedAuthUser); // Use the freshly updated auth user object
+                showUserProfilePage(event);
+
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                showToast('Failed to update profile: ' + error.message, 'error');
+            } finally {
+                saveButton.disabled = false;
+                saveButton.innerHTML = 'Save changes';
+            }
+        }
+        
+        function loadCategories() {
+            const categorySelect = document.getElementById('category-select');
+            while (categorySelect.options.length > 1) {
+                categorySelect.remove(1);
+            }
+            categoriesData.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
+            });
+        }
+
+        async function uploadFilesToCloudinary(files) {
+            const uploadedUrls = [];
+            const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+            for (const file of files) {
+                 const formData = new FormData();
+                if (typeof file === 'string') { // Handle Base64 strings
+                    formData.append('file', file);
+                } else { // Handle File objects
+                    formData.append('file', file);
+                }
+                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+                try {
+                    const response = await fetch(uploadUrl, { method: 'POST', body: formData });
+                    const data = await response.json();
+                    if (data.secure_url) {
+                        uploadedUrls.push(data.secure_url);
+                    } else { throw new Error('Image upload failed.'); }
+                } catch (error) {
+                    console.error('Error uploading to Cloudinary:', error);
+                    showToast('An error occurred during file upload.', 'error');
+                    return [];
+                }
+            }
+            return uploadedUrls;
+        }
+        
+        let editingAdId = null; 
+        let stagedFiles = []; // To hold files from upload OR camera
+
+        async function handleAdSubmit(event) {
+            event.preventDefault();
+            const postButton = document.getElementById('post-ad-button');
+            const originalButtonText = editingAdId ? 'Update Ad' : 'Post Now';
+
+            postButton.disabled = true;
+            postButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Posting...`;
+
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    throw new Error("You must be logged in to post an ad.");
+                }
+
+                const title = document.getElementById('ad-title').value.trim();
+                const description = document.getElementById('ad-description').value.trim();
+                const price = document.getElementById('ad-price').value;
+                const categoryName = document.getElementById('category-select').value;
+                const categoryId = categoryMapping[categoryName];
+                const cityId = document.getElementById('ad-city').value;
+                const pincode = document.getElementById('ad-pincode').value.trim();
+                
+                if (!title || !price || !categoryName || !cityId) {
+                    throw new Error("Please fill out all required fields: Title, Price, Category, and Location.");
+                }
+                if (!categoryId) {
+                    throw new Error("Invalid category selected.");
+                }
+                
+                let imageUrls = [];
+                if (stagedFiles.length > 0) {
+                    const filesToUpload = stagedFiles.map(file => {
+                        return typeof file.data === 'string' ? file.data : file.file;
+                    });
+                    imageUrls = await uploadFilesToCloudinary(filesToUpload);
+                    if (imageUrls.length !== stagedFiles.length) {
+                        throw new Error('Some images failed to upload. Please try again.');
+                    }
+                }
+                
+                const cityName = allCities.find(c => c.id == cityId)?.name || 'Not specified';
+                const listingData = {
+                    user_id: user.id,
+                    category_id: categoryId,
+                    title: title,
+                    description: description,
+                    price: parseFloat(price),
+                    image_urls: imageUrls,
+                    location: cityName, // Legacy location field
+                    city_id: parseInt(cityId),
+                    pincode: pincode || null,
+                };
+
+                let error;
+                if (editingAdId) {
+                    const { error: updateError } = await supabase.from('listings').update(listingData).eq('id', editingAdId);
+                    error = updateError;
+                } else {
+                    const { error: insertError } = await supabase.from('listings').insert([listingData]);
+                    error = insertError;
+                }
+
+                if (error) throw error;
+                
+                if(editingAdId) {
+                    showToast('Ad updated successfully!', 'success');
+                } else {
+                    showPostSuccessModal();
+                }
+                stagedFiles = [];
+                hideSellModal();
+                await fetchAndDisplayMyAds();
+
+            } catch (error) {
+                console.error('Detailed error during ad submission:', error);
+                 let errorMessage = error.message || 'Failed to post ad. Please try again.';
+
+                if (error.message.includes("violates row-level security policy")) {
+                    errorMessage = 'Posting failed due to database security rules. Please check your Supabase settings.';
+                    // DEV NOTE: To fix, go to Supabase > Authentication > Policies > listings table
+                    // and create a new policy for INSERT, for authenticated users.
+                } else if (error.message.includes('violates not-null constraint') && error.message.includes('subcategory_id')) {
+                    errorMessage = 'Posting failed: A "Sub-Category" is required. The backend was updated, but the form is not sending this yet.';
+                     // DEV NOTE: To fix, make the 'subcategory_id' column in the 'listings' table optional (allow nulls).
+                    // SQL FIX: ALTER TABLE public.listings ALTER COLUMN subcategory_id DROP NOT NULL;
+                } else if (error.code) { 
+                    errorMessage = `Database Error: ${error.message}`;
+                }
+                
+                showToast(errorMessage, 'error');
+            } finally {
+                postButton.disabled = false;
+                postButton.innerHTML = originalButtonText;
+            }
+        }
+
+        async function handleEditAd(adId) {
+            try {
+                editingAdId = adId;
+                const { data: ad, error } = await supabase
+                    .from('listings')
+                    .select('*, cities(*)')
+                    .eq('id', adId)
+                    .single();
+                
+                if (error) throw error;
+                
+                document.getElementById('category-select').value = reverseCategoryMapping[ad.category_id];
+                updateAttributeFields();
+                document.getElementById('ad-title').value = ad.title;
+                document.getElementById('ad-description').value = ad.description;
+                document.getElementById('ad-price').value = ad.price;
+                
+                // Populate location
+                if (ad.city_id && ad.cities) {
+                    const stateId = ad.cities.state_id;
+                    const cityId = ad.city_id;
+                    const adStateSelect = document.getElementById('ad-state');
+                    adStateSelect.value = stateId;
+                    populateCities(stateId);
+                    // Use a timeout to ensure cities are populated before setting the value
+                    setTimeout(() => {
+                        document.getElementById('ad-city').value = cityId;
+                    }, 100);
+                }
+                document.getElementById('ad-pincode').value = ad.pincode || '';
+
+                document.querySelector('#sellModal .text-2xl').textContent = 'Edit Your Ad';
+                document.getElementById('post-ad-button').textContent = 'Update Ad';
+                
+                showSellModal();
+            } catch(error) {
+                console.error("Error fetching ad for edit:", error);
+                showToast('Could not load ad details for editing.', 'error');
+            }
+        }
+
+        async function handleDeleteAd(adId) {
+            showConfirmModal(
+                'Delete Ad',
+                'Are you sure you want to delete this ad? This action cannot be undone.',
+                async () => { // This is the onConfirm callback
+                    try {
+                        const { error } = await supabase.from('listings').delete().eq('id', adId);
+                        if (error) throw error;
+                        showToast('Ad deleted successfully.', 'success');
+                        await fetchAndDisplayMyAds();
+                    } catch (error) {
+                        console.error("Error deleting ad:", error);
+                        showToast('Failed to delete ad: ' + error.message, 'error');
+                    }
+                }
+            );
+        }
+
+        async function fetchAndDisplayMyAds() {
+            const adsGrid = document.getElementById('my-ads-grid');
+            adsGrid.innerHTML = Array(4).fill(skeletonCardHTML).join('');
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    adsGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">Please log in to see your ads.</p>`;
+                    return;
+                }
+
+                const { data: ads, error } = await supabase
+                    .from('listings')
+                    .select('*, cities(name)')
+                    .eq('user_id', user.id);
+
+                if (error) throw error;
+
+                adsGrid.innerHTML = '';
+
+                if (!ads || ads.length === 0) {
+                    adsGrid.innerHTML = `
+                        <div class="col-span-full bg-white p-8 rounded-lg shadow-md text-center">
+                            <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
+                            <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
+                            <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
+                            <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
+                        </div>`;
+                    return;
+                }
+
+                ads.forEach((ad) => {
+                    const locationText = ad.cities ? ad.cities.name : ad.location || 'N/A';
+                    const adCard = `
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="Product Image" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg mb-2">₹ ${ad.price.toLocaleString('en-IN')}</h3>
+                                <p class="text-gray-600 text-sm mb-4 truncate">${ad.title}</p>
+                                <div class="flex justify-between items-center text-xs text-gray-500">
+                                    <span>${locationText}</span>
+                                    <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">Active</span>
+                                </div>
+                                <div class="mt-4 flex gap-2">
+                                    <button onclick="handleEditAd(${ad.id})" class="w-full bg-gray-200 text-gray-700 p-2 rounded-md font-semibold hover:bg-gray-300 text-sm">Edit</button>
+                                    <button onclick="handleDeleteAd(${ad.id})" class="w-full bg-red-500 text-white p-2 rounded-md font-semibold hover:bg-red-600 text-sm">Delete</button>
+                                </div>
+                            </div>
+                        </div>`;
+                    adsGrid.innerHTML += adCard;
+                });
+            } catch (error) {
+                console.error("Error fetching user's ads:", error);
+                showToast("Could not fetch your ads.", 'error');
+                adsGrid.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading ads.</p>`;
+            }
+        }
+        
+        // --- FAVORITES LOGIC ---
+        // --- IMPORTANT SUPABASE SETUP FOR FAVORITES ---
+        // For the "Add to Favorite" feature to work, you MUST enable Row Level Security (RLS)
+        // on your 'favorites' table and create policies. Go to your Supabase project, open the
+        // SQL Editor, and run the following commands one by one:
+        /*
+        
+        -- 1. Enable RLS on the favorites table
+        ALTER TABLE public.favorites ENABLE ROW LEVEL SECURITY;
+
+        -- 2. Create a policy that allows users to view their OWN favorites
+        CREATE POLICY "Enable read access for own user"
+        ON public.favorites
+        AS PERMISSIVE FOR SELECT
+        TO authenticated
+        USING ((auth.uid() = user_id));
+
+        -- 3. Create a policy that allows users to add a favorite FOR THEMSELVES
+        CREATE POLICY "Enable insert for own user"
+        ON public.favorites
+        AS PERMISSIVE FOR INSERT
+        TO authenticated
+        WITH CHECK ((auth.uid() = user_id));
+        
+        -- 4. Create a policy that allows users to remove their OWN favorites
+        CREATE POLICY "Enable delete for own user"
+        ON public.favorites
+        AS PERMISSIVE FOR DELETE
+        TO authenticated
+        USING ((auth.uid() = user_id));
+
+        */
+        let userFavorites = new Set();
+        async function fetchUserFavorites() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    userFavorites = new Set();
+                    return;
+                }
+                const { data, error } = await supabase.from('favorites').select('listing_id').eq('user_id', user.id);
+                if (error) throw error;
+                userFavorites = new Set(data.map(fav => fav.listing_id));
+            } catch (error) {
+                console.error("Error fetching user favorites:", error);
+                userFavorites = new Set();
+            }
+        }
+
+        async function handleFavoriteClick(event, adId) {
+            event.preventDefault();
+            event.stopPropagation(); // Prevent navigating to product page
+
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                showToast('Please log in to save favorites.', 'info');
+                showLoginModal();
+                return;
+            }
+
+            const heartButton = event.currentTarget;
+            if (!heartButton) {
+                console.warn("handleFavoriteClick was called without a valid button target.");
+                return;
+            }
+            
+            heartButton.disabled = true;
+
+            try {
+                const heartIcon = heartButton.querySelector('i');
+                if (!heartIcon) {
+                    console.warn("Could not find heart icon inside the favorite button.");
+                    return; // Exit if the icon isn't there
+                }
+                
+                const isFavorited = userFavorites.has(adId);
+
+                if (isFavorited) {
+                    const { error } = await supabase.from('favorites').delete().match({ user_id: user.id, listing_id: adId });
+                    if (error) throw error;
+                    userFavorites.delete(adId);
+                    heartIcon.classList.replace('fas', 'far');
+                    heartIcon.classList.remove('text-red-500');
+                    heartIcon.classList.add('text-gray-400');
+                } else {
+                    const { error } = await supabase.from('favorites').insert({ user_id: user.id, listing_id: adId });
+                    if (error) throw error;
+                    userFavorites.add(adId);
+                    heartIcon.classList.replace('far', 'fas');
+                    heartIcon.classList.remove('text-gray-400');
+                    heartIcon.classList.add('text-red-500');
+                }
+            } catch (error) {
+                console.error("Error updating favorite:", error);
+                // --- FIX: Add specific error message for RLS policy failure ---
+                let errorMessage = 'Could not update favorites. Please try again.';
+                if (error.message && error.message.includes("violates row-level security policy")) {
+                    errorMessage = 'Favorites feature is not enabled. Please contact support.';
+                    console.error("FAVORITES RLS POLICY ERROR: The user does not have permission to insert/delete from the 'favorites' table. Please ensure the RLS policies provided in the code comments are active on your Supabase project.");
+                }
+                showToast(errorMessage, 'error');
+            } finally {
+                if (heartButton) {
+                     heartButton.disabled = false;
+                }
+            }
+        }
+        
+        async function fetchAndDisplayMyFavorites() {
+            const favoritesGrid = document.getElementById('my-favorites-grid');
+            favoritesGrid.innerHTML = Array(4).fill(skeletonCardHTML).join('');
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) throw new Error("User not logged in.");
+
+                const { data: ads, error } = await supabase
+                    .from('favorites')
+                    .select('listings(*, cities(name))')
+                    .eq('user_id', user.id);
+
+                if (error) throw error;
+                
+                favoritesGrid.innerHTML = '';
+                const favoriteAds = ads.map(fav => fav.listings).filter(Boolean);
+
+                if (favoriteAds.length === 0) {
+                    favoritesGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">You have no favorite ads yet.</p>`;
+                    return;
+                }
+
+                await fetchUserFavorites(); // Ensure favorites set is up to date
+
+                favoriteAds.forEach(ad => {
+                    favoritesGrid.innerHTML += createAdCard(ad);
+                });
+
+            } catch (error) {
+                 console.error("Error fetching favorites:", error);
+                 favoritesGrid.innerHTML = `<p class="col-span-full text-center text-red-500">Could not load your favorites.</p>`;
+            }
+        }
+        
+        function createAdCard(ad) {
+           const locationText = ad.cities ? ad.cities.name : ad.location;
+           return `
+           <div class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300 relative">
+               <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
+                  <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${ad.title}" class="w-full h-48 object-cover">
+               </a>
+              <button onclick="handleFavoriteClick(event, ${ad.id})" class="absolute top-2 right-2 p-2 rounded-full bg-white bg-opacity-75 z-10 hover:bg-gray-100 transition-colors">
+                  <i class="${userFavorites.has(ad.id) ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400'}"></i>
+              </button>
+              ${ad.is_premium ? '<span class="absolute top-2 left-2 bg-theme-accent text-white text-xs font-bold px-2 py-1 rounded z-10">Premium</span>' : ''}
+              <div class="p-4">
+                  <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
+                      <h3 class="font-bold text-lg mb-2 truncate">₹ ${ad.price.toLocaleString('en-IN')}</h3>
+                      <p class="text-gray-600 text-sm truncate">${ad.title}</p>
+                      <div class="flex justify-between text-xs text-gray-500 mt-2">
+                          <span>${locationText}</span>
+                          <span>${ad.created_at ? new Date(ad.created_at).toLocaleDateString() : 'Recently'}</span>
+                      </div>
+                  </a>
+              </div>
+           </div>`;
+        }
+
+        async function fetchAndDisplayListings(categoryName, filters = {}) {
+            const listingGrid = document.getElementById('listing-grid');
+            listingGrid.innerHTML = Array(6).fill(skeletonCardHTML).join('');
+            
+            await fetchUserFavorites();
+            
+            const categoryId = categoryMapping[categoryName];
+            
+            try {
+                let query = supabase
+                    .from('listings')
+                    .select('*, cities(name)');
+                    
+                if (categoryId) {
+                    query = query.eq('category_id', categoryId);
+                }
+                
+                if (filters.city_id) {
+                    query = query.eq('city_id', filters.city_id);
+                }
+                
+                if (filters.keyword) {
+                    const searchPattern = `%${filters.keyword}%`;
+                    query = query.or(`title.ilike.${searchPattern},location.ilike.${searchPattern}`);
+                }
+
+                const { data: ads, error } = await query;
+
+                if (error) throw error;
+
+                listingGrid.innerHTML = '';
+
+                if (!ads || ads.length === 0) {
+                    listingGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">No listings found for your criteria.</p>`;
+                    return;
+                }
+
+                ads.forEach((ad) => {
+                    listingGrid.innerHTML += createAdCard(ad);
+                });
+            } catch(error) {
+                 console.error("Error fetching listings:", error);
+                 showToast("Could not fetch listings.", 'error');
+                 listingGrid.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading listings.</p>`;
+            }
+        }
+
+        function handleFileUpload(event) {
+            stagedFiles = Array.from(event.target.files).map(file => ({ type: 'file', file: file }));
+            renderImagePreviews();
+        }
+
+        function renderImagePreviews() {
+            const previewContainer = document.getElementById('image-preview-container');
+            previewContainer.innerHTML = '';
+            if (stagedFiles.length > 8) {
+                showToast("You can only upload a maximum of 8 images.", 'error');
+                stagedFiles = stagedFiles.slice(0, 8);
+            }
+            stagedFiles.forEach((fileWrapper, index) => {
+                const reader = new FileReader();
+                const file = fileWrapper.type === 'base64' ? dataURLtoFile(fileWrapper.data, `capture${index}.jpg`) : fileWrapper.file;
+                
+                reader.onload = function(e) {
+                    const previewWrapper = document.createElement('div');
+                    previewWrapper.className = 'relative w-24 h-24';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'w-full h-full object-cover rounded-md border';
+                    
+                    previewWrapper.appendChild(img);
+                    previewContainer.appendChild(previewWrapper);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function renderProductDetailPage(adId) {
+            const container = document.getElementById('product-detail-container');
+            container.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
+            try {
+                // Ensure user's favorites are loaded before rendering the page
+                await fetchUserFavorites();
+
+                const { data: ad, error: adError } = await supabase.from('listings').select('*, cities(name, states(name))').eq('id', adId).single();
+                
+                if (adError || !ad) { throw adError || new Error("Ad not found"); }
+
+                let seller;
+                const { data: sellerData, error: sellerError } = await supabase.from('profiles').select('*').eq('id', ad.user_id).single();
+
+                if (sellerError && sellerError.code !== 'PGRST116') {
+                    console.warn("Could not fetch seller profile, using default:", sellerError);
+                    seller = { id: 'unknown', first_name: 'Unknown', last_name: 'Seller', created_at: ad.created_at };
+                } else {
+                    seller = sellerData || { id: 'unknown', first_name: 'Unknown', last_name: 'Seller', created_at: ad.created_at };
+                }
+
+                const creationDate = seller.created_at ? new Date(seller.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'a while';
+
+                const { data: similarAds, error: similarAdsError } = await supabase
+                    .from('listings')
+                    .select('*')
+                    .eq('category_id', ad.category_id)
+                    .neq('id', adId)
+                    .limit(4);
+                
+                if(similarAdsError) { console.warn("Could not fetch similar ads:", similarAdsError); }
+                
+                const locationText = ad.cities ? `${ad.cities.name}, ${ad.cities.states.name}` : (ad.location || 'India');
+
+                const similarAdsHTML = similarAds && similarAds.length > 0 ? similarAds.map(similarAd => `
+                    <a href="#" onclick="showProductDetailPage(event, ${similarAd.id})" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
+                        <img src="${similarAd.image_urls && similarAd.image_urls.length > 0 ? similarAd.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=Ad'}" alt="Product" class="w-full h-40 object-cover">
+                        <div class="p-3">
+                            <h3 class="font-bold text-md mb-1">₹ ${similarAd.price.toLocaleString('en-IN')}</h3>
+                            <p class="text-gray-600 text-xs truncate">${similarAd.title}</p>
+                        </div>
+                    </a>
+                `).join('') : '<p class="col-span-full text-gray-500">No similar ads found.</p>';
+                
+                const pageHTML = `
+                    <div class="flex items-center gap-4 mb-4">
+                        <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
+                        <h1 class="text-2xl font-bold">Product Details</h1>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="w-full md:w-2/3">
+                                <img id="main-product-image" src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/800x600/CBD5E0/4A5568?text=Product'}" alt="Main Product Image" class="w-full h-auto rounded-lg shadow-lg">
+                            </div>
+                            <div class="w-full md:w-1/3">
+                                <div class="border-b pb-4 mb-4">
+                                    <h2 class="text-3xl font-bold mb-2">₹ ${ad.price.toLocaleString('en-IN')}</h2>
+                                    <p class="text-lg text-gray-600">${ad.title}</p>
+                                    <div class="flex justify-between text-sm text-gray-500 mt-2">
+                                        <span>${locationText}</span>
+                                        <span>Posted ${new Date(ad.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                                <div class="border-b pb-4 mb-4">
+                                    <h3 class="text-xl font-semibold mb-2">Seller Details</h3>
+                                    <div class="flex items-center gap-4">
+                                        <img class="h-16 w-16 rounded-full object-cover" src="https://placehold.co/64x64/0A2342/D4AF37?text=${(seller.first_name || 'S').charAt(0)}" alt="Seller profile">
+                                        <div>
+                                            <p class="font-bold text-lg">${seller.first_name} ${seller.last_name}</p>
+                                            <p class="text-sm text-gray-500">Member since ${creationDate}</p>
+                                        </div>
+                                    </div>
+                                    <button onclick="openChatWindow('${seller.first_name}', ${ad.id}, '${seller.id}')" class="w-full mt-4 bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">
+                                        <i class="fas fa-comments mr-2"></i>Chat with Seller
+                                    </button>
+                                </div>
+                                <button onclick="handleFavoriteClick(event, ${ad.id})" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
+                                    <i class="${userFavorites.has(ad.id) ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-500'}"></i>
+                                    <span class="font-semibold">Add to Favorites</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-8 border-t pt-6">
+                            <h3 class="text-xl font-semibold mb-4">Description</h3>
+                            <p class="text-gray-700 leading-relaxed">${ad.description}</p>
+                        </div>
+                        <div class="mt-8 border-t pt-6">
+                            <h3 class="text-xl font-semibold mb-4">Similar Ads</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">${similarAdsHTML}</div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML = pageHTML;
+            } catch(error) {
+                 console.error("Error fetching product details:", error);
+                 container.innerHTML = `<p class="text-center text-red-500">Could not load product details.</p>`;
+            }
+        }
+
+        async function renderProfileAds() {
+            const container = document.getElementById('profile-ads-container');
+            container.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) throw new Error("User not logged in.");
+
+                const { data: ads, error } = await supabase.from('listings').select('*, cities(name)').eq('user_id', user.id).limit(6);
+                
+                if (error) throw error;
+
+                if (!ads || ads.length === 0) {
+                     container.innerHTML = `
+                          <div class="bg-white p-8 rounded-lg shadow-md text-center">
+                                <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4">
+                                <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
+                                <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
+                                <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
+                          </div>
+                        `;
+                } else {
+                     const adsGridHTML = ads.map(ad => `
+                          <a href="#" onclick="showProductDetailPage(event, ${ad.id})" class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300">
+                                <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=Ad'}" alt="Product" class="w-full h-40 object-cover">
+                                <div class="p-3">
+                                    <h3 class="font-bold text-md mb-1">₹ ${ad.price.toLocaleString('en-IN')}</h3>
+                                    <p class="text-gray-600 text-xs truncate">${ad.title}</p>
+                                </div>
+                          </a>
+                        `).join('');
+                     container.innerHTML = `
+                          <div class="bg-white p-6 rounded-lg shadow-md">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-xl font-bold">Your Active Ads</h3>
+                                    <a href="#" onclick="showMyAdsPage(event)" class="text-sm font-semibold text-theme-accent hover:underline">View All</a>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    ${adsGridHTML}
+                                </div>
+                          </div>
+                        `;
+                }
+            } catch (error) {
+                console.error("Error rendering profile ads:", error);
+                 container.innerHTML = `<p class="text-center text-red-500">Could not load your ads.</p>`;
+            }
+        }
+
+        async function generateAdDescription(event) {
+            event.preventDefault();
+            const adTitle = document.getElementById('ad-title').value.trim();
+            const categorySelect = document.getElementById('category-select');
+            const categoryName = categorySelect.options[categorySelect.selectedIndex].text;
+            const descriptionTextarea = document.getElementById('ad-description');
+            const generateButton = event.target;
+
+            if (!adTitle) {
+                showToast('Please enter an Ad Title first to generate a description.', 'error');
+                return;
+            }
+
+            const originalButtonText = generateButton.innerHTML;
+            generateButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Generating...`;
+            generateButton.disabled = true;
+
+            try {
+                const apiKey = ""; // Canvas will provide this
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+
+                const systemPrompt = "You are an expert copywriter for a local online marketplace. Your goal is to write clear, friendly, and persuasive ad descriptions that help items sell quickly. Do not use markdown or formatting. Just provide the plain text for the description.";
+                const userQuery = `Write a short and appealing ad description for an item with the following details:\nCategory: ${categoryName}\nTitle: "${adTitle}"`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    },
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API call failed with status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const generatedText = candidate.content.parts[0].text;
+                    descriptionTextarea.value = generatedText;
+                    showToast('Description generated!', 'success');
+                } else {
+                    throw new Error('No content generated in API response.');
+                }
+
+            } catch (error) {
+                console.error('Error generating ad description:', error);
+                showToast('Could not generate description. Please try again.', 'error');
+            } finally {
+                generateButton.innerHTML = originalButtonText;
+                generateButton.disabled = false;
+            }
+        }
+
+        let cameraStream = null;
+
+        async function openCamera(event) {
+            event.preventDefault();
+            const cameraView = document.getElementById('camera-view');
+            const video = document.getElementById('camera-stream');
+            cameraView.classList.remove('hidden');
+            try {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    video.srcObject = cameraStream;
+                } else {
+                    throw new Error('Camera not supported on this browser.');
+                }
+            } catch (err) {
+                console.error("Error accessing camera:", err);
+                showToast('Could not access camera. Please ensure permissions are granted.', 'error');
+                closeCamera();
+            }
+        }
+        
+        function closeCamera(event) {
+            if(event) event.preventDefault();
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('camera-view').classList.add('hidden');
+        }
+
+        async function captureImage(event) {
+            event.preventDefault();
+            const video = document.getElementById('camera-stream');
+            const canvas = document.getElementById('camera-canvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const base64ImageData = canvas.toDataURL('image/jpeg');
+            stagedFiles.push({ type: 'base64', data: base64ImageData });
+            renderImagePreviews();
+            
+            closeCamera();
+            await analyzeImageWithAI(base64ImageData.split(',')[1]); // Send without the prefix
+        }
+
+        function dataURLtoFile(dataurl, filename) {
+            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new File([u8arr], filename, {type:mime});
+        }
+        
+        async function analyzeImageWithAI(base64ImageData) {
+            showToast('🤖 AI is analyzing your image...', 'info');
+            
+            try {
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`;
+
+                const validCategories = ['cars', 'property', 'mobiles', 'bikes', 'electronics', 'commercial_vehicles', 'furniture', 'fashion', 'pets', 'services'];
+                const prompt = `Analyze this image of an item for sale. Provide a JSON object with 'category', 'title', and 'description'. The 'category' must be one of these exact values: ${validCategories.join(', ')}. The 'title' should be a short, catchy title. The 'description' should be a helpful summary.`;
+                
+                const payload = {
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
+                        ]
+                    }],
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    // Gemini might wrap the JSON in markdown, so we need to clean it
+                    const rawText = candidate.content.parts[0].text;
+                    const jsonText = rawText.replace(/```json\n?|\n?```/g, '').trim();
+                    const parsedJson = JSON.parse(jsonText);
+                    
+                    if (validCategories.includes(parsedJson.category)) {
+                        document.getElementById('category-select').value = parsedJson.category;
+                        updateAttributeFields(); // Important to update UI for the new category
+                    } else {
+                        console.warn(`AI suggested an invalid category: ${parsedJson.category}`);
+                    }
+                    document.getElementById('ad-title').value = parsedJson.title;
+                    document.getElementById('ad-description').value = parsedJson.description;
+                    showToast('✅ AI analysis complete!', 'success');
+                } else {
+                    throw new Error('Could not parse AI response.');
+                }
+            } catch (error) {
+                console.error('Error analyzing image with AI:', error);
+                showToast('AI analysis failed. Please fill in the details manually.', 'error');
+            }
+        }
+
+        // --- NEW: Location Functions ---
+        async function fetchAndPopulateLocations() {
+            try {
+                const { data: statesData, error: statesError } = await supabase.from('states').select('id, name').order('name');
+                if (statesError) throw statesError;
+                allStates = statesData;
+
+                const { data: citiesData, error: citiesError } = await supabase.from('cities').select('id, name, state_id').order('name');
+                if (citiesError) throw citiesError;
+                allCities = citiesData;
+
+                const stateSelect = document.getElementById('ad-state');
+                stateSelect.innerHTML = '<option value="">Select State</option>'; // Reset
+                allStates.forEach(state => {
+                    stateSelect.innerHTML += `<option value="${state.id}">${state.name}</option>`;
+                });
+
+            } catch (error) {
+                console.error("Error fetching locations:", error);
+                showToast("Could not load location data from the database.", "error");
+            }
+        }
+
+        function populateCities(stateId) {
+            const citySelect = document.getElementById('ad-city');
+            citySelect.innerHTML = '<option value="">Select City</option>'; // Reset cities
+            if (!stateId) return;
+
+            const filteredCities = allCities.filter(city => city.state_id == stateId);
+            filteredCities.forEach(city => {
+                citySelect.innerHTML += `<option value="${city.id}">${city.name}</option>`;
+            });
+        }
+        
+        function populateFilterCities(stateId) {
+            const citySelect = document.getElementById('filter-city');
+            citySelect.innerHTML = '<option value="">All Cities</option>'; // Reset cities
+            if (!stateId) return;
+
+            const filteredCities = allCities.filter(city => city.state_id == stateId);
+            filteredCities.forEach(city => {
+                citySelect.innerHTML += `<option value="${city.id}">${city.name}</option>`;
+            });
+        }
+        
+        // --- CUSTOM CONFIRM MODAL ---
+        let confirmCallback = null;
+        function showConfirmModal(title, message, onConfirm) {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-message').innerText = message;
+            confirmCallback = onConfirm;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function hideConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            confirmCallback = null;
+        }
+
+        // --- EXPOSE FUNCTIONS TO GLOBAL SCOPE ---
+        const functionsToExpose = {
+            showHomepage, showListingPage, showLoginModal, showSellModal, toggleNotifications,
+            markNotificationsAsRead, showUserProfilePage, showMyAdsPage, showPlaceholderPage,
+            showHelpPage, logout, searchFromHome, goBack, showComingSoonPage, showProductDetailPage,
+            hideSellModal, hideLoginModal, showTncModal, hideTncModal, updateAttributeFields,
+            handlePropertyTypeChange, showReraInfo, togglePostButton, openChatWindow,
+            closeChatWindow, toggleMute, switchAuthForm, handleLogin, loginWithGoogle,
+            handleRegister, handlePasswordReset, handleProfilePictureChange, showEditProfilePage,
+            handleProfileUpdate, handleEditAd, handleDeleteAd,
+            hideAdSuccessModal, handleFileUpload, fetchAndDisplayMyAds, generateAdDescription,
+            openCamera, closeCamera, captureImage, populateCities, populateFilterCities, applyFilters, resetFilters,
+            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage, openChatFromListPage
+        };
+        Object.keys(functionsToExpose).forEach(funcName => {
+            window[funcName] = functionsToExpose[funcName];
+        });
+
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
+            
+            // Add search functionality to the header search bar
+            document.getElementById('header-search-input').addEventListener('keypress', async function(e) {
+                if (e.key === 'Enter') {
+                    const keyword = e.target.value.trim();
+                    if (keyword) {
+                        e.preventDefault(); 
+                        // Default to 'all' category for a general search, but pass the keyword
+                        await showListingPage(null, 'all', { keyword: keyword }); 
+                    }
+                }
+            });
+
+            document.getElementById('chat-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const input = document.getElementById('chat-input');
+                const messageText = input.value.trim();
+                const { data: { user } } = await supabase.auth.getUser();
+
+                if (messageText && currentRoomId && user) {
+                    appendMessage(messageText, 'sent', false);
+                    input.value = '';
+
+                    try {
+                        const { error } = await supabase.from('chat_messages').insert({
+                            room_id: currentRoomId,
+                            sender_id: user.id,
+                            receiver_id: currentReceiverId,
+                            content: messageText
+                        });
+                        if (error) throw error;
+                    } catch (error) {
+                         console.error("Error sending message:", error);
+                         showToast("Message failed to send.", "error");
+                    }
+                }
+            });
+            
+            // Confirm modal listeners
+            document.getElementById('confirm-ok-btn').addEventListener('click', () => {
+                if (typeof confirmCallback === 'function') {
+                    confirmCallback();
+                }
+                hideConfirmModal();
+            });
+            document.getElementById('confirm-cancel-btn').addEventListener('click', hideConfirmModal);
+
+            loadCategories();
+            await fetchAndPopulateLocations(); // <-- Fetch locations on load
+        });
+
+    </script>
+</body>
+</html>
 

@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,16 +14,17 @@
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 
     <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self'; 
-        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com; 
-        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; 
-        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; 
-        img-src 'self' https: data:; 
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com https://unpkg.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        img-src 'self' data: https://images.unsplash.com https://placehold.co https://www.google.com https://res.cloudinary.com;
         connect-src 'self' https://crepnlidfdoskighdhdt.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://crepnlidfdoskighdhdt.supabase.co;
-        frame-src 'self';
         object-src 'none';
         base-uri 'self';
         form-action 'self';
+        frame-src 'none';
+        frame-ancestors 'none';
     ">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TradeGinger - Buy & Sell Locally</title>
@@ -2796,6 +2798,9 @@
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', async () => {
+            // Disable right-click context menu to prevent "View Page Source"
+            document.addEventListener('contextmenu', event => event.preventDefault());
+
             document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
             
             document.getElementById('header-search-input').addEventListener('keypress', async function(e) {
@@ -2860,6 +2865,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 

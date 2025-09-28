@@ -162,7 +162,7 @@
 </head>
 <body class="text-gray-800">
 
-    <header id="header-logged-out" class="bg-white shadow-md sticky top-0 z-50">
+    <header id="header-logged-out" class="bg-white shadow-md sticky top-0 z-50 hidden">
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
@@ -279,31 +279,31 @@
         </section>
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <section class="mb-12">
-                <h2 class="text-3xl font-bold mb-8 text-center text-gray-800">Browse by Category</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <h2 class="text-3xl font-bold mb-8 text-left text-gray-800">Browse by Category</h2>
+                <div class="flex flex-col gap-10 md:w-1/2">
                     <div class="space-y-4">
-                        <h3 class="text-xl font-semibold mb-4 theme-primary text-center">Marketplace</h3>
-                        <ul class="space-y-3">
-                            <li><a href="#" onclick="showListingPage(event, 'mobiles')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-mobile-alt text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Mobiles</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'electronics')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-tv text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Electronics</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'furniture')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-couch text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Furniture</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'fashion')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-tshirt text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Fashion</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'pets')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-dog text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Pets</span></a></li>
+                        <h3 class="text-xl font-semibold mb-4 theme-primary text-left">Marketplace</h3>
+                        <ul class="flex flex-wrap items-center gap-3">
+                            <li><a href="#" onclick="showListingPage(event, 'mobiles')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-mobile-alt text-theme-accent"></i><span>Mobiles</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'electronics')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-tv text-theme-accent"></i><span>Electronics</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'furniture')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-couch text-theme-accent"></i><span>Furniture</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'fashion')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-tshirt text-theme-accent"></i><span>Fashion</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'pets')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-dog text-theme-accent"></i><span>Pets</span></a></li>
                         </ul>
                     </div>
-                     <div class="space-y-4">
-                        <h3 class="text-xl font-semibold mb-4 theme-primary text-center">Vehicles</h3>
-                        <ul class="space-y-3">
-                            <li><a href="#" onclick="showListingPage(event, 'cars')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-car text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Cars</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'bikes')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-motorcycle text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Bikes</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'commercial_vehicles')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-truck text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">Commercial</span></a></li>
+                     <div class="space-y-4 md:ml-8">
+                        <h3 class="text-xl font-semibold mb-4 theme-primary text-left">Vehicles</h3>
+                        <ul class="flex flex-wrap items-center gap-3">
+                            <li><a href="#" onclick="showListingPage(event, 'cars')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-car text-theme-accent"></i><span>Cars</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'bikes')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-motorcycle text-theme-accent"></i><span>Bikes</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'commercial_vehicles')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-truck text-theme-accent"></i><span>Commercial</span></a></li>
                         </ul>
                     </div>
-                     <div class="space-y-4">
-                        <h3 class="text-xl font-semibold mb-4 theme-primary text-center">Real Estate</h3>
-                        <ul class="space-y-3">
-                            <li><a href="#" onclick="showListingPage(event, 'property')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-building text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">For Sale: Houses & Apartments</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'property')" class="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300"><i class="fas fa-sign text-2xl text-theme-accent w-8 text-center"></i><span class="font-semibold text-gray-700">For Rent: Houses & Apartments</span></a></li>
+                     <div class="space-y-4 md:ml-16">
+                        <h3 class="text-xl font-semibold mb-4 theme-primary text-left">Real Estate</h3>
+                        <ul class="flex flex-wrap items-center gap-3">
+                            <li><a href="#" onclick="showListingPage(event, 'property')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-building text-theme-accent"></i><span>For Sale</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'property')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-sign text-theme-accent"></i><span>For Rent</span></a></li>
                         </ul>
                     </div>
                 </div>
@@ -1822,6 +1822,19 @@
         // --- Auth State Listener ---
         supabase.auth.onAuthStateChange(async (event, session) => {
             try {
+                // --- START: Robust Session Handling ---
+                // On SIGNED_IN event, the URL contains a hash with the access token. 
+                // We remove it for a cleaner URL and to prevent it from being shared accidentally.
+                // This also improves the user experience on refresh, as the session is already
+                // persisted in localStorage by the Supabase client.
+                if (event === 'SIGNED_IN') {
+                    if (window.location.hash) {
+                        // Use replaceState to clean the URL without a page reload.
+                        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                    }
+                }
+                // --- END: Robust Session Handling ---
+
                 const user = session?.user;
                 if (user) {
                     // --- START: New User Profile Creation ---
@@ -2917,17 +2930,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

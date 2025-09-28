@@ -158,6 +158,16 @@
             min-height: 200px;
             width: 100%;
         }
+
+        /* --- START: Auth Header Control --- */
+        /* By default, show the logged-out header and hide the logged-in one. */
+        #header-logged-in { display: none; }
+        #header-logged-out { display: block; }
+
+        /* When the body has the 'user-is-logged-in' class, switch which header is visible. */
+        body.user-is-logged-in #header-logged-in { display: block; }
+        body.user-is-logged-in #header-logged-out { display: none; }
+        /* --- END: Auth Header Control --- */
     </style>
 </head>
 <body class="text-gray-800">
@@ -187,7 +197,7 @@
         </nav>
     </header>
 
-    <header id="header-logged-in" class="bg-white shadow-md sticky top-0 z-50 hidden">
+    <header id="header-logged-in" class="bg-white shadow-md sticky top-0 z-50">
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center space-x-8">
@@ -560,7 +570,7 @@
     <footer class="bg-gray-800 text-white mt-12">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div><h3 class="font-bold mb-4">TradeGinger</h3><ul><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Help</a></li><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Legal & Privacy</a></li></ul></div>
+                <div><h3 class="font-bold mb-4">TradeGinger</h3><ul><li class="mb-2"><a href="mailto:Sales@tradeginger.com" class="hover:text-theme-accent">Contact us : Sales@tradeginger.com</a></li><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Legal & Privacy</a></li></ul></div>
                 <div><h3 class="font-bold mb-4">Follow Us</h3>
                     <img src="https://res.cloudinary.com/dcxhenppn/image/upload/v1758373119/tradeginger_qr_abft9t.png" alt="QR Code" class="w-24 h-24 rounded-lg">
                 </div>
@@ -985,8 +995,6 @@
             Object.values(pageDivs).forEach(div => { if(div) div.classList.add('hidden'); });
             if (pageDivs[pageName]) pageDivs[pageName].classList.remove('hidden');
 
-            headers.loggedOut.classList.toggle('hidden', isLoggedIn);
-            headers.loggedIn.classList.toggle('hidden', !isLoggedIn);
             window.scrollTo(0, 0);
         }
         
@@ -1837,6 +1845,7 @@
 
                 const user = session?.user;
                 if (user) {
+                    document.body.classList.add('user-is-logged-in');
                     // --- START: New User Profile Creation ---
                     // On successful sign-in, check if a profile exists. If not, create one.
                     // This handles new user registration via magic link or OAuth.
@@ -1898,6 +1907,7 @@
                         }
                     }
                 } else { 
+                    document.body.classList.remove('user-is-logged-in');
                     if (notificationSubscription) {
                         await supabase.removeChannel(notificationSubscription);
                         notificationSubscription = null;
@@ -2930,3 +2940,5 @@
     </script>
 </body>
 </html>
+
+

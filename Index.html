@@ -1937,8 +1937,16 @@
                     throw error;
                 }
 
-                const fullName = `${userProfileData?.first_name || user.user_metadata.full_name || ''} ${userProfileData?.last_name || ''}`.trim() || user.email;
-                const profilePicUrl = userProfileData?.avatar_url || user.user_metadata.avatar_url || `https://placehold.co/96x96/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
+                // --- START: Safer Data Handling ---
+                // Prioritize data from our 'profiles' table, but fall back gracefully to
+                // auth metadata, especially for the initial sign-in moment before the profile is created.
+                // Using optional chaining (?.) prevents errors if user_metadata is not present.
+                const firstName = userProfileData?.first_name || user?.user_metadata?.full_name?.split(' ')[0] || '';
+                const lastName = userProfileData?.last_name || user?.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '';
+                const fullName = `${firstName} ${lastName}`.trim() || user.email;
+                
+                const profilePicUrl = userProfileData?.avatar_url || user?.user_metadata?.avatar_url || `https://placehold.co/96x96/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
+                // --- END: Safer Data Handling ---
 
                 document.getElementById('header-profile-pic').src = profilePicUrl;
                 document.getElementById('dropdown-profile-pic').src = profilePicUrl;
@@ -2940,5 +2948,6 @@
     </script>
 </body>
 </html>
+
 
 

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -169,6 +170,27 @@
         body.user-is-logged-in #header-logged-out { display: none; }
         /* --- END: Auth Header Control --- */
     </style>
+<style>
+  :root { --tg-brand:#b79438; --tg-ok:#22c55e; }
+  .tg-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-radius:999px;border:1px solid #e5e7eb33;background:linear-gradient(180deg,#1e293b,#0b1220);color:#fff;font-weight:600;cursor:pointer;transition:transform .06s ease,box-shadow .2s ease;text-decoration:none}
+  .tg-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+  .tg-tabs{display:flex;border-bottom:1px solid #e5e7eb66;margin:-8px 0 16px 0}
+  .tg-tab{flex:1;text-align:center;padding:10px 8px;cursor:pointer;font-weight:700;border-bottom:2px solid transparent;color:#475569}
+  .tg-tab[aria-selected="true"]{color:#111827;border-color:var(--tg-brand)}
+  .tg-pane{display:none}
+  .tg-pane.active{display:block}
+  .tg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .tg-field label{font-size:.85rem;color:#334155;display:block;margin:0 0 6px}
+  .tg-field input[type="text"],.tg-field input[type="email"],.tg-field input[type="password"]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #e5e7eb;background:#fff;color:#0f172a;outline:none}
+  .tg-hint{font-size:.8rem;color:#6b7280;margin-top:4px}
+  .tg-success{color:var(--tg-ok);font-size:.9rem}
+  .tg-error{color:#ef4444;font-size:.9rem}
+  .tg-checks{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+  .tg-checks li{font-size:.9rem;display:flex;align-items:center;gap:8px;color:#334155}
+  .tg-tick{width:18px;height:18px;display:inline-grid;place-items:center;border:2px solid #94a3b8;border-radius:6px;font-size:12px}
+  .tg-ok{border-color:var(--tg-ok);background:rgba(34,197,94,.1);color:var(--tg-ok)}
+  #tg-register-home-btn{margin-top:12px}
+</style>
 </head>
 <body class="text-gray-800">
 
@@ -2946,8 +2968,150 @@
         onINP(logVitals);
         onLCP(logVitals);
     </script>
+<script type="module">
+  const toast = (m,t='info') => (typeof window.showToast==='function'? window.showToast(m,t) : console.log(`[toast:${t}]`, m));
+
+  // 1) Remove category words from the logged-out header nav
+  (function stripHeaderCategories(){
+    const nav = document.querySelector('#header-logged-out .ml-10');
+    if(nav) nav.remove();
+  })();
+
+  // 2) Ensure exactly ONE "Register new user" button on the homepage (hero section)
+  (function ensureSingleHomeRegisterBtn(){
+    const hero = document.querySelector('#homepage .hero-section .container');
+    if(!hero) return;
+    document.querySelectorAll('#tg-register-home-btn').forEach((el,i)=>{ if(i>0) el.remove(); });
+    if(!document.getElementById('tg-register-home-btn')){
+      const btn = document.createElement('button');
+      btn.id = 'tg-register-home-btn';
+      btn.type = 'button';
+      btn.className = 'tg-btn';
+      btn.textContent = '📝 Register new user';
+      btn.addEventListener('click',()=> openLogin(true));
+      hero.appendChild(btn);
+    }
+  })();
+
+  // 3) Convert the existing #loginModal into tabbed Sign In / Register
+  (function embedRegisterInsideLogin(){
+    const modal = document.getElementById('loginModal');
+    if(!modal) return;
+    const host = modal.querySelector('#auth-form');
+    if(!host || host.dataset.tgUpgraded==='1') return;
+
+    const signinHTML = host.innerHTML; // keep your current sign-in UI
+
+    host.innerHTML = `
+      <div class="tg-tabs" role="tablist">
+        <button id="tg-tab-signin" class="tg-tab" role="tab" aria-selected="true" aria-controls="tg-pane-signin">Sign In</button>
+        <button id="tg-tab-register" class="tg-tab" role="tab" aria-selected="false" aria-controls="tg-pane-register">Register</button>
+      </div>
+      <div id="tg-pane-signin" class="tg-pane active" role="tabpanel"></div>
+      <div id="tg-pane-register" class="tg-pane" role="tabpanel">
+        <form id="tg-register-form" novalidate>
+          <div class="tg-row">
+            <div class="tg-field"><label for="tg-first">First name</label><input id="tg-first" name="firstName" type="text" placeholder="Priya" autocomplete="given-name" required></div>
+            <div class="tg-field"><label for="tg-last">Last name</label><input id="tg-last" name="lastName" type="text" placeholder="Sharma" autocomplete="family-name" required></div>
+          </div>
+          <div class="tg-field"><label for="tg-email">Email address</label><input id="tg-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required></div>
+          <div class="tg-row">
+            <div class="tg-field">
+              <label for="tg-pass">Password</label>
+              <input id="tg-pass" name="password" type="password" placeholder="••••••••••" autocomplete="new-password" required>
+              <div class="tg-hint">Use at least 10 characters including uppercase, lowercase, a number, and a special character.</div>
+              <ul class="tg-checks" aria-live="polite">
+                <li><span id="tg-ck-len" class="tg-tick">✗</span><span>≥ 10 characters</span></li>
+                <li><span id="tg-ck-up" class="tg-tick">✗</span><span>Contains an uppercase letter (A–Z)</span></li>
+                <li><span id="tg-ck-low" class="tg-tick">✗</span><span>Contains a lowercase letter (a–z)</span></li>
+                <li><span id="tg-ck-num" class="tg-tick">✗</span><span>Contains a number (0–9)</span></li>
+                <li><span id="tg-ck-spl" class="tg-tick">✗</span><span>Contains a special character (!@#$…)</span></li>
+              </ul>
+            </div>
+            <div class="tg-field">
+              <label for="tg-confirm">Confirm password</label>
+              <input id="tg-confirm" name="confirm" type="password" placeholder="Repeat password" autocomplete="new-password" required>
+              <div id="tg-confirm-msg" class="tg-hint">Must match the password.</div>
+            </div>
+          </div>
+          <div class="tg-row" style="align-items:center;">
+            <button id="tg-submit" type="submit" class="tg-btn" style="justify-self:flex-end;background:linear-gradient(180deg,#22c55e,#16a34a);border:none;box-shadow:0 6px 24px rgba(22,163,74,.35);">Send confirmation email</button>
+          </div>
+          <div id="tg-form-msg" class="tg-hint" aria-live="polite"></div>
+        </form>
+      </div>`;
+
+    // Put your original sign-in markup back in the first pane
+    modal.querySelector('#tg-pane-signin').innerHTML = signinHTML;
+
+    // Tabs
+    const tabSignIn = modal.querySelector('#tg-tab-signin');
+    const tabReg = modal.querySelector('#tg-tab-register');
+    const paneSignIn = modal.querySelector('#tg-pane-signin');
+    const paneReg = modal.querySelector('#tg-pane-register');
+    function selectTab(name){
+      const reg = name==='register';
+      tabSignIn.setAttribute('aria-selected', String(!reg));
+      tabReg.setAttribute('aria-selected', String(reg));
+      paneSignIn.classList.toggle('active', !reg);
+      paneReg.classList.toggle('active', reg);
+    }
+    tabSignIn.addEventListener('click',()=>selectTab('signin'));
+    tabReg.addEventListener('click',()=>selectTab('register'));
+    host.dataset.tgUpgraded='1';
+
+    // Register handlers
+    const formEl = modal.querySelector('#tg-register-form');
+    const emailEl = modal.querySelector('#tg-email');
+    const firstEl = modal.querySelector('#tg-first');
+    const lastEl = modal.querySelector('#tg-last');
+    const passEl = modal.querySelector('#tg-pass');
+    const confEl = modal.querySelector('#tg-confirm');
+    const submitBtn = modal.querySelector('#tg-submit');
+    const formMsg = modal.querySelector('#tg-form-msg');
+    const cmsg = modal.querySelector('#tg-confirm-msg');
+    const ck = { len: modal.querySelector('#tg-ck-len'), up: modal.querySelector('#tg-ck-up'), low: modal.querySelector('#tg-ck-low'), num: modal.querySelector('#tg-ck-num'), spl: modal.querySelector('#tg-ck-spl') };
+    function tick(el, ok){ el.classList.toggle('tg-ok', ok); el.textContent = ok ? '✓' : '✗'; }
+    const tests = { len:v=>v.length>=10, up:v=>/[A-Z]/.test(v), low:v=>/[a-z]/.test(v), num:v=>/\d/.test(v), spl:v=>/[^A-Za-z0-9]/.test(v) };
+    function validateUI(){
+      const v=passEl.value||'';
+      tick(ck.len, tests.len(v)); tick(ck.up, tests.up(v)); tick(ck.low, tests.low(v)); tick(ck.num, tests.num(v)); tick(ck.spl, tests.spl(v));
+      const allOk = tests.len(v)&&tests.up(v)&&tests.low(v)&&tests.num(v)&&tests.spl(v);
+      const match = v && v === (confEl.value||'');
+      cmsg.textContent = match ? 'Passwords match ✓' : 'Must match the password.';
+      cmsg.className = match ? 'tg-success' : 'tg-hint';
+      submitBtn.disabled = !(allOk && match && emailEl.value && firstEl.value && lastEl.value);
+    }
+    [emailEl, firstEl, lastEl, passEl, confEl].forEach(el=> el.addEventListener('input', validateUI));
+
+    formEl.addEventListener('submit', async (e)=>{
+      e.preventDefault(); validateUI();
+      const v = passEl.value, addr = (emailEl.value||'').trim(), fname=(firstEl.value||'').trim(), lname=(lastEl.value||'').trim();
+      const ok = tests.len(v)&&tests.up(v)&&tests.low(v)&&tests.num(v)&&tests.spl(v)&&(v===confEl.value);
+      if(!ok){ formMsg.className='tg-error'; formMsg.textContent='Please meet all password rules and ensure the passwords match.'; return; }
+      if(!window.supabase){ formMsg.className='tg-error'; formMsg.textContent='Backend not initialized. Supabase client missing on window.'; return; }
+      formMsg.className='tg-hint'; formMsg.textContent='Creating account and sending confirmation email…'; submitBtn.disabled=true;
+      const { error } = await window.supabase.auth.signUp({
+        email: addr,
+        password: v,
+        options: { emailRedirectTo: window.location.href, data: { first_name: fname, last_name: lname } }
+      });
+      if(error){ formMsg.className='tg-error'; formMsg.textContent=error.message; submitBtn.disabled=false; }
+      else { formMsg.className='tg-success'; formMsg.textContent='Confirmation email sent! Check your inbox to complete sign-up.'; toast('Confirmation email sent! Please check your inbox.','success'); setTimeout(()=>{ formEl.reset(); Object.values(ck).forEach(e=>tick(e,false)); submitBtn.disabled=false; selectTab('signin'); }, 1200); }
+    });
+
+    // helper so the home button can deep-link to register tab
+    window.__tgOpenRegisterTab = function(){
+      const show = (typeof window.showLoginModal==='function') ? window.showLoginModal : (e=>{ if(modal) modal.classList.remove('hidden'); });
+      show(); selectTab('register');
+    }
+  })();
+
+  function openLogin(registerTab=false){
+    if(typeof window.showLoginModal==='function') window.showLoginModal();
+    if(registerTab) setTimeout(()=>{ if(typeof window.__tgOpenRegisterTab==='function') window.__tgOpenRegisterTab(); },0);
+  }
+</script>
 </body>
 </html>
-
-
 

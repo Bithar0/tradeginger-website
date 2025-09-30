@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -168,12 +169,7 @@
         body.user-is-logged-in #header-logged-in { display: block; }
         body.user-is-logged-in #header-logged-out { display: none; }
         /* --- END: Auth Header Control --- */
-    
-/* Minimal auth alignment without altering theme */
-header #authLinks{ margin-left:auto; display:inline-flex; gap:.5rem; align-items:center; }
-header #authLinks .login-btn, header #authLinks .register-btn, header #authLinks .logout-btn{ text-decoration:none; }
-
-\1
+    </style>
 <style>
   :root { --tg-brand:#b79438; --tg-ok:#22c55e; }
   .tg-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-radius:999px;border:1px solid #e5e7eb33;background:linear-gradient(180deg,#1e293b,#0b1220);color:#fff;font-weight:600;cursor:pointer;transition:transform .06s ease,box-shadow .2s ease;text-decoration:none}
@@ -197,9 +193,41 @@ header #authLinks .login-btn, header #authLinks .register-btn, header #authLinks
 </style>
 
 <style>
-/* Keep categories left aligned as a straight list without structural changes */
-.browse-categories { list-style: none; padding-left: 0; margin-left: 0; max-width: 520px; }
-.browse-categories > li { margin: 0 0 .5rem 0; }
+/* TG Auth Modal (non-invasive: z-index high, uses basic styles) */
+#tg-auth-modal.backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 9999; }
+#tg-auth-modal .sheet { width: 92vw; max-width: 420px; background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.2); overflow: hidden; }
+#tg-auth-modal header { display:flex; align-items:center; justify-content:space-between; padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,.08); }
+#tg-auth-modal h3 { margin: 0; font-size: 1.05rem; }
+#tg-auth-modal button.icon { background: transparent; border: 0; font-size: 20px; cursor: pointer; }
+#tg-auth-modal .content { padding: 16px; display: grid; gap: 12px; }
+#tg-auth-modal .field { display: grid; gap: 6px; }
+#tg-auth-modal .field input { width: 100%; height: 38px; padding: 0 10px; border: 1px solid rgba(0,0,0,.2); border-radius: 8px; }
+#tg-auth-modal .actions { display: grid; gap: 10px; margin-top: 4px; }
+#tg-auth-modal .btn { height: 40px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; font-weight: 600; }
+#tg-auth-modal .btn.primary { background: #111; color: #fff; }
+#tg-auth-modal .btn.ghost { background: #fff; border-color: rgba(0,0,0,.2); }
+#tg-auth-modal .hint { font-size: .84rem; opacity: .8; }
+#tg-auth-modal .error { color: #b00020; font-size: .88rem; }
+#tg-auth-modal .success { color: #0a7c2f; font-size: .88rem; }
+</style>
+
+
+<style>
+#tg-auth-modal.backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 99999; }
+#tg-auth-modal .sheet { width: 92vw; max-width: 420px; background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.2); overflow: hidden; }
+#tg-auth-modal header { display:flex; align-items:center; justify-content:space-between; padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,.08); }
+#tg-auth-modal h3 { margin: 0; font-size: 1.05rem; }
+#tg-auth-modal button.icon { background: transparent; border: 0; font-size: 20px; cursor: pointer; }
+#tg-auth-modal .content { padding: 16px; display: grid; gap: 12px; }
+#tg-auth-modal .field { display: grid; gap: 6px; }
+#tg-auth-modal .field input { width: 100%; height: 38px; padding: 0 10px; border: 1px solid rgba(0,0,0,.2); border-radius: 8px; }
+#tg-auth-modal .actions { display: grid; gap: 10px; margin-top: 4px; }
+#tg-auth-modal .btn { height: 40px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; font-weight: 600; }
+#tg-auth-modal .btn.primary { background: #111; color: #fff; }
+#tg-auth-modal .btn.ghost { background: #fff; border-color: rgba(0,0,0,.2); }
+#tg-auth-modal .hint { font-size: .84rem; opacity: .9; }
+#tg-auth-modal .error { color: #b00020; font-size: .9rem; }
+#tg-auth-modal .success { color: #0a7c2f; font-size: .9rem; }
 </style>
 
 </head>
@@ -914,8 +942,9 @@ header #authLinks .login-btn, header #authLinks .register-btn, header #authLinks
             if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
                 throw new Error("Supabase credentials are placeholders. Please update them in index.html.");
             }
-            \1
-window.supabase = supabase; // expose globally
+            supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+try { window.supabase = supabase; } catch(e) {}
+try { window.supabase = supabase; } catch(e) {} // expose globally for auth flows
         } catch (error) {
             console.error("Error creating Supabase client:", error);
              document.body.innerHTML = `
@@ -2989,7 +3018,7 @@ window.supabase = supabase; // expose globally
     if(nav) nav.remove();
   })();
 
-  // 2) Ensure exactly ONE "Register" button on the homepage (hero section)
+  // 2) Ensure exactly ONE "Register new user" button on the homepage (hero section)
   (function ensureSingleHomeRegisterBtn(){
     const hero = document.querySelector('#homepage .hero-section .container');
     if(!hero) return;
@@ -2999,7 +3028,7 @@ window.supabase = supabase; // expose globally
       btn.id = 'tg-register-home-btn';
       btn.type = 'button';
       btn.className = 'tg-btn';
-      btn.textContent = '📝 Register';
+      btn.textContent = '📝 Register new user';
       btn.addEventListener('click',()=> openLogin(true));
       hero.appendChild(btn);
     }
@@ -3126,108 +3155,421 @@ window.supabase = supabase; // expose globally
 </script>
 
 <script>
-// Prevent '#' anchors from polluting URL; route via showPage if used
-document.addEventListener('click', function (e) {
-  const a = e.target.closest('a[href]');
-  if (!a) return;
-  const href = a.getAttribute('href');
-  if (!href) return;
-  if (href === '#' || href === '#!') {
-    e.preventDefault();
-    if (typeof showPage === 'function') {
-      const page = (a.dataset.page || '').trim();
-      if (page) { try { showPage(page, document.body.classList.contains('user-is-logged-in')); } catch(_){} }
+ Wire registration form submit to send Supabase confirmation email ---
+    (function wireRegistrationSubmit(){
+      try {
+        const regForm = document.querySelector('form#register, form[name="register"], .register-form');
+        if (!regForm || regForm.__tgWired) return;
+        regForm.__tgWired = true;
+        regForm.addEventListener('submit', async function(e){
+          // If your existing code already handles with window.supabase, allow it to proceed
+          if (!window.supabase) {
+            e.preventDefault();
+            console.error('Supabase not initialized');
+            if (window.showToast) showToast('Backend not initialized. Please try again.', 'error');
+            return;
+          }
+          // If fields exist, perform signUp; otherwise let native handler proceed
+          const emailEl = regForm.querySelector('input[name="email"], input[type="email"]');
+          const passEl = regForm.querySelector('input[name="password"], input[type="password"]');
+          if (emailEl && passEl) {
+            e.preventDefault();
+            const email = (emailEl.value || '').trim();
+            const password = passEl.value || '';
+            try {
+              const options = { emailRedirectTo: (location.origin || '') + '/' };
+              const { data, error } = await window.supabase.auth.signUp({ email, password, options });
+              if (error) throw error;
+              // Success UX
+              if (window.showToast) showToast('Confirmation email sent. Please check your inbox.', 'success');
+              // Close registration UI if modal
+              const modal = document.querySelector('#registrationModal, .registration-modal, .modal.register, .modal[data-modal="register"]');
+              if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                document.documentElement.classList.remove('no-scroll');
+              }
+            } catch (err) {
+              console.error('Registration error:', err);
+              if (window.showToast) showToast(err.message || 'Registration failed', 'error');
+            }
+          }
+        }, true);
+      } catch (e) { console.warn('wireRegistrationSubmit failed', e); }
+    })();
+
+    // --- D) Make the registration close (X) work ---
+    (function wireRegistrationClose(){
+      try {
+        window.closeRegistrationUI = function(){
+          const modal = document.querySelector('#registrationModal, .registration-modal, .modal.register, .modal[data-modal="register"]');
+          if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            document.documentElement.classList.remove('no-scroll');
+            return true;
+          }
+          // If it's a dedicated page, attempt SPA route
+          if (typeof showPage === 'function') {
+            try { showPage('home', document.body.classList.contains('user-is-logged-in')); return true; } catch(_){}
+          }
+          return false;
+        };
+        const closeBtns = document.querySelectorAll('[data-close="registration"], .registration-modal .close, #registrationModal .close, .modal.register .close');
+        closeBtns.forEach(btn => {
+          btn.addEventListener('click', function(e){
+            e.preventDefault();
+            closeRegistrationUI();
+          }, { once:false });
+        });
+      } catch (e) { console.warn('wireRegistrationClose failed', e); }
+    })();
+
+  }); // DOMContentLoaded
+})();
+</script>
+
+
+
+<!-- TG Auth Modal -->
+<div id="tg-auth-modal" class="backdrop" aria-hidden="true" role="dialog">
+  <div class="sheet" role="document" aria-labelledby="tg-auth-title">
+    <header>
+      <h3 id="tg-auth-title">Sign in</h3>
+      <button class="icon" id="tg-auth-close" aria-label="Close">✕</button>
+    </header>
+    <div class="content">
+      <div class="field">
+        <label for="tg-auth-email">Email</label>
+        <input id="tg-auth-email" type="email" autocomplete="email" required />
+      </div>
+      <div class="field">
+        <label for="tg-auth-pass">Password</label>
+        <input id="tg-auth-pass" type="password" autocomplete="current-password" required />
+      </div>
+      <div id="tg-auth-msg" class="hint"></div>
+      <div class="actions">
+        <button id="tg-auth-email-btn" class="btn primary">Sign in</button>
+        <button id="tg-auth-google-btn" class="btn ghost">Continue with Google</button>
+      </div>
+      <div class="hint">New user? Please use the Register button in the header.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+<script>
+(function(){
+  // Require Supabase client
+  function ensureClient(){
+    if (window.supabase) return true;
+    try {
+      const url = window.SUPABASE_URL || (typeof SUPABASE_URL !== 'undefined' ? SUPABASE_URL : null);
+      const anon = window.SUPABASE_ANON_KEY || (typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY : null);
+      if (typeof createClient === 'function' && url && anon) {
+        window.supabase = createClient(url, anon);
+        return true;
+      }
+    } catch(e){}
+    console.warn('Supabase client missing: check SUPABASE_URL and SUPABASE_ANON_KEY.');
+    return false;
+  }
+
+  function el(id){ return document.getElementById(id); }
+
+  function openAuthModal(){
+    const modal = el('tg-auth-modal');
+    if (!modal) return;
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden','false');
+    const email = el('tg-auth-email'); if (email) email.focus();
+  }
+  function closeAuthModal(){
+    const modal = el('tg-auth-modal'); if (!modal) return;
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden','true');
+  }
+
+  // Disable any magic link UI
+  document.addEventListener('click', function(e){
+    const m = e.target.closest('[data-magiclink], .magic-link, [data-action="magic-link"]');
+    if (m) { e.preventDefault(); e.stopPropagation(); console.info('Magic link disabled by request.'); }
+  }, true);
+
+  // Bind Login button(s) to open the modal instead of going to register
+  function wireLoginButton(){
+    const loginBtn = document.querySelector('#loginBtn, .login-btn, a[data-action="login"], button[data-action="login"]') ||
+      Array.from(document.querySelectorAll('a,button')).find(n => /(^|\s)login(\s|$)/i.test(n.textContent||''));
+    if (!loginBtn) return;
+    if (loginBtn.tagName === 'A') loginBtn.setAttribute('href', 'javascript:void(0)');
+    loginBtn.addEventListener('click', function(e){ e.preventDefault(); openAuthModal(); }, { once:false });
+  }
+
+  // Email + Password Sign-in
+  async function signInWithEmail(){
+    const msg = el('tg-auth-msg'); if (msg) { msg.className='hint'; msg.textContent=''; }
+    if (!ensureClient()){
+      if (msg){ msg.className='error'; msg.textContent='Backend not initialized. Check Supabase keys.'; }
+      return;
+    }
+    const email = (el('tg-auth-email')?.value || '').trim();
+    const password = el('tg-auth-pass')?.value || '';
+    if (!email || !password){
+      if (msg){ msg.className='error'; msg.textContent='Please enter both email and password.'; }
+      return;
+    }
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      if (msg){ msg.className='success'; msg.textContent='Signed in successfully.'; }
+      closeAuthModal();
+      // Refresh UI state
+      try { location.reload(); } catch(_){}
+    } catch (err){
+      console.error('Sign-in error:', err);
+      if (msg){ msg.className='error'; msg.textContent = err.message || 'Sign in failed'; }
     }
   }
-}, true);
+
+  // Google OAuth Sign-in
+  async function signInWithGoogle(){
+    const msg = el('tg-auth-msg'); if (msg) { msg.className='hint'; msg.textContent=''; }
+    if (!ensureClient()){
+      if (msg){ msg.className='error'; msg.textContent='Backend not initialized. Check Supabase keys.'; }
+      return;
+    }
+    try {
+      const redirectTo = (location.origin || '') + '/';
+      const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
+      if (error) throw error;
+      // Supabase will redirect; no further action here
+    } catch (err){
+      console.error('Google OAuth error:', err);
+      if (msg){ msg.className='error'; msg.textContent = err.message || 'Google login failed'; }
+    }
+  }
+
+  // Registration submit handler (ensure confirmation email actually goes out)
+  function wireRegistrationSubmit(){
+    const form = document.querySelector('form#register, form[name="register"], .register-form');
+    if (!form || form.__tgWiredAuth) return;
+    form.__tgWiredAuth = true;
+    form.addEventListener('submit', async function(e){
+      if (!ensureClient()){ e.preventDefault(); alert('Backend not initialized.'); return; }
+      const email = form.querySelector('input[name="email"], input[type="email"]')?.value?.trim();
+      const password = form.querySelector('input[name="password"], input[type="password"]')?.value || '';
+      if (!email || !password) return; // allow native validation
+      e.preventDefault();
+      try {
+        const redirectTo = (location.origin || '') + '/';
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo } });
+        if (error) throw error;
+        // If project requires email confirmation, session will be null.
+        const ok = !error;
+        if (ok) {
+          alert('Confirmation email requested. Please check your inbox.');
+        }
+      } catch (err){
+        console.error('Registration error:', err);
+        alert(err.message || 'Registration failed');
+      }
+    }, true);
+  }
+
+  // Wire modal controls and auth flows
+  document.addEventListener('DOMContentLoaded', function(){
+    wireLoginButton();
+    wireRegistrationSubmit();
+    const closeBtn = document.getElementById('tg-auth-close');
+    if (closeBtn) closeBtn.addEventListener('click', closeAuthModal);
+    const emailBtn = document.getElementById('tg-auth-email-btn');
+    if (emailBtn) emailBtn.addEventListener('click', function(e){ e.preventDefault(); signInWithEmail(); });
+    const googleBtn = document.getElementById('tg-auth-google-btn');
+    if (googleBtn) googleBtn.addEventListener('click', function(e){ e.preventDefault(); signInWithGoogle(); });
+  });
+})();
+</script>
+
+
+<script>
+(function supabaseBootstrap(){
+  // Proxy createClient so whenever your app creates the client, we expose it globally
+  try {
+    if (typeof window.createClient === 'function' && !window.__tgCreateProxy) {
+      const __origCreate = window.createClient;
+      window.createClient = function(u, k){
+        const c = __origCreate(u, k);
+        try { window.supabase = c; } catch(e) {}
+        return c;
+      };
+      window.__tgCreateProxy = true;
+    }
+  } catch(e){ console.warn('createClient proxy failed', e); }
+
+  // Fallback: if keys are present, ensure client exists
+  function tryInit(){
+    try {
+      if (!window.supabase && typeof window.createClient === 'function') {
+        const url = window.SUPABASE_URL || (typeof SUPABASE_URL !== 'undefined' ? SUPABASE_URL : null);
+        const anon = window.SUPABASE_ANON_KEY || (typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY : null);
+        if (url && anon) { window.supabase = window.createClient(url, anon); }
+      }
+    } catch(e){}
+  }
+  tryInit();
+  document.addEventListener('DOMContentLoaded', tryInit);
+  // Also try again after 1s in case scripts load late
+  setTimeout(tryInit, 1000);
+})();
 </script>
 
 
 <script>
 (function(){
-  if (!window.supabase) return;
+  function $(sel, ctx){ return (ctx||document).querySelector(sel); }
+  function $all(sel, ctx){ return Array.from((ctx||document).querySelectorAll(sel)); }
 
-  async function syncAuthUI(){
-    try{
-      const { data: { session } } = await supabase.auth.getSession();
-      const loggedIn = !!session?.user;
-      document.body.classList.toggle('user-is-logged-in', loggedIn);
-      const auth = document.querySelector('#authLinks') || document.querySelector('.auth-actions');
-      if (!auth) return;
-      const login = auth.querySelector('.login-btn') || auth.querySelector('[data-action="login"]');
-      const register = auth.querySelector('.register-btn') || auth.querySelector('[data-action="register"]');
-      let logout = auth.querySelector('.logout-btn');
-      if (!logout) {
-        logout = document.createElement('a');
-        logout.textContent = 'Logout';
-        logout.href = 'javascript:void(0)';
-        logout.className = 'logout-btn';
-        auth.appendChild(logout);
-      }
-      // Toggle visibility only; do NOT restyle
-      if (loggedIn) {
-        if (login) login.style.display = 'none';
-        if (register) register.style.display = 'none';
-        logout.style.display = 'inline-flex';
-      } else {
-        if (login) login.style.display = '';
-        if (register) register.style.display = '';
-        logout.style.display = 'none';
-      }
-
-      logout.onclick = async function(e){
-        e.preventDefault();
-        try { 
-          const { error } = await supabase.auth.signOut();
-          if (error) throw error;
-          await syncAuthUI();
-          location.reload();
-        } catch(err){ console.error(err); }
-      };
-    }catch(err){ console.warn('syncAuthUI failed', err); }
-  }
-
-  // Wire Login/Register behavior
-  function wireAuthClicks(){
-    const auth = document.querySelector('#authLinks') || document.querySelector('.auth-actions');
-    if (!auth) return;
-    const login = auth.querySelector('.login-btn') || auth.querySelector('[data-action="login"]');
-    const register = auth.querySelector('.register-btn') || auth.querySelector('[data-action="register"]');
-    if (login) login.addEventListener('click', function(e){
-      e.preventDefault();
-      if (typeof openLoginModal === 'function') return openLoginModal();
-      if (typeof showPage === 'function') try { showPage('login', document.body.classList.contains('user-is-logged-in')); } catch(_){}
-    });
-    if (register) register.addEventListener('click', function(e){
-      e.preventDefault();
-      if (typeof openRegistrationModal === 'function') return openRegistrationModal();
-      if (typeof showPage === 'function') try { showPage('register', document.body.classList.contains('user-is-logged-in')); } catch(_){}
-    });
-  }
-
-  // Ensure Register only exists in header (remove duplicates elsewhere)
-  function dedupeRegister(){
-    const auth = document.querySelector('#authLinks') || document.querySelector('.auth-actions') || document.querySelector('header');
-    if (!auth) return;
-    const regs = Array.from(document.querySelectorAll('a.register-btn, button.register-btn, [data-action="register"]'));
-    regs.forEach((el, i) => {
-      if (!auth.contains(el) and i>0) {
-        el.remove();
-      }
-    });
-  }
-
-  supabase.auth.onAuthStateChange((_evt,_session)=>syncAuthUI());
+  // Remove any stray "Register new user" buttons not in header
   document.addEventListener('DOMContentLoaded', function(){
-    wireAuthClicks();
-    dedupeRegister();
-    syncAuthUI();
+    const header = document.querySelector('header');
+    $all('a.register-btn, button.register-btn, [data-action="register"]').forEach(el => {
+      if (!header || !header.contains(el)) {
+        el.remove();
+      } else {
+        // Keep header register but normalize href
+        if (el.tagName === 'A') el.setAttribute('href', 'javascript:void(0)');
+      }
+    });
   });
+
+  // Modal controls
+  function openAuthModal(){
+    const modal = $('#tg-auth-modal'); if (!modal) return;
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden','false');
+    const email = $('#tg-auth-email'); if (email) email.focus();
+    // Hide any registration overlay behind
+    const regModal = $('#registrationModal, .registration-modal, .modal.register, .modal[data-modal=\"register\"]');
+    if (regModal) { regModal.style.display='none'; regModal.classList.add('hidden'); }
+  }
+  function closeAuthModal(){
+    const modal = $('#tg-auth-modal'); if (!modal) return;
+    modal.style.display = 'none'; modal.setAttribute('aria-hidden','true');
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    const closeBtn = $('#tg-auth-close'); if (closeBtn) closeBtn.addEventListener('click', function(e){ e.preventDefault(); closeAuthModal(); }, false);
+  });
+
+  // Login button -> open modal (stop propagation & hash)
+  document.addEventListener('DOMContentLoaded', function(){
+    const loginBtn = $('#loginBtn, .login-btn, a[data-action=\"login\"], button[data-action=\"login\"]') ||
+      $all('a,button').find(n => /(^|\s)login(\s|$)/i.test(n.textContent||''));
+    if (loginBtn) {
+      if (loginBtn.tagName === 'A') loginBtn.setAttribute('href', 'javascript:void(0)');
+      loginBtn.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        openAuthModal();
+      }, false);
+    }
+  });
+
+  // Supabase ensure
+  function ensureClient(){
+    if (window.supabase) return true;
+    try {
+      const url = window.SUPABASE_URL || (typeof SUPABASE_URL !== 'undefined' ? SUPABASE_URL : null);
+      const anon = window.SUPABASE_ANON_KEY || (typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY : null);
+      if (typeof createClient === 'function' && url && anon) {
+        window.supabase = createClient(url, anon);
+        return true;
+      }
+    } catch(e){}
+    return false;
+  }
+
+  // Email + Password Sign-in
+  async function signInWithEmail(){
+    const msg = $('#tg-auth-msg'); if (msg) { msg.className='hint'; msg.textContent=''; }
+    if (!ensureClient()){ if (msg){ msg.className='error'; msg.textContent='Backend not initialized. Check Supabase keys.'; } return; }
+    const email = ($('#tg-auth-email')?.value || '').trim();
+    const password = $('#tg-auth-pass')?.value || '';
+    if (!email || !password){ if (msg){ msg.className='error'; msg.textContent='Enter email and password.'; } return; }
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      if (msg){ msg.className='success'; msg.textContent='Signed in successfully.'; }
+      closeAuthModal();
+      try { location.reload(); } catch(_){}
+    } catch (err) {
+      console.error('Sign-in error:', err);
+      if (msg){ msg.className='error'; msg.textContent = err.message || 'Sign in failed'; }
+    }
+  }
+
+  // Google OAuth
+  async function signInWithGoogle(){
+    const msg = $('#tg-auth-msg'); if (msg) { msg.className='hint'; msg.textContent=''; }
+    if (!ensureClient()){ if (msg){ msg.className='error'; msg.textContent='Backend not initialized. Check Supabase keys.'; } return; }
+    try {
+      const redirectTo = (location.origin || '') + '/';
+      const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
+      if (error) throw error;
+      // Redirect happens automatically
+    } catch (err) {
+      console.error('Google OAuth error:', err);
+      if (msg){ msg.className='error'; msg.textContent = err.message || 'Google login failed'; }
+    }
+  }
+
+  // Bind modal buttons
+  document.addEventListener('DOMContentLoaded', function(){
+    const emailBtn = $('#tg-auth-email-btn'); if (emailBtn) emailBtn.addEventListener('click', function(e){ e.preventDefault(); signInWithEmail(); }, false);
+    const googleBtn = $('#tg-auth-google-btn'); if (googleBtn) googleBtn.addEventListener('click', function(e){ e.preventDefault(); signInWithGoogle(); }, false);
+  });
+
+  // Registration submit -> Supabase signUp (confirmation email)
+  document.addEventListener('DOMContentLoaded', function(){
+    const form = $('form#register, form[name=\"register\"], .register-form'); if (!form || form.__tgWired) return;
+    form.__tgWired = true;
+    form.addEventListener('submit', async function(e){
+      if (!ensureClient()){ e.preventDefault(); alert('Backend not initialized. Check Supabase keys.'); return; }
+      const emailEl = form.querySelector('input[name=\"email\"], input[type=\"email\"]');
+      const passEl  = form.querySelector('input[name=\"password\"], input[type=\"password\"]');
+      if (!(emailEl && passEl)) return; // let native handler proceed if fields not found
+      const email = (emailEl.value||'').trim();
+      const password = passEl.value||'';
+      if (!email || !password) return;
+      e.preventDefault();
+      try {
+        const redirectTo = (location.origin || '') + '/';
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo } });
+        if (error) throw error;
+        alert('Confirmation email requested. Please check your inbox.');
+      } catch (err){
+        console.error('Registration error:', err);
+        alert(err.message || 'Registration failed');
+      }
+    }, true);
+  });
+
+  // Disable magic link flows
+  document.addEventListener('click', function(e){
+    const m = e.target.closest('[data-magiclink], .magic-link, [data-action=\"magic-link\"]');
+    if (m) { e.preventDefault(); e.stopPropagation(); console.info('Magic link disabled.'); }
+  }, true);
+
+  // Prevent "#" anchor hash glitches
+  document.addEventListener('click', function(e){
+    const a = e.target.closest('a[href]'); if (!a) return;
+    const href = a.getAttribute('href');
+    if (href === '#' || href === '#!') { e.preventDefault(); e.stopPropagation(); a.setAttribute('href','javascript:void(0)'); }
+  }, true);
 })();
 </script>
 
 </body>
 </html>
-
 
 

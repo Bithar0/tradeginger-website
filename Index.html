@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -168,7 +170,12 @@
         body.user-is-logged-in #header-logged-in { display: block; }
         body.user-is-logged-in #header-logged-out { display: none; }
         /* --- END: Auth Header Control --- */
-    </style>
+    
+/* Minimal auth alignment without altering theme */
+header #authLinks{ margin-left:auto; display:inline-flex; gap:.5rem; align-items:center; }
+header #authLinks .login-btn, header #authLinks .register-btn, header #authLinks .logout-btn{ text-decoration:none; }
+
+\1
 <style>
   :root { --tg-brand:#b79438; --tg-ok:#22c55e; }
   .tg-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-radius:999px;border:1px solid #e5e7eb33;background:linear-gradient(180deg,#1e293b,#0b1220);color:#fff;font-weight:600;cursor:pointer;transition:transform .06s ease,box-shadow .2s ease;text-decoration:none}
@@ -190,6 +197,13 @@
   .tg-ok{border-color:var(--tg-ok);background:rgba(34,197,94,.1);color:var(--tg-ok)}
   #tg-register-home-btn{margin-top:12px}
 </style>
+
+<style>
+/* Keep categories left aligned as a straight list without structural changes */
+.browse-categories { list-style: none; padding-left: 0; margin-left: 0; max-width: 520px; }
+.browse-categories > li { margin: 0 0 .5rem 0; }
+</style>
+
 </head>
 <body class="text-gray-800">
 
@@ -902,7 +916,8 @@
             if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
                 throw new Error("Supabase credentials are placeholders. Please update them in index.html.");
             }
-            supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            \1
+window.supabase = supabase; // expose globally
         } catch (error) {
             console.error("Error creating Supabase client:", error);
              document.body.innerHTML = `
@@ -2976,7 +2991,7 @@
     if(nav) nav.remove();
   })();
 
-  // 2) Ensure exactly ONE "Register new user" button on the homepage (hero section)
+  // 2) Ensure exactly ONE "Register" button on the homepage (hero section)
   (function ensureSingleHomeRegisterBtn(){
     const hero = document.querySelector('#homepage .hero-section .container');
     if(!hero) return;
@@ -2986,7 +3001,7 @@
       btn.id = 'tg-register-home-btn';
       btn.type = 'button';
       btn.className = 'tg-btn';
-      btn.textContent = '📝 Register new user';
+      btn.textContent = '📝 Register';
       btn.addEventListener('click',()=> openLogin(true));
       hero.appendChild(btn);
     }
@@ -3111,6 +3126,108 @@
     if(registerTab) setTimeout(()=>{ if(typeof window.__tgOpenRegisterTab==='function') window.__tgOpenRegisterTab(); },0);
   }
 </script>
+
+<script>
+// Prevent '#' anchors from polluting URL; route via showPage if used
+document.addEventListener('click', function (e) {
+  const a = e.target.closest('a[href]');
+  if (!a) return;
+  const href = a.getAttribute('href');
+  if (!href) return;
+  if (href === '#' || href === '#!') {
+    e.preventDefault();
+    if (typeof showPage === 'function') {
+      const page = (a.dataset.page || '').trim();
+      if (page) { try { showPage(page, document.body.classList.contains('user-is-logged-in')); } catch(_){} }
+    }
+  }
+}, true);
+</script>
+
+
+<script>
+(function(){
+  if (!window.supabase) return;
+
+  async function syncAuthUI(){
+    try{
+      const { data: { session } } = await supabase.auth.getSession();
+      const loggedIn = !!session?.user;
+      document.body.classList.toggle('user-is-logged-in', loggedIn);
+      const auth = document.querySelector('#authLinks') || document.querySelector('.auth-actions');
+      if (!auth) return;
+      const login = auth.querySelector('.login-btn') || auth.querySelector('[data-action="login"]');
+      const register = auth.querySelector('.register-btn') || auth.querySelector('[data-action="register"]');
+      let logout = auth.querySelector('.logout-btn');
+      if (!logout) {
+        logout = document.createElement('a');
+        logout.textContent = 'Logout';
+        logout.href = 'javascript:void(0)';
+        logout.className = 'logout-btn';
+        auth.appendChild(logout);
+      }
+      // Toggle visibility only; do NOT restyle
+      if (loggedIn) {
+        if (login) login.style.display = 'none';
+        if (register) register.style.display = 'none';
+        logout.style.display = 'inline-flex';
+      } else {
+        if (login) login.style.display = '';
+        if (register) register.style.display = '';
+        logout.style.display = 'none';
+      }
+
+      logout.onclick = async function(e){
+        e.preventDefault();
+        try { 
+          const { error } = await supabase.auth.signOut();
+          if (error) throw error;
+          await syncAuthUI();
+          location.reload();
+        } catch(err){ console.error(err); }
+      };
+    }catch(err){ console.warn('syncAuthUI failed', err); }
+  }
+
+  // Wire Login/Register behavior
+  function wireAuthClicks(){
+    const auth = document.querySelector('#authLinks') || document.querySelector('.auth-actions');
+    if (!auth) return;
+    const login = auth.querySelector('.login-btn') || auth.querySelector('[data-action="login"]');
+    const register = auth.querySelector('.register-btn') || auth.querySelector('[data-action="register"]');
+    if (login) login.addEventListener('click', function(e){
+      e.preventDefault();
+      if (typeof openLoginModal === 'function') return openLoginModal();
+      if (typeof showPage === 'function') try { showPage('login', document.body.classList.contains('user-is-logged-in')); } catch(_){}
+    });
+    if (register) register.addEventListener('click', function(e){
+      e.preventDefault();
+      if (typeof openRegistrationModal === 'function') return openRegistrationModal();
+      if (typeof showPage === 'function') try { showPage('register', document.body.classList.contains('user-is-logged-in')); } catch(_){}
+    });
+  }
+
+  // Ensure Register only exists in header (remove duplicates elsewhere)
+  function dedupeRegister(){
+    const auth = document.querySelector('#authLinks') || document.querySelector('.auth-actions') || document.querySelector('header');
+    if (!auth) return;
+    const regs = Array.from(document.querySelectorAll('a.register-btn, button.register-btn, [data-action="register"]'));
+    regs.forEach((el, i) => {
+      if (!auth.contains(el) and i>0) {
+        el.remove();
+      }
+    });
+  }
+
+  supabase.auth.onAuthStateChange((_evt,_session)=>syncAuthUI());
+  document.addEventListener('DOMContentLoaded', function(){
+    wireAuthClicks();
+    dedupeRegister();
+    syncAuthUI();
+  });
+})();
+</script>
+
 </body>
 </html>
 

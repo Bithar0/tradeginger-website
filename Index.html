@@ -1030,6 +1030,7 @@
         let allStates = [], allCities = []; 
         let stagedProfilePic = null; 
         let isNavigating = false; // --- FIX: Global flag to prevent rapid navigation ---
+        let userFavorites = new Set();
 
         const pageDivs = {
             homepage: document.getElementById('homepage'),
@@ -1962,23 +1963,34 @@
 
             try {
                 const { data, error } = await supabase.auth.signUp({
-                    email, password,
-                    options: { data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}` } }
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            first_name: firstName,
+                            last_name: lastName,
+                            full_name: `${firstName} ${lastName}`.trim()
+                        },
+                        // This ensures the confirmation link brings the user back to your site.
+                        emailRedirectTo: window.location.origin 
+                    }
                 });
-                if (error) throw error;
 
-                if (data.user && data.user.identities && data.user.identities.length === 0) {
-                     errorDiv.textContent = 'User with this email already exists. Please login.';
-                     errorDiv.classList.remove('hidden');
-                } else {
-                    successDiv.textContent = 'Registration successful! Please check your email to verify your account.';
-                    successDiv.classList.remove('hidden');
-                    document.getElementById('registrationForm').reset();
-                    // Reset password strength UI
-                    Object.keys(strengthChecks).forEach(key => validateCheck(key, false));
+                if (error) {
+                    // Let Supabase's specific error message do the work (e.g., "User already registered")
+                    throw error;
                 }
+
+                // A successful call to signUp means a confirmation email was sent.
+                // This covers both new users and existing unconfirmed users.
+                successDiv.textContent = 'Registration successful! Please check your email for a confirmation link to complete the sign-up.';
+                successDiv.classList.remove('hidden');
+                document.getElementById('registrationForm').reset();
+                Object.keys(strengthChecks).forEach(key => validateCheck(key, false));
+
             } catch (error) {
                 console.error("Registration error:", error);
+                // Display the specific error from Supabase to the user
                 errorDiv.textContent = error.message || "Registration failed. Please try again.";
                 errorDiv.classList.remove('hidden');
             } finally {
@@ -2520,6 +2532,322 @@
             }
         }
         
+        // --- START: NEWLY ADDED/FIXED FUNCTIONS ---
+
+        async function fetchUserFavorites() {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    userFavorites.clear();
+                    return;
+                }
+                const { data, error } = await supabase.from('favorites').select('listing_id').eq('user_id', user.id);
+                if (error) throw error;
+                userFavorites = new Set(data.map(fav => fav.listing_id));
+            } catch (error) {
+                console.error("Error fetching user favorites:", error);
+                userFavorites.clear();
+            }
+        }
+
+        window.toggleFavorite = async function(event, adId) {
+            event.stopPropagation();
+            event.preventDefault();
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    postLoginAction = { action: 'favorite', adId };
+                    showLoginModal();
+                    return;
+                }
+                const isFavorited = userFavorites.has(adId);
+                const favIcon = event.currentTarget.querySelector('i');
+                if (isFavorited) {
+                    const { error } = await supabase.from('favorites').delete().match({ user_id: user.id, listing_id: adId });
+                    if (error) throw error;
+                    userFavorites.delete(adId);
+                    favIcon.classList.remove('fas', 'text-red-500');
+                    favIcon.classList.add('far');
+                    showToast('Removed from favorites.');
+                } else {
+                    const { error } = await supabase.from('favorites').insert({ user_id: user.id, listing_id: adId });
+                    if (error) throw error;
+                    userFavorites.add(adId);
+                    favIcon.classList.remove('far');
+                    favIcon.classList.add('fas', 'text-red-500');
+                    showToast('Added to favorites!', 'success');
+                }
+            } catch (error) {
+                console.error("Error toggling favorite:", error);
+                showToast("Could not update favorites.", "error");
+            }
+        }
+
+        function createAdCard(ad, isMyAd = false) {
+            const imageUrl = ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image';
+            const location = ad.cities ? ad.cities.name : ad.location || 'N/A';
+            const postDate = new Date(ad.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+            const title = sanitizeHTML(ad.title);
+            const sanitizedLocation = sanitizeHTML(location);
+            const price = Number(ad.price).toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 });
+            const isFavorited = userFavorites.has(ad.id);
+            const favClass = isFavorited ? 'fas text-red-500' : 'far';
+            const editDeleteButtons = isMyAd ? `
+                <div class="absolute top-2 right-10 flex space-x-2">
+                    <button onclick="handleEditAd(${ad.id})" class="bg-blue-500 text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-blue-600"><i class="fas fa-edit"></i></button>
+                    <button onclick="handleDeleteAd(${ad.id})" class="bg-red-500 text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-red-600"><i class="fas fa-trash"></i></button>
+                </div>
+            ` : '';
+            return `
+                <div class="product-card rounded-lg overflow-hidden relative group">
+                    <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
+                        <div class="relative"><img src="${imageUrl}" alt="${title}" class="w-full h-48 object-cover" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E2E8F0/4A5568?text=Error';"></div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg truncate" title="${title}">${title}</h3>
+                            <p class="text-xl font-extrabold theme-accent mt-1">${price}</p>
+                            <div class="flex justify-between items-center text-xs text-gray-500 mt-2">
+                                <span class="truncate pr-2" title="${sanitizedLocation}">${sanitizedLocation}</span>
+                                <span>${postDate}</span>
+                            </div>
+                        </div>
+                    </a>
+                    <button onclick="toggleFavorite(event, ${ad.id})" class="absolute top-2 right-2 bg-white rounded-full h-8 w-8 flex items-center justify-center shadow-md z-10"><i class="${favClass} fa-heart"></i></button>
+                    ${editDeleteButtons}
+                </div>`;
+        }
+        
+        async function fetchAndDisplayListings(categoryKey, filters = {}) {
+            const grid = document.getElementById('listing-grid');
+            grid.innerHTML = Array(8).fill(skeletonCardHTML).join('');
+            try {
+                let query = supabase.from('listings').select('*, cities(name)');
+                if (categoryKey && categoryKey !== 'all') {
+                    const categoryId = categoryMapping[categoryKey];
+                    if (categoryId) query = query.eq('category_id', categoryId);
+                }
+                if (filters.city_id) query = query.eq('city_id', filters.city_id);
+                if (filters.keyword) query = query.textSearch('title', `'${filters.keyword}'`);
+                query = query.order('created_at', { ascending: false }).limit(20);
+                const { data: listings, error } = await query;
+                if (error) throw error;
+                if (!listings || listings.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full bg-white p-8 rounded-lg shadow-md text-center"><h3 class="text-2xl font-bold">No results found</h3><p class="text-gray-500 mt-2">Try adjusting your search or filters.</p></div>`;
+                    return;
+                }
+                grid.innerHTML = listings.map(ad => createAdCard(ad, false)).join('');
+            } catch (error) {
+                console.error("Error fetching listings:", error);
+                grid.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading ads. Please try again later.</p>`;
+            }
+        }
+
+        async function fetchAndDisplayMyFavorites() {
+            const favoritesGrid = document.getElementById('my-favorites-grid');
+            favoritesGrid.innerHTML = Array(4).fill(skeletonCardHTML).join('');
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    favoritesGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">Please log in to see your favorites.</p>`;
+                    return;
+                }
+                const { data: favs, error: favsError } = await supabase.from('favorites').select('listing_id').eq('user_id', user.id);
+                if (favsError) throw favsError;
+                if (!favs || favs.length === 0) {
+                    favoritesGrid.innerHTML = `<div class="col-span-full bg-white p-8 rounded-lg shadow-md text-center"><h3 class="text-2xl font-bold">No favorites yet!</h3><p class="text-gray-500 mt-2">Start exploring and save the items you love.</p></div>`;
+                    return;
+                }
+                const listingIds = favs.map(f => f.listing_id);
+                const { data: ads, error: adsError } = await supabase.from('listings').select('*, cities(name)').in('id', listingIds);
+                if (adsError) throw adsError;
+                favoritesGrid.innerHTML = ads.map(ad => createAdCard(ad, false)).join('');
+            } catch (error) {
+                console.error("Error fetching favorites:", error);
+                favoritesGrid.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading your favorites.</p>`;
+            }
+        }
+
+        async function renderProductDetailPage(adId) {
+            const container = document.getElementById('product-detail-container');
+            container.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
+            try {
+                const { data: ad, error } = await supabase.from('listings').select('*, profiles(*), cities(name, states(name))').eq('id', adId).single();
+                if (error) throw error;
+                if(!ad) {
+                    container.innerHTML = `<p class="text-center text-red-500">Product not found.</p>`;
+                    return;
+                }
+                const { data: { user } } = await supabase.auth.getUser();
+                const images = ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls : ['https://placehold.co/800x600/E2E8F0/4A5568?text=No+Image'];
+                const sellerName = `${ad.profiles.first_name || ''} ${ad.profiles.last_name || ''}`.trim() || 'Seller';
+                const memberSince = new Date(ad.profiles.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                const location = ad.cities ? `${ad.cities.name}, ${ad.cities.states.name}` : ad.location || 'N/A';
+                const price = Number(ad.price).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
+                const isFavorited = userFavorites.has(ad.id);
+                const favClass = isFavorited ? 'fas text-red-500' : 'far';
+                const showChatButton = user && user.id !== ad.user_id;
+                container.innerHTML = `
+                    <div class="flex items-center gap-4 mb-6"><a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a></div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2">
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <div class="aspect-w-16 aspect-h-9 mb-4"><img src="${images[0]}" alt="${sanitizeHTML(ad.title)}" class="w-full h-auto object-contain rounded-lg max-h-[500px]" onerror="this.onerror=null;this.src='https://placehold.co/800x600/E2E8F0/4A5568?text=Error';"></div>
+                                <h2 class="text-xl font-bold border-t pt-4 mt-4">Description</h2>
+                                <p class="mt-2 text-gray-600 whitespace-pre-wrap">${sanitizeHTML(ad.description)}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <div class="flex justify-between items-start">
+                                    <h1 class="text-3xl font-bold theme-accent">${price}</h1>
+                                    <button onclick="toggleFavorite(event, ${ad.id})" class="text-2xl text-gray-400 hover:text-red-500"><i class="${favClass} fa-heart"></i></button>
+                                </div>
+                                <p class="text-lg text-gray-700 mt-2">${sanitizeHTML(ad.title)}</p>
+                                <div class="flex justify-between text-sm text-gray-500 mt-4">
+                                    <span>${sanitizeHTML(location)}</span>
+                                    <span>${new Date(ad.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <h2 class="text-xl font-bold mb-4">Seller information</h2>
+                                <div class="flex items-center gap-4">
+                                    <img src="${ad.profiles.avatar_url || 'https://placehold.co/64x64/0A2342/D4AF37?text='+sellerName.charAt(0)}" alt="${sellerName}" class="w-16 h-16 rounded-full object-cover">
+                                    <div>
+                                        <p class="font-bold text-lg">${sanitizeHTML(sellerName)}</p>
+                                        <p class="text-sm text-gray-500">Member since ${memberSince}</p>
+                                    </div>
+                                </div>
+                                ${showChatButton ? `<button onclick="openChatWindow('${sanitizeHTML(sellerName.replace(/'/g, "\\'"))}', ${ad.id}, '${ad.user_id}')" class="w-full mt-4 bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">Chat with seller</button>` : ''}
+                            </div>
+                        </div>
+                    </div>`;
+            } catch (error) {
+                console.error("Error rendering product detail page:", error);
+                container.innerHTML = `<p class="text-center text-red-500">Could not load product details.</p>`;
+            }
+        }
+        
+        async function fetchLocations() {
+            try {
+                const { data: statesData, error: statesError } = await supabase.from('states').select('*');
+                if (statesError) throw statesError;
+                allStates = statesData;
+                const { data: citiesData, error: citiesError } = await supabase.from('cities').select('*');
+                if (citiesError) throw citiesError;
+                allCities = citiesData;
+                const stateSelects = [document.getElementById('ad-state')];
+                stateSelects.forEach(select => {
+                    if (select) {
+                        allStates.forEach(state => {
+                            const option = document.createElement('option');
+                            option.value = state.id;
+                            option.textContent = state.name;
+                            select.appendChild(option);
+                        });
+                    }
+                });
+            } catch (error) {
+                console.error("Error fetching locations:", error);
+                showToast('Could not load location data.', 'error');
+            }
+        }
+        
+        window.populateCities = async function(stateId) {
+            const citySelect = document.getElementById('ad-city');
+            citySelect.innerHTML = '<option value="">Select City</option>';
+            if (!stateId) return;
+            const filteredCities = allCities.filter(c => c.state_id == stateId);
+            filteredCities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.id;
+                option.textContent = city.name;
+                citySelect.appendChild(option);
+            });
+            const option = document.createElement('option');
+            option.value = 'other';
+            option.textContent = 'Other';
+            citySelect.appendChild(option);
+        }
+
+        window.populateFilterCities = function(stateId) {
+            const citySelect = document.getElementById('filter-city');
+            citySelect.innerHTML = '<option value="">All Cities</option>';
+            if (!stateId) return;
+            const filteredCities = allCities.filter(c => c.state_id == stateId);
+            filteredCities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.id;
+                option.textContent = city.name;
+                citySelect.appendChild(option);
+            });
+        }
+
+        window.showConfirmModal = function(title, message, onConfirm) {
+            const confirmModal = document.getElementById('confirmModal');
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-message').innerText = message;
+            confirmModal.classList.remove('hidden');
+            const okBtn = document.getElementById('confirm-ok-btn');
+            const cancelBtn = document.getElementById('confirm-cancel-btn');
+            const okListener = () => { onConfirm(); hideConfirm(); };
+            const hideConfirm = () => {
+                confirmModal.classList.add('hidden');
+                okBtn.removeEventListener('click', okListener);
+                cancelBtn.removeEventListener('click', hideConfirm);
+            };
+            okBtn.addEventListener('click', okListener);
+            cancelBtn.addEventListener('click', hideConfirm);
+        }
+
+        window.generateAdDescription = function(event) { event.preventDefault(); showToast("AI features coming soon!", 'info'); }
+        window.openCamera = function(event) { event.preventDefault(); showToast("Camera feature coming soon!", 'info'); }
+        window.captureImage = function(event) { event.preventDefault(); }
+        window.closeCamera = function(event) { event.preventDefault(); }
+        
+        function renderImagePreviews() {
+            const container = document.getElementById('image-preview-container');
+            container.innerHTML = stagedFiles.map(fileItem => `
+                <div class="relative w-24 h-24">
+                    <img src="${URL.createObjectURL(fileItem.file)}" class="w-full h-full object-cover rounded-md">
+                    <button onclick="removeStagedFile(${fileItem.id})" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-xs">&times;</button>
+                </div>`).join('');
+        }
+        window.removeStagedFile = function(id) {
+            stagedFiles = stagedFiles.filter(f => f.id !== id);
+            renderImagePreviews();
+        }
+        window.handleFileUpload = function(event) {
+            const files = Array.from(event.target.files);
+            files.forEach(file => stagedFiles.push({ file, id: Date.now() + Math.random() }));
+            renderImagePreviews();
+        }
+
+        async function initializeApp() {
+            loadCategories();
+            await fetchLocations();
+            document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
+            document.getElementById('chat-form').addEventListener('submit', async (e) => {
+                 e.preventDefault();
+                 const content = document.getElementById('chat-input').value.trim();
+                 if (content && currentRoomId) {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if(!user) return;
+                    appendMessage(content, 'sent');
+                    document.getElementById('chat-input').value = '';
+                    const { error } = await supabase.from('chat_messages').insert({ room_id: currentRoomId, sender_id: user.id, receiver_id: currentReceiverId, content: content });
+                    if(error) {
+                        console.error("Error sending message:", error);
+                        showToast("Message failed to send.", "error");
+                    }
+                 }
+            });
+        }
+        
+        // --- END: NEWLY ADDED/FIXED FUNCTIONS ---
+
+        // --- App Initialization ---
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
     </script>
 </body>
 </html>
+

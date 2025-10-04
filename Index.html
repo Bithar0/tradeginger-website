@@ -2151,40 +2151,56 @@
         });
 
         async function updateUIForUser(user) {
+            // Stage 1: Immediate update with guaranteed data from the auth object.
+            // This prevents "Unknown" from ever showing for a logged-in user.
+            const initialName = user.email; 
+            const initialAvatar = `https://placehold.co/96x96/0A2342/D4AF37?text=${(initialName || 'U').charAt(0).toUpperCase()}`;
+            
+            // Update crucial UI elements immediately
+            document.getElementById('dropdown-username').innerText = initialName;
+            document.getElementById('header-profile-pic').src = initialAvatar;
+            document.getElementById('dropdown-profile-pic').src = initialAvatar;
+
             try {
+                // Stage 2: Asynchronously fetch and enhance with detailed profile data.
                 const { data: userProfileData, error } = await supabase
                     .from('profiles')
                     .select('*')
                     .eq('id', user.id)
                     .single();
-                
-                if (error && error.code !== 'PGRST116') {
-                    throw error;
-                }
 
-                const firstName = userProfileData?.first_name || user?.user_metadata?.first_name || user?.user_metadata?.full_name?.split(' ')[0] || '';
-                const lastName = userProfileData?.last_name || user?.user_metadata?.last_name || user?.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '';
-                const fullName = `${firstName} ${lastName}`.trim() || user.email;
-                
-                const profilePicUrl = userProfileData?.avatar_url || user?.user_metadata?.avatar_url || `https://placehold.co/96x96/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
+                // If we get profile data, we can enhance the UI.
+                if (userProfileData && !error) {
+                    const firstName = userProfileData.first_name || '';
+                    const lastName = userProfileData.last_name || '';
+                    // A more robust fullName, falling back to the initial email if names are blank.
+                    const fullName = `${firstName} ${lastName}`.trim() || initialName;
+                    
+                    const profilePicUrl = userProfileData.avatar_url || `https://placehold.co/96x96/0A2342/D4AF37?text=${fullName.charAt(0).toUpperCase()}`;
 
-                document.getElementById('header-profile-pic').src = profilePicUrl;
-                document.getElementById('dropdown-profile-pic').src = profilePicUrl;
-                document.getElementById('dropdown-username').innerText = fullName;
-                document.getElementById('profile-page-pic').src = profilePicUrl;
-                document.getElementById('profile-page-username').innerText = fullName;
-                const creationDate = user.created_at ? new Date(user.created_at) : new Date();
-                document.getElementById('profile-page-member-since').innerText = `Member since ${creationDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
-                document.getElementById('profile-pic-preview').src = profilePicUrl;
-                document.getElementById('edit-profile-name-input').value = fullName;
-                document.getElementById('edit-profile-email-input').value = user.email || '';
-                if(userProfileData) {
+                    // Update all UI elements with the fetched data
+                    document.getElementById('header-profile-pic').src = profilePicUrl;
+                    document.getElementById('dropdown-profile-pic').src = profilePicUrl;
+                    document.getElementById('dropdown-username').innerText = fullName;
+                    document.getElementById('profile-page-pic').src = profilePicUrl;
+                    document.getElementById('profile-page-username').innerText = fullName;
+                    const creationDate = user.created_at ? new Date(user.created_at) : new Date();
+                    document.getElementById('profile-page-member-since').innerText = `Member since ${creationDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
+                    document.getElementById('profile-pic-preview').src = profilePicUrl;
+                    document.getElementById('edit-profile-name-input').value = fullName;
+                    document.getElementById('edit-profile-email-input').value = user.email || '';
                     document.getElementById('edit-profile-phone-input').value = userProfileData.mobile || '';
                     document.getElementById('edit-profile-about-input').value = userProfileData.about || '';
+                } else if (error && error.code !== 'PGRST116') {
+                     // PGRST116 means 'no rows found', which is a valid case right after signup. Any other error is a real problem.
+                     throw error;
                 }
-            } catch(error) {
-                console.error("Error updating user UI:", error);
-                showToast("Could not load your profile details.", "error");
+                // If no userProfileData is found, the UI gracefully remains with the email, which is fine.
+
+            } catch (error) {
+                console.error("Error enhancing user UI with profile data:", error);
+                // Do not show a toast here, as the UI is in a valid state (showing email).
+                // The user doesn't need to be alerted about a non-critical background fetch failure.
             }
         }
 
@@ -2782,7 +2798,7 @@
             });
         }
 
-        window.showConfirmModal = function(title, message, onConfirm) {
+         window.showConfirmModal = function(title, message, onConfirm) {
             const confirmModal = document.getElementById('confirmModal');
             document.getElementById('confirm-title').innerText = title;
             document.getElementById('confirm-message').innerText = message;
@@ -2851,4 +2867,3 @@
     </script>
 </body>
 </html>
-

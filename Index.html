@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,13 +11,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 
+    <!-- A more permissive Content-Security-Policy to ensure all external resources load correctly -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com https://unpkg.com;
+        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com https://unpkg.com https://*.supabase.co;
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
         font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
-        img-src 'self' data: https://images.unsplash.com https://placehold.co https://www.google.com https://res.cloudinary.com;
-        connect-src 'self' https://crepnlidfdoskighdhdt.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://crepnlidfdoskighdhdt.supabase.co;
+        img-src 'self' data: blob: https://images.unsplash.com https://placehold.co https://www.google.com https://res.cloudinary.com;
+        connect-src 'self' https://*.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://*.supabase.co;
         object-src 'none';
         base-uri 'self';
         form-action 'self';
@@ -39,10 +39,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" defer></script>
     
     <!-- 
-      SERVER-SIDE OPTIMIZATION NOTES:
-      1. Caching: For best performance, configure your web server (e.g., Netlify, Vercel, Nginx) to set long cache-control headers for static assets.
-         Example: `Cache-Control: public, max-age=31536000, immutable` for fonts, icons, and versioned JS/CSS.
-      2. TTFB (Time to First Byte): To improve TTFB, consider upgrading your hosting plan, using a global CDN, or optimizing backend database queries if they are slow. This is a server-side concern.
+        SERVER-SIDE OPTIMIZATION NOTES:
+        1. Caching: For best performance, configure your web server (e.g., Netlify, Vercel, Nginx) to set long cache-control headers for static assets.
+           Example: `Cache-Control: public, max-age=31536000, immutable` for fonts, icons, and versioned JS/CSS.
+        2. TTFB (Time to First Byte): To improve TTFB, consider upgrading your hosting plan, using a global CDN, or optimizing backend database queries if they are slow. This is a server-side concern.
     -->
     <style>
         body {
@@ -169,28 +169,31 @@
         body.user-is-logged-in #header-logged-in { display: block; }
         body.user-is-logged-in #header-logged-out { display: none; }
         /* --- END: Auth Header Control --- */
+
+        /* --- START: New Auth Modal Styles --- */
+         :root { --tg-brand:#b79438; --tg-ok:#22c55e; }
+        .tg-tabs{display:flex;border-bottom:1px solid #e5e7eb; margin-bottom: 24px;}
+        .tg-tab{flex:1;text-align:center;padding:12px 8px;cursor:pointer;font-weight:600;border-bottom:3px solid transparent;color:#64748b; margin-bottom: -1px;}
+        .tg-tab[aria-selected="true"]{color:#1e293b;border-color:var(--tg-brand)}
+        .tg-pane{display:none}
+        .tg-pane.active{display:block; animation: fadeIn 0.3s ease;}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .tg-field{margin-bottom: 1rem;}
+        .tg-field label{font-size:.875rem; color:#334155;display:block;margin-bottom: 6px; font-weight: 500;}
+        .tg-field input[type="text"],.tg-field input[type="email"],.tg-field input[type="password"]{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;outline:none; transition: border-color 0.2s, box-shadow 0.2s;}
+        .tg-field input:focus { border-color: var(--tg-brand); box-shadow: 0 0 0 2px rgba(183, 148, 56, 0.2); }
+        .tg-hint{font-size:.8rem;color:#6b7280;margin-top:4px}
+        .tg-success{color:var(--tg-ok);font-size:.9rem}
+        .tg-error{color:#ef4444;font-size:.9rem}
+        .tg-checks{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
+        .tg-checks li{font-size:.85rem;display:flex;align-items:center;gap:8px;color:#475569; transition: color 0.3s ease;}
+        .tg-checks li.valid { color: var(--tg-ok); }
+        .tg-tick{width:16px;height:16px;display:inline-grid;place-items:center;border:2px solid #94a3b8;border-radius:50%;font-size:10px; transition: all 0.3s ease; flex-shrink: 0;}
+        .tg-checks li.valid .tg-tick { border-color:transparent; background:var(--tg-ok); color:white; }
+        /* --- END: New Auth Modal Styles --- */
+
     </style>
-<style>
-  :root { --tg-brand:#b79438; --tg-ok:#22c55e; }
-  .tg-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-radius:999px;border:1px solid #e5e7eb33;background:linear-gradient(180deg,#1e293b,#0b1220);color:#fff;font-weight:600;cursor:pointer;transition:transform .06s ease,box-shadow .2s ease;text-decoration:none}
-  .tg-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
-  .tg-tabs{display:flex;border-bottom:1px solid #e5e7eb66;margin:-8px 0 16px 0}
-  .tg-tab{flex:1;text-align:center;padding:10px 8px;cursor:pointer;font-weight:700;border-bottom:2px solid transparent;color:#475569}
-  .tg-tab[aria-selected="true"]{color:#111827;border-color:var(--tg-brand)}
-  .tg-pane{display:none}
-  .tg-pane.active{display:block}
-  .tg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .tg-field label{font-size:.85rem;color:#334155;display:block;margin:0 0 6px}
-  .tg-field input[type="text"],.tg-field input[type="email"],.tg-field input[type="password"]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #e5e7eb;background:#fff;color:#0f172a;outline:none}
-  .tg-hint{font-size:.8rem;color:#6b7280;margin-top:4px}
-  .tg-success{color:var(--tg-ok);font-size:.9rem}
-  .tg-error{color:#ef4444;font-size:.9rem}
-  .tg-checks{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
-  .tg-checks li{font-size:.9rem;display:flex;align-items:center;gap:8px;color:#334155}
-  .tg-tick{width:18px;height:18px;display:inline-grid;place-items:center;border:2px solid #94a3b8;border-radius:6px;font-size:12px}
-  .tg-ok{border-color:var(--tg-ok);background:rgba(34,197,94,.1);color:var(--tg-ok)}
-  #tg-register-home-btn{margin-top:12px}
-</style>
 </head>
 <body class="text-gray-800">
 
@@ -199,14 +202,6 @@
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center">
                     <a href="#" onclick="showHomepage(event)" class="text-2xl font-bold theme-primary">TradeGinger</a>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="#" onclick="showListingPage(event, 'cars')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Cars</a>
-                        <a href="#" onclick="showListingPage(event, 'mobiles')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Mobiles</a>
-                        <a href="#" onclick="showListingPage(event, 'electronics')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Electronics</a>
-                        <a href="#" onclick="showListingPage(event, 'property')" class="text-gray-600 hover:text-theme-accent px-3 py-2 rounded-md text-sm font-medium">Property</a>
-                    </div>
                 </div>
                 <div class="flex items-center">
                     <a href="#" onclick="showLoginModal(event)" class="text-sm font-medium text-gray-700 hover:text-theme-accent mr-4">Login</a>
@@ -229,7 +224,7 @@
                     </a>
                     <div class="hidden md:flex items-center border-2 rounded-full p-1 w-96">
                         <i class="fas fa-search text-gray-400 mx-3"></i>
-                        <input id="header-search-input" type="text" placeholder="Search for cars, mobiles..." class="w-full bg-transparent focus:outline-none text-sm" autocomplete="nope">
+                        <input id="header-search-input" type="text" placeholder="Search for cars, mobiles..." class="w-full bg-transparent focus:outline-none text-sm" autocomplete="off">
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -301,7 +296,7 @@
                 <div class="max-w-2xl mx-auto bg-white rounded-full p-2 flex items-center shadow-2xl">
                     <div class="flex-grow flex items-center">
                          <i class="fas fa-search text-gray-400 mx-3"></i>
-                        <input id="hero-search-input" type="text" placeholder="Search for anything... (e.g., 'iPhone in Mumbai')" class="w-full bg-transparent text-gray-700 focus:outline-none" autocomplete="nope">
+                        <input id="hero-search-input" type="text" placeholder="Search for anything... (e.g., 'iPhone in Mumbai')" class="w-full bg-transparent text-gray-700 focus:outline-none" autocomplete="off">
                     </div>
                     <button onclick="searchFromHome(event)" class="bg-theme-accent text-white rounded-full px-6 py-3 font-semibold hover:bg-theme-accent-dark transition duration-300 flex-shrink-0">
                         Search
@@ -407,20 +402,20 @@
                     <h3 class="text-xl font-semibold mt-4">4.2. Limitation of Liability</h3>
                     <p>To the maximum extent permitted by law, TradeGinger, its affiliates, officers, directors, and employees shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from:</p>
                      <ul class="list-disc list-inside space-y-1">
-                          <li>Your use or inability to use the Website.</li>
-                          <li>Any unauthorized access to or use of your personal information.</li>
-                          <li>Any content posted by a user or third party on the Website.</li>
-                          <li>Any claims arising from the transactions between buyers and sellers.</li>
-                     </ul>
+                         <li>Your use or inability to use the Website.</li>
+                         <li>Any unauthorized access to or use of your personal information.</li>
+                         <li>Any content posted by a user or third party on the Website.</li>
+                         <li>Any claims arising from the transactions between buyers and sellers.</li>
+                    </ul>
 
                     <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">5. Indemnification</h2>
                     <p>You agree to indemnify, defend, and hold harmless TradeGinger, its officers, directors, employees, and agents from and against any and all claims, liabilities, damages, losses, and expenses, including reasonable legal fees, arising out of or in connection with:</p>
                      <ul class="list-disc list-inside space-y-1">
-                          <li>Your use of the Website.</li>
-                          <li>Your violation of these Terms.</li>
-                          <li>Your infringement of any intellectual property or other right of any person or entity.</li>
-                          <li>Any transaction or dispute between you and another user.</li>
-                     </ul>
+                         <li>Your use of the Website.</li>
+                         <li>Your violation of these Terms.</li>
+                         <li>Your infringement of any intellectual property or other right of any person or entity.</li>
+                         <li>Any transaction or dispute between you and another user.</li>
+                    </ul>
 
                     <h2 class="text-2xl font-bold border-b pb-2 mb-4 mt-8">6. Privacy and Data Protection</h2>
                     <h3 class="text-xl font-semibold mt-4">6.1. Privacy Policy</h3>
@@ -642,7 +637,10 @@
                         <div>
                             <div class="flex justify-between items-center">
                                 <label class="label-style">Description</label>
-                                <button type="button" onclick="generateAdDescription(event)" class="text-xs bg-purple-100 text-purple-700 font-semibold px-2 py-1 rounded-md hover:bg-purple-200">✨ Generate with AI</button>
+                                <button type="button" id="ai-generate-btn" onclick="generateAdDescription(event)" class="text-xs bg-purple-100 text-purple-700 font-semibold px-2 py-1 rounded-md hover:bg-purple-200 flex items-center gap-1">
+                                    <i class="fas fa-magic"></i>
+                                    <span>Generate with AI</span>
+                                </button>
                             </div>
                             <textarea rows="4" id="ad-description" placeholder="Include condition, features, and reason for selling" class="mt-1 block w-full input-style"></textarea>
                         </div>
@@ -671,7 +669,7 @@
                                             <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple accept="image/*" onchange="handleFileUpload(event)">
                                         </label>
                                         <p class="pl-1">or</p>
-                                        <button type="button" onclick="openCamera(event)" class="ml-1 relative cursor-pointer bg-white rounded-md font-medium text-theme-accent hover\:text-theme-accent">Take a Picture with AI</button>
+                                        <button type="button" onclick="openCamera(event)" class="ml-1 relative cursor-pointer bg-white rounded-md font-medium text-theme-accent hover\:text-theme-accent">Take a Picture</button>
                                     </div>
                                     <p class="text-xs text-gray-500">PNG, JPG up to 5MB</p>
                                 </div>
@@ -805,20 +803,60 @@
             <div class="w-full md:w-2/3 bg-white p-8 flex flex-col justify-center relative overflow-y-auto">
                 <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
                 
-                <div id="auth-form" class="w-full max-w-sm mx-auto">
-                    <h2 class="text-2xl font-bold text-center mb-2">Sign In or Register</h2>
-                    <p class="text-center text-gray-500 mb-6">Enter your email below to receive a magic link, or continue with Google.</p>
-                    <input id="auth-email" type="email" placeholder="Enter your email" class="w-full border-2 border-gray-300 p-3 rounded-md focus:outline-none focus:border-theme-accent">
-                    <button id="magic-link-button" onclick="handleMagicLinkLogin(event)" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Continue with Email</button>
-                    <div class="my-6 flex items-center">
-                        <div class="flex-grow border-t border-gray-300"></div>
-                        <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
-                        <div class="flex-grow border-t border-gray-300"></div>
+                <div id="auth-container" class="w-full max-w-sm mx-auto">
+                    <div class="tg-tabs">
+                        <div class="tg-tab" role="tab" aria-selected="true" data-tab="signin">Sign In</div>
+                        <div class="tg-tab" role="tab" aria-selected="false" data-tab="register">Register</div>
                     </div>
-                    <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
-                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
-                        <span class="font-semibold">Continue with Google</span>
-                    </button>
+
+                    <!-- Sign In Pane -->
+                    <div id="signin-pane" class="tg-pane active">
+                        <h2 class="text-2xl font-bold text-center mb-2">Welcome Back!</h2>
+                        <p class="text-center text-gray-500 mb-6">Sign in to your account.</p>
+                        <form id="email-password-login-form">
+                            <div class="tg-field">
+                                <label for="signin-email">Email</label>
+                                <input id="signin-email" type="email" placeholder="you@example.com" required autocomplete="email">
+                            </div>
+                             <div class="tg-field">
+                                <label for="signin-password">Password</label>
+                                <input id="signin-password" type="password" placeholder="Enter your password" required autocomplete="current-password">
+                            </div>
+                            <button type="submit" id="email-password-signin-button" class="w-full bg-theme-primary text-white p-3 rounded-md mt-2 font-semibold hover:bg-theme-primary-dark">Sign In</button>
+                        </form>
+                        <div class="my-6 flex items-center">
+                            <div class="flex-grow border-t border-gray-300"></div>
+                            <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
+                            <div class="flex-grow border-t border-gray-300"></div>
+                        </div>
+                        <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
+                            <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
+                            <span class="font-semibold">Continue with Google</span>
+                        </button>
+                    </div>
+
+                    <!-- Register Pane -->
+                    <div id="register-pane" class="tg-pane">
+                        <h2 class="text-2xl font-bold text-center mb-2">Create an Account</h2>
+                        <p class="text-center text-gray-500 mb-6">It's quick and easy.</p>
+                        <form id="register-form">
+                            <div class="tg-row">
+                                <div class="tg-field"><label for="reg-fname">First Name</label><input id="reg-fname" type="text" autocomplete="given-name" required></div>
+                                <div class="tg-field"><label for="reg-lname">Last Name</label><input id="reg-lname" type="text" autocomplete="family-name" required></div>
+                            </div>
+                            <div class="tg-field"><label for="reg-email">Email</label><input id="reg-email" type="email" autocomplete="email" required></div>
+                            <div class="tg-field"><label for="reg-pass">Password</label><input id="reg-pass" type="password" autocomplete="new-password" required></div>
+                            
+                            <ul id="password-checks" class="tg-checks">
+                                <li data-check="length"><span class="tg-tick">✓</span>At least 8 characters</li>
+                                <li data-check="upper"><span class="tg-tick">✓</span>One uppercase letter</li>
+                                <li data-check="lower"><span class="tg-tick">✓</span>One lowercase letter</li>
+                                <li data-check="number"><span class="tg-tick">✓</span>One number</li>
+                            </ul>
+                            <div id="auth-message" class="text-sm mt-4 text-center"></div>
+                            <button type="submit" id="register-button" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Register</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -904,7 +942,7 @@
                 throw new Error("Supabase credentials are placeholders. Please update them in index.html.");
             }
             supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-try { window.supabase = supabase; } catch(e) {} // expose globally for auth flows
+			try { window.supabase = supabase; } catch(e) {} // expose globally for auth flows
         } catch (error) {
             console.error("Error creating Supabase client:", error);
              document.body.innerHTML = `
@@ -922,39 +960,6 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
         // --- Cloudinary Configuration for STORAGE ---
         const CLOUDINARY_CLOUD_NAME = 'dcxhenppn';
         const CLOUDINARY_UPLOAD_PRESET = 'Tradeginger';
-
-        // --- Supabase RLS Policies for Listings ---
-        // IMPORTANT: To prevent "Error fetching listings", ensure public read access is enabled on your 'listings' table.
-        /*
-        CREATE POLICY "Enable public read access for all listings"
-        ON public.listings
-        AS PERMISSIVE FOR SELECT
-        TO public
-        USING (true);
-        */
-
-        // --- Supabase RLS Policies for Profiles & Favorites ---
-        // IMPORTANT: Ensure users can manage their own profiles and favorites.
-        /*
-        -- Profiles Table
-        CREATE POLICY "Users can insert their own profile."
-        ON public.profiles FOR INSERT
-        TO authenticated
-        WITH CHECK (auth.uid() = id);
-
-        CREATE POLICY "Users can update their own profile."
-        ON public.profiles FOR UPDATE
-        TO authenticated
-        USING (auth.uid() = id);
-        
-        -- Favorites Table
-        CREATE POLICY "Users can manage their own favorites."
-        ON public.favorites FOR ALL
-        TO authenticated
-        USING (auth.uid() = user_id)
-        WITH CHECK (auth.uid() = user_id);
-        */
-
 
         // --- Category Mapping ---
         const categoryMapping = {
@@ -982,10 +987,6 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             editprofilepage: document.getElementById('editprofilepage'),
             myfavoritespage: document.getElementById('myfavoritespage'),
             mychatspage: document.getElementById('mychatspage'),
-        };
-        const headers = {
-            loggedOut: document.getElementById('header-logged-out'),
-            loggedIn: document.getElementById('header-logged-in')
         };
         
         const skeletonCardHTML = `
@@ -1021,7 +1022,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             window.scrollTo(0, 0);
         }
         
-        async function goBack(event) {
+        window.goBack = async function(event) {
             if (event) event.preventDefault();
             if (isNavigating) return;
             isNavigating = true;
@@ -1044,14 +1045,14 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
 
-        async function showHomepage(event) { 
+        window.showHomepage = async function(event) { 
             if(event) event.preventDefault(); 
             const { data: { session } } = await supabase.auth.getSession();
             window.navigationHistory = []; 
             showPage('homepage', !!session?.user); 
         }
         
-        async function showListingPage(event, categoryKey, filters = {}) { 
+        window.showListingPage = async function(event, categoryKey, filters = {}) { 
             if(event) event.preventDefault();
             if (isNavigating) return;
             isNavigating = true;
@@ -1065,15 +1066,15 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
 
-        async function showHelpPage(event) { 
+        window.showHelpPage = async function(event) { 
             if(event) event.preventDefault(); 
             const { data: { session } } = await supabase.auth.getSession();
             showPage('helppage', !!session?.user); 
         }
         
-        function showPlaceholderPage(event) { if(event) event.preventDefault(); showPage('placeholderpage', true); }
+        window.showPlaceholderPage = function(event) { if(event) event.preventDefault(); showPage('placeholderpage', true); }
         
-        async function showProductDetailPage(event, adId) { 
+        window.showProductDetailPage = async function(event, adId) { 
             if (event) event.preventDefault();
             if (isNavigating) return;
             isNavigating = true;
@@ -1099,27 +1100,27 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
         
-        async function showComingSoonPage(event) { 
+        window.showComingSoonPage = async function(event) { 
             if(event) event.preventDefault(); 
             const { data: { session } } = await supabase.auth.getSession();
             showPage('comingsoonpage', !!session?.user); 
         }
         
-        async function showMyAdsPage(event) {
+        window.showMyAdsPage = async function(event) {
             if(event) event.preventDefault();
             showPage('myadspage', true);
             await fetchAndDisplayMyAds();
         }
 
-        async function showUserProfilePage(event) { 
+        window.showUserProfilePage = async function(event) { 
             if(event) event.preventDefault(); 
             showPage('userprofilepage', true);
             await renderProfileAds();
         }
         
-        function showEditProfilePage(event) { if(event) event.preventDefault(); showPage('editprofilepage', true); }
+        window.showEditProfilePage = function(event) { if(event) event.preventDefault(); showPage('editprofilepage', true); }
         
-        async function searchFromHome(event) {
+        window.searchFromHome = async function(event) {
             if (event) event.preventDefault();
             const keyword = document.getElementById('hero-search-input').value.trim();
             const filters = {};
@@ -1129,13 +1130,13 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             await showListingPage(event, 'all', filters);
         }
         
-        async function showMyFavoritesPage(event) {
+        window.showMyFavoritesPage = async function(event) {
              if (event) event.preventDefault();
              showPage('myfavoritespage', true);
              await fetchAndDisplayMyFavorites();
         }
         
-        async function showMyChatsPage(event) {
+        window.showMyChatsPage = async function(event) {
             if (event) event.preventDefault();
             showPage('mychatspage', true);
             await fetchAndDisplayMyChats();
@@ -1229,7 +1230,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
 
-        async function openChatFromListPage(roomId, otherUserId, otherUserName, adId) {
+        window.openChatFromListPage = async function(roomId, otherUserId, otherUserName, adId) {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) {
@@ -1280,7 +1281,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
         }
 
         // --- Modal Control ---
-        async function showSellModal(event) { 
+        window.showSellModal = async function(event) { 
             if(event) event.preventDefault();
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
@@ -1291,7 +1292,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
 
-        function hideSellModal() { 
+        window.hideSellModal = function() { 
             document.getElementById('sellModal').classList.add('hidden'); 
             editingAdId = null;
             document.getElementById('adForm').reset();
@@ -1300,19 +1301,19 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             document.getElementById('post-ad-button').textContent = 'Post Now';
         }
 
-        function showLoginModal(event) { if(event) event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); }
+        window.showLoginModal = function(event) { if(event) event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); }
         
-        function hideLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
+        window.hideLoginModal = function() { document.getElementById('loginModal').classList.add('hidden'); }
 
-        function showTncModal(event) { if(event) event.preventDefault(); document.getElementById('tncModal').classList.remove('hidden'); }
+        window.showTncModal = function(event) { if(event) event.preventDefault(); document.getElementById('tncModal').classList.remove('hidden'); }
 
-        function hideTncModal() { document.getElementById('tncModal').classList.add('hidden'); }
+        window.hideTncModal = function() { document.getElementById('tncModal').classList.add('hidden'); }
 
         function showPostSuccessModal() { document.getElementById('adSuccessModal').classList.remove('hidden'); }
 
-        function hideAdSuccessModal() { document.getElementById('adSuccessModal').classList.add('hidden'); }
+        window.hideAdSuccessModal = function() { document.getElementById('adSuccessModal').classList.add('hidden'); }
         
-        function showReraInfo() { showToast('RERA is a unique ID for real estate projects, ensuring transparency.', 'info'); }
+        window.showReraInfo = function() { showToast('RERA is a unique ID for real estate projects, ensuring transparency.', 'info'); }
 
         // --- Dynamic Form Logic ---
         const categoriesData = [
@@ -1335,7 +1336,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
             return options;
         }
-        const yearDropdown = generateYearOptions(1990, 2025);
+        const yearDropdown = generateYearOptions(1990, new Date().getFullYear());
 
         const attributeTemplates = {
             cars: `<h3 class="text-xl font-bold text-gray-900 mb-4">Car Details</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="label-style">Brand*</label><select class="input-style w-full"><option>Maruti Suzuki</option><option>Hyundai</option><option>Tata</option><option>Mahindra</option><option>Kia</option><option>Toyota</option><option>Honda</option><option>Volkswagen</option><option>Skoda</option><option>MG</option><option>Renault</option><option>Nissan</option><option>Jeep</option><option>Citroen</option><option>Isuzu</option><option>Mercedes-Benz</option><option>BMW</option><option>Audi</option><option>Jaguar</option><option>Land Rover</option><option>Volvo</option><option>Other</option></select></div><div><label class="label-style">Model*</label><input type="text" placeholder="e.g., Swift, Creta, Nexon" class="input-style w-full"></div><div><label class="label-style">Variant*</label><input type="text" placeholder="e.g., VXI, SX, XZ+" class="input-style w-full"></div><div><label class="label-style">Year*</label><select class="input-style w-full">${yearDropdown}</select></div><div><label class="label-style">Fuel*</label><select class="input-style w-full"><option>Petrol</option><option>Diesel</option><option>CNG & Hybrids</option><option>Electric</option><option>LPG</option></select></div><div><label class="label-style">Transmission*</label><select class="input-style w-full"><option>Manual</option><option>Automatic</option></select></div><div><label class="label-style">KM Driven*</label><input type="number" placeholder="e.g., 25000" class="input-style w-full"></div><div><label class="label-style">No. of Owners*</label><select class="input-style w-full"><option>1st</option><option>2nd</option><option>3rd</option><option>4th+</option></select></div></div><div><label class="label-style">Condition</label><div class="flex space-x-4 mt-1"><label class="flex items-center"><input type="radio" name="condition" class="mr-2 h-4 w-4"> Non-Accidental</label><label class="flex items-center"><input type="radio" name="condition" class="mr-2 h-4 w-4"> Accidental</label></div></div>`,
@@ -1353,13 +1354,13 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
         style.innerHTML = `.input-style { padding: 0.5rem 0.75rem; background-color: white; border: 1px solid #D1D5DB; border-radius: 0.375rem; } .input-style:focus { outline: none; ring: 2px; ring-offset: 2px; ring-color: #D4AF37; border-color: #D4AF37; } .label-style { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }`;
         document.head.appendChild(style);
         
-        function updateAttributeFields() {
+        window.updateAttributeFields = function() {
             const category = document.getElementById('category-select').value;
             const container = document.getElementById('category-attributes');
             container.innerHTML = (category && attributeTemplates[category]) ? attributeTemplates[category] : '<p class="text-gray-500 text-center py-4">Please select a category to see relevant options.</p>';
         }
 
-        function handlePropertyTypeChange(selectElement) {
+        window.handlePropertyTypeChange = function(selectElement) {
             const landSubCategoryContainer = document.getElementById('land-subcategory-container');
             if (selectElement.value === 'Land') {
                 landSubCategoryContainer.classList.remove('hidden');
@@ -1485,7 +1486,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
         
-        function applyFilters(categoryKey) {
+        window.applyFilters = function(categoryKey) {
             const cityId = document.getElementById('filter-city').value;
             const filters = {};
             if (cityId) {
@@ -1495,13 +1496,13 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             showToast('Filters applied!', 'info');
         }
 
-        function resetFilters(categoryKey) {
+        window.resetFilters = function(categoryKey) {
             updateListingPage(categoryKey);
             fetchAndDisplayListings(categoryKey);
             showToast('Filters reset.', 'info');
         }
         
-        function togglePostButton() {
+        window.togglePostButton = function() {
             const checkbox = document.getElementById('terms-checkbox');
             const button = document.getElementById('post-ad-button');
             if (checkbox.checked) {
@@ -1579,7 +1580,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
 
-        async function openChatWindow(sellerName, adId, sellerId) {
+        window.openChatWindow = async function(sellerName, adId, sellerId) {
             try {
                 const { data: { user: buyer } } = await supabase.auth.getUser();
                 if (!buyer || buyer.id === sellerId) {
@@ -1631,7 +1632,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
 
-        async function closeChatWindow() {
+        window.closeChatWindow = async function() {
             document.getElementById('chat-window').classList.add('hidden');
             if (chatSubscription) {
                 await supabase.removeChannel(chatSubscription);
@@ -1642,7 +1643,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             document.getElementById('chat-messages').innerHTML = '';
         }
 
-        function toggleMute() {
+        window.toggleMute = function() {
             isMuted = !isMuted;
             const muteIcon = document.getElementById('mute-btn').querySelector('i');
             muteIcon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
@@ -1700,33 +1701,33 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
                     noNotificationsMessage.classList.remove('hidden');
                 } else {
                      notifications.forEach(notif => {
-                          const icon = notif.type === 'new_message' ? 'fa-comment-dots' : 'fa-info-circle';
-                          const isUnreadClass = !notif.is_read ? 'bg-blue-50' : '';
-                          const timeAgo = new Date(notif.created_at).toLocaleString();
+                         const icon = notif.type === 'new_message' ? 'fa-comment-dots' : 'fa-info-circle';
+                         const isUnreadClass = !notif.is_read ? 'bg-blue-50' : '';
+                         const timeAgo = new Date(notif.created_at).toLocaleString();
 
-                          notificationsHTML += `
-                              <a href="#" class="block p-4 text-sm hover:bg-gray-50 ${isUnreadClass}">
-                                   <div class="flex items-start gap-3">
-                                       <i class="fas ${icon} text-gray-400 mt-1"></i>
-                                       <div>
-                                           <p class="font-semibold">${sanitizeHTML(notif.content)}</p>
-                                           <p class="text-xs text-gray-500">${timeAgo}</p>
-                                       </div>
-                                   </div>
-                              </a>
-                          `;
-                      });
+                         notificationsHTML += `
+                             <a href="#" class="block p-4 text-sm hover:bg-gray-50 ${isUnreadClass}">
+                                 <div class="flex items-start gap-3">
+                                     <i class="fas ${icon} text-gray-400 mt-1"></i>
+                                     <div>
+                                         <p class="font-semibold">${sanitizeHTML(notif.content)}</p>
+                                         <p class="text-xs text-gray-500">${timeAgo}</p>
+                                     </div>
+                                 </div>
+                             </a>
+                         `;
+                     });
                 }
                 notificationList.innerHTML = notificationsHTML;
             } catch(error) {
                  console.error("Error fetching notifications:", error);
                  if(notificationList) {
-                    notificationList.innerHTML = `<p class="p-4 text-sm text-red-500 text-center">Could not load notifications.</p>`;
+                     notificationList.innerHTML = `<p class="p-4 text-sm text-red-500 text-center">Could not load notifications.</p>`;
                  }
             }
         }
         
-        async function markNotificationsAsRead(event, forceRefresh = false) {
+        window.markNotificationsAsRead = async function(event, forceRefresh = false) {
             if(event) event.preventDefault();
             try {
                 const { data: { user } } = await supabase.auth.getUser();
@@ -1749,7 +1750,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
 
-        async function toggleNotifications() {
+        window.toggleNotifications = async function() {
             const dropdown = document.getElementById('notification-dropdown');
             const isOpening = dropdown.style.display !== 'block';
             
@@ -1761,7 +1762,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
         
-        function handleProfilePictureChange(event) {
+        window.handleProfilePictureChange = function(event) {
             const file = event.target.files[0];
             if (file) {
                 stagedProfilePic = file;
@@ -1776,48 +1777,100 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
         
         // --- Authentication Logic (Supabase) ---
 
-        async function handleMagicLinkLogin(event) {
+        async function handleEmailPasswordLogin(event) {
             event.preventDefault();
-            const magicLinkButton = document.getElementById('magic-link-button');
-            const email = document.getElementById('auth-email').value.trim();
-
-            if (!email) {
-                showToast('Please enter your email address.', 'error');
+            const email = document.getElementById('signin-email').value.trim();
+            const password = document.getElementById('signin-password').value;
+            const button = document.getElementById('email-password-signin-button');
+            
+            if (!email || !password) {
+                showToast('Please enter both email and password.', 'error');
                 return;
             }
 
-            magicLinkButton.disabled = true;
-            magicLinkButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Sending...`;
+            button.disabled = true;
+            button.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Signing in...`;
 
             try {
-                const { error } = await supabase.auth.signInWithOtp({
-                    email: email,
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                // Success toast is removed as onAuthStateChange will handle UI updates, giving a seamless experience.
+            } catch (error) {
+                console.error("Sign in error:", error);
+                showToast(error.message || "Invalid email or password.", "error");
+            } finally {
+                button.disabled = false;
+                button.innerHTML = 'Sign In';
+            }
+        }
+        
+        async function handleRegistration(event) {
+            event.preventDefault();
+            const button = document.getElementById('register-button');
+            const messageDiv = document.getElementById('auth-message');
+            messageDiv.textContent = '';
+
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-pass').value;
+            const firstName = document.getElementById('reg-fname').value.trim();
+            const lastName = document.getElementById('reg-lname').value.trim();
+
+            if(!validatePassword(password)) {
+                messageDiv.className = 'text-sm mt-4 text-center tg-error';
+                messageDiv.textContent = 'Password does not meet the requirements.';
+                return;
+            }
+            if(!firstName || !lastName) {
+                messageDiv.className = 'text-sm mt-4 text-center tg-error';
+                messageDiv.textContent = 'Please enter your first and last name.';
+                return;
+            }
+
+            button.disabled = true;
+            button.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Registering...`;
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
                     options: {
-                        emailRedirectTo: window.location.href,
-                    },
+                        data: {
+                            first_name: firstName,
+                            last_name: lastName,
+                            full_name: `${firstName} ${lastName}`,
+                        },
+                        emailRedirectTo: window.location.origin,
+                    }
                 });
 
                 if (error) throw error;
 
-                showToast('Check your email for the magic link to sign in!', 'success');
-                hideLoginModal();
-
-            } catch (err) {
-                console.error("Magic Link error:", err);
-                showToast("Failed to send magic link: " + (err.message || "Unknown error"), "error");
+                if (data.user && data.user.identities && data.user.identities.length === 0) {
+                     messageDiv.className = 'text-sm mt-4 text-center tg-error';
+                     messageDiv.textContent = 'User with this email already exists.';
+                } else {
+                    messageDiv.className = 'text-sm mt-4 text-center tg-success';
+                    messageDiv.textContent = 'Success! Please check your email to confirm your account.';
+                    document.getElementById('register-form').reset();
+                }
+            } catch (error) {
+                console.error("Registration error:", error);
+                messageDiv.className = 'text-sm mt-4 text-center tg-error';
+                messageDiv.textContent = error.message || "Registration failed. Please try again.";
             } finally {
-                magicLinkButton.disabled = false;
-                magicLinkButton.innerHTML = 'Continue with Email';
+                button.disabled = false;
+                button.innerHTML = 'Register';
             }
         }
 
-        async function loginWithGoogle(event) {
+
+        window.loginWithGoogle = async function(event) {
             event.preventDefault();
             try {
                 const { error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.href
+                        redirectTo: window.location.href.split('#')[0] // Clean redirect URL
                     }
                 });
                 if (error) throw error;
@@ -1831,19 +1884,14 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
         
-        async function logout(event) {
+        window.logout = async function(event) {
             if (event) event.preventDefault();
-            headers.loggedIn.classList.add('hidden');
-            headers.loggedOut.classList.remove('hidden');
-
             try {
                 const { error } = await supabase.auth.signOut();
-                if (error) {
-                    headers.loggedIn.classList.remove('hidden');
-                    headers.loggedOut.classList.add('hidden');
-                    throw error;
-                }
-                window.location.reload();
+                if (error) throw error;
+                // The onAuthStateChange handler will automatically update the UI.
+                // A full page reload is avoided for a smoother SPA-like experience.
+                showHomepage();
             } catch (error) {
                 console.error('Error logging out:', error);
                 showToast('Logout failed: ' + error.message, 'error');
@@ -1853,25 +1901,13 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
         // --- Auth State Listener ---
         supabase.auth.onAuthStateChange(async (event, session) => {
             try {
-                // --- START: Robust Session Handling ---
-                // On SIGNED_IN event, the URL contains a hash with the access token. 
-                // We remove it for a cleaner URL and to prevent it from being shared accidentally.
-                // This also improves the user experience on refresh, as the session is already
-                // persisted in localStorage by the Supabase client.
-                if (event === 'SIGNED_IN') {
-                    if (window.location.hash) {
-                        // Use replaceState to clean the URL without a page reload.
-                        window.history.replaceState(null, '', window.location.pathname + window.location.search);
-                    }
+                if (event === 'SIGNED_IN' && window.location.hash) {
+                    window.history.replaceState(null, '', window.location.pathname + window.location.search);
                 }
-                // --- END: Robust Session Handling ---
 
                 const user = session?.user;
                 if (user) {
                     document.body.classList.add('user-is-logged-in');
-                    // --- START: New User Profile Creation ---
-                    // On successful sign-in, check if a profile exists. If not, create one.
-                    // This handles new user registration via magic link or OAuth.
                     if (event === 'SIGNED_IN') {
                         const { data: profile, error: profileError } = await supabase
                             .from('profiles')
@@ -1879,13 +1915,12 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
                             .eq('id', user.id)
                             .single();
 
-                        // 'PGRST116' means no row was found, which indicates a new user.
                         if (profileError && profileError.code === 'PGRST116') {
                             const { error: insertError } = await supabase.from('profiles').insert({
                                 id: user.id,
                                 email: user.email,
-                                first_name: user.user_metadata?.full_name?.split(' ')[0] || '',
-                                last_name: user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+                                first_name: user.user_metadata?.first_name || user.user_metadata?.full_name?.split(' ')[0] || '',
+                                last_name: user.user_metadata?.last_name || user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
                                 avatar_url: user.user_metadata?.avatar_url,
                             });
 
@@ -1899,7 +1934,6 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
                             console.error("Error checking for user profile:", profileError);
                         }
                     }
-                    // --- END: New User Profile Creation ---
 
                     await fetchUserFavorites();
                     if (notificationSubscription) await supabase.removeChannel(notificationSubscription);
@@ -1914,13 +1948,12 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
 
                     if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
                         hideLoginModal();
-                        showPage(window.navigationHistory.length > 0 ? window.navigationHistory[window.navigationHistory.length - 1] : 'homepage', true);
                     }
                     
                     await updateUIForUser(user);
                     
                     if (postLoginAction) {
-                        const actionToPerform = postLoginAction;
+                        const actionToPerform = { ...postLoginAction };
                         postLoginAction = null; 
 
                         if (actionToPerform.action === 'sellItem') {
@@ -1939,7 +1972,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
                         await supabase.removeChannel(chatSubscription);
                         chatSubscription = null;
                     }
-                    showPage('homepage', false);
+                    showHomepage();
                     updateUIForGuest();
                 }
             } catch (error) {
@@ -1960,16 +1993,11 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
                     throw error;
                 }
 
-                // --- START: Safer Data Handling ---
-                // Prioritize data from our 'profiles' table, but fall back gracefully to
-                // auth metadata, especially for the initial sign-in moment before the profile is created.
-                // Using optional chaining (?.) prevents errors if user_metadata is not present.
-                const firstName = userProfileData?.first_name || user?.user_metadata?.full_name?.split(' ')[0] || '';
-                const lastName = userProfileData?.last_name || user?.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '';
+                const firstName = userProfileData?.first_name || user?.user_metadata?.first_name || user?.user_metadata?.full_name?.split(' ')[0] || '';
+                const lastName = userProfileData?.last_name || user?.user_metadata?.last_name || user?.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '';
                 const fullName = `${firstName} ${lastName}`.trim() || user.email;
                 
                 const profilePicUrl = userProfileData?.avatar_url || user?.user_metadata?.avatar_url || `https://placehold.co/96x96/0A2342/D4AF37?text=${(fullName || 'U').charAt(0).toUpperCase()}`;
-                // --- END: Safer Data Handling ---
 
                 document.getElementById('header-profile-pic').src = profilePicUrl;
                 document.getElementById('dropdown-profile-pic').src = profilePicUrl;
@@ -1998,7 +2026,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             document.getElementById('dropdown-username').innerText = 'Unknown';
         }
 
-        async function handleProfileUpdate(event) {
+        window.handleProfileUpdate = async function(event) {
             event.preventDefault();
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
@@ -2031,11 +2059,8 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
                     }
                 }
 
-                const authUpdateData = { data: { first_name: newFirstName, last_name: newLastName } };
                 const profileUpdateData = { mobile: newPhone, about: newAbout, first_name: newFirstName, last_name: newLastName };
-
                 if (newAvatarUrl) {
-                    authUpdateData.data.avatar_url = newAvatarUrl;
                     profileUpdateData.avatar_url = newAvatarUrl;
                 }
 
@@ -2045,7 +2070,12 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
                     .eq('id', user.id);
                 if (profileError) throw profileError;
                 
-                const { data: {user: updatedAuthUser}, error: authError } = await supabase.auth.updateUser(authUpdateData);
+                const { data: {user: updatedAuthUser}, error: authError } = await supabase.auth.updateUser({
+                    data: {
+                        full_name: newName,
+                        avatar_url: newAvatarUrl || user.user_metadata.avatar_url,
+                    }
+                });
                 if (authError) throw authError;
 
                 showToast('Profile updated successfully!', 'success');
@@ -2141,7 +2171,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
                         return typeof file.data === 'string' ? file.data : file.file;
                     });
                     imageUrls = await uploadFilesToCloudinary(filesToUpload);
-                    if (imageUrls.length !== stagedFiles.length) {
+                    if (imageUrls.length !== filesToUpload.length) {
                         throw new Error('Some images failed to upload. Please try again.');
                     }
                 }
@@ -2197,10 +2227,6 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
 
                 if (error.message.includes("violates row-level security policy")) {
                     errorMessage = 'Posting failed due to database security rules. Please check your Supabase settings.';
-                } else if (error.message.includes('violates not-null constraint') && error.message.includes('subcategory_id')) {
-                    errorMessage = 'Posting failed: A "Sub-Category" is required. The backend was updated, but the form is not sending this yet.';
-                } else if (error.code) { 
-                    errorMessage = `Database Error: ${error.message}`;
                 }
                 
                 showToast(errorMessage, 'error');
@@ -2210,7 +2236,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
 
-        async function handleEditAd(adId) {
+        window.handleEditAd = async function(adId) {
             try {
                 editingAdId = adId;
                 const { data: ad, error } = await supabase
@@ -2232,7 +2258,8 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
                     const cityId = ad.city_id;
                     const adStateSelect = document.getElementById('ad-state');
                     adStateSelect.value = stateId;
-                    populateCities(stateId);
+                    await populateCities(stateId); // Now async
+                    // Use a short timeout to allow the DOM to update with new cities
                     setTimeout(() => {
                         document.getElementById('ad-city').value = cityId;
                     }, 100);
@@ -2249,7 +2276,7 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             }
         }
 
-        async function handleDeleteAd(adId) {
+        window.handleDeleteAd = async function(adId) {
             showConfirmModal(
                 'Delete Ad',
                 'Are you sure you want to delete this ad? This action cannot be undone.',
@@ -2287,318 +2314,19 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
                 if (!ads || ads.length === 0) {
                     adsGrid.innerHTML = `
                         <div class="col-span-full bg-white p-8 rounded-lg shadow-md text-center">
-                            <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4" width="300" height="200" loading="lazy" decoding="async">
-                            <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
-                            <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
-                            <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
-                        </div>`;
-                    return;
-                }
-                
-                const adsHTML = ads.map(ad => {
-                    const locationText = ad.cities ? ad.cities.name : ad.location || 'N/A';
-                    return `
-                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                            <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${sanitizeHTML(ad.title)}" class="w-full h-48 object-cover" width="400" height="300" loading="lazy" decoding="async">
-                            <div class="p-4">
-                                <h3 class="font-bold text-lg mb-2">₹ ${ad.price.toLocaleString('en-IN')}</h3>
-                                <p class="text-gray-600 text-sm mb-4 truncate">${sanitizeHTML(ad.title)}</p>
-                                <div class="flex justify-between items-center text-xs text-gray-500">
-                                    <span>${sanitizeHTML(locationText)}</span>
-                                    <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">Active</span>
-                                </div>
-                                <div class="mt-4 flex gap-2">
-                                    <button onclick="handleEditAd(${ad.id})" class="w-full bg-gray-200 text-gray-700 p-2 rounded-md font-semibold hover:bg-gray-300 text-sm">Edit</button>
-                                    <button onclick="handleDeleteAd(${ad.id})" class="w-full bg-red-500 text-white p-2 rounded-md font-semibold hover:bg-red-600 text-sm">Delete</button>
-                                </div>
-                            </div>
-                        </div>`;
-                }).join('');
-                adsGrid.innerHTML = adsHTML;
-            } catch (error) {
-                console.error("Error fetching user's ads:", error);
-                showToast("Could not fetch your ads.", 'error');
-                adsGrid.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading ads.</p>`;
-            }
-        }
-        
-        // --- FAVORITES LOGIC ---
-        let userFavorites = new Set();
-        async function fetchUserFavorites() {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) {
-                    userFavorites = new Set();
-                    return;
-                }
-                const { data, error } = await supabase.from('favorites').select('listing_id').eq('user_id', user.id);
-                if (error) throw error;
-                userFavorites = new Set(data.map(fav => fav.listing_id));
-            } catch (error) {
-                console.error("Error fetching user favorites:", error);
-                userFavorites = new Set();
-            }
-        }
-
-        async function handleFavoriteClick(event, adId) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                showToast('Please log in to save favorites.', 'info');
-                showLoginModal();
-                return;
-            }
-
-            const heartButton = event.currentTarget;
-            if (!heartButton) return;
-            
-            heartButton.disabled = true;
-
-            try {
-                const heartIcon = heartButton.querySelector('i');
-                if (!heartIcon) return;
-                
-                const isFavorited = userFavorites.has(adId);
-
-                if (isFavorited) {
-                    const { error } = await supabase.from('favorites').delete().match({ user_id: user.id, listing_id: adId });
-                    if (error) throw error;
-                    userFavorites.delete(adId);
-                    heartIcon.classList.replace('fas', 'far');
-                    heartIcon.classList.remove('text-red-500');
-                    heartIcon.classList.add('text-gray-400');
-                } else {
-                    const { error } = await supabase.from('favorites').insert({ user_id: user.id, listing_id: adId });
-                    if (error) throw error;
-                    userFavorites.add(adId);
-                    heartIcon.classList.replace('far', 'fas');
-                    heartIcon.classList.remove('text-gray-400');
-                    heartIcon.classList.add('text-red-500');
-                }
-            } catch (error) {
-                console.error("Error updating favorite:", error);
-                let errorMessage = 'Could not update favorites. Please try again.';
-                if (error.message && error.message.includes("violates row-level security policy")) {
-                    errorMessage = 'Favorites feature is not enabled. Please contact support.';
-                }
-                showToast(errorMessage, 'error');
-            } finally {
-                if (heartButton) {
-                     heartButton.disabled = false;
-                }
-            }
-        }
-        
-        async function fetchAndDisplayMyFavorites() {
-            const favoritesGrid = document.getElementById('my-favorites-grid');
-            favoritesGrid.innerHTML = Array(4).fill(skeletonCardHTML).join('');
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (!user) throw new Error("User not logged in.");
-
-                const { data: ads, error } = await supabase
-                    .from('favorites')
-                    .select('listings(*, cities(name))')
-                    .eq('user_id', user.id);
-
-                if (error) throw error;
-                
-                const favoriteAds = ads.map(fav => fav.listings).filter(Boolean);
-
-                if (favoriteAds.length === 0) {
-                    favoritesGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">You have no favorite ads yet.</p>`;
-                    return;
-                }
-
-                await fetchUserFavorites();
-                const favoritesHTML = favoriteAds.map(ad => createAdCard(ad)).join('');
-                favoritesGrid.innerHTML = favoritesHTML;
-
-            } catch (error) {
-                 console.error("Error fetching favorites:", error);
-                 favoritesGrid.innerHTML = `<p class="col-span-full text-center text-red-500">Could not load your favorites.</p>`;
-            }
-        }
-        
-        function createAdCard(ad) {
-           const locationText = ad.cities ? ad.cities.name : ad.location;
-           return `
-           <div class="block bg-white rounded-lg border border-gray-200 overflow-hidden product-card transition-all duration-300 relative">
-               <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
-                  <img src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/400x300/E2E8F0/4A5568?text=No+Image'}" alt="${sanitizeHTML(ad.title)}" class="w-full h-48 object-cover" width="400" height="300" loading="lazy" decoding="async">
-               </a>
-              <button onclick="handleFavoriteClick(event, ${ad.id})" class="absolute top-2 right-2 p-2 rounded-full bg-white bg-opacity-75 z-10 hover:bg-gray-100 transition-colors">
-                  <i class="${userFavorites.has(ad.id) ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-400'}"></i>
-              </button>
-              ${ad.is_premium ? '<span class="absolute top-2 left-2 bg-theme-accent text-white text-xs font-bold px-2 py-1 rounded z-10">Premium</span>' : ''}
-              <div class="p-4">
-                  <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
-                      <h3 class="font-bold text-lg mb-2 truncate">₹ ${ad.price.toLocaleString('en-IN')}</h3>
-                      <p class="text-gray-600 text-sm truncate">${sanitizeHTML(ad.title)}</p>
-                      <div class="flex justify-between text-xs text-gray-500 mt-2">
-                          <span>${sanitizeHTML(locationText)}</span>
-                          <span>${ad.created_at ? new Date(ad.created_at).toLocaleDateString() : 'Recently'}</span>
-                      </div>
-                  </a>
-              </div>
-           </div>`;
-        }
-
-        async function fetchAndDisplayListings(categoryName, filters = {}) {
-            const listingGrid = document.getElementById('listing-grid');
-            listingGrid.innerHTML = Array(6).fill(skeletonCardHTML).join('');
-            
-            await fetchUserFavorites();
-            
-            const categoryId = categoryMapping[categoryName];
-            
-            try {
-                let query = supabase
-                    .from('listings')
-                    .select('*, cities(name)');
-                    
-                if (categoryId) {
-                    query = query.eq('category_id', categoryId);
-                }
-                
-                if (filters.city_id) {
-                    query = query.eq('city_id', filters.city_id);
-                }
-                
-                if (filters.keyword) {
-                    const searchPattern = `%${filters.keyword}%`;
-                    query = query.or(`title.ilike.${searchPattern},location.ilike.${searchPattern}`);
-                }
-
-                const { data: ads, error } = await query;
-
-                if (error) throw error;
-
-                if (!ads || ads.length === 0) {
-                    listingGrid.innerHTML = `<p class="col-span-full text-center text-gray-500">No listings found for your criteria.</p>`;
-                    return;
-                }
-
-                const adsHTML = ads.map(ad => createAdCard(ad)).join('');
-                listingGrid.innerHTML = adsHTML;
-
-            } catch(error) {
-                 console.error("Error fetching listings:", error);
-                 showToast("Could not fetch listings.", 'error');
-                 listingGrid.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading listings.</p>`;
-            }
-        }
-
-        function handleFileUpload(event) {
-            stagedFiles = Array.from(event.target.files).map(file => ({ type: 'file', file: file }));
-            renderImagePreviews();
-        }
-
-        function renderImagePreviews() {
-            const previewContainer = document.getElementById('image-preview-container');
-            previewContainer.innerHTML = '';
-            if (stagedFiles.length > 8) {
-                showToast("You can only upload a maximum of 8 images.", 'error');
-                stagedFiles = stagedFiles.slice(0, 8);
-            }
-            const previewsHTML = stagedFiles.map((fileWrapper, index) => {
-                const file = fileWrapper.type === 'base64' ? dataURLtoFile(fileWrapper.data, `capture${index}.jpg`) : fileWrapper.file;
-                return `<div class="relative w-24 h-24">
-                            <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover rounded-md border" width="96" height="96">
-                        </div>`;
-            }).join('');
-            previewContainer.innerHTML = previewsHTML;
-        }
-
-        async function renderProductDetailPage(adId) {
-            const container = document.getElementById('product-detail-container');
-            container.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
-            try {
-                await fetchUserFavorites();
-
-                const { data: ad, error: adError } = await supabase.from('listings').select('*, cities(name, states(name))').eq('id', adId).single();
-                
-                if (adError || !ad) { throw adError || new Error("Ad not found"); }
-
-                let seller;
-                const { data: sellerData, error: sellerError } = await supabase.from('profiles').select('*').eq('id', ad.user_id).single();
-
-                if (sellerError && sellerError.code !== 'PGRST116') {
-                    console.warn("Could not fetch seller profile, using default:", sellerError);
-                    seller = { id: 'unknown', first_name: 'Unknown', last_name: 'Seller', created_at: ad.created_at };
-                } else {
-                    seller = sellerData || { id: 'unknown', first_name: 'Unknown', last_name: 'Seller', created_at: ad.created_at };
-                }
-
-                const creationDate = seller.created_at ? new Date(seller.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'a while';
-
-                const { data: similarAds, error: similarAdsError } = await supabase
-                    .from('listings')
-                    .select('*')
-                    .eq('category_id', ad.category_id)
-                    .neq('id', adId)
-                    .limit(4);
-                
-                if(similarAdsError) { console.warn("Could not fetch similar ads:", similarAdsError); }
-                
-                const locationText = ad.cities ? `${ad.cities.name}, ${ad.cities.states.name}` : (ad.location || 'India');
-
-                const similarAdsHTML = similarAds && similarAds.length > 0 ? similarAds.map(similarAd => createAdCard(similarAd)).join('') : '<p class="col-span-full text-gray-500">No similar ads found.</p>';
-                
-                const pageHTML = `
-                    <div class="flex items-center gap-4 mb-4">
-                        <a href="#" onclick="goBack(event)" class="text-xl text-gray-500 hover:theme-primary" title="Back"><i class="fas fa-arrow-left"></i></a>
-                        <h1 class="text-2xl font-bold">Product Details</h1>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <div class="flex flex-col md:flex-row gap-8">
-                            <div class="w-full md:w-2/3">
-                                <img id="main-product-image" src="${ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/800x600/CBD5E0/4A5568?text=Product'}" alt="${sanitizeHTML(ad.title)}" class="w-full h-auto rounded-lg shadow-lg" width="800" height="600">
-                            </div>
-                            <div class="w-full md:w-1/3">
-                                <div class="border-b pb-4 mb-4">
-                                    <h2 class="text-3xl font-bold mb-2">₹ ${ad.price.toLocaleString('en-IN')}</h2>
-                                    <p class="text-lg text-gray-600">${sanitizeHTML(ad.title)}</p>
-                                    <div class="flex justify-between text-sm text-gray-500 mt-2">
-                                        <span>${sanitizeHTML(locationText)}</span>
-                                        <span>Posted ${new Date(ad.created_at).toLocaleDateString()}</span>
-                                    </div>
-                                </div>
-                                <div class="border-b pb-4 mb-4">
-                                    <h3 class="text-xl font-semibold mb-2">Seller Details</h3>
-                                    <div class="flex items-center gap-4">
-                                        <img class="h-16 w-16 rounded-full object-cover" src="https://placehold.co/64x64/0A2342/D4AF37?text=${(seller.first_name || 'S').charAt(0)}" alt="Seller profile" width="64" height="64">
-                                        <div>
-                                            <p class="font-bold text-lg">${sanitizeHTML(seller.first_name)} ${sanitizeHTML(seller.last_name)}</p>
-                                            <p class="text-sm text-gray-500">Member since ${creationDate}</p>
-                                        </div>
-                                    </div>
-                                    <button onclick="openChatWindow('${sanitizeHTML(seller.first_name)}', ${ad.id}, '${seller.id}')" class="w-full mt-4 bg-theme-primary text-white p-3 rounded-md font-semibold hover:bg-theme-primary-dark">
-                                        <i class="fas fa-comments mr-2"></i>Chat with Seller
-                                    </button>
-                                </div>
-                                <button onclick="handleFavoriteClick(event, ${ad.id})" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-100">
-                                    <i class="${userFavorites.has(ad.id) ? 'fas fa-heart text-red-500' : 'far fa-heart text-gray-500'}"></i>
-                                    <span class="font-semibold">Add to Favorites</span>
-                                </button>
-                            </div>
+                            <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" alt="Illustration of items to sell" class="mx-auto mb-4 rounded-lg" width="300" height="200" loading="lazy" decoding="async">
+                            <h3 class="text-2xl font-bold">You haven't posted any ads yet</h3>
+                            <p class="text-gray-500 mt-2 mb-4">Let go of what you don't use anymore</p>
+                            <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-2 rounded-full font-semibold hover:bg-theme-accent-dark">Start Selling</button>
                         </div>
-                        <div class="mt-8 border-t pt-6">
-                            <h3 class="text-xl font-semibold mb-4">Description</h3>
-                            <p class="text-gray-700 leading-relaxed">${sanitizeHTML(ad.description)}</p>
-                        </div>
-                        <div class="mt-8 border-t pt-6">
-                            <h3 class="text-xl font-semibold mb-4">Similar Ads</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">${similarAdsHTML}</div>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML = pageHTML;
-            } catch(error) {
-                 console.error("Error fetching product details:", error);
-                 container.innerHTML = `<p class="text-center text-red-500">Could not load product details.</p>`;
+                    `;
+                    return;
+                }
+
+                adsGrid.innerHTML = ads.map(ad => createAdCard(ad, true)).join('');
+            } catch (error) {
+                console.error("Error fetching my ads:", error);
+                adsGrid.innerHTML = `<p class="col-span-full text-center text-red-500">Error loading your ads.</p>`;
             }
         }
 
@@ -2607,720 +2335,839 @@ try { window.supabase = supabase; } catch(e) {} // expose globally for auth flow
             container.innerHTML = `<div class="loading-container"><div class="loader"></div></div>`;
             try {
                 const { data: { user } } = await supabase.auth.getUser();
-                if (!user) throw new Error("User not logged in.");
-
-                const { data: ads, error } = await supabase.from('listings').select('*, cities(name)').eq('user_id', user.id).limit(6);
-                
+                if (!user) return;
+                const { data: ads, error } = await supabase.from('listings').select('*').eq('user_id', user.id);
                 if (error) throw error;
 
                 if (!ads || ads.length === 0) {
-                     container.innerHTML = `
-                          <div class="bg-white p-8 rounded-lg shadow-md text-center">
-                                <img src="https://placehold.co/300x200/F0F9FF/1a202c?text=Sell+Something" class="mx-auto mb-4" width="300" height="200" loading="lazy" decoding="async">
-                                <h3 class="text-2xl font-bold">You haven't listed anything yet</h3>
-                                <p class="text-gray-500 mb-6">Let go of what you don't use anymore</p>
-                                <button onclick="showSellModal()" class="bg-theme-accent text-white px-6 py-3 rounded-full font-semibold hover:bg-theme-accent-dark">Start selling</button>
-                          </div>
-                        `;
-                } else {
-                     const adsGridHTML = ads.map(ad => createAdCard(ad)).join('');
-                     container.innerHTML = `
-                          <div class="bg-white p-6 rounded-lg shadow-md">
-                                <div class="flex justify-between items-center mb-4">
-                                    <h3 class="text-xl font-bold">Your Active Ads</h3>
-                                    <a href="#" onclick="showMyAdsPage(event)" class="text-sm font-semibold text-theme-accent hover:underline">View All</a>
-                                </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    ${adsGridHTML}
-                                </div>
-                          </div>
-                        `;
+                     container.innerHTML = `<div class="bg-white p-6 rounded-lg shadow-md text-center"><h2 class="font-bold text-xl">No ads posted yet.</h2></div>`;
+                     return;
                 }
+
+                container.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h2 class="font-bold text-xl mb-4">Published Ads (${ads.length})</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            ${ads.map(ad => createAdCard(ad, false)).join('')}
+                        </div>
+                    </div>
+                `;
+
             } catch (error) {
-                console.error("Error rendering profile ads:", error);
-                 container.innerHTML = `<p class="text-center text-red-500">Could not load your ads.</p>`;
-            }
-        }
-
-        async function generateAdDescription(event) {
-            event.preventDefault();
-            const adTitle = document.getElementById('ad-title').value.trim();
-            const categorySelect = document.getElementById('category-select');
-            const categoryName = categorySelect.options[categorySelect.selectedIndex].text;
-            const descriptionTextarea = document.getElementById('ad-description');
-            const generateButton = event.target;
-
-            if (!adTitle) {
-                showToast('Please enter an Ad Title first to generate a description.', 'error');
-                return;
-            }
-
-            const originalButtonText = generateButton.innerHTML;
-            generateButton.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Generating...`;
-            generateButton.disabled = true;
-
-            try {
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
-
-                const systemPrompt = "You are an expert copywriter for a local online marketplace. Your goal is to write clear, friendly, and persuasive ad descriptions that help items sell quickly. Do not use markdown or formatting. Just provide the plain text for the description.";
-                const userQuery = `Write a short and appealing ad description for an item with the following details:\nCategory: ${categoryName}\nTitle: "${adTitle}"`;
-
-                const payload = {
-                    contents: [{ parts: [{ text: userQuery }] }],
-                    systemInstruction: {
-                        parts: [{ text: systemPrompt }]
-                    },
-                };
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-
-                const result = await response.json();
-                const candidate = result.candidates?.[0];
-                
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    const generatedText = candidate.content.parts[0].text;
-                    descriptionTextarea.value = generatedText;
-                    showToast('Description generated!', 'success');
-                } else {
-                    throw new Error('Could not parse AI response.');
-                }
-            } catch (error) {
-                console.error('Error generating ad description:', error);
-                showToast('AI analysis failed. Please fill in the details manually.', 'error');
-            } finally {
-                generateButton.innerHTML = originalButtonText;
-                generateButton.disabled = false;
-            }
-        }
-
-        let cameraStream = null;
-
-        async function openCamera(event) {
-            event.preventDefault();
-            const cameraView = document.getElementById('camera-view');
-            const video = document.getElementById('camera-stream');
-            cameraView.classList.remove('hidden');
-            try {
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                    video.srcObject = cameraStream;
-                } else {
-                    throw new Error('Camera not supported on this browser.');
-                }
-            } catch (err) {
-                console.error("Error accessing camera:", err);
-                showToast('Could not access camera. Please ensure permissions are granted.', 'error');
-                closeCamera();
+                console.error('Error fetching profile ads:', error);
+                container.innerHTML = `<p class="text-red-500 text-center">Could not load ads.</p>`;
             }
         }
         
-        function closeCamera(event) {
-            if(event) event.preventDefault();
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-            }
-            document.getElementById('camera-view').classList.add('hidden');
-        }
-
-        async function captureImage(event) {
-            event.preventDefault();
-            const video = document.getElementById('camera-stream');
-            const canvas = document.getElementById('camera-canvas');
-            const context = canvas.getContext('2d');
-            
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            const base64ImageData = canvas.toDataURL('image/jpeg');
-            stagedFiles.push({ type: 'base64', data: base64ImageData });
-            renderImagePreviews();
-            
-            closeCamera();
-            await analyzeImageWithAI(base64ImageData.split(',')[1]);
-        }
-
-        function dataURLtoFile(dataurl, filename) {
-            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-            while(n--){
-                u8arr[n] = bstr.charCodeAt(n);
-            }
-            return new File([u8arr], filename, {type:mime});
-        }
-        
-        async function analyzeImageWithAI(base64ImageData) {
-            showToast('🤖 AI is analyzing your image...', 'info');
-            
-            try {
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`;
-
-                const validCategories = ['cars', 'property', 'mobiles', 'bikes', 'electronics', 'commercial_vehicles', 'furniture', 'fashion', 'pets', 'services'];
-                const prompt = `Analyze this image of an item for sale. Provide a JSON object with 'category', 'title', and 'description'. The 'category' must be one of these exact values: ${validCategories.join(', ')}. The 'title' should be a short, catchy title. The 'description' should be a helpful summary.`;
-                
-                const payload = {
-                    contents: [{
-                        parts: [
-                            { text: prompt },
-                            { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
-                        ]
-                    }],
-                };
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-
-                const result = await response.json();
-                const candidate = result.candidates?.[0];
-                
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    const rawText = candidate.content.parts[0].text;
-                    const jsonText = rawText.replace(/```json\n?|\n?```/g, '').trim();
-                    const parsedJson = JSON.parse(jsonText);
-                    
-                    if (validCategories.includes(parsedJson.category)) {
-                        document.getElementById('category-select').value = parsedJson.category;
-                        updateAttributeFields();
-                    } else {
-                        console.warn(`AI suggested an invalid category: ${parsedJson.category}`);
-                    }
-                    document.getElementById('ad-title').value = parsedJson.title;
-                    document.getElementById('ad-description').value = parsedJson.description;
-                    showToast('✅ AI analysis complete!', 'success');
-                } else {
-                    throw new Error('Could not parse AI response.');
-                }
-            } catch (error) {
-                console.error('Error analyzing image with AI:', error);
-                showToast('AI analysis failed. Please fill in the details manually.', 'error');
-            }
-        }
-
-        // --- Location Functions ---
-        async function fetchAndPopulateLocations() {
-            try {
-                const { data: statesData, error: statesError } = await supabase.from('states').select('id, name').order('name');
-                if (statesError) throw statesError;
-                allStates = statesData;
-
-                const { data: citiesData, error: citiesError } = await supabase.from('cities').select('id, name, state_id').order('name');
-                if (citiesError) throw citiesError;
-                allCities = citiesData;
-
-                const stateSelect = document.getElementById('ad-state');
-                stateSelect.innerHTML = '<option value="">Select State</option>';
-                allStates.forEach(state => {
-                    stateSelect.innerHTML += `<option value="${state.id}">${state.name}</option>`;
-                });
-
-            } catch (error) {
-                console.error("Error fetching locations:", error);
-                showToast("Could not load location data from the database.", "error");
-            }
-        }
-
-        function populateCities(stateId) {
-            const citySelect = document.getElementById('ad-city');
-            citySelect.innerHTML = '<option value="">Select City</option>';
-            if (!stateId) return;
-
-            const filteredCities = allCities.filter(city => city.state_id == stateId);
-            
-            if (filteredCities.length === 0) {
-                citySelect.innerHTML += `<option value="other">Other / Not Listed</option>`;
-                return;
-            }
-
-            const uniqueCities = [...new Map(filteredCities.map(item => [item['id'], item])).values()];
-
-            uniqueCities.forEach(city => {
-                citySelect.innerHTML += `<option value="${city.id}">${city.name}</option>`;
-            });
-        }
-        
-        function populateFilterCities(stateId) {
-            const citySelect = document.getElementById('filter-city');
-            citySelect.innerHTML = '<option value="">All Cities</option>';
-            if (!stateId) return;
-
-            const filteredCities = allCities.filter(city => city.state_id == stateId);
-
-            if (filteredCities.length === 0) {
-                return;
-            }
-
-            const uniqueCities = [...new Map(filteredCities.map(item => [item['id'], item])).values()];
-            
-            uniqueCities.forEach(city => {
-                citySelect.innerHTML += `<option value="${city.id}">${city.name}</option>`;
-            });
-        }
-        
-        // --- CUSTOM CONFIRM MODAL ---
-        let confirmCallback = null;
-        function showConfirmModal(title, message, onConfirm) {
-            document.getElementById('confirm-title').innerText = title;
-            document.getElementById('confirm-message').innerText = message;
-            confirmCallback = onConfirm;
-            document.getElementById('confirmModal').classList.remove('hidden');
-        }
-
-        function hideConfirmModal() {
-            document.getElementById('confirmModal').classList.add('hidden');
-            confirmCallback = null;
-        }
-
-        // --- EXPOSE FUNCTIONS TO GLOBAL SCOPE ---
-        const functionsToExpose = {
-            showHomepage, showListingPage, showLoginModal, showSellModal, toggleNotifications,
-            markNotificationsAsRead, showUserProfilePage, showMyAdsPage, showPlaceholderPage,
-            showHelpPage, logout, searchFromHome, goBack, showComingSoonPage, showProductDetailPage,
-            hideSellModal, hideLoginModal, showTncModal, hideTncModal, updateAttributeFields,
-            handlePropertyTypeChange, showReraInfo, togglePostButton, openChatWindow,
-            closeChatWindow, toggleMute, handleMagicLinkLogin, loginWithGoogle,
-            handleProfilePictureChange, showEditProfilePage,
-            handleProfileUpdate, handleEditAd, handleDeleteAd,
-            hideAdSuccessModal, handleFileUpload, fetchAndDisplayMyAds, generateAdDescription,
-            openCamera, closeCamera, captureImage, populateCities, populateFilterCities, applyFilters, resetFilters,
-            handleFavoriteClick, showMyFavoritesPage, showMyChatsPage, openChatFromListPage
-        };
-        Object.keys(functionsToExpose).forEach(funcName => {
-            window[funcName] = functionsToExpose[funcName];
-        });
-
-
-        // --- Initial Load ---
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Disable right-click context menu to prevent "View Page Source"
-            document.addEventListener('contextmenu', event => event.preventDefault());
-
-            document.getElementById('adForm').addEventListener('submit', handleAdSubmit);
-            
-            document.getElementById('header-search-input').addEventListener('keypress', async function(e) {
-                if (e.key === 'Enter') {
-                    const keyword = e.target.value.trim();
-                    if (keyword) {
-                        e.preventDefault(); 
-                        await showListingPage(null, 'all', { keyword: keyword }); 
-                    }
-                }
-            });
-
-            document.getElementById('chat-form').addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const input = document.getElementById('chat-input');
-                const messageText = input.value.trim();
-                const { data: { user } } = await supabase.auth.getUser();
-
-                if (messageText && currentRoomId && user) {
-                    appendMessage(messageText, 'sent', false);
-                    input.value = '';
-
-                    try {
-                        const { error } = await supabase.from('chat_messages').insert({
-                            room_id: currentRoomId,
-                            sender_id: user.id,
-                            receiver_id: currentReceiverId,
-                            content: messageText
-                        });
-                        if (error) throw error;
-                    } catch (error) {
-                         console.error("Error sending message:", error);
-                         showToast("Message failed to send.", "error");
-                    }
-                }
-            });
-            
-            document.getElementById('confirm-ok-btn').addEventListener('click', () => {
-                if (typeof confirmCallback === 'function') {
-                    confirmCallback();
-                }
-                hideConfirmModal();
-            });
-            document.getElementById('confirm-cancel-btn').addEventListener('click', hideConfirmModal);
-
-            loadCategories();
-            await fetchAndPopulateLocations();
-        });
-
     </script>
-    <!-- RUM / Web Vitals Tracking -->
-    <script type="module">
-        import { onCLS, onINP, onLCP } from 'https://unpkg.com/web-vitals@4?module';
-
-        function logVitals({ name, value, id }) {
-            console.log(`[Web Vitals] ${name}:`, { value: `${Math.round(value)}ms`, id });
-        }
-
-        onCLS(logVitals);
-        onINP(logVitals);
-        onLCP(logVitals);
-    </script>
-<script type="module">
-  const toast = (m,t='info') => (typeof window.showToast==='function'? window.showToast(m,t) : console.log(`[toast:${t}]`, m));
-
-  // 1) Remove category words from the logged-out header nav
-  (function stripHeaderCategories(){
-    const nav = document.querySelector('#header-logged-out .ml-10');
-    if(nav) nav.remove();
-  })();
-
-  // 2) Ensure exactly ONE "Register new user" button on the homepage (hero section)
-  (function ensureSingleHomeRegisterBtn(){
-    const hero = document.querySelector('#homepage .hero-section .container');
-    if(!hero) return;
-    document.querySelectorAll('#tg-register-home-btn').forEach((el,i)=>{ if(i>0) el.remove(); });
-    if(!document.getElementById('tg-register-home-btn')){
-      const btn = document.createElement('button');
-      btn.id = 'tg-register-home-btn';
-      btn.type = 'button';
-      btn.className = 'tg-btn';
-      btn.textContent = '📝 Register new user';
-      btn.addEventListener('click',()=> openLogin(true));
-      hero.appendChild(btn);
-    }
-  })();
-
-  // 3) Convert the existing #loginModal into tabbed Sign In / Register
-  (function embedRegisterInsideLogin(){
-    const modal = document.getElementById('loginModal');
-    if(!modal) return;
-    const host = modal.querySelector('#auth-form');
-    if(!host || host.dataset.tgUpgraded==='1') return;
-
-    const signinHTML = host.innerHTML; // keep your current sign-in UI
-
-    host.innerHTML = `
-      <div class="tg-tabs" role="tablist">
-        <button id="tg-tab-signin" class="tg-tab" role="tab" aria-selected="true" aria-controls="tg-pane-signin">Sign In</button>
-        <button id="tg-tab-register" class="tg-tab" role="tab" aria-selected="false" aria-controls="tg-pane-register">Register</button>
-      </div>
-      <div id="tg-pane-signin" class="tg-pane active" role="tabpanel"></div>
-      <div id="tg-pane-register" class="tg-pane" role="tabpanel">
-        <form id="tg-register-form" novalidate>
-          <div class="tg-row">
-            <div class="tg-field"><label for="tg-first">First name</label><input id="tg-first" name="firstName" type="text" placeholder="Priya" autocomplete="given-name" required></div>
-            <div class="tg-field"><label for="tg-last">Last name</label><input id="tg-last" name="lastName" type="text" placeholder="Sharma" autocomplete="family-name" required></div>
-          </div>
-          <div class="tg-field"><label for="tg-email">Email address</label><input id="tg-email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required></div>
-          <div class="tg-row">
-            <div class="tg-field">
-              <label for="tg-pass">Password</label>
-              <input id="tg-pass" name="password" type="password" placeholder="••••••••••" autocomplete="new-password" required>
-              <div class="tg-hint">Use at least 10 characters including uppercase, lowercase, a number, and a special character.</div>
-              <ul class="tg-checks" aria-live="polite">
-                <li><span id="tg-ck-len" class="tg-tick">✗</span><span>≥ 10 characters</span></li>
-                <li><span id="tg-ck-up" class="tg-tick">✗</span><span>Contains an uppercase letter (A–Z)</span></li>
-                <li><span id="tg-ck-low" class="tg-tick">✗</span><span>Contains a lowercase letter (a–z)</span></li>
-                <li><span id="tg-ck-num" class="tg-tick">✗</span><span>Contains a number (0–9)</span></li>
-                <li><span id="tg-ck-spl" class="tg-tick">✗</span><span>Contains a special character (!@#$…)</span></li>
-              </ul>
-            </div>
-            <div class="tg-field">
-              <label for="tg-confirm">Confirm password</label>
-              <input id="tg-confirm" name="confirm" type="password" placeholder="Repeat password" autocomplete="new-password" required>
-              <div id="tg-confirm-msg" class="tg-hint">Must match the password.</div>
-            </div>
-          </div>
-          <div class="tg-row" style="align-items:center;">
-            <button id="tg-submit" type="submit" class="tg-btn" style="justify-self:flex-end;background:linear-gradient(180deg,#22c55e,#16a34a);border:none;box-shadow:0 6px 24px rgba(22,163,74,.35);">Send confirmation email</button>
-          </div>
-          <div id="tg-form-msg" class="tg-hint" aria-live="polite"></div>
-        </form>
-      </div>`;
-
-    // Put your original sign-in markup back in the first pane
-    modal.querySelector('#tg-pane-signin').innerHTML = signinHTML;
-
-    // Tabs
-    const tabSignIn = modal.querySelector('#tg-tab-signin');
-    const tabReg = modal.querySelector('#tg-tab-register');
-    const paneSignIn = modal.querySelector('#tg-pane-signin');
-    const paneReg = modal.querySelector('#tg-pane-register');
-    function selectTab(name){
-      const reg = name==='register';
-      tabSignIn.setAttribute('aria-selected', String(!reg));
-      tabReg.setAttribute('aria-selected', String(reg));
-      paneSignIn.classList.toggle('active', !reg);
-      paneReg.classList.toggle('active', reg);
-    }
-    tabSignIn.addEventListener('click',()=>selectTab('signin'));
-    tabReg.addEventListener('click',()=>selectTab('register'));
-    host.dataset.tgUpgraded='1';
-
-    // Register handlers
-    const formEl = modal.querySelector('#tg-register-form');
-    const emailEl = modal.querySelector('#tg-email');
-    const firstEl = modal.querySelector('#tg-first');
-    const lastEl = modal.querySelector('#tg-last');
-    const passEl = modal.querySelector('#tg-pass');
-    const confEl = modal.querySelector('#tg-confirm');
-    const submitBtn = modal.querySelector('#tg-submit');
-    const formMsg = modal.querySelector('#tg-form-msg');
-    const cmsg = modal.querySelector('#tg-confirm-msg');
-    const ck = { len: modal.querySelector('#tg-ck-len'), up: modal.querySelector('#tg-ck-up'), low: modal.querySelector('#tg-ck-low'), num: modal.querySelector('#tg-ck-num'), spl: modal.querySelector('#tg-ck-spl') };
-    function tick(el, ok){ el.classList.toggle('tg-ok', ok); el.textContent = ok ? '✓' : '✗'; }
-    const tests = { len:v=>v.length>=10, up:v=>/[A-Z]/.test(v), low:v=>/[a-z]/.test(v), num:v=>/\d/.test(v), spl:v=>/[^A-Za-z0-9]/.test(v) };
-    function validateUI(){
-      const v=passEl.value||'';
-      tick(ck.len, tests.len(v)); tick(ck.up, tests.up(v)); tick(ck.low, tests.low(v)); tick(ck.num, tests.num(v)); tick(ck.spl, tests.spl(v));
-      const allOk = tests.len(v)&&tests.up(v)&&tests.low(v)&&tests.num(v)&&tests.spl(v);
-      const match = v && v === (confEl.value||'');
-      cmsg.textContent = match ? 'Passwords match ✓' : 'Must match the password.';
-      cmsg.className = match ? 'tg-success' : 'tg-hint';
-      submitBtn.disabled = !(allOk && match && emailEl.value && firstEl.value && lastEl.value);
-    }
-    [emailEl, firstEl, lastEl, passEl, confEl].forEach(el=> el.addEventListener('input', validateUI));
-
-    formEl.addEventListener('submit', async (e)=>{
-      e.preventDefault(); validateUI();
-      const v = passEl.value, addr = (emailEl.value||'').trim(), fname=(firstEl.value||'').trim(), lname=(lastEl.value||'').trim();
-      const ok = tests.len(v)&&tests.up(v)&&tests.low(v)&&tests.num(v)&&tests.spl(v)&&(v===confEl.value);
-      if(!ok){ formMsg.className='tg-error'; formMsg.textContent='Please meet all password rules and ensure the passwords match.'; return; }
-      if(!window.supabase){ formMsg.className='tg-error'; formMsg.textContent='Backend not initialized. Supabase client missing on window.'; return; }
-      formMsg.className='tg-hint'; formMsg.textContent='Creating account and sending confirmation email…'; submitBtn.disabled=true;
-      const { error } = await window.supabase.auth.signUp({
-        email: addr,
-        password: v,
-        options: { emailRedirectTo: window.location.href, data: { first_name: fname, last_name: lname } }
-      });
-      if(error){ formMsg.className='tg-error'; formMsg.textContent=error.message; submitBtn.disabled=false; }
-      else { formMsg.className='tg-success'; formMsg.textContent='Confirmation email sent! Check your inbox to complete sign-up.'; toast('Confirmation email sent! Please check your inbox.','success'); setTimeout(()=>{ formEl.reset(); Object.values(ck).forEach(e=>tick(e,false)); submitBtn.disabled=false; selectTab('signin'); }, 1200); }
-    });
-
-    // helper so the home button can deep-link to register tab
-    window.__tgOpenRegisterTab = function(){
-      const show = (typeof window.showLoginModal==='function') ? window.showLoginModal : (e=>{ if(modal) modal.classList.remove('hidden'); });
-      show(); selectTab('register');
-    }
-  })();
-
-  function openLogin(registerTab=false){
-    if(typeof window.showLoginModal==='function') window.showLoginModal();
-    if(registerTab) setTimeout(()=>{ if(typeof window.__tgOpenRegisterTab==='function') window.__tgOpenRegisterTab(); },0);
-  }
-</script>
-
-<script>
-// -- Remove magic link UI & block any remaining triggers --
-document.addEventListener('DOMContentLoaded', function(){
-  document.querySelectorAll('[data-magiclink], .magic-link, [data-action="magic-link"]').forEach(function(el){
-    el.remove();
-  });
-});
-document.addEventListener('click', function(e){
-  const trg = e.target.closest('[data-magiclink], .magic-link, [data-action="magic-link"]');
-  if (trg) { e.preventDefault(); e.stopPropagation(); }
-}, true);
-</script>
-
-
-<script>
-(function(){
-  function $(sel, ctx){ return (ctx||document).querySelector(sel); }
-  function $all(sel, ctx){ return Array.from((ctx||document).querySelectorAll(sel)); }
-
-  // Prevent '#' anchors causing freezes or weird routing
-  document.addEventListener('click', function(e){
-    const a = e.target.closest('a[href]'); if (!a) return;
-    const href = a.getAttribute('href'); if (!href) return;
-    if (href === '#' || href === '#!') { e.preventDefault(); a.setAttribute('href','javascript:void(0)'); }
-  }, true);
-
-  // Ensure Supabase exists (fallback init if needed)
-  function ensureClient(){
-    if (window.supabase) return true;
-    try {
-      const url = window.SUPABASE_URL || (typeof SUPABASE_URL !== 'undefined' ? SUPABASE_URL : null);
-      const anon = window.SUPABASE_ANON_KEY || (typeof SUPABASE_ANON_KEY !== 'undefined' ? SUPABASE_ANON_KEY : null);
-      if (typeof createClient === 'function' && url && anon) {
-        window.supabase = createClient(url, anon);
-        return true;
-      }
-    } catch(e){}
-    console.warn('Supabase not initialized. Check SUPABASE_URL and SUPABASE_ANON_KEY.');
-    return false;
-  }
-
-  // UI sync based on session only
-  async function syncAuthUI(){
-    try{
-      if (!ensureClient()) return;
-      const { data: { session } } = await supabase.auth.getSession();
-      const loggedIn = !!session?.user;
-      document.body.classList.toggle('user-is-logged-in', loggedIn);
-
-      // Hide/Show elements if your markup uses these classes/attributes
-      $all('[data-auth="logged-in"]').forEach(n => n.style.display = loggedIn ? '' : 'none');
-      $all('[data-auth="logged-out"]').forEach(n => n.style.display = loggedIn ? 'none' : '');
-
-      // Header username text if present
-      const uTxt = $('[data-user-name]');
-      if (uTxt) uTxt.textContent = loggedIn ? (session.user.email || 'User') : '';
-
-      // Ensure buttons are always interactive
-      $all('button, a').forEach(n => n.style.pointerEvents = 'auto');
-    }catch(err){ console.warn('syncAuthUI failed:', err); }
-  }
-
-  // Robust Logout
-  async function doLogout(e){
-    if (e) { e.preventDefault(); e.stopPropagation(); }
-    try {
-      if (!ensureClient()) return;
-      await supabase.auth.signOut();
-    } catch(err){ console.error('Logout error', err); }
-    finally{
-      await syncAuthUI();
-      // Soft refresh to clear any stale event handlers without blanking SPA
-      try { location.reload(); } catch(_){}
-    }
-  }
-
-  // Robust Login (Email+Password) via a simple inline modal if your site doesn't show one
-  function ensureLoginUI(){
-    if ($('#tg-auth-modal')) return; // don't duplicate if you already have a modal elsewhere
-    const div = document.createElement('div');
-    div.innerHTML = `
-      <div id="tg-auth-modal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);z-index:99999;">
-        <div role="dialog" aria-labelledby="tg-auth-title" style="width:92vw;max-width:420px;background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);overflow:hidden;">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(0,0,0,.08)">
-            <h3 id="tg-auth-title" style="margin:0;font-size:1.05rem">Sign in</h3>
-            <button id="tg-auth-close" aria-label="Close" style="background:transparent;border:0;font-size:20px;cursor:pointer">✕</button>
-          </div>
-          <div style="padding:14px;display:grid;gap:10px">
-            <label>Email <input id="tg-auth-email" type="email" autocomplete="email" required style="width:100%;height:38px;padding:0 10px;border:1px solid rgba(0,0,0,.2);border-radius:8px"></label>
-            <label>Password <input id="tg-auth-pass" type="password" autocomplete="current-password" required style="width:100%;height:38px;padding:0 10px;border:1px solid rgba(0,0,0,.2);border-radius:8px"></label>
-            <div id="tg-auth-msg" style="font-size:.88rem;opacity:.9"></div>
-            <button id="tg-auth-email-btn" style="height:40px;border-radius:8px;border:0;background:#111;color:#fff;font-weight:600;cursor:pointer">Sign in</button>
-            <button id="tg-auth-google-btn" style="height:40px;border-radius:8px;border:1px solid rgba(0,0,0,.2);background:#fff;font-weight:600;cursor:pointer">Continue with Google</button>
-            <div style="font-size:.84rem;opacity:.8">New user? Use the Register button to sign up.</div>
-          </div>
-        </div>
-      </div>`;
-    document.body.appendChild(div.firstElementChild);
-    $('#tg-auth-close').addEventListener('click', function(e){ e.preventDefault(); $('#tg-auth-modal').style.display='none'; });
-  }
-
-  function openLogin(){
-    ensureLoginUI();
-    const modal = $('#tg-auth-modal');
-    if (!modal) return;
-    // Hide any registration overlay behind
-    const regModal = document.querySelector('#registrationModal, .registration-modal, .modal.register, .modal[data-modal="register"]');
-    if (regModal) { regModal.style.display='none'; regModal.classList.add('hidden'); }
-    modal.style.display = 'flex';
-    const email = $('#tg-auth-email'); if (email) email.focus();
-  }
-
-  async function signInEmailPass(){
-    const msg = $('#tg-auth-msg'); if (msg) { msg.textContent=''; msg.style.color='inherit'; }
-    if (!ensureClient()){ if (msg){ msg.style.color='#b00020'; msg.textContent='Backend not initialized. Check Supabase keys.'; } return; }
-    const email = ($('#tg-auth-email')?.value||'').trim();
-    const password = $('#tg-auth-pass')?.value||'';
-    if (!email || !password){ if (msg){ msg.style.color='#b00020'; msg.textContent='Enter email and password.'; } return; }
-    try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      if (msg){ msg.style.color='#0a7c2f'; msg.textContent='Signed in.'; }
-      $('#tg-auth-modal').style.display='none';
-      await syncAuthUI();
-      location.reload();
-    } catch(err){
-      console.error('Sign in failed:', err);
-      if (msg){ msg.style.color='#b00020'; msg.textContent=err.message || 'Sign in failed'; }
-    }
-  }
-
-  async function signInGoogle(){
-    const msg = $('#tg-auth-msg'); if (msg) { msg.textContent=''; msg.style.color='inherit'; }
-    if (!ensureClient()){ if (msg){ msg.style.color='#b00020'; msg.textContent='Backend not initialized. Check Supabase keys.'; } return; }
-    try {
-      const redirectTo = (location.origin || '') + '/';
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
-      if (error) throw error;
-      // Supabase will redirect; no freezing
-    } catch(err){
-      console.error('Google OAuth error:', err);
-      if (msg){ msg.style.color='#b00020'; msg.textContent=err.message || 'Google login failed'; }
-    }
-  }
-
-  // Registration submit -> create user + confirmation email
-  function wireRegistrationSubmit(){
-    const form = $('form#register, form[name="register"], .register-form');
-    if (!form || form.__tgWired) return;
-    form.__tgWired = true;
-    form.addEventListener('submit', async function(e){
-      if (!ensureClient()){ e.preventDefault(); alert('Backend not initialized. Check Supabase keys.'); return; }
-      const emailEl = form.querySelector('input[name="email"], input[type="email"]');
-      const passEl  = form.querySelector('input[name="password"], input[type="password"]');
-      if (!(emailEl && passEl)) return; // let native handler proceed if unknown form
-      const email = (emailEl.value||'').trim();
-      const password = passEl.value||'';
-      if (!email || !password) return;
-      e.preventDefault();
-      try {
-        const redirectTo = (location.origin || '') + '/';
-        const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo } });
-        if (error) throw error;
-        alert('Confirmation email requested. Please check your inbox.');
-      } catch(err){
-        console.error('Registration error:', err);
-        alert(err.message || 'Registration failed');
-      }
-    }, true);
-  }
-
-  // Attach login/logout buttons to correct handlers
-  function wireHeaderAuth(){
-    // Login
-    const loginBtn = $('#loginBtn, .login-btn, a[data-action="login"], button[data-action="login"]') ||
-      $all('a,button').find(n => /(^|\s)login(\s|$)/i.test(n.textContent||''));
-    if (loginBtn) {
-      if (loginBtn.tagName === 'A') loginBtn.setAttribute('href', 'javascript:void(0)');
-      loginBtn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); openLogin(); }, false);
-    }
-    // Logout
-    const logoutBtn = $('#logoutBtn, .logout-btn, a[data-action="logout"], button[data-action="logout"]');
-    if (logoutBtn) {
-      if (logoutBtn.tagName === 'A') logoutBtn.setAttribute('href', 'javascript:void(0)');
-      logoutBtn.addEventListener('click', doLogout, false);
-    }
-  }
-
-  // Keep UI responsive; never leave overlays blocking clicks
-  function clearOverlays(){
-    $all('.overlay, .modal-backdrop').forEach(el => { el.style.pointerEvents='none'; });
-  }
-
-  // Init
-  document.addEventListener('DOMContentLoaded', function(){
-    wireHeaderAuth();
-    wireRegistrationSubmit();
-    syncAuthUI();
-    clearOverlays();
-  });
-  if (window.supabase && typeof supabase.auth?.onAuthStateChange === 'function') {
-    supabase.auth.onAuthStateChange((_e, _s) => { syncAuthUI(); });
-  }
-})();
-</script>
-
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- SEO and Accessibility: Added a descriptive meta description -->
+    <meta name="description" content="Find the best local deals on cars, mobiles, property, and more on TradeGinger. Buy and sell used goods in your community safely and easily.">
+    
+    <!-- Performance: Preload critical resources -->
+    <link rel="preload" href="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=85&w=1200&auto=format&fit=crop" as="image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 
+    <!-- A more permissive Content-Security-Policy to ensure all external resources load correctly -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com https://unpkg.com https://*.supabase.co;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        img-src 'self' data: blob: https://images.unsplash.com https://placehold.co https://www.google.com https://res.cloudinary.com;
+        connect-src 'self' https://*.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://*.supabase.co;
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+        frame-src 'none';
+        frame-ancestors 'none';
+    ">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeGinger - Buy & Sell Locally</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Performance: Asynchronously load non-critical CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    
+    <!-- Performance: Defer non-critical JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" defer></script>
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7fafc;
+        }
+        .hero-section {
+            background: linear-gradient(rgba(26, 32, 44, 0.7), rgba(26, 32, 44, 0.7)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=85&w=1200&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            overflow: hidden;
+        }
+        .product-card {
+             background-color: white;
+             border: 1px solid #e2e8f0;
+             transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #b79438;
+        }
+        #sellModal .modal-content::-webkit-scrollbar, .modal-backdrop .modal-content::-webkit-scrollbar, #tncModal .modal-content::-webkit-scrollbar, #chat-messages::-webkit-scrollbar, #notification-list::-webkit-scrollbar { width: 8px; }
+        #sellModal .modal-content::-webkit-scrollbar-track, .modal-backdrop .modal-content::-webkit-scrollbar-track, #tncModal .modal-content::-webkit-scrollbar-track, #chat-messages::-webkit-scrollbar-track, #notification-list::-webkit-scrollbar-track { background: #f1f1f1; }
+        #sellModal .modal-content::-webkit-scrollbar-thumb, .modal-backdrop .modal-content::-webkit-scrollbar-thumb, #tncModal .modal-content::-webkit-scrollbar-thumb, #chat-messages::-webkit-scrollbar-thumb, #notification-list::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        #sellModal .modal-content::-webkit-scrollbar-thumb:hover, .modal-backdrop .modal-content::-webkit-scrollbar-thumb:hover, #tncModal .modal-content::-webkit-scrollbar-thumb:hover, #notification-list::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        .profile-dropdown, .category-dropdown, #notification-dropdown { display: none; }
+        .profile-button:focus-within .profile-dropdown, .category-item:hover > .category-dropdown { display: block; }
+
+        .theme-primary { color: #1a202c; }
+        .theme-accent { color: #b79438; }
+        .bg-theme-primary { background-color: #1a202c; }
+        .hover\:bg-theme-primary-dark:hover { background-color: #11151c; }
+        .bg-theme-accent { background-color: #b79438; }
+        .hover\:bg-theme-accent-dark:hover { background-color: #a08130; }
+        .text-theme-accent { color: #b79438; }
+        .hover\:text-theme-accent:hover { color: #a08130; }
+        .focus\:ring-theme-accent:focus { --tw-ring-color: #b79438; }
+        .border-theme-accent { border-color: #b79438; }
+        
+        .beer-cap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background-color: #1a202c;
+            color: #b79438;
+            border-radius: 50%;
+            font-size: 1rem;
+            box-shadow: 0 0 0 2px #f8f9fa, 0 0 0 3px #aaa, inset 0 1px 3px rgba(0,0,0,0.4);
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .beer-cap:hover {
+            transform: scale(1.1) rotate(5deg) !important;
+        }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] summary .accordion-icon { transform: rotate(180deg); }
+        .notification-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: red;
+        }
+        #toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+        }
+        #toast-notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -10px);
+        }
+        .toast-success { background-color: #28a745; }
+        .toast-error { background-color: #dc3545; }
+        .toast-info { background-color: #17a2b8; }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #b79438;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            width: 100%;
+        }
+
+        #header-logged-in { display: none; }
+        #header-logged-out { display: block; }
+        body.user-is-logged-in #header-logged-in { display: block; }
+        body.user-is-logged-in #header-logged-out { display: none; }
+
+        /* --- New Auth Modal Styles --- */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 60;
+            transition: opacity 0.3s ease;
+        }
+        @keyframes fade-in-down {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-down {
+            animation: fade-in-down 0.3s ease-out;
+        }
+        .error-message {
+            color: #ef4444; /* red-500 */
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 0.25rem;
+            min-height: 1rem;
+        }
+        .password-container {
+            position: relative;
+        }
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280; /* gray-500 */
+        }
+        .password-toggle:hover {
+            color: #1f2937; /* gray-800 */
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header id="header-logged-out" class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#" onclick="showHomepage(event)" class="text-2xl font-bold theme-primary">TradeGinger</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#" onclick="showLoginModal(event)" class="text-sm font-medium text-gray-700 hover:text-theme-accent">Login</a>
+                    <a href="#" onclick="showRegisterModal(event)" class="text-sm font-bold text-white bg-theme-accent hover:bg-theme-accent-dark px-3 py-1.5 rounded-md">Register</a>
+                    <button onclick="showSellModal()" class="flex items-center bg-theme-accent text-white px-4 py-2 rounded-full shadow-lg hover:bg-theme-accent-dark transition duration-300">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        SELL
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <header id="header-logged-in" class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-8">
+                    <a href="#" onclick="showHomepage(event)" class="text-2xl font-bold theme-primary">TradeGinger</a>
+                    <a href="#" onclick="showHomepage(event)" class="text-xl text-gray-500 hover:text-theme-accent" title="Home">
+                        <i class="fas fa-home"></i>
+                    </a>
+                    <div class="hidden md:flex items-center border-2 rounded-full p-1 w-96">
+                        <i class="fas fa-search text-gray-400 mx-3"></i>
+                        <input id="header-search-input" type="text" placeholder="Search for cars, mobiles..." class="w-full bg-transparent focus:outline-none text-sm" autocomplete="off">
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                     <button onclick="showMyChatsPage(event)" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700" title="My Chats">
+                         <i class="fas fa-comment-dots text-xl"></i>
+                         <span id="chat-notification-dot" class="hidden notification-dot"></span>
+                     </button>
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700">
+                            <i class="far fa-bell text-xl"></i>
+                            <span id="main-notification-dot" class="hidden notification-dot"></span>
+                        </button>
+                        <div id="notification-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50 overflow-hidden">
+                            <div class="p-4 font-bold border-b flex justify-between items-center">
+                                <span>Notifications</span>
+                                <a href="#" onclick="markNotificationsAsRead(event, true)" class="text-xs font-normal text-theme-accent hover:underline">Mark all as read</a>
+                            </div>
+                            <div id="notification-list" class="divide-y max-h-80 overflow-y-auto">
+                                <p id="no-notifications-message" class="p-4 text-sm text-gray-500 text-center hidden">You have no new notifications.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative profile-button">
+                        <button class="flex items-center space-x-2">
+                            <img id="header-profile-pic" class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" alt="User profile" width="32" height="32">
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="profile-dropdown absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-50 overflow-hidden">
+                            <div class="p-4">
+                                <div class="flex items-center gap-3">
+                                    <img id="dropdown-profile-pic" class="h-12 w-12 rounded-full object-cover" src="https://placehold.co/48x48/0A2342/D4AF37?text=U" alt="User profile" width="48" height="48">
+                                    <div>
+                                        <p id="dropdown-username" class="font-semibold text-gray-800">Unknown</p>
+                                        <a href="#" onclick="showUserProfilePage(event)" class="text-sm text-theme-accent hover:underline">View and edit profile</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <nav class="border-t border-gray-100">
+                                <a href="#" onclick="showMyAdsPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-ad w-5 text-center text-gray-500"></i> My ADS</a>
+                                <a href="#" onclick="showMyFavoritesPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-heart w-5 text-center text-gray-500"></i> My Favorites</a>
+                                <a href="#" onclick="showMyChatsPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-comments w-5 text-center text-gray-500"></i> My Chats</a>
+                            </nav>
+                            <div class="border-t border-gray-100">
+                                <a href="#" onclick="showHelpPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-question-circle w-5 text-center text-gray-500"></i> Help</a>
+                                <a href="#" onclick="logout(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-sign-out-alt w-5 text-center text-gray-500"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="showSellModal()" class="flex items-center bg-theme-accent text-white px-4 py-2 rounded-full shadow-lg hover:bg-theme-accent-dark transition duration-300"><i class="fas fa-plus-circle mr-2"></i>SELL</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div id="homepage">
+        <section class="hero-section text-white py-20">
+            <div class="absolute top-4 left-4 flex space-x-3 z-20">
+                <a href="#" onclick="showListingPage(event, 'cars')" class="beer-cap" style="transform: rotate(-15deg);"><i class="fas fa-car"></i></a>
+                <a href="#" onclick="showListingPage(event, 'mobiles')" class="beer-cap" style="transform: rotate(10deg);"><i class="fas fa-mobile-alt"></i></a>
+                <a href="#" onclick="showListingPage(event, 'property')" class="beer-cap" style="transform: rotate(8deg);"><i class="fas fa-building"></i></a>
+                <a href="#" onclick="showListingPage(event, 'furniture')" class="beer-cap" style="transform: rotate(-12deg);"><i class="fas fa-couch"></i></a>
+                <a href="#" onclick="showListingPage(event, 'bikes')" class="beer-cap" style="transform: rotate(15deg);"><i class="fas fa-motorcycle"></i></a>
+                <a href="#" onclick="showListingPage(event, 'pets')" class="beer-cap" style="transform: rotate(-5deg);"><i class="fas fa-dog"></i></a>
+            </div>
+            
+            <div class="container mx-auto px-4 text-center relative z-10">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-4">TradeGinger</h1>
+                <p class="text-lg md:text-xl mb-8">Find the best deals near you</p>
+                <div class="max-w-2xl mx-auto bg-white rounded-full p-2 flex items-center shadow-2xl">
+                    <div class="flex-grow flex items-center">
+                         <i class="fas fa-search text-gray-400 mx-3"></i>
+                        <input id="hero-search-input" type="text" placeholder="Search for anything... (e.g., 'iPhone in Mumbai')" class="w-full bg-transparent text-gray-700 focus:outline-none" autocomplete="off">
+                    </div>
+                    <button onclick="searchFromHome(event)" class="bg-theme-accent text-white rounded-full px-6 py-3 font-semibold hover:bg-theme-accent-dark transition duration-300 flex-shrink-0">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </section>
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <section class="mb-12">
+                <h2 class="text-3xl font-bold mb-8 text-left text-gray-800">Browse by Category</h2>
+                <div class="flex flex-col gap-10 md:w-1/2">
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-semibold mb-4 theme-primary text-left">Marketplace</h3>
+                        <ul class="flex flex-wrap items-center gap-3">
+                            <li><a href="#" onclick="showListingPage(event, 'mobiles')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-mobile-alt text-theme-accent"></i><span>Mobiles</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'electronics')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-tv text-theme-accent"></i><span>Electronics</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'furniture')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-couch text-theme-accent"></i><span>Furniture</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'fashion')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-tshirt text-theme-accent"></i><span>Fashion</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'pets')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-dog text-theme-accent"></i><span>Pets</span></a></li>
+                        </ul>
+                    </div>
+                     <div class="space-y-4 md:ml-8">
+                        <h3 class="text-xl font-semibold mb-4 theme-primary text-left">Vehicles</h3>
+                        <ul class="flex flex-wrap items-center gap-3">
+                            <li><a href="#" onclick="showListingPage(event, 'cars')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-car text-theme-accent"></i><span>Cars</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'bikes')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-motorcycle text-theme-accent"></i><span>Bikes</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'commercial_vehicles')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-truck text-theme-accent"></i><span>Commercial</span></a></li>
+                        </ul>
+                    </div>
+                     <div class="space-y-4 md:ml-16">
+                        <h3 class="text-xl font-semibold mb-4 theme-primary text-left">Real Estate</h3>
+                        <ul class="flex flex-wrap items-center gap-3">
+                            <li><a href="#" onclick="showListingPage(event, 'property')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-building text-theme-accent"></i><span>For Sale</span></a></li>
+                            <li><a href="#" onclick="showListingPage(event, 'property')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-sign text-theme-accent"></i><span>For Rent</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Other Page Divs -->
+    <div id="listingpage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
+    <div id="helppage" class="hidden"><main class="container mx-auto p-4"><h1>Help Page</h1></main></div>
+    <div id="placeholderpage" class="hidden"><main class="container mx-auto p-4"><h1>Placeholder Page</h1></main></div>
+    <div id="comingsoonpage" class="hidden"><main class="container mx-auto p-4"><h1>Coming Soon</h1></main></div>
+    <div id="productdetailpage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
+    <div id="myadspage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
+    <div id="userprofilepage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
+    <div id="editprofilepage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
+    <div id="myfavoritespage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
+    <div id="mychatspage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
+
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div><h3 class="font-bold mb-4">TradeGinger</h3><ul><li class="mb-2"><a href="mailto:Sales@tradeginger.com" class="hover:text-theme-accent">Contact us : Sales@tradeginger.com</a></li><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Legal & Privacy</a></li></ul></div>
+                <div><h3 class="font-bold mb-4">Follow Us</h3>
+                    <img src="https://res.cloudinary.com/dcxhenppn/image/upload/v1758373119/tradeginger_qr_abft9t.png" alt="QR Code" class="w-24 h-24 rounded-lg">
+                </div>
+            </div>
+            <div class="text-center text-gray-400 mt-8 pt-8 border-t border-gray-700">&copy; 2025 TradeGinger. All rights reserved.</div>
+        </div>
+    </footer>
+    
+    <!-- AUTHENTICATION MODALS -->
+    <!-- The Login Modal -->
+    <div id="loginModal" class="modal-backdrop hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4 relative animate-fade-in-down">
+            <div class="flex justify-between items-center mb-6 pb-3 border-b">
+                <h2 class="text-2xl font-bold text-gray-800">Login</h2>
+                <button onclick="hideAllModals()" class="text-gray-500 hover:text-gray-800 text-3xl font-light leading-none">&times;</button>
+            </div>
+            <div id="login-error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
+            <form onsubmit="event.preventDefault(); handleLoginSubmit();">
+                <div class="mb-4">
+                    <label for="login-email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                    <input type="email" id="login-email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div class="mb-6 password-container">
+                    <label for="login-password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="login-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                    <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('login-password', this)"></i>
+                </div>
+                 <div class="mb-4">
+                    <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
+                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
+                        <span class="font-semibold">Continue with Google</span>
+                    </button>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Sign In
+                    </button>
+                    <a href="#" onclick="showForgotPasswordModal(event)" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                        Forgot Password?
+                    </a>
+                </div>
+                 <div class="text-center mt-4">
+                    <p class="text-sm text-gray-600">Don't have an account? <a href="#" onclick="showRegisterModal(event)" class="font-bold text-blue-500 hover:text-blue-800">Register here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- The Registration Modal -->
+    <div id="registerModal" class="modal-backdrop hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4 relative animate-fade-in-down modal-content overflow-y-auto" style="max-height: 90vh;">
+            <div class="flex justify-between items-center mb-6 pb-3 border-b">
+                <h2 class="text-2xl font-bold text-gray-800">Create Account</h2>
+                <button onclick="hideAllModals()" class="text-gray-500 hover:text-gray-800 text-3xl font-light leading-none">&times;</button>
+            </div>
+            <div id="register-success-message" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
+             <div id="register-error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
+            <form id="registrationForm" onsubmit="event.preventDefault(); handleRegistrationSubmit();">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="first-name" class="block text-gray-700 text-sm font-bold mb-2">First Name</label>
+                        <input type="text" id="first-name" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <p id="first-name-error" class="error-message"></p>
+                    </div>
+                    <div>
+                        <label for="last-name" class="block text-gray-700 text-sm font-bold mb-2">Last Name</label>
+                        <input type="text" id="last-name" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <p id="last-name-error" class="error-message"></p>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label for="register-email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                    <input type="text" id="register-email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <p id="register-email-error" class="error-message"></p>
+                </div>
+                <div class="mt-4 password-container">
+                    <label for="register-password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="register-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                     <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('register-password', this)"></i>
+                    <p id="register-password-error" class="error-message"></p>
+                    <ul id="password-strength" class="text-xs mt-2 space-y-1 text-gray-500">
+                        <li data-check="length"><i class="fas fa-times-circle text-red-400 mr-1"></i> 10+ characters</li>
+                        <li data-check="upper"><i class="fas fa-times-circle text-red-400 mr-1"></i> One uppercase letter</li>
+                        <li data-check="lower"><i class="fas fa-times-circle text-red-400 mr-1"></i> One lowercase letter</li>
+                        <li data-check="number"><i class="fas fa-times-circle text-red-400 mr-1"></i> One number</li>
+                        <li data-check="special"><i class="fas fa-times-circle text-red-400 mr-1"></i> One special character (@$!%*?&)</li>
+                    </ul>
+                </div>
+                <div class="mt-4 password-container">
+                    <label for="confirm-password" class="block text-gray-700 text-sm font-bold mb-2">Confirm Password</label>
+                    <input type="password" id="confirm-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('confirm-password', this)"></i>
+                    <p id="confirm-password-error" class="error-message"></p>
+                </div>
+                <div class="mt-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="terms" class="form-checkbox h-5 w-5 text-blue-600">
+                        <span class="ml-2 text-sm text-gray-700">I agree to the <a href="#" onclick="showHelpPage(event)" class="text-blue-500 hover:underline">Terms & Conditions</a></span>
+                    </label>
+                    <p id="terms-error" class="error-message"></p>
+                </div>
+                 <div class="mt-6">
+                    <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Create Account
+                    </button>
+                </div>
+                 <div class="text-center mt-4">
+                    <p class="text-sm text-gray-600">Already have an account? <a href="#" onclick="showLoginModal(event)" class="font-bold text-blue-500 hover:text-blue-800">Login here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal-backdrop hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4 relative animate-fade-in-down">
+            <div class="flex justify-between items-center mb-6 pb-3 border-b">
+                <h2 class="text-2xl font-bold text-gray-800">Reset Password</h2>
+                <button onclick="hideAllModals()" class="text-gray-500 hover:text-gray-800 text-3xl font-light leading-none">&times;</button>
+            </div>
+             <div id="forgot-success-message" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
+            <form onsubmit="event.preventDefault(); handleForgotPasswordSubmit();">
+                <p class="text-gray-600 mb-4">Enter your email address and we will send you a link to reset your password.</p>
+                <div class="mb-4">
+                    <label for="forgot-email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                    <input type="email" id="forgot-email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div class="mt-6">
+                     <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Send Reset Link
+                    </button>
+                </div>
+                 <div class="text-center mt-4">
+                    <a href="#" onclick="showLoginModal(event)" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                        &larr; Back to Login
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Other Modals -->
+    <div id="chat-window" class="hidden"></div>
+    <div id="adSuccessModal" class="hidden"></div>
+    <div id="confirmModal" class="hidden"></div>
+    <div id="toast-notification"></div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+        // --- Supabase Configuration ---
+        const SUPABASE_URL = 'https://crepnlidfdoskighdhdt.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyZXBubGlkZmRvc2tpZ2hkaGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4Mjg3MzYsImV4cCI6MjA2ODQwNDczNn0.SjrYMGxuIFDsSZpPBm6a_ZveuI_gef80o03TNESJlDw';
+        let supabase;
+        try {
+            supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            window.supabase = supabase; // Make it globally available for simplicity
+        } catch (error) {
+            console.error("Error creating Supabase client:", error);
+            document.body.innerHTML = `<div class="p-4 text-center text-red-800 bg-red-100">Could not connect to the database. Please check Supabase credentials.</div>`;
+        }
+
+        // --- Page Navigation & State Management ---
+        const pageDivs = {
+            homepage: document.getElementById('homepage'),
+            listingpage: document.getElementById('listingpage'),
+            helppage: document.getElementById('helppage'),
+            placeholderpage: document.getElementById('placeholderpage'),
+            productdetailpage: document.getElementById('productdetailpage'),
+            comingsoonpage: document.getElementById('comingsoonpage'),
+            myadspage: document.getElementById('myadspage'),
+            userprofilepage: document.getElementById('userprofilepage'),
+            editprofilepage: document.getElementById('editprofilepage'),
+            myfavoritespage: document.getElementById('myfavoritespage'),
+            mychatspage: document.getElementById('mychatspage'),
+        };
+
+        function showPage(pageName) {
+            Object.values(pageDivs).forEach(div => div && div.classList.add('hidden'));
+            if (pageDivs[pageName]) {
+                pageDivs[pageName].classList.remove('hidden');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // --- Make Functions Globally Accessible ---
+        window.showHomepage = (event) => { event.preventDefault(); showPage('homepage'); };
+        window.showListingPage = (event, category) => { event.preventDefault(); showPage('listingpage'); console.log('Show listing for:', category);};
+        window.showHelpPage = (event) => { event.preventDefault(); showPage('helppage'); };
+        window.showMyAdsPage = (event) => { event.preventDefault(); showPage('myadspage'); };
+        window.showMyFavoritesPage = (event) => { event.preventDefault(); showPage('myfavoritespage'); };
+        window.showMyChatsPage = (event) => { event.preventDefault(); showPage('mychatspage'); };
+        window.showUserProfilePage = (event) => { event.preventDefault(); showPage('userprofilepage'); };
+        window.searchFromHome = (event) => { event.preventDefault(); showPage('listingpage'); console.log('Searching...'); };
+        window.logout = async (event) => {
+            event.preventDefault();
+            const { error } = await supabase.auth.signOut();
+            if (error) console.error('Logout error:', error);
+        };
+        window.toggleNotifications = () => {
+             const dropdown = document.getElementById('notification-dropdown');
+             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        };
+        window.markNotificationsAsRead = () => console.log('Marking notifications as read');
+
+
+        // --- MODAL CONTROL AND AUTH LOGIC ---
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+        const sellModal = document.getElementById('sellModal'); // Assuming you have a sell modal
+        const modals = [loginModal, registerModal, forgotPasswordModal, sellModal];
+
+        window.hideAllModals = function() {
+            modals.forEach(modal => modal && modal.classList.add('hidden'));
+        }
+
+        window.showLoginModal = function(event) {
+            if (event) event.preventDefault();
+            hideAllModals();
+            loginModal.classList.remove('hidden');
+        };
+
+        window.showRegisterModal = function(event) {
+            if (event) event.preventDefault();
+            hideAllModals();
+            registerModal.classList.remove('hidden');
+            document.getElementById('registrationForm').reset();
+            clearAllErrors();
+            document.getElementById('register-success-message').classList.add('hidden');
+            document.getElementById('register-error-message').classList.add('hidden');
+        };
+        
+        window.showForgotPasswordModal = function(event) {
+            if (event) event.preventDefault();
+            hideAllModals();
+            forgotPasswordModal.classList.remove('hidden');
+        };
+        
+        window.showSellModal = async function(event) {
+            if(event) event.preventDefault();
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                hideAllModals();
+                // Assuming you have a sell modal with this ID
+                const sellModalEl = document.getElementById('sellModal');
+                if (sellModalEl) sellModalEl.classList.remove('hidden');
+            } else {
+                showLoginModal(event);
+            }
+        }
+
+        // Close modal if backdrop is clicked
+        window.addEventListener('click', function(event) {
+            if (Array.from(event.target.classList).includes('modal-backdrop')) {
+                hideAllModals();
+            }
+        });
+
+        window.togglePasswordVisibility = function(fieldId, icon) {
+            const passwordField = document.getElementById(fieldId);
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        function setError(field, message) {
+            document.getElementById(`${field}-error`).textContent = message;
+        }
+
+        function clearAllErrors() {
+             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+        }
+
+        // --- Real-time Password Strength Validation ---
+        const passwordInput = document.getElementById('register-password');
+        const strengthChecks = {
+            length: document.querySelector('#password-strength [data-check="length"]'),
+            upper: document.querySelector('#password-strength [data-check="upper"]'),
+            lower: document.querySelector('#password-strength [data-check="lower"]'),
+            number: document.querySelector('#password-strength [data-check="number"]'),
+            special: document.querySelector('#password-strength [data-check="special"]'),
+        };
+
+        passwordInput.addEventListener('input', () => {
+            const pass = passwordInput.value;
+            validateCheck('length', pass.length >= 10);
+            validateCheck('upper', /[A-Z]/.test(pass));
+            validateCheck('lower', /[a-z]/.test(pass));
+            validateCheck('number', /[0-9]/.test(pass));
+            validateCheck('special', /[@$!%*?&]/.test(pass));
+        });
+
+        function validateCheck(checkName, isValid) {
+            const el = strengthChecks[checkName];
+            const icon = el.querySelector('i');
+            if (isValid) {
+                el.classList.add('text-green-500');
+                el.classList.remove('text-gray-500');
+                icon.className = 'fas fa-check-circle text-green-500 mr-1';
+            } else {
+                el.classList.remove('text-green-500');
+                el.classList.add('text-gray-500');
+                icon.className = 'fas fa-times-circle text-red-400 mr-1';
+            }
+        }
+
+        window.handleRegistrationSubmit = async function() {
+            clearAllErrors();
+            let isValid = true;
+            
+            const firstName = document.getElementById('first-name').value.trim();
+            const lastName = document.getElementById('last-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const terms = document.getElementById('terms').checked;
+
+            if (!firstName) { setError('first-name', 'First name is required.'); isValid = false; }
+            if (!lastName) { setError('last-name', 'Last name is required.'); isValid = false; }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email) { setError('register-email', 'Email is required.'); isValid = false; }
+            else if (!emailRegex.test(email)) { setError('register-email', 'Please enter a valid email address.'); isValid = false; }
+            
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
+            if (!password) { setError('register-password', 'Password is required.'); isValid = false; }
+            else if (!passwordRegex.test(password)) { setError('register-password', 'Password does not meet all requirements.'); isValid = false; }
+
+            if (password !== confirmPassword) { setError('confirm-password', 'Passwords do not match.'); isValid = false; }
+            
+            if (!terms) { setError('terms', 'You must agree to the terms and conditions.'); isValid = false; }
+            
+            if (!isValid) return;
+
+            const successDiv = document.getElementById('register-success-message');
+            const errorDiv = document.getElementById('register-error-message');
+            successDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email, password,
+                    options: { data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}` } }
+                });
+                if (error) throw error;
+
+                if (data.user && data.user.identities && data.user.identities.length === 0) {
+                     errorDiv.textContent = 'User with this email already exists. Please login.';
+                     errorDiv.classList.remove('hidden');
+                } else {
+                    successDiv.textContent = 'Registration successful! Please check your email to verify your account.';
+                    successDiv.classList.remove('hidden');
+                    document.getElementById('registrationForm').reset();
+                    // Reset password strength UI
+                    Object.keys(strengthChecks).forEach(key => validateCheck(key, false));
+                }
+            } catch (error) {
+                console.error("Registration error:", error);
+                errorDiv.textContent = error.message || "Registration failed. Please try again.";
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        window.handleLoginSubmit = async function() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorDiv = document.getElementById('login-error-message');
+            errorDiv.classList.add('hidden');
+
+            try {
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                // onAuthStateChange will handle success
+            } catch (error) {
+                console.error("Sign in error:", error);
+                errorDiv.textContent = error.message || "Invalid email or password.";
+                errorDiv.classList.remove('hidden');
+            }
+        }
+        
+        window.loginWithGoogle = async function(event) {
+             event.preventDefault();
+             try {
+                 const { error } = await supabase.auth.signInWithOAuth({
+                     provider: 'google',
+                     options: { redirectTo: window.location.href.split('#')[0] }
+                 });
+                 if (error) throw error;
+             } catch (error) {
+                 console.error('Error with Google login:', error);
+             }
+         }
+
+        window.handleForgotPasswordSubmit = async function() {
+            const email = document.getElementById('forgot-email').value;
+            const successDiv = document.getElementById('forgot-success-message');
+            successDiv.classList.add('hidden');
+            const form = document.querySelector('#forgotPasswordModal form');
+
+            try {
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin,
+                });
+                if (error) throw error;
+                successDiv.textContent = `If an account exists for ${email}, a password reset link has been sent.`;
+                successDiv.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4';
+                successDiv.classList.remove('hidden');
+                if(form) form.reset();
+            } catch(error) {
+                console.error("Forgot password error:", error);
+                successDiv.textContent = `Error: ${error.message}`;
+                successDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
+                successDiv.classList.remove('hidden');
+            }
+        }
+
+        // --- Auth State Change Listener ---
+        supabase.auth.onAuthStateChange(async (event, session) => {
+            if (session?.user) {
+                document.body.classList.add('user-is-logged-in');
+                hideAllModals();
+                 const { data: userProfileData } = await supabase
+                    .from('profiles')
+                    .select('first_name, last_name, avatar_url')
+                    .eq('id', session.user.id)
+                    .single();
+                
+                const fullName = `${userProfileData?.first_name || ''} ${userProfileData?.last_name || ''}`.trim() || session.user.email;
+                const avatarUrl = userProfileData?.avatar_url || `https://placehold.co/48x48/0A2342/D4AF37?text=${fullName.charAt(0).toUpperCase()}`;
+
+                document.getElementById('dropdown-username').textContent = fullName;
+                document.getElementById('header-profile-pic').src = avatarUrl;
+                document.getElementById('dropdown-profile-pic').src = avatarUrl;
+            } else {
+                document.body.classList.remove('user-is-logged-in');
+            }
+        });
+
+    </script>
+</body>
+</html>
 

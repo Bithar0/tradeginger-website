@@ -38,12 +38,6 @@
     <!-- Performance: Defer non-critical JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" defer></script>
     
-    <!-- 
-        SERVER-SIDE OPTIMIZATION NOTES:
-        1. Caching: For best performance, configure your web server (e.g., Netlify, Vercel, Nginx) to set long cache-control headers for static assets.
-           Example: `Cache-Control: public, max-age=31536000, immutable` for fonts, icons, and versioned JS/CSS.
-        2. TTFB (Time to First Byte): To improve TTFB, consider upgrading your hosting plan, using a global CDN, or optimizing backend database queries if they are slow. This is a server-side concern.
-    -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -65,10 +59,10 @@
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             border-color: #b79438;
         }
-        #sellModal .modal-content::-webkit-scrollbar, #loginModal .modal-content::-webkit-scrollbar, #tncModal .modal-content::-webkit-scrollbar, #chat-messages::-webkit-scrollbar, #notification-list::-webkit-scrollbar { width: 8px; }
-        #sellModal .modal-content::-webkit-scrollbar-track, #loginModal .modal-content::-webkit-scrollbar-track, #tncModal .modal-content::-webkit-scrollbar-track, #chat-messages::-webkit-scrollbar-track, #notification-list::-webkit-scrollbar-track { background: #f1f1f1; }
-        #sellModal .modal-content::-webkit-scrollbar-thumb, #loginModal .modal-content::-webkit-scrollbar-thumb, #tncModal .modal-content::-webkit-scrollbar-thumb, #chat-messages::-webkit-scrollbar-thumb, #notification-list::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
-        #sellModal .modal-content::-webkit-scrollbar-thumb:hover, #loginModal .modal-content::-webkit-scrollbar-thumb:hover, #tncModal .modal-content::-webkit-scrollbar-thumb:hover, #notification-list::-webkit-scrollbar-thumb:hover { background: #555; }
+        #sellModal .modal-content::-webkit-scrollbar, .modal-backdrop .modal-content::-webkit-scrollbar, #tncModal .modal-content::-webkit-scrollbar, #chat-messages::-webkit-scrollbar, #notification-list::-webkit-scrollbar { width: 8px; }
+        #sellModal .modal-content::-webkit-scrollbar-track, .modal-backdrop .modal-content::-webkit-scrollbar-track, #tncModal .modal-content::-webkit-scrollbar-track, #chat-messages::-webkit-scrollbar-track, #notification-list::-webkit-scrollbar-track { background: #f1f1f1; }
+        #sellModal .modal-content::-webkit-scrollbar-thumb, .modal-backdrop .modal-content::-webkit-scrollbar-thumb, #tncModal .modal-content::-webkit-scrollbar-thumb, #chat-messages::-webkit-scrollbar-thumb, #notification-list::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        #sellModal .modal-content::-webkit-scrollbar-thumb:hover, .modal-backdrop .modal-content::-webkit-scrollbar-thumb:hover, #tncModal .modal-content::-webkit-scrollbar-thumb:hover, #notification-list::-webkit-scrollbar-thumb:hover { background: #555; }
         
         /* Dropdown CSS */
         .profile-dropdown, .category-dropdown, #notification-dropdown { display: none; }
@@ -161,37 +155,54 @@
         }
 
         /* --- START: Auth Header Control --- */
-        /* By default, show the logged-out header and hide the logged-in one. */
         #header-logged-in { display: none; }
         #header-logged-out { display: block; }
-
-        /* When the body has the 'user-is-logged-in' class, switch which header is visible. */
         body.user-is-logged-in #header-logged-in { display: block; }
         body.user-is-logged-in #header-logged-out { display: none; }
         /* --- END: Auth Header Control --- */
-
-        /* --- START: New Auth Modal Styles --- */
-         :root { --tg-brand:#b79438; --tg-ok:#22c55e; }
-        .tg-tabs{display:flex;border-bottom:1px solid #e5e7eb; margin-bottom: 24px;}
-        .tg-tab{flex:1;text-align:center;padding:12px 8px;cursor:pointer;font-weight:600;border-bottom:3px solid transparent;color:#64748b; margin-bottom: -1px;}
-        .tg-tab[aria-selected="true"]{color:#1e293b;border-color:var(--tg-brand)}
-        .tg-pane{display:none}
-        .tg-pane.active{display:block; animation: fadeIn 0.3s ease;}
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .tg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        .tg-field{margin-bottom: 1rem;}
-        .tg-field label{font-size:.875rem; color:#334155;display:block;margin-bottom: 6px; font-weight: 500;}
-        .tg-field input[type="text"],.tg-field input[type="email"],.tg-field input[type="password"]{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;outline:none; transition: border-color 0.2s, box-shadow 0.2s;}
-        .tg-field input:focus { border-color: var(--tg-brand); box-shadow: 0 0 0 2px rgba(183, 148, 56, 0.2); }
-        .tg-hint{font-size:.8rem;color:#6b7280;margin-top:4px}
-        .tg-success{color:var(--tg-ok);font-size:.9rem}
-        .tg-error{color:#ef4444;font-size:.9rem}
-        .tg-checks{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
-        .tg-checks li{font-size:.85rem;display:flex;align-items:center;gap:8px;color:#475569; transition: color 0.3s ease;}
-        .tg-checks li.valid { color: var(--tg-ok); }
-        .tg-tick{width:16px;height:16px;display:inline-grid;place-items:center;border:2px solid #94a3b8;border-radius:50%;font-size:10px; transition: all 0.3s ease; flex-shrink: 0;}
-        .tg-checks li.valid .tg-tick { border-color:transparent; background:var(--tg-ok); color:white; }
-        /* --- END: New Auth Modal Styles --- */
+        
+        /* --- START: Refactored Auth Modal Styles --- */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 60;
+            transition: opacity 0.3s ease;
+        }
+        @keyframes fade-in-down {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-down {
+            animation: fade-in-down 0.3s ease-out;
+        }
+        .error-message {
+            color: #ef4444; /* red-500 */
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 0.25rem;
+            min-height: 1rem;
+        }
+        .password-container {
+            position: relative;
+        }
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280; /* gray-500 */
+        }
+        .password-toggle:hover {
+            color: #1f2937; /* gray-800 */
+        }
+        /* --- END: Refactored Auth Modal Styles --- */
 
     </style>
 </head>
@@ -203,8 +214,9 @@
                 <div class="flex items-center">
                     <a href="#" onclick="showHomepage(event)" class="text-2xl font-bold theme-primary">TradeGinger</a>
                 </div>
-                <div class="flex items-center">
-                    <a href="#" onclick="showLoginModal(event)" class="text-sm font-medium text-gray-700 hover:text-theme-accent mr-4">Login</a>
+                <div class="flex items-center space-x-4">
+                    <a href="#" onclick="showLoginModal(event)" class="text-sm font-medium text-gray-700 hover:text-theme-accent">Login</a>
+                    <a href="#" onclick="showRegisterModal(event)" class="text-sm font-bold text-white bg-theme-accent hover:bg-theme-accent-dark px-3 py-1.5 rounded-md">Register</a>
                     <button onclick="showSellModal()" class="flex items-center bg-theme-accent text-white px-4 py-2 rounded-full shadow-lg hover:bg-theme-accent-dark transition duration-300">
                         <i class="fas fa-plus-circle mr-2"></i>
                         SELL
@@ -775,92 +787,136 @@
         </div>
     </div>
 
-    <div id="loginModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 h-full w-full z-50 flex items-center justify-center p-4">
-        <div class="relative w-full max-w-4xl mx-auto rounded-lg overflow-hidden flex flex-col md:flex-row" style="max-height: 90vh;">
-            <div class="w-full md:w-1/3 bg-theme-primary text-white p-8 space-y-8 hidden md:flex flex-col justify-center">
-                <div class="flex items-center gap-4">
-                    <i class="fas fa-truck-loading text-2xl text-theme-accent"></i>
-                    <div>
-                        <h3 class="font-bold">Manage your orders</h3>
-                        <p class="text-sm text-gray-300">Track your orders, delivery and returns</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <i class="fas fa-comments-dollar text-2xl text-theme-accent"></i>
-                    <div>
-                        <h3 class="font-bold">Transact with buyers and sellers</h3>
-                        <p class="text-sm text-gray-300">Check and respond to chats, replies, offers and more</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <i class="fas fa-bell text-2xl text-theme-accent"></i>
-                    <div>
-                        <h3 class="font-bold">Personalized notifications and alerts</h3>
-                        <p class="text-sm text-gray-300">Get matching alerts for the products/services you are looking for</p>
-                    </div>
-                </div>
+    <!-- REFACTORED AUTH MODALS -->
+    <div id="loginModal" class="modal-backdrop hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4 relative animate-fade-in-down">
+            <div class="flex justify-between items-center mb-6 pb-3 border-b">
+                <h2 class="text-2xl font-bold text-gray-800">Login</h2>
+                <button onclick="hideAllModals()" class="text-gray-500 hover:text-gray-800 text-3xl font-light leading-none">&times;</button>
             </div>
-            <div class="w-full md:w-2/3 bg-white p-8 flex flex-col justify-center relative overflow-y-auto">
-                <button onclick="hideLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
-                
-                <div id="auth-container" class="w-full max-w-sm mx-auto">
-                    <div class="tg-tabs">
-                        <div class="tg-tab" role="tab" aria-selected="true" data-tab="signin">Sign In</div>
-                        <div class="tg-tab" role="tab" aria-selected="false" data-tab="register">Register</div>
-                    </div>
-
-                    <!-- Sign In Pane -->
-                    <div id="signin-pane" class="tg-pane active">
-                        <h2 class="text-2xl font-bold text-center mb-2">Welcome Back!</h2>
-                        <p class="text-center text-gray-500 mb-6">Sign in to your account.</p>
-                        <form id="email-password-login-form">
-                            <div class="tg-field">
-                                <label for="signin-email">Email</label>
-                                <input id="signin-email" type="email" placeholder="you@example.com" required autocomplete="email">
-                            </div>
-                             <div class="tg-field">
-                                <label for="signin-password">Password</label>
-                                <input id="signin-password" type="password" placeholder="Enter your password" required autocomplete="current-password">
-                            </div>
-                            <button type="submit" id="email-password-signin-button" class="w-full bg-theme-primary text-white p-3 rounded-md mt-2 font-semibold hover:bg-theme-primary-dark">Sign In</button>
-                        </form>
-                        <div class="my-6 flex items-center">
-                            <div class="flex-grow border-t border-gray-300"></div>
-                            <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
-                            <div class="flex-grow border-t border-gray-300"></div>
-                        </div>
-                        <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
-                            <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
-                            <span class="font-semibold">Continue with Google</span>
-                        </button>
-                    </div>
-
-                    <!-- Register Pane -->
-                    <div id="register-pane" class="tg-pane">
-                        <h2 class="text-2xl font-bold text-center mb-2">Create an Account</h2>
-                        <p class="text-center text-gray-500 mb-6">It's quick and easy.</p>
-                        <form id="register-form">
-                            <div class="tg-row">
-                                <div class="tg-field"><label for="reg-fname">First Name</label><input id="reg-fname" type="text" autocomplete="given-name" required></div>
-                                <div class="tg-field"><label for="reg-lname">Last Name</label><input id="reg-lname" type="text" autocomplete="family-name" required></div>
-                            </div>
-                            <div class="tg-field"><label for="reg-email">Email</label><input id="reg-email" type="email" autocomplete="email" required></div>
-                            <div class="tg-field"><label for="reg-pass">Password</label><input id="reg-pass" type="password" autocomplete="new-password" required></div>
-                            
-                            <ul id="password-checks" class="tg-checks">
-                                <li data-check="length"><span class="tg-tick">✓</span>At least 8 characters</li>
-                                <li data-check="upper"><span class="tg-tick">✓</span>One uppercase letter</li>
-                                <li data-check="lower"><span class="tg-tick">✓</span>One lowercase letter</li>
-                                <li data-check="number"><span class="tg-tick">✓</span>One number</li>
-                            </ul>
-                            <div id="auth-message" class="text-sm mt-4 text-center"></div>
-                            <button type="submit" id="register-button" class="w-full bg-theme-primary text-white p-3 rounded-md mt-4 font-semibold hover:bg-theme-primary-dark">Register</button>
-                        </form>
-                    </div>
+            <div id="login-error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
+            <form onsubmit="event.preventDefault(); handleLoginSubmit();">
+                <div class="mb-4">
+                    <label for="login-email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                    <input type="email" id="login-email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" required>
                 </div>
-            </div>
+                <div class="mb-6 password-container">
+                    <label for="login-password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="login-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                    <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('login-password', this)"></i>
+                </div>
+                 <div class="mb-4">
+                    <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
+                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
+                        <span class="font-semibold">Continue with Google</span>
+                    </button>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button type="submit" id="login-submit-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Sign In
+                    </button>
+                    <a href="#" onclick="showForgotPasswordModal(event)" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                        Forgot Password?
+                    </a>
+                </div>
+                 <div class="text-center mt-4">
+                    <p class="text-sm text-gray-600">Don't have an account? <a href="#" onclick="showRegisterModal(event)" class="font-bold text-blue-500 hover:text-blue-800">Register here</a></p>
+                </div>
+            </form>
         </div>
     </div>
+    
+    <div id="registerModal" class="modal-backdrop hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4 relative animate-fade-in-down modal-content overflow-y-auto" style="max-height: 90vh;">
+            <div class="flex justify-between items-center mb-6 pb-3 border-b">
+                <h2 class="text-2xl font-bold text-gray-800">Create Account</h2>
+                <button onclick="hideAllModals()" class="text-gray-500 hover:text-gray-800 text-3xl font-light leading-none">&times;</button>
+            </div>
+            <div id="register-success-message" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
+             <div id="register-error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
+            <form id="registrationForm" onsubmit="event.preventDefault(); handleRegistrationSubmit();">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="first-name" class="block text-gray-700 text-sm font-bold mb-2">First Name</label>
+                        <input type="text" id="first-name" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <p id="first-name-error" class="error-message"></p>
+                    </div>
+                    <div>
+                        <label for="last-name" class="block text-gray-700 text-sm font-bold mb-2">Last Name</label>
+                        <input type="text" id="last-name" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        <p id="last-name-error" class="error-message"></p>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label for="register-email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                    <input type="text" id="register-email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <p id="register-email-error" class="error-message"></p>
+                </div>
+                <div class="mt-4 password-container">
+                    <label for="register-password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="register-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                     <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('register-password', this)"></i>
+                    <p id="register-password-error" class="error-message"></p>
+                    <ul id="password-strength" class="text-xs mt-2 space-y-1 text-gray-500">
+                        <li data-check="length"><i class="fas fa-times-circle text-red-400 mr-1"></i> 10+ characters</li>
+                        <li data-check="upper"><i class="fas fa-times-circle text-red-400 mr-1"></i> One uppercase letter</li>
+                        <li data-check="lower"><i class="fas fa-times-circle text-red-400 mr-1"></i> One lowercase letter</li>
+                        <li data-check="number"><i class="fas fa-times-circle text-red-400 mr-1"></i> One number</li>
+                        <li data-check="special"><i class="fas fa-times-circle text-red-400 mr-1"></i> One special character (@$!%*?&)</li>
+                    </ul>
+                </div>
+                <div class="mt-4 password-container">
+                    <label for="confirm-password" class="block text-gray-700 text-sm font-bold mb-2">Confirm Password</label>
+                    <input type="password" id="confirm-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('confirm-password', this)"></i>
+                    <p id="confirm-password-error" class="error-message"></p>
+                </div>
+                <div class="mt-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="terms" class="form-checkbox h-5 w-5 text-blue-600">
+                        <span class="ml-2 text-sm text-gray-700">I agree to the <a href="#" onclick="showHelpPage(event)" class="text-blue-500 hover:underline">Terms & Conditions</a></span>
+                    </label>
+                    <p id="terms-error" class="error-message"></p>
+                </div>
+                 <div class="mt-6">
+                    <button type="submit" id="register-submit-button" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Create Account
+                    </button>
+                </div>
+                 <div class="text-center mt-4">
+                    <p class="text-sm text-gray-600">Already have an account? <a href="#" onclick="showLoginModal(event)" class="font-bold text-blue-500 hover:text-blue-800">Login here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="forgotPasswordModal" class="modal-backdrop hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4 relative animate-fade-in-down">
+            <div class="flex justify-between items-center mb-6 pb-3 border-b">
+                <h2 class="text-2xl font-bold text-gray-800">Reset Password</h2>
+                <button onclick="hideAllModals()" class="text-gray-500 hover:text-gray-800 text-3xl font-light leading-none">&times;</button>
+            </div>
+             <div id="forgot-success-message" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
+            <form onsubmit="event.preventDefault(); handleForgotPasswordSubmit();">
+                <p class="text-gray-600 mb-4">Enter your email address and we will send you a link to reset your password.</p>
+                <div class="mb-4">
+                    <label for="forgot-email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                    <input type="email" id="forgot-email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div class="mt-6">
+                     <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Send Reset Link
+                    </button>
+                </div>
+                 <div class="text-center mt-4">
+                    <a href="#" onclick="showLoginModal(event)" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                        &larr; Back to Login
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <div id="chat-window" class="hidden fixed bottom-0 right-4 w-80 bg-white rounded-t-lg shadow-2xl z-50">
         <div class="flex justify-between items-center bg-theme-primary text-white p-2 rounded-t-lg">
@@ -1301,10 +1357,6 @@
             document.getElementById('post-ad-button').textContent = 'Post Now';
         }
 
-        window.showLoginModal = function(event) { if(event) event.preventDefault(); document.getElementById('loginModal').classList.remove('hidden'); }
-        
-        window.hideLoginModal = function() { document.getElementById('loginModal').classList.add('hidden'); }
-
         window.showTncModal = function(event) { if(event) event.preventDefault(); document.getElementById('tncModal').classList.remove('hidden'); }
 
         window.hideTncModal = function() { document.getElementById('tncModal').classList.add('hidden'); }
@@ -1722,7 +1774,7 @@
             } catch(error) {
                  console.error("Error fetching notifications:", error);
                  if(notificationList) {
-                     notificationList.innerHTML = `<p class="p-4 text-sm text-red-500 text-center">Could not load notifications.</p>`;
+                      notificationList.innerHTML = `<p class="p-4 text-sm text-red-500 text-center">Could not load notifications.</p>`;
                  }
             }
         }
@@ -1777,120 +1829,229 @@
         
         // --- Authentication Logic (Supabase) ---
 
-        async function handleEmailPasswordLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('signin-email').value.trim();
-            const password = document.getElementById('signin-password').value;
-            const button = document.getElementById('email-password-signin-button');
-            
-            if (!email || !password) {
-                showToast('Please enter both email and password.', 'error');
-                return;
-            }
+        // REFACTORED: Unified modal control
+        const loginModal = document.getElementById('loginModal');
+        const registerModal = document.getElementById('registerModal');
+        const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+        // Include other modals if they should be managed by this system
+        const modals = [loginModal, registerModal, forgotPasswordModal, document.getElementById('sellModal'), document.getElementById('tncModal')];
 
+        window.hideAllModals = function() {
+            modals.forEach(modal => modal && modal.classList.add('hidden'));
+        }
+
+        window.showLoginModal = function(event) {
+            if (event) event.preventDefault();
+            hideAllModals();
+            loginModal.classList.remove('hidden');
+        };
+
+        window.showRegisterModal = function(event) {
+            if (event) event.preventDefault();
+            hideAllModals();
+            registerModal.classList.remove('hidden');
+            document.getElementById('registrationForm').reset();
+            clearAllErrors();
+            document.getElementById('register-success-message').classList.add('hidden');
+            document.getElementById('register-error-message').classList.add('hidden');
+        };
+        
+        window.showForgotPasswordModal = function(event) {
+            if (event) event.preventDefault();
+            hideAllModals();
+            forgotPasswordModal.classList.remove('hidden');
+        };
+
+        // Close modal if backdrop is clicked
+        window.addEventListener('click', function(event) {
+            if (Array.from(event.target.classList).includes('modal-backdrop')) {
+                hideAllModals();
+            }
+        });
+
+        window.togglePasswordVisibility = function(fieldId, icon) {
+            const passwordField = document.getElementById(fieldId);
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function setError(field, message) {
+            document.getElementById(`${field}-error`).textContent = message;
+        }
+
+        function clearAllErrors() {
+             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+        }
+        
+        // --- Real-time Password Strength Validation ---
+        const passwordInput = document.getElementById('register-password');
+        const strengthChecks = {
+            length: document.querySelector('#password-strength [data-check="length"]'),
+            upper: document.querySelector('#password-strength [data-check="upper"]'),
+            lower: document.querySelector('#password-strength [data-check="lower"]'),
+            number: document.querySelector('#password-strength [data-check="number"]'),
+            special: document.querySelector('#password-strength [data-check="special"]'),
+        };
+
+        passwordInput.addEventListener('input', () => {
+            const pass = passwordInput.value;
+            validateCheck('length', pass.length >= 10);
+            validateCheck('upper', /[A-Z]/.test(pass));
+            validateCheck('lower', /[a-z]/.test(pass));
+            validateCheck('number', /[0-9]/.test(pass));
+            validateCheck('special', /[@$!%*?&]/.test(pass));
+        });
+
+        function validateCheck(checkName, isValid) {
+            const el = strengthChecks[checkName];
+            const icon = el.querySelector('i');
+            if (isValid) {
+                el.classList.add('text-green-500');
+                el.classList.remove('text-gray-500');
+                icon.className = 'fas fa-check-circle text-green-500 mr-1';
+            } else {
+                el.classList.remove('text-green-500');
+                el.classList.add('text-gray-500');
+                icon.className = 'fas fa-times-circle text-red-400 mr-1';
+            }
+        }
+
+        window.handleRegistrationSubmit = async function() {
+            clearAllErrors();
+            let isValid = true;
+            
+            const firstName = document.getElementById('first-name').value.trim();
+            const lastName = document.getElementById('last-name').value.trim();
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const terms = document.getElementById('terms').checked;
+
+            if (!firstName) { setError('first-name', 'First name is required.'); isValid = false; }
+            if (!lastName) { setError('last-name', 'Last name is required.'); isValid = false; }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email) { setError('register-email', 'Email is required.'); isValid = false; }
+            else if (!emailRegex.test(email)) { setError('register-email', 'Please enter a valid email address.'); isValid = false; }
+            
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
+            if (!password) { setError('register-password', 'Password is required.'); isValid = false; }
+            else if (!passwordRegex.test(password)) { setError('register-password', 'Password does not meet all requirements.'); isValid = false; }
+
+            if (password !== confirmPassword) { setError('confirm-password', 'Passwords do not match.'); isValid = false; }
+            
+            if (!terms) { setError('terms', 'You must agree to the terms and conditions.'); isValid = false; }
+            
+            if (!isValid) return;
+            
+            const button = document.getElementById('register-submit-button');
+            button.disabled = true;
+            button.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Creating Account...`;
+
+            const successDiv = document.getElementById('register-success-message');
+            const errorDiv = document.getElementById('register-error-message');
+            successDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email, password,
+                    options: { data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}` } }
+                });
+                if (error) throw error;
+
+                if (data.user && data.user.identities && data.user.identities.length === 0) {
+                     errorDiv.textContent = 'User with this email already exists. Please login.';
+                     errorDiv.classList.remove('hidden');
+                } else {
+                    successDiv.textContent = 'Registration successful! Please check your email to verify your account.';
+                    successDiv.classList.remove('hidden');
+                    document.getElementById('registrationForm').reset();
+                    // Reset password strength UI
+                    Object.keys(strengthChecks).forEach(key => validateCheck(key, false));
+                }
+            } catch (error) {
+                console.error("Registration error:", error);
+                errorDiv.textContent = error.message || "Registration failed. Please try again.";
+                errorDiv.classList.remove('hidden');
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Create Account';
+            }
+        }
+
+        window.handleLoginSubmit = async function() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorDiv = document.getElementById('login-error-message');
+            const button = document.getElementById('login-submit-button');
+            errorDiv.classList.add('hidden');
             button.disabled = true;
             button.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Signing in...`;
 
             try {
                 const { error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
-                // Success toast is removed as onAuthStateChange will handle UI updates, giving a seamless experience.
+                // onAuthStateChange will handle success and hide modal
             } catch (error) {
                 console.error("Sign in error:", error);
-                showToast(error.message || "Invalid email or password.", "error");
+                errorDiv.textContent = error.message || "Invalid email or password.";
+                errorDiv.classList.remove('hidden');
             } finally {
                 button.disabled = false;
-                button.innerHTML = 'Sign In';
+                button.textContent = 'Sign In';
             }
         }
         
-        async function handleRegistration(event) {
-            event.preventDefault();
-            const button = document.getElementById('register-button');
-            const messageDiv = document.getElementById('auth-message');
-            messageDiv.textContent = '';
-
-            const email = document.getElementById('reg-email').value.trim();
-            const password = document.getElementById('reg-pass').value;
-            const firstName = document.getElementById('reg-fname').value.trim();
-            const lastName = document.getElementById('reg-lname').value.trim();
-
-            if(!validatePassword(password)) {
-                messageDiv.className = 'text-sm mt-4 text-center tg-error';
-                messageDiv.textContent = 'Password does not meet the requirements.';
-                return;
-            }
-            if(!firstName || !lastName) {
-                messageDiv.className = 'text-sm mt-4 text-center tg-error';
-                messageDiv.textContent = 'Please enter your first and last name.';
-                return;
-            }
-
-            button.disabled = true;
-            button.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Registering...`;
-
-            try {
-                const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: {
-                            first_name: firstName,
-                            last_name: lastName,
-                            full_name: `${firstName} ${lastName}`,
-                        },
-                        emailRedirectTo: window.location.origin,
-                    }
-                });
-
-                if (error) throw error;
-
-                if (data.user && data.user.identities && data.user.identities.length === 0) {
-                     messageDiv.className = 'text-sm mt-4 text-center tg-error';
-                     messageDiv.textContent = 'User with this email already exists.';
-                } else {
-                    messageDiv.className = 'text-sm mt-4 text-center tg-success';
-                    messageDiv.textContent = 'Success! Please check your email to confirm your account.';
-                    document.getElementById('register-form').reset();
-                }
-            } catch (error) {
-                console.error("Registration error:", error);
-                messageDiv.className = 'text-sm mt-4 text-center tg-error';
-                messageDiv.textContent = error.message || "Registration failed. Please try again.";
-            } finally {
-                button.disabled = false;
-                button.innerHTML = 'Register';
-            }
-        }
-
-
         window.loginWithGoogle = async function(event) {
-            event.preventDefault();
+             event.preventDefault();
+             try {
+                 const { error } = await supabase.auth.signInWithOAuth({
+                     provider: 'google',
+                     options: { redirectTo: window.location.href.split('#')[0] }
+                 });
+                 if (error) throw error;
+             } catch (error) {
+                 console.error('Error with Google login:', error);
+                 showToast('Google login failed. Please try again.', 'error');
+             }
+         }
+
+        window.handleForgotPasswordSubmit = async function() {
+            const email = document.getElementById('forgot-email').value;
+            const successDiv = document.getElementById('forgot-success-message');
+            successDiv.classList.add('hidden');
+            const form = document.querySelector('#forgotPasswordModal form');
+
             try {
-                const { error } = await supabase.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: window.location.href.split('#')[0] // Clean redirect URL
-                    }
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin,
                 });
                 if (error) throw error;
-            } catch (error) {
-                console.error('Error with Google login:', error);
-                if (error.message.includes("redirect_uri")) {
-                     showToast('Google login failed: Check your Supabase Redirect URL settings.', 'error');
-                } else {
-                     showToast('Google login failed. Please try again.', 'error');
-                }
+                successDiv.textContent = `If an account exists for ${email}, a password reset link has been sent.`;
+                successDiv.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4';
+                successDiv.classList.remove('hidden');
+                if(form) form.reset();
+            } catch(error) {
+                console.error("Forgot password error:", error);
+                successDiv.textContent = `Error: ${error.message}`;
+                successDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
+                successDiv.classList.remove('hidden');
             }
         }
-        
+
         window.logout = async function(event) {
             if (event) event.preventDefault();
             try {
                 const { error } = await supabase.auth.signOut();
                 if (error) throw error;
-                // The onAuthStateChange handler will automatically update the UI.
-                // A full page reload is avoided for a smoother SPA-like experience.
                 showHomepage();
             } catch (error) {
                 console.error('Error logging out:', error);
@@ -1947,7 +2108,7 @@
                         .subscribe();
 
                     if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-                        hideLoginModal();
+                        hideAllModals();
                     }
                     
                     await updateUIForUser(user);
@@ -2362,812 +2523,3 @@
     </script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <!-- SEO and Accessibility: Added a descriptive meta description -->
-    <meta name="description" content="Find the best local deals on cars, mobiles, property, and more on TradeGinger. Buy and sell used goods in your community safely and easily.">
-    
-    <!-- Performance: Preload critical resources -->
-    <link rel="preload" href="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=85&w=1200&auto=format&fit=crop" as="image">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-
-    <!-- A more permissive Content-Security-Policy to ensure all external resources load correctly -->
-    <meta http-equiv="Content-Security-Policy" content="
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com https://unpkg.com https://*.supabase.co;
-        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
-        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
-        img-src 'self' data: blob: https://images.unsplash.com https://placehold.co https://www.google.com https://res.cloudinary.com;
-        connect-src 'self' https://*.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://*.supabase.co;
-        object-src 'none';
-        base-uri 'self';
-        form-action 'self';
-        frame-src 'none';
-        frame-ancestors 'none';
-    ">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradeGinger - Buy & Sell Locally</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Performance: Asynchronously load non-critical CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    
-    <!-- Performance: Defer non-critical JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js" defer></script>
-    
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f7fafc;
-        }
-        .hero-section {
-            background: linear-gradient(rgba(26, 32, 44, 0.7), rgba(26, 32, 44, 0.7)), url('https://images.unsplash.com/photo-1521791136064-7986c2920216?q=85&w=1200&auto=format&fit=crop') no-repeat center center;
-            background-size: cover;
-            position: relative;
-            overflow: hidden;
-        }
-        .product-card {
-             background-color: white;
-             border: 1px solid #e2e8f0;
-             transition: all 0.3s ease;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border-color: #b79438;
-        }
-        #sellModal .modal-content::-webkit-scrollbar, .modal-backdrop .modal-content::-webkit-scrollbar, #tncModal .modal-content::-webkit-scrollbar, #chat-messages::-webkit-scrollbar, #notification-list::-webkit-scrollbar { width: 8px; }
-        #sellModal .modal-content::-webkit-scrollbar-track, .modal-backdrop .modal-content::-webkit-scrollbar-track, #tncModal .modal-content::-webkit-scrollbar-track, #chat-messages::-webkit-scrollbar-track, #notification-list::-webkit-scrollbar-track { background: #f1f1f1; }
-        #sellModal .modal-content::-webkit-scrollbar-thumb, .modal-backdrop .modal-content::-webkit-scrollbar-thumb, #tncModal .modal-content::-webkit-scrollbar-thumb, #chat-messages::-webkit-scrollbar-thumb, #notification-list::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
-        #sellModal .modal-content::-webkit-scrollbar-thumb:hover, .modal-backdrop .modal-content::-webkit-scrollbar-thumb:hover, #tncModal .modal-content::-webkit-scrollbar-thumb:hover, #notification-list::-webkit-scrollbar-thumb:hover { background: #555; }
-        
-        .profile-dropdown, .category-dropdown, #notification-dropdown { display: none; }
-        .profile-button:focus-within .profile-dropdown, .category-item:hover > .category-dropdown { display: block; }
-
-        .theme-primary { color: #1a202c; }
-        .theme-accent { color: #b79438; }
-        .bg-theme-primary { background-color: #1a202c; }
-        .hover\:bg-theme-primary-dark:hover { background-color: #11151c; }
-        .bg-theme-accent { background-color: #b79438; }
-        .hover\:bg-theme-accent-dark:hover { background-color: #a08130; }
-        .text-theme-accent { color: #b79438; }
-        .hover\:text-theme-accent:hover { color: #a08130; }
-        .focus\:ring-theme-accent:focus { --tw-ring-color: #b79438; }
-        .border-theme-accent { border-color: #b79438; }
-        
-        .beer-cap {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 35px;
-            height: 35px;
-            background-color: #1a202c;
-            color: #b79438;
-            border-radius: 50%;
-            font-size: 1rem;
-            box-shadow: 0 0 0 2px #f8f9fa, 0 0 0 3px #aaa, inset 0 1px 3px rgba(0,0,0,0.4);
-            transition: transform 0.2s ease-in-out;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .beer-cap:hover {
-            transform: scale(1.1) rotate(5deg) !important;
-        }
-        details > summary { list-style: none; }
-        details > summary::-webkit-details-marker { display: none; }
-        details[open] summary .accordion-icon { transform: rotate(180deg); }
-        .notification-dot {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: red;
-        }
-        #toast-notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            border-radius: 8px;
-            color: white;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
-        }
-        #toast-notification.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translate(-50%, -10px);
-        }
-        .toast-success { background-color: #28a745; }
-        .toast-error { background-color: #dc3545; }
-        .toast-info { background-color: #17a2b8; }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #b79438;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .loading-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 200px;
-            width: 100%;
-        }
-
-        #header-logged-in { display: none; }
-        #header-logged-out { display: block; }
-        body.user-is-logged-in #header-logged-in { display: block; }
-        body.user-is-logged-in #header-logged-out { display: none; }
-
-        /* --- New Auth Modal Styles --- */
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 60;
-            transition: opacity 0.3s ease;
-        }
-        @keyframes fade-in-down {
-            0% { opacity: 0; transform: translateY(-20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-down {
-            animation: fade-in-down 0.3s ease-out;
-        }
-        .error-message {
-            color: #ef4444; /* red-500 */
-            font-size: 0.875rem; /* text-sm */
-            margin-top: 0.25rem;
-            min-height: 1rem;
-        }
-        .password-container {
-            position: relative;
-        }
-        .password-toggle {
-            position: absolute;
-            top: 50%;
-            right: 12px;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #6b7280; /* gray-500 */
-        }
-        .password-toggle:hover {
-            color: #1f2937; /* gray-800 */
-        }
-    </style>
-</head>
-<body class="text-gray-800">
-
-    <header id="header-logged-out" class="bg-white shadow-md sticky top-0 z-50">
-        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center">
-                    <a href="#" onclick="showHomepage(event)" class="text-2xl font-bold theme-primary">TradeGinger</a>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="#" onclick="showLoginModal(event)" class="text-sm font-medium text-gray-700 hover:text-theme-accent">Login</a>
-                    <a href="#" onclick="showRegisterModal(event)" class="text-sm font-bold text-white bg-theme-accent hover:bg-theme-accent-dark px-3 py-1.5 rounded-md">Register</a>
-                    <button onclick="showSellModal()" class="flex items-center bg-theme-accent text-white px-4 py-2 rounded-full shadow-lg hover:bg-theme-accent-dark transition duration-300">
-                        <i class="fas fa-plus-circle mr-2"></i>
-                        SELL
-                    </button>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <header id="header-logged-in" class="bg-white shadow-md sticky top-0 z-50">
-        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center space-x-8">
-                    <a href="#" onclick="showHomepage(event)" class="text-2xl font-bold theme-primary">TradeGinger</a>
-                    <a href="#" onclick="showHomepage(event)" class="text-xl text-gray-500 hover:text-theme-accent" title="Home">
-                        <i class="fas fa-home"></i>
-                    </a>
-                    <div class="hidden md:flex items-center border-2 rounded-full p-1 w-96">
-                        <i class="fas fa-search text-gray-400 mx-3"></i>
-                        <input id="header-search-input" type="text" placeholder="Search for cars, mobiles..." class="w-full bg-transparent focus:outline-none text-sm" autocomplete="off">
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                     <button onclick="showMyChatsPage(event)" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700" title="My Chats">
-                         <i class="fas fa-comment-dots text-xl"></i>
-                         <span id="chat-notification-dot" class="hidden notification-dot"></span>
-                     </button>
-                    <div class="relative">
-                        <button onclick="toggleNotifications()" class="relative bg-white p-1 rounded-full text-gray-500 hover:text-gray-700">
-                            <i class="far fa-bell text-xl"></i>
-                            <span id="main-notification-dot" class="hidden notification-dot"></span>
-                        </button>
-                        <div id="notification-dropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50 overflow-hidden">
-                            <div class="p-4 font-bold border-b flex justify-between items-center">
-                                <span>Notifications</span>
-                                <a href="#" onclick="markNotificationsAsRead(event, true)" class="text-xs font-normal text-theme-accent hover:underline">Mark all as read</a>
-                            </div>
-                            <div id="notification-list" class="divide-y max-h-80 overflow-y-auto">
-                                <p id="no-notifications-message" class="p-4 text-sm text-gray-500 text-center hidden">You have no new notifications.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="relative profile-button">
-                        <button class="flex items-center space-x-2">
-                            <img id="header-profile-pic" class="h-8 w-8 rounded-full object-cover" src="https://placehold.co/40x40/E2E8F0/4A5568?text=U" alt="User profile" width="32" height="32">
-                            <i class="fas fa-chevron-down text-xs"></i>
-                        </button>
-                        <div class="profile-dropdown absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg z-50 overflow-hidden">
-                            <div class="p-4">
-                                <div class="flex items-center gap-3">
-                                    <img id="dropdown-profile-pic" class="h-12 w-12 rounded-full object-cover" src="https://placehold.co/48x48/0A2342/D4AF37?text=U" alt="User profile" width="48" height="48">
-                                    <div>
-                                        <p id="dropdown-username" class="font-semibold text-gray-800">Unknown</p>
-                                        <a href="#" onclick="showUserProfilePage(event)" class="text-sm text-theme-accent hover:underline">View and edit profile</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <nav class="border-t border-gray-100">
-                                <a href="#" onclick="showMyAdsPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-ad w-5 text-center text-gray-500"></i> My ADS</a>
-                                <a href="#" onclick="showMyFavoritesPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-heart w-5 text-center text-gray-500"></i> My Favorites</a>
-                                <a href="#" onclick="showMyChatsPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-comments w-5 text-center text-gray-500"></i> My Chats</a>
-                            </nav>
-                            <div class="border-t border-gray-100">
-                                <a href="#" onclick="showHelpPage(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-question-circle w-5 text-center text-gray-500"></i> Help</a>
-                                <a href="#" onclick="logout(event)" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50"><i class="fas fa-sign-out-alt w-5 text-center text-gray-500"></i> Logout</a>
-                            </div>
-                        </div>
-                    </div>
-                    <button onclick="showSellModal()" class="flex items-center bg-theme-accent text-white px-4 py-2 rounded-full shadow-lg hover:bg-theme-accent-dark transition duration-300"><i class="fas fa-plus-circle mr-2"></i>SELL</button>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <div id="homepage">
-        <section class="hero-section text-white py-20">
-            <div class="absolute top-4 left-4 flex space-x-3 z-20">
-                <a href="#" onclick="showListingPage(event, 'cars')" class="beer-cap" style="transform: rotate(-15deg);"><i class="fas fa-car"></i></a>
-                <a href="#" onclick="showListingPage(event, 'mobiles')" class="beer-cap" style="transform: rotate(10deg);"><i class="fas fa-mobile-alt"></i></a>
-                <a href="#" onclick="showListingPage(event, 'property')" class="beer-cap" style="transform: rotate(8deg);"><i class="fas fa-building"></i></a>
-                <a href="#" onclick="showListingPage(event, 'furniture')" class="beer-cap" style="transform: rotate(-12deg);"><i class="fas fa-couch"></i></a>
-                <a href="#" onclick="showListingPage(event, 'bikes')" class="beer-cap" style="transform: rotate(15deg);"><i class="fas fa-motorcycle"></i></a>
-                <a href="#" onclick="showListingPage(event, 'pets')" class="beer-cap" style="transform: rotate(-5deg);"><i class="fas fa-dog"></i></a>
-            </div>
-            
-            <div class="container mx-auto px-4 text-center relative z-10">
-                <h1 class="text-4xl md:text-5xl font-extrabold mb-4">TradeGinger</h1>
-                <p class="text-lg md:text-xl mb-8">Find the best deals near you</p>
-                <div class="max-w-2xl mx-auto bg-white rounded-full p-2 flex items-center shadow-2xl">
-                    <div class="flex-grow flex items-center">
-                         <i class="fas fa-search text-gray-400 mx-3"></i>
-                        <input id="hero-search-input" type="text" placeholder="Search for anything... (e.g., 'iPhone in Mumbai')" class="w-full bg-transparent text-gray-700 focus:outline-none" autocomplete="off">
-                    </div>
-                    <button onclick="searchFromHome(event)" class="bg-theme-accent text-white rounded-full px-6 py-3 font-semibold hover:bg-theme-accent-dark transition duration-300 flex-shrink-0">
-                        Search
-                    </button>
-                </div>
-            </div>
-        </section>
-        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <section class="mb-12">
-                <h2 class="text-3xl font-bold mb-8 text-left text-gray-800">Browse by Category</h2>
-                <div class="flex flex-col gap-10 md:w-1/2">
-                    <div class="space-y-4">
-                        <h3 class="text-xl font-semibold mb-4 theme-primary text-left">Marketplace</h3>
-                        <ul class="flex flex-wrap items-center gap-3">
-                            <li><a href="#" onclick="showListingPage(event, 'mobiles')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-mobile-alt text-theme-accent"></i><span>Mobiles</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'electronics')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-tv text-theme-accent"></i><span>Electronics</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'furniture')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-couch text-theme-accent"></i><span>Furniture</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'fashion')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-tshirt text-theme-accent"></i><span>Fashion</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'pets')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-dog text-theme-accent"></i><span>Pets</span></a></li>
-                        </ul>
-                    </div>
-                     <div class="space-y-4 md:ml-8">
-                        <h3 class="text-xl font-semibold mb-4 theme-primary text-left">Vehicles</h3>
-                        <ul class="flex flex-wrap items-center gap-3">
-                            <li><a href="#" onclick="showListingPage(event, 'cars')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-car text-theme-accent"></i><span>Cars</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'bikes')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-motorcycle text-theme-accent"></i><span>Bikes</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'commercial_vehicles')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-truck text-theme-accent"></i><span>Commercial</span></a></li>
-                        </ul>
-                    </div>
-                     <div class="space-y-4 md:ml-16">
-                        <h3 class="text-xl font-semibold mb-4 theme-primary text-left">Real Estate</h3>
-                        <ul class="flex flex-wrap items-center gap-3">
-                            <li><a href="#" onclick="showListingPage(event, 'property')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-building text-theme-accent"></i><span>For Sale</span></a></li>
-                            <li><a href="#" onclick="showListingPage(event, 'property')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-colors duration-200 shadow-sm"><i class="fas fa-sign text-theme-accent"></i><span>For Rent</span></a></li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Other Page Divs -->
-    <div id="listingpage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
-    <div id="helppage" class="hidden"><main class="container mx-auto p-4"><h1>Help Page</h1></main></div>
-    <div id="placeholderpage" class="hidden"><main class="container mx-auto p-4"><h1>Placeholder Page</h1></main></div>
-    <div id="comingsoonpage" class="hidden"><main class="container mx-auto p-4"><h1>Coming Soon</h1></main></div>
-    <div id="productdetailpage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
-    <div id="myadspage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
-    <div id="userprofilepage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
-    <div id="editprofilepage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
-    <div id="myfavoritespage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
-    <div id="mychatspage" class="hidden"><main class="container mx-auto p-4"><div class="loading-container"><div class="loader"></div></div></main></div>
-
-    <footer class="bg-gray-800 text-white mt-12">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div><h3 class="font-bold mb-4">TradeGinger</h3><ul><li class="mb-2"><a href="mailto:Sales@tradeginger.com" class="hover:text-theme-accent">Contact us : Sales@tradeginger.com</a></li><li class="mb-2"><a href="#" onclick="showHelpPage(event)" class="hover:text-theme-accent">Legal & Privacy</a></li></ul></div>
-                <div><h3 class="font-bold mb-4">Follow Us</h3>
-                    <img src="https://res.cloudinary.com/dcxhenppn/image/upload/v1758373119/tradeginger_qr_abft9t.png" alt="QR Code" class="w-24 h-24 rounded-lg">
-                </div>
-            </div>
-            <div class="text-center text-gray-400 mt-8 pt-8 border-t border-gray-700">&copy; 2025 TradeGinger. All rights reserved.</div>
-        </div>
-    </footer>
-    
-    <!-- AUTHENTICATION MODALS -->
-    <!-- The Login Modal -->
-    <div id="loginModal" class="modal-backdrop hidden">
-        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4 relative animate-fade-in-down">
-            <div class="flex justify-between items-center mb-6 pb-3 border-b">
-                <h2 class="text-2xl font-bold text-gray-800">Login</h2>
-                <button onclick="hideAllModals()" class="text-gray-500 hover:text-gray-800 text-3xl font-light leading-none">&times;</button>
-            </div>
-            <div id="login-error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
-            <form onsubmit="event.preventDefault(); handleLoginSubmit();">
-                <div class="mb-4">
-                    <label for="login-email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
-                    <input type="email" id="login-email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-                </div>
-                <div class="mb-6 password-container">
-                    <label for="login-password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                    <input type="password" id="login-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-                    <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('login-password', this)"></i>
-                </div>
-                 <div class="mb-4">
-                    <button onclick="loginWithGoogle(event)" class="w-full border-2 border-gray-300 p-3 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50">
-                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5">
-                        <span class="font-semibold">Continue with Google</span>
-                    </button>
-                </div>
-                <div class="flex items-center justify-between">
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                        Sign In
-                    </button>
-                    <a href="#" onclick="showForgotPasswordModal(event)" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
-                        Forgot Password?
-                    </a>
-                </div>
-                 <div class="text-center mt-4">
-                    <p class="text-sm text-gray-600">Don't have an account? <a href="#" onclick="showRegisterModal(event)" class="font-bold text-blue-500 hover:text-blue-800">Register here</a></p>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- The Registration Modal -->
-    <div id="registerModal" class="modal-backdrop hidden">
-        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4 relative animate-fade-in-down modal-content overflow-y-auto" style="max-height: 90vh;">
-            <div class="flex justify-between items-center mb-6 pb-3 border-b">
-                <h2 class="text-2xl font-bold text-gray-800">Create Account</h2>
-                <button onclick="hideAllModals()" class="text-gray-500 hover:text-gray-800 text-3xl font-light leading-none">&times;</button>
-            </div>
-            <div id="register-success-message" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
-             <div id="register-error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
-            <form id="registrationForm" onsubmit="event.preventDefault(); handleRegistrationSubmit();">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="first-name" class="block text-gray-700 text-sm font-bold mb-2">First Name</label>
-                        <input type="text" id="first-name" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
-                        <p id="first-name-error" class="error-message"></p>
-                    </div>
-                    <div>
-                        <label for="last-name" class="block text-gray-700 text-sm font-bold mb-2">Last Name</label>
-                        <input type="text" id="last-name" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
-                        <p id="last-name-error" class="error-message"></p>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <label for="register-email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
-                    <input type="text" id="register-email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
-                    <p id="register-email-error" class="error-message"></p>
-                </div>
-                <div class="mt-4 password-container">
-                    <label for="register-password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                    <input type="password" id="register-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
-                     <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('register-password', this)"></i>
-                    <p id="register-password-error" class="error-message"></p>
-                    <ul id="password-strength" class="text-xs mt-2 space-y-1 text-gray-500">
-                        <li data-check="length"><i class="fas fa-times-circle text-red-400 mr-1"></i> 10+ characters</li>
-                        <li data-check="upper"><i class="fas fa-times-circle text-red-400 mr-1"></i> One uppercase letter</li>
-                        <li data-check="lower"><i class="fas fa-times-circle text-red-400 mr-1"></i> One lowercase letter</li>
-                        <li data-check="number"><i class="fas fa-times-circle text-red-400 mr-1"></i> One number</li>
-                        <li data-check="special"><i class="fas fa-times-circle text-red-400 mr-1"></i> One special character (@$!%*?&)</li>
-                    </ul>
-                </div>
-                <div class="mt-4 password-container">
-                    <label for="confirm-password" class="block text-gray-700 text-sm font-bold mb-2">Confirm Password</label>
-                    <input type="password" id="confirm-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400">
-                    <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility('confirm-password', this)"></i>
-                    <p id="confirm-password-error" class="error-message"></p>
-                </div>
-                <div class="mt-6">
-                    <label class="flex items-center">
-                        <input type="checkbox" id="terms" class="form-checkbox h-5 w-5 text-blue-600">
-                        <span class="ml-2 text-sm text-gray-700">I agree to the <a href="#" onclick="showHelpPage(event)" class="text-blue-500 hover:underline">Terms & Conditions</a></span>
-                    </label>
-                    <p id="terms-error" class="error-message"></p>
-                </div>
-                 <div class="mt-6">
-                    <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                        Create Account
-                    </button>
-                </div>
-                 <div class="text-center mt-4">
-                    <p class="text-sm text-gray-600">Already have an account? <a href="#" onclick="showLoginModal(event)" class="font-bold text-blue-500 hover:text-blue-800">Login here</a></p>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Forgot Password Modal -->
-    <div id="forgotPasswordModal" class="modal-backdrop hidden">
-        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md mx-4 relative animate-fade-in-down">
-            <div class="flex justify-between items-center mb-6 pb-3 border-b">
-                <h2 class="text-2xl font-bold text-gray-800">Reset Password</h2>
-                <button onclick="hideAllModals()" class="text-gray-500 hover:text-gray-800 text-3xl font-light leading-none">&times;</button>
-            </div>
-             <div id="forgot-success-message" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert"></div>
-            <form onsubmit="event.preventDefault(); handleForgotPasswordSubmit();">
-                <p class="text-gray-600 mb-4">Enter your email address and we will send you a link to reset your password.</p>
-                <div class="mb-4">
-                    <label for="forgot-email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
-                    <input type="email" id="forgot-email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-                </div>
-                <div class="mt-6">
-                     <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                        Send Reset Link
-                    </button>
-                </div>
-                 <div class="text-center mt-4">
-                    <a href="#" onclick="showLoginModal(event)" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
-                        &larr; Back to Login
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Other Modals -->
-    <div id="chat-window" class="hidden"></div>
-    <div id="adSuccessModal" class="hidden"></div>
-    <div id="confirmModal" class="hidden"></div>
-    <div id="toast-notification"></div>
-
-    <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-        // --- Supabase Configuration ---
-        const SUPABASE_URL = 'https://crepnlidfdoskighdhdt.supabase.co'; 
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyZXBubGlkZmRvc2tpZ2hkaGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4Mjg3MzYsImV4cCI6MjA2ODQwNDczNn0.SjrYMGxuIFDsSZpPBm6a_ZveuI_gef80o03TNESJlDw';
-        let supabase;
-        try {
-            supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            window.supabase = supabase; // Make it globally available for simplicity
-        } catch (error) {
-            console.error("Error creating Supabase client:", error);
-            document.body.innerHTML = `<div class="p-4 text-center text-red-800 bg-red-100">Could not connect to the database. Please check Supabase credentials.</div>`;
-        }
-
-        // --- Page Navigation & State Management ---
-        const pageDivs = {
-            homepage: document.getElementById('homepage'),
-            listingpage: document.getElementById('listingpage'),
-            helppage: document.getElementById('helppage'),
-            placeholderpage: document.getElementById('placeholderpage'),
-            productdetailpage: document.getElementById('productdetailpage'),
-            comingsoonpage: document.getElementById('comingsoonpage'),
-            myadspage: document.getElementById('myadspage'),
-            userprofilepage: document.getElementById('userprofilepage'),
-            editprofilepage: document.getElementById('editprofilepage'),
-            myfavoritespage: document.getElementById('myfavoritespage'),
-            mychatspage: document.getElementById('mychatspage'),
-        };
-
-        function showPage(pageName) {
-            Object.values(pageDivs).forEach(div => div && div.classList.add('hidden'));
-            if (pageDivs[pageName]) {
-                pageDivs[pageName].classList.remove('hidden');
-                window.scrollTo(0, 0);
-            }
-        }
-
-        // --- Make Functions Globally Accessible ---
-        window.showHomepage = (event) => { event.preventDefault(); showPage('homepage'); };
-        window.showListingPage = (event, category) => { event.preventDefault(); showPage('listingpage'); console.log('Show listing for:', category);};
-        window.showHelpPage = (event) => { event.preventDefault(); showPage('helppage'); };
-        window.showMyAdsPage = (event) => { event.preventDefault(); showPage('myadspage'); };
-        window.showMyFavoritesPage = (event) => { event.preventDefault(); showPage('myfavoritespage'); };
-        window.showMyChatsPage = (event) => { event.preventDefault(); showPage('mychatspage'); };
-        window.showUserProfilePage = (event) => { event.preventDefault(); showPage('userprofilepage'); };
-        window.searchFromHome = (event) => { event.preventDefault(); showPage('listingpage'); console.log('Searching...'); };
-        window.logout = async (event) => {
-            event.preventDefault();
-            const { error } = await supabase.auth.signOut();
-            if (error) console.error('Logout error:', error);
-        };
-        window.toggleNotifications = () => {
-             const dropdown = document.getElementById('notification-dropdown');
-             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-        };
-        window.markNotificationsAsRead = () => console.log('Marking notifications as read');
-
-
-        // --- MODAL CONTROL AND AUTH LOGIC ---
-        const loginModal = document.getElementById('loginModal');
-        const registerModal = document.getElementById('registerModal');
-        const forgotPasswordModal = document.getElementById('forgotPasswordModal');
-        const sellModal = document.getElementById('sellModal'); // Assuming you have a sell modal
-        const modals = [loginModal, registerModal, forgotPasswordModal, sellModal];
-
-        window.hideAllModals = function() {
-            modals.forEach(modal => modal && modal.classList.add('hidden'));
-        }
-
-        window.showLoginModal = function(event) {
-            if (event) event.preventDefault();
-            hideAllModals();
-            loginModal.classList.remove('hidden');
-        };
-
-        window.showRegisterModal = function(event) {
-            if (event) event.preventDefault();
-            hideAllModals();
-            registerModal.classList.remove('hidden');
-            document.getElementById('registrationForm').reset();
-            clearAllErrors();
-            document.getElementById('register-success-message').classList.add('hidden');
-            document.getElementById('register-error-message').classList.add('hidden');
-        };
-        
-        window.showForgotPasswordModal = function(event) {
-            if (event) event.preventDefault();
-            hideAllModals();
-            forgotPasswordModal.classList.remove('hidden');
-        };
-        
-        window.showSellModal = async function(event) {
-            if(event) event.preventDefault();
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                hideAllModals();
-                // Assuming you have a sell modal with this ID
-                const sellModalEl = document.getElementById('sellModal');
-                if (sellModalEl) sellModalEl.classList.remove('hidden');
-            } else {
-                showLoginModal(event);
-            }
-        }
-
-        // Close modal if backdrop is clicked
-        window.addEventListener('click', function(event) {
-            if (Array.from(event.target.classList).includes('modal-backdrop')) {
-                hideAllModals();
-            }
-        });
-
-        window.togglePasswordVisibility = function(fieldId, icon) {
-            const passwordField = document.getElementById(fieldId);
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                passwordField.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-        
-        function setError(field, message) {
-            document.getElementById(`${field}-error`).textContent = message;
-        }
-
-        function clearAllErrors() {
-             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-        }
-
-        // --- Real-time Password Strength Validation ---
-        const passwordInput = document.getElementById('register-password');
-        const strengthChecks = {
-            length: document.querySelector('#password-strength [data-check="length"]'),
-            upper: document.querySelector('#password-strength [data-check="upper"]'),
-            lower: document.querySelector('#password-strength [data-check="lower"]'),
-            number: document.querySelector('#password-strength [data-check="number"]'),
-            special: document.querySelector('#password-strength [data-check="special"]'),
-        };
-
-        passwordInput.addEventListener('input', () => {
-            const pass = passwordInput.value;
-            validateCheck('length', pass.length >= 10);
-            validateCheck('upper', /[A-Z]/.test(pass));
-            validateCheck('lower', /[a-z]/.test(pass));
-            validateCheck('number', /[0-9]/.test(pass));
-            validateCheck('special', /[@$!%*?&]/.test(pass));
-        });
-
-        function validateCheck(checkName, isValid) {
-            const el = strengthChecks[checkName];
-            const icon = el.querySelector('i');
-            if (isValid) {
-                el.classList.add('text-green-500');
-                el.classList.remove('text-gray-500');
-                icon.className = 'fas fa-check-circle text-green-500 mr-1';
-            } else {
-                el.classList.remove('text-green-500');
-                el.classList.add('text-gray-500');
-                icon.className = 'fas fa-times-circle text-red-400 mr-1';
-            }
-        }
-
-        window.handleRegistrationSubmit = async function() {
-            clearAllErrors();
-            let isValid = true;
-            
-            const firstName = document.getElementById('first-name').value.trim();
-            const lastName = document.getElementById('last-name').value.trim();
-            const email = document.getElementById('register-email').value.trim();
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            const terms = document.getElementById('terms').checked;
-
-            if (!firstName) { setError('first-name', 'First name is required.'); isValid = false; }
-            if (!lastName) { setError('last-name', 'Last name is required.'); isValid = false; }
-
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!email) { setError('register-email', 'Email is required.'); isValid = false; }
-            else if (!emailRegex.test(email)) { setError('register-email', 'Please enter a valid email address.'); isValid = false; }
-            
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/;
-            if (!password) { setError('register-password', 'Password is required.'); isValid = false; }
-            else if (!passwordRegex.test(password)) { setError('register-password', 'Password does not meet all requirements.'); isValid = false; }
-
-            if (password !== confirmPassword) { setError('confirm-password', 'Passwords do not match.'); isValid = false; }
-            
-            if (!terms) { setError('terms', 'You must agree to the terms and conditions.'); isValid = false; }
-            
-            if (!isValid) return;
-
-            const successDiv = document.getElementById('register-success-message');
-            const errorDiv = document.getElementById('register-error-message');
-            successDiv.classList.add('hidden');
-            errorDiv.classList.add('hidden');
-
-            try {
-                const { data, error } = await supabase.auth.signUp({
-                    email, password,
-                    options: { data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}` } }
-                });
-                if (error) throw error;
-
-                if (data.user && data.user.identities && data.user.identities.length === 0) {
-                     errorDiv.textContent = 'User with this email already exists. Please login.';
-                     errorDiv.classList.remove('hidden');
-                } else {
-                    successDiv.textContent = 'Registration successful! Please check your email to verify your account.';
-                    successDiv.classList.remove('hidden');
-                    document.getElementById('registrationForm').reset();
-                    // Reset password strength UI
-                    Object.keys(strengthChecks).forEach(key => validateCheck(key, false));
-                }
-            } catch (error) {
-                console.error("Registration error:", error);
-                errorDiv.textContent = error.message || "Registration failed. Please try again.";
-                errorDiv.classList.remove('hidden');
-            }
-        }
-
-        window.handleLoginSubmit = async function() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            const errorDiv = document.getElementById('login-error-message');
-            errorDiv.classList.add('hidden');
-
-            try {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-                // onAuthStateChange will handle success
-            } catch (error) {
-                console.error("Sign in error:", error);
-                errorDiv.textContent = error.message || "Invalid email or password.";
-                errorDiv.classList.remove('hidden');
-            }
-        }
-        
-        window.loginWithGoogle = async function(event) {
-             event.preventDefault();
-             try {
-                 const { error } = await supabase.auth.signInWithOAuth({
-                     provider: 'google',
-                     options: { redirectTo: window.location.href.split('#')[0] }
-                 });
-                 if (error) throw error;
-             } catch (error) {
-                 console.error('Error with Google login:', error);
-             }
-         }
-
-        window.handleForgotPasswordSubmit = async function() {
-            const email = document.getElementById('forgot-email').value;
-            const successDiv = document.getElementById('forgot-success-message');
-            successDiv.classList.add('hidden');
-            const form = document.querySelector('#forgotPasswordModal form');
-
-            try {
-                const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin,
-                });
-                if (error) throw error;
-                successDiv.textContent = `If an account exists for ${email}, a password reset link has been sent.`;
-                successDiv.className = 'bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4';
-                successDiv.classList.remove('hidden');
-                if(form) form.reset();
-            } catch(error) {
-                console.error("Forgot password error:", error);
-                successDiv.textContent = `Error: ${error.message}`;
-                successDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
-                successDiv.classList.remove('hidden');
-            }
-        }
-
-        // --- Auth State Change Listener ---
-        supabase.auth.onAuthStateChange(async (event, session) => {
-            if (session?.user) {
-                document.body.classList.add('user-is-logged-in');
-                hideAllModals();
-                 const { data: userProfileData } = await supabase
-                    .from('profiles')
-                    .select('first_name, last_name, avatar_url')
-                    .eq('id', session.user.id)
-                    .single();
-                
-                const fullName = `${userProfileData?.first_name || ''} ${userProfileData?.last_name || ''}`.trim() || session.user.email;
-                const avatarUrl = userProfileData?.avatar_url || `https://placehold.co/48x48/0A2342/D4AF37?text=${fullName.charAt(0).toUpperCase()}`;
-
-                document.getElementById('dropdown-username').textContent = fullName;
-                document.getElementById('header-profile-pic').src = avatarUrl;
-                document.getElementById('dropdown-profile-pic').src = avatarUrl;
-            } else {
-                document.body.classList.remove('user-is-logged-in');
-            }
-        });
-
-    </script>
-</body>
-</html>
-

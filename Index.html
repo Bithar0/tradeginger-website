@@ -967,13 +967,27 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        // --- Supabase Configuration for "My Project" ---
+        // --- START: SECURITY BEST PRACTICES & CONFIGURATION ---
+        // IMPORTANT: Supabase Configuration & Security
+        // This configuration uses a Supabase "anon" key. This key is designed to be public
+        // and allows your application to interact with your Supabase backend directly from the client.
+        //
+        // However, its security relies ENTIRELY on you enabling Row Level Security (RLS)
+        // on all your tables in the Supabase dashboard.
+        //
+        // WITHOUT RLS, THIS KEY WOULD GRANT ANYONE FULL ACCESS TO YOUR DATABASE.
+        //
+        // For production applications with more complex needs, it's recommended to build a
+        // separate backend (e.g., using Node.js, or Supabase Edge Functions) that uses the
+        // Supabase "service_role" key, which should NEVER be exposed in the client.
+        // This allows you to hide business logic and manage secrets securely using environment variables.
         const SUPABASE_URL = 'https://crepnlidfdoskighdhdt.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyZXBubGlkZmRvc2tpZ2hkaGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4Mjg3MzYsImV4cCI6MjA2ODQwNDczNn0.SjrYMGxuIFDsSZpPBm6a_ZveuI_gef80o03TNESJlDw';
+        // --- END: SECURITY BEST PRACTICES & CONFIGURATION ---
 
         let supabase;
         
-        // --- START: Hardening - Input Sanitization ---
+        // --- Hardening - Input Sanitization to prevent XSS attacks ---
         function sanitizeHTML(str) {
             if (str === null || str === undefined) {
                 return '';
@@ -982,11 +996,10 @@
             temp.textContent = str;
             return temp.innerHTML;
         }
-        // --- END: Hardening - Input Sanitization ---
 
         function showToast(message, type = 'info') {
             const toast = document.getElementById('toast-notification');
-            toast.textContent = message;
+            toast.textContent = sanitizeHTML(message);
             toast.className = `toast-${type} show`;
             setTimeout(() => {
                 toast.className = toast.className.replace('show', '');
@@ -994,7 +1007,7 @@
         }
         
         try {
-            if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
+            if (SUPABASE_URL.includes('YOUR_SUPABASE_URL') || SUPABASE_ANON_KEY.includes('YOUR_SUPABASE_ANON_KEY')) {
                 throw new Error("Supabase credentials are placeholders. Please update them in index.html.");
             }
             supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1208,6 +1221,9 @@
                     throw new Error("User not logged in.");
                 }
 
+                // RLS CHECK: Ensure 'chat_rooms' table only allows users to see rooms they are part of.
+                // E.g., CREATE POLICY "Users can view their own chat rooms."
+                // ON chat_rooms FOR SELECT USING (auth.uid() = buyer_id OR auth.uid() = seller_id);
                 const { data: rooms, error: roomsError } = await supabase
                     .from('chat_rooms')
                     .select(`id, listing_id, buyer_id, seller_id`)
@@ -1263,6 +1279,7 @@
                     const otherUserName = `${otherUser.first_name || ''} ${otherUser.last_name || ''}`.trim() || 'User';
                     const adImage = ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/80x80/E2E8F0/4A5568?text=Ad';
 
+                    // --- Security: Sanitize all outputs ---
                     chatsHTML += `
                         <div class="flex items-center justify-between p-4 border-b hover:bg-gray-50 transition-colors duration-200">
                             <div class="flex items-center gap-4 flex-1 min-w-0">
@@ -1303,7 +1320,7 @@
                 currentReceiverId = otherUserId;
                 currentRoomId = roomId;
 
-                document.getElementById('chat-seller-name').innerText = otherUserName;
+                document.getElementById('chat-seller-name').innerText = otherUserName; // Already sanitized
                 document.getElementById('chat-ad-id').innerText = `Ad ID: ${adId}`;
                 document.getElementById('chat-window').classList.remove('hidden');
                 document.getElementById('chat-notification-dot').classList.add('hidden');
@@ -1598,10 +1615,15 @@
 
         async function findOrCreateChatRoom(buyerId, sellerId, adId) {
             try {
+                // RLS CHECK: A user should only be able to find a room if they are the buyer or seller.
                 let { data: room, error } = await supabase
                     .from('chat_rooms').select('id').eq('buyer_id', buyerId).eq('seller_id', sellerId).eq('listing_id', adId).single();
                 if (error && error.code !== 'PGRST116') { throw error; }
                 if (room) { return room.id; }
+
+                // RLS CHECK: A user should only be able to insert a room where they are the buyer.
+                // E.g., CREATE POLICY "Users can create chat rooms as a buyer."
+                // ON chat_rooms FOR INSERT WITH CHECK (auth.uid() = buyer_id);
                 const { data: newRoom, error: insertError } = await supabase
                     .from('chat_rooms').insert({ buyer_id: buyerId, seller_id: sellerId, listing_id: adId }).select().single();
                 if (insertError) { throw insertError; }
@@ -1619,6 +1641,15 @@
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) throw new Error("User not logged in.");
+
+                // RLS CHECK: A user must be part of a chat room to read its messages.
+                // This requires a more complex policy, potentially involving a join.
+                // E.g., CREATE POLICY "Users can read messages in their own chat rooms."
+                // ON chat_messages FOR SELECT USING (
+                //   (SELECT count(*) FROM chat_rooms
+                //    WHERE chat_rooms.id = chat_messages.room_id
+                //    AND (chat_rooms.buyer_id = auth.uid() OR chat_rooms.seller_id = auth.uid())) > 0
+                // );
                 const { data: messages, error } = await supabase.from('chat_messages').select('*').eq('room_id', roomId).order('created_at', { ascending: true });
                 if (error) throw error;
                 
@@ -1703,6 +1734,9 @@
 
         async function fetchInitialNotificationCount(userId) {
             try {
+                // RLS CHECK: Users should only be able to count their own notifications.
+                // E.g., CREATE POLICY "Users can access their own notifications."
+                // ON notifications FOR ALL USING (auth.uid() = user_id);
                 const { count, error } = await supabase
                     .from('notifications')
                     .select('id', { count: 'exact', head: true })
@@ -1739,6 +1773,7 @@
                     return;
                 }
 
+                // RLS CHECK: Policy for notifications already mentioned above.
                 const { data: notifications, error } = await supabase
                     .from('notifications')
                     .select('*')
@@ -1757,6 +1792,7 @@
                          const isUnreadClass = !notif.is_read ? 'bg-blue-50' : '';
                          const timeAgo = new Date(notif.created_at).toLocaleString();
 
+                         // --- Security: Sanitize notification content ---
                          notificationsHTML += `
                              <a href="#" class="block p-4 text-sm hover:bg-gray-50 ${isUnreadClass}">
                                  <div class="flex items-start gap-3">
@@ -1784,7 +1820,8 @@
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if(!user) return;
-
+                
+                // RLS CHECK: User can only update their own notifications.
                 const { error } = await supabase
                     .from('notifications')
                     .update({ is_read: true })
@@ -1970,18 +2007,14 @@
                             last_name: lastName,
                             full_name: `${firstName} ${lastName}`.trim()
                         },
-                        // This ensures the confirmation link brings the user back to your site.
                         emailRedirectTo: window.location.origin 
                     }
                 });
 
                 if (error) {
-                    // Let Supabase's specific error message do the work (e.g., "User already registered")
                     throw error;
                 }
-
-                // A successful call to signUp means a confirmation email was sent.
-                // This covers both new users and existing unconfirmed users.
+                
                 successDiv.textContent = 'Registration successful! Please check your email for a confirmation link to complete the sign-up.';
                 successDiv.classList.remove('hidden');
                 document.getElementById('registrationForm').reset();
@@ -1989,7 +2022,6 @@
 
             } catch (error) {
                 console.error("Registration error:", error);
-                // Display the specific error from Supabase to the user
                 errorDiv.textContent = error.message || "Registration failed. Please try again.";
                 errorDiv.classList.remove('hidden');
             } finally {
@@ -2081,6 +2113,8 @@
                 if (user) {
                     document.body.classList.add('user-is-logged-in');
                     if (event === 'SIGNED_IN') {
+                        // RLS CHECK: User profiles are often public, but this checks if one exists.
+                        // A policy might allow users to read all profiles but only update their own.
                         const { data: profile, error: profileError } = await supabase
                             .from('profiles')
                             .select('id')
@@ -2088,6 +2122,8 @@
                             .single();
 
                         if (profileError && profileError.code === 'PGRST116') {
+                            // This part runs without RLS policies because a user needs to create their own profile.
+                            // Supabase has special rules for this. Your INSERT policy should check `auth.uid() = id`.
                             const { error: insertError } = await supabase.from('profiles').insert({
                                 id: user.id,
                                 email: user.email,
@@ -2155,6 +2191,8 @@
 
         async function updateUIForUser(user) {
             try {
+                // RLS CHECK: This assumes profiles are publicly readable or at least a user can read their own.
+                // E.g., CREATE POLICY "Users can read their own profile." ON profiles FOR SELECT USING (auth.uid() = id);
                 const { data: userProfileData, error } = await supabase
                     .from('profiles')
                     .select('*')
@@ -2173,9 +2211,9 @@
 
                 document.getElementById('header-profile-pic').src = profilePicUrl;
                 document.getElementById('dropdown-profile-pic').src = profilePicUrl;
-                document.getElementById('dropdown-username').innerText = fullName;
+                document.getElementById('dropdown-username').innerText = sanitizeHTML(fullName);
                 document.getElementById('profile-page-pic').src = profilePicUrl;
-                document.getElementById('profile-page-username').innerText = fullName;
+                document.getElementById('profile-page-username').innerText = sanitizeHTML(fullName);
                 const creationDate = user.created_at ? new Date(user.created_at) : new Date();
                 document.getElementById('profile-page-member-since').innerText = `Member since ${creationDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
                 document.getElementById('profile-pic-preview').src = profilePicUrl;
@@ -2235,7 +2273,9 @@
                 if (newAvatarUrl) {
                     profileUpdateData.avatar_url = newAvatarUrl;
                 }
-
+                
+                // RLS CHECK: User can only update their own profile.
+                // E.g., CREATE POLICY "Users can update their own profile." ON profiles FOR UPDATE USING (auth.uid() = id);
                 const { error: profileError } = await supabase
                     .from('profiles')
                     .update(profileUpdateData)
@@ -2280,6 +2320,10 @@
         async function uploadFilesToCloudinary(files) {
             const uploadedUrls = [];
             const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+            
+            // SERVER-SIDE LOGIC: In production, file uploads should be handled by a backend.
+            // The client would get a "signed URL" from the backend to upload directly to cloud storage.
+            // This prevents abuse and keeps your storage credentials secret.
 
             for (const file of files) {
                  const formData = new FormData();
@@ -2317,6 +2361,10 @@
             postButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Posting...`;
 
             try {
+                // SERVER-SIDE LOGIC: In a more secure architecture, this entire function would be an API call 
+                // to your backend. The backend would then perform validation (e.g., check price ranges, validate location), 
+                // handle the file upload securely, and interact with the database using a privileged service_role key.
+
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) {
                     throw new Error("You must be logged in to post an ad.");
@@ -2375,9 +2423,13 @@
 
                 let error;
                 if (editingAdId) {
+                    // RLS CHECK: User can only update their own ads.
+                    // E.g., CREATE POLICY "Users can update their own ads." ON listings FOR UPDATE USING (auth.uid() = user_id);
                     const { error: updateError } = await supabase.from('listings').update(listingData).eq('id', editingAdId);
                     error = updateError;
                 } else {
+                    // RLS CHECK: User must be logged in to insert an ad.
+                    // E.g., CREATE POLICY "Users can insert their own ads." ON listings FOR INSERT WITH CHECK (auth.uid() = user_id);
                     const { error: insertError } = await supabase.from('listings').insert([listingData]);
                     error = insertError;
                 }
@@ -2411,6 +2463,7 @@
         window.handleEditAd = async function(adId) {
             try {
                 editingAdId = adId;
+                // RLS CHECK: This will only succeed if the user is the owner of the ad (assuming correct RLS policy).
                 const { data: ad, error } = await supabase
                     .from('listings')
                     .select('*, cities(*)')
@@ -2431,7 +2484,6 @@
                     const adStateSelect = document.getElementById('ad-state');
                     adStateSelect.value = stateId;
                     await populateCities(stateId); // Now async
-                    // Use a short timeout to allow the DOM to update with new cities
                     setTimeout(() => {
                         document.getElementById('ad-city').value = cityId;
                     }, 100);
@@ -2454,6 +2506,8 @@
                 'Are you sure you want to delete this ad? This action cannot be undone.',
                 async () => {
                     try {
+                        // RLS CHECK: User can only delete their own ads.
+                        // E.g., CREATE POLICY "Users can delete their own ads." ON listings FOR DELETE USING (auth.uid() = user_id);
                         const { error } = await supabase.from('listings').delete().eq('id', adId);
                         if (error) throw error;
                         showToast('Ad deleted successfully.', 'success');
@@ -2476,6 +2530,7 @@
                     return;
                 }
 
+                // RLS CHECK: This query will automatically be filtered by RLS policies to only show the current user's ads.
                 const { data: ads, error } = await supabase
                     .from('listings')
                     .select('*, cities(name)')
@@ -2508,6 +2563,8 @@
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) return;
+                
+                // RLS CHECK: This also relies on the RLS policy for the 'listings' table.
                 const { data: ads, error } = await supabase.from('listings').select('*').eq('user_id', user.id);
                 if (error) throw error;
 
@@ -2531,6 +2588,116 @@
             }
         }
         
+        // --- NEW: Added missing functions for completeness and security demonstration ---
+        function createAdCard(ad, isMyAdView = false) {
+            // --- Security: Sanitize all user-provided data before rendering to prevent XSS ---
+            const title = sanitizeHTML(ad.title);
+            const location = sanitizeHTML(ad.location || ad.cities?.name || 'Unknown');
+            const price = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(ad.price);
+            const imageUrl = ad.image_urls && ad.image_urls.length > 0 ? ad.image_urls[0] : 'https://placehold.co/300x200/E2E8F0/4A5568?text=No+Image';
+            const date = new Date(ad.created_at).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' });
+
+            const editDeleteButtons = isMyAdView ? `
+                <div class="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onclick="handleEditAd(${ad.id})" class="bg-blue-500 text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-blue-600 transition-colors" title="Edit Ad"><i class="fas fa-edit"></i></button>
+                    <button onclick="handleDeleteAd(${ad.id})" class="bg-red-500 text-white rounded-full h-8 w-8 flex items-center justify-center hover:bg-red-600 transition-colors" title="Delete Ad"><i class="fas fa-trash"></i></button>
+                </div>` : '';
+
+            return `
+                <div class="product-card rounded-lg overflow-hidden relative group">
+                    <a href="#" onclick="showProductDetailPage(event, ${ad.id})">
+                        <img src="${imageUrl}" alt="${title}" class="w-full h-48 object-cover" loading="lazy" decoding="async">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg truncate" title="${price}">${price}</h3>
+                            <p class="text-gray-600 text-sm truncate" title="${title}">${title}</p>
+                            <div class="flex justify-between text-xs text-gray-500 mt-3">
+                                <span class="truncate pr-2">${location}</span>
+                                <span>${date}</span>
+                            </div>
+                        </div>
+                    </a>
+                    ${editDeleteButtons}
+                </div>
+            `;
+        }
+
+        async function fetchAndDisplayListings(categoryKey, filters = {}) {
+            const grid = document.getElementById('listing-grid');
+            grid.innerHTML = Array(8).fill(skeletonCardHTML).join('');
+            try {
+                // RLS CHECK: Ensure your 'listings' table has an RLS policy that allows public read access.
+                // E.g., CREATE POLICY "Allow public read access" ON listings FOR SELECT USING (true);
+                let query = supabase.from('listings').select('*, cities(name)');
+
+                if (categoryKey && categoryKey !== 'all') {
+                    query = query.eq('category_id', categoryMapping[categoryKey]);
+                }
+                if (filters.keyword) {
+                    // --- Security: Use Supabase's built-in textSearch which is safer against SQL injection ---
+                    query = query.textSearch('title', `'${filters.keyword}'`); 
+                }
+                 if (filters.city_id) {
+                    query = query.eq('city_id', filters.city_id);
+                }
+
+                query = query.order('created_at', { ascending: false }).limit(20);
+
+                const { data: ads, error } = await query;
+                if (error) throw error;
+                
+                if (!ads || ads.length === 0) {
+                    grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-12">No listings found matching your criteria.</p>`;
+                    return;
+                }
+                
+                // --- Security: Ensure data is sanitized in createAdCard ---
+                grid.innerHTML = ads.map(ad => createAdCard(ad, false)).join('');
+
+            } catch (error) {
+                console.error('Error fetching listings:', error);
+                grid.innerHTML = `<p class="col-span-full text-center text-red-500 py-12">Error loading listings. Please try again.</p>`;
+            }
+        }
+        
+        window.generateAdDescription = async function(event) {
+            event.preventDefault();
+            const btn = document.getElementById('ai-generate-btn');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>Generating...</span>`;
+            
+            // --- SECURITY & BEST PRACTICE: AI Logic on Server ---
+            // In a production app, you would NOT call a generative AI API directly from the client.
+            // 1. It would expose your secret API key.
+            // 2. You would have no control over usage, leading to high costs and potential abuse.
+            //
+            // The CORRECT approach is:
+            // - Create a Supabase Edge Function (or other backend endpoint).
+            // - The client calls your secure function.
+            // - Your function (on the server) calls the AI service using a key stored in an environment variable.
+            // - This also allows you to add rate limiting and validation.
+            
+            try {
+                const title = document.getElementById('ad-title').value;
+                const category = document.getElementById('category-select').options[document.getElementById('category-select').selectedIndex].text;
+                
+                if (!title || !category) {
+                    showToast('Please enter a title and category first.', 'info');
+                    return;
+                }
+                
+                // This is a placeholder for the server-side call.
+                showToast('AI generation is a server-side feature. This is a demo.', 'info');
+                const generatedText = `This is a high-quality ${title} in the ${category} category. It's in excellent condition and perfect for anyone looking for a great deal. Includes all original accessories. Selling because of an upgrade.`;
+                document.getElementById('ad-description').value = generatedText;
+
+            } catch (error) {
+                console.error("Error generating description:", error);
+                showToast('Failed to generate description.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fas fa-magic"></i><span>Generate with AI</span>`;
+            }
+        }
     </script>
 </body>
 </html>

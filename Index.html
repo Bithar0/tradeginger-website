@@ -17,7 +17,7 @@
         script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://generativelanguage.googleapis.com https://unpkg.com https://*.supabase.co;
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
         font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
-        img-src 'self' data: blob: https://images.unsplash.com https://placehold.co https://www.google.com https://res.cloudinary.com;
+        img-src 'self' data: blob: https://images.unsplash.com https://placehold.co https://www.google.com https://res.cloudinary.com https://crepnlidfdoskighdhdt.supabase.co;
         connect-src 'self' https://*.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://*.supabase.co;
         object-src 'none';
         base-uri 'self';
@@ -1013,10 +1013,6 @@
             throw new Error("Supabase is not configured.");
         }
         
-        // --- Cloudinary Configuration for STORAGE ---
-        const CLOUDINARY_CLOUD_NAME = 'dcxhenppn';
-        const CLOUDINARY_UPLOAD_PRESET = 'Tradeginger';
-
         // --- Category Mapping ---
         const categoryMapping = {
             'cars': 1, 'property': 2, 'mobiles': 3, 'bikes': 4, 'electronics': 5,
@@ -2224,7 +2220,7 @@
 
                 let newAvatarUrl = null;
                 if (stagedProfilePic) {
-                    const uploadedUrls = await uploadFilesToCloudinary([stagedProfilePic]);
+                    const uploadedUrls = await uploadFilesToSupabase([stagedProfilePic], 'avatars');
                     if (uploadedUrls && uploadedUrls.length > 0) {
                         newAvatarUrl = uploadedUrls[0];
                     } else {
@@ -2277,34 +2273,41 @@
                 categorySelect.appendChild(option);
             });
         }
+        
+        // --- START: Supabase Storage Upload ---
+        // IMPORTANT: Create two public buckets in your Supabase project:
+        // 1. 'listing_images' for ad photos.
+        // 2. 'avatars' for user profile pictures.
+        // Set RLS policies to allow public read access, and authenticated users to insert/update their own files.
+        async function uploadFilesToSupabase(files, bucketName) {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("User not authenticated for file upload.");
 
-        async function uploadFilesToCloudinary(files) {
-            const uploadedUrls = [];
-            const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+            const uploadPromises = files.map(async (file) => {
+                const fileToUpload = (typeof file === 'string') 
+                    ? await(await fetch(file)).blob() // Convert base64 data URL to blob
+                    : file;
+                
+                const fileExt = file.name ? file.name.split('.').pop() : 'png';
+                const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
+                const filePath = `${user.id}/${fileName}`;
 
-            for (const file of files) {
-                 const formData = new FormData();
-                if (typeof file === 'string') { // Handle Base64 strings
-                    formData.append('file', file);
-                } else { // Handle File objects
-                    formData.append('file', file);
+                const { error: uploadError } = await supabase.storage
+                    .from(bucketName)
+                    .upload(filePath, fileToUpload);
+
+                if (uploadError) {
+                    console.error(`Error uploading to Supabase Storage (${bucketName}):`, uploadError);
+                    throw new Error(`Failed to upload file.`);
                 }
-                formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
-                try {
-                    const response = await fetch(uploadUrl, { method: 'POST', body: formData });
-                    const data = await response.json();
-                    if (data.secure_url) {
-                        uploadedUrls.push(data.secure_url);
-                    } else { throw new Error('Image upload failed.'); }
-                } catch (error) {
-                    console.error('Error uploading to Cloudinary:', error);
-                    showToast('An error occurred during file upload.', 'error');
-                    return [];
-                }
-            }
-            return uploadedUrls;
+                const { data } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+                return data.publicUrl;
+            });
+            
+            return await Promise.all(uploadPromises);
         }
+        // --- END: Supabase Storage Upload ---
         
         let editingAdId = null; 
         let stagedFiles = []; 
@@ -2340,10 +2343,8 @@
                 
                 let imageUrls = [];
                 if (stagedFiles.length > 0) {
-                    const filesToUpload = stagedFiles.map(file => {
-                        return typeof file.data === 'string' ? file.data : file.file;
-                    });
-                    imageUrls = await uploadFilesToCloudinary(filesToUpload);
+                    const filesToUpload = stagedFiles.map(item => item.file);
+                    imageUrls = await uploadFilesToSupabase(filesToUpload, 'listing_images');
                     if (imageUrls.length !== filesToUpload.length) {
                         throw new Error('Some images failed to upload. Please try again.');
                     }

@@ -2075,7 +2075,7 @@
                 }
 
                 const user = session?.user;
-                if (user) {
+                if (user && !user.is_anonymous) {
                     document.body.classList.add('user-is-logged-in');
                     if (event === 'SIGNED_IN') {
                         const { data: profile, error: profileError } = await supabase
@@ -2141,7 +2141,10 @@
                         await supabase.removeChannel(chatSubscription);
                         chatSubscription = null;
                     }
-                    showHomepage();
+                     // Only redirect to homepage on explicit signout to avoid navigation issues on page load
+                    if (event === 'SIGNED_OUT') {
+                        showHomepage();
+                    }
                     updateUIForGuest();
                 }
             } catch (error) {
@@ -2867,3 +2870,4 @@
     </script>
 </body>
 </html>
+

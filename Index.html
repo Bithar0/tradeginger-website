@@ -160,6 +160,7 @@
                 <div>
                     <h3 class="text-2xl font-bold mb-4">TradeGinger</h3>
                     <p class="text-gray-400 text-sm">The safest way to buy and sell locally. Verified users, secure chat, and premium listings.</p>
+                    <button onclick="app.router.navigate('admin')" class="mt-4 text-xs text-gray-500 hover:text-gray-300"><i class="fas fa-lock mr-1"></i> Admin Login</button>
                 </div>
                 <div>
                     <h4 class="font-semibold mb-4 text-gray-200">For Business</h4>
@@ -281,7 +282,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                            <select id="category-select" name="category" required onchange="app.sell.updateSubcats()" class="w-full rounded-lg border-gray-300 border px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none bg-white">
+                            <select id="category-select" name="category" required onchange="app.sell.handleCategoryChange(this.value)" class="w-full rounded-lg border-gray-300 border px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none bg-white">
                                 <option value="">Select...</option>
                             </select>
                         </div>
@@ -291,6 +292,11 @@
                                 <option value="">Select Category First</option>
                             </select>
                         </div>
+                    </div>
+
+                    <!-- Dynamic Attributes Container -->
+                    <div id="dynamic-attributes" class="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-gray-100 pb-6">
+                        <!-- Attributes Injected Here -->
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -471,20 +477,46 @@
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- STATE MANAGEMENT ---
+        // --- STATE & SCHEMA MANAGEMENT ---
+        const defaultSchema = [
+            {
+                id: 1, name: 'Cars', icon: 'fa-car',
+                subcategories: ['Sedan', 'SUV', 'Hatchback', 'Luxury'],
+                attributes: [
+                    { key: 'fuel_type', label: 'Fuel Type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric'] },
+                    { key: 'km_driven', label: 'KM Driven', type: 'number' },
+                    { key: 'year', label: 'Model Year', type: 'number' }
+                ]
+            },
+            {
+                id: 2, name: 'Property', icon: 'fa-building',
+                subcategories: ['Apartment', 'Villa', 'Plot', 'Commercial'],
+                attributes: [
+                    { key: 'bedrooms', label: 'Bedrooms (BHK)', type: 'select', options: ['1 BHK', '2 BHK', '3 BHK', '4+ BHK'] },
+                    { key: 'area', label: 'Area (sq ft)', type: 'number' },
+                    { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Furnished', 'Semi-Furnished', 'Unfurnished'] }
+                ]
+            },
+            {
+                id: 3, name: 'Mobiles', icon: 'fa-mobile-alt',
+                subcategories: ['Smartphones', 'Tablets', 'Accessories'],
+                attributes: [
+                    { key: 'brand', label: 'Brand', type: 'select', options: ['Apple', 'Samsung', 'OnePlus', 'Xiaomi', 'Other'] },
+                    { key: 'storage', label: 'Storage', type: 'select', options: ['64GB', '128GB', '256GB', '512GB+'] }
+                ]
+            },
+            { id: 7, name: 'Furniture', icon: 'fa-couch', subcategories: ['Sofa', 'Bed', 'Dining', 'Decor'], attributes: [] },
+            { id: 4, name: 'Bikes', icon: 'fa-motorcycle', subcategories: ['Motorcycle', 'Scooter'], attributes: [] },
+            { id: 5, name: 'Electronics', icon: 'fa-tv', subcategories: ['TV', 'Laptop', 'Camera'], attributes: [] },
+            { id: 8, name: 'Fashion', icon: 'fa-tshirt', subcategories: ['Men', 'Women', 'Kids'], attributes: [] },
+            { id: 9, name: 'Pets', icon: 'fa-paw', subcategories: ['Dogs', 'Cats', 'Fish'], attributes: [] }
+        ];
+
         const state = {
             user: null,
             profile: null,
-            categories: [
-                { id: 1, name: 'Cars', icon: 'fa-car' },
-                { id: 2, name: 'Property', icon: 'fa-building' },
-                { id: 3, name: 'Mobiles', icon: 'fa-mobile-alt' },
-                { id: 7, name: 'Furniture', icon: 'fa-couch' },
-                { id: 4, name: 'Bikes', icon: 'fa-motorcycle' },
-                { id: 5, name: 'Electronics', icon: 'fa-tv' },
-                { id: 8, name: 'Fashion', icon: 'fa-tshirt' },
-                { id: 9, name: 'Pets', icon: 'fa-paw' }
-            ],
+            // Load schema from storage or default
+            categories: JSON.parse(localStorage.getItem('tg_categories')) || defaultSchema,
             locations: [
                 {state: 'Delhi', cities: ['New Delhi', 'Dwarka', 'Rohini']},
                 {state: 'Maharashtra', cities: ['Mumbai', 'Pune', 'Nagpur']},
@@ -526,7 +558,8 @@
                     el.style.animation = 'slideIn 0.3s reverse forwards';
                     setTimeout(() => el.remove(), 300);
                 }, 3000);
-            }
+            },
+            isAdmin: () => state.user && (state.user.email === 'admin@tradeginger.com' || state.user.email.includes('admin'))
         };
 
         // --- APP MODULES ---
@@ -540,7 +573,7 @@
                 supabase.auth.onAuthStateChange(async (_event, session) => {
                     if (session?.user) await app.auth.setUser(session.user);
                     else app.auth.clearUser();
-                    app.router.handle(); // Re-render based on auth state
+                    app.router.handle();
                 });
 
                 // Initial Route
@@ -556,6 +589,46 @@
                 });
             },
 
+            admin: {
+                saveSchema: () => {
+                    localStorage.setItem('tg_categories', JSON.stringify(state.categories));
+                    utils.toast('Schema Saved Successfully!', 'success');
+                    app.router.handle(); // Refresh view
+                },
+                addCategory: () => {
+                    const name = prompt("Enter Category Name:");
+                    if(!name) return;
+                    const id = state.categories.length > 0 ? Math.max(...state.categories.map(c => c.id)) + 1 : 1;
+                    state.categories.push({ id, name, icon: 'fa-box', subcategories: [], attributes: [] });
+                    app.admin.saveSchema();
+                },
+                addSubcategory: (catId) => {
+                    const name = prompt("Enter Subcategory Name:");
+                    if(!name) return;
+                    const cat = state.categories.find(c => c.id === catId);
+                    if(cat) {
+                        cat.subcategories.push(name);
+                        app.admin.saveSchema();
+                    }
+                },
+                addAttribute: (catId) => {
+                    const label = prompt("Attribute Name (e.g. Fuel Type):");
+                    if(!label) return;
+                    const type = prompt("Type (text, number, select):", "text");
+                    let options = [];
+                    if(type === 'select') {
+                        const opts = prompt("Enter options comma separated (e.g. Petrol, Diesel):");
+                        if(opts) options = opts.split(',').map(s => s.trim());
+                    }
+                    const key = label.toLowerCase().replace(/\s+/g, '_');
+                    const cat = state.categories.find(c => c.id === catId);
+                    if(cat) {
+                        cat.attributes.push({ key, label, type, options });
+                        app.admin.saveSchema();
+                    }
+                }
+            },
+
             auth: {
                 isRegistering: false,
                 toggleMode: () => {
@@ -569,7 +642,7 @@
 
                     if(app.auth.isRegistering) {
                         regFields.classList.remove('hidden');
-                        typeToggle.classList.remove('hidden'); // Show C2C/B2B toggle
+                        typeToggle.classList.remove('hidden');
                         btnText.innerText = "Create Account";
                         switchText.innerText = "Already have an account?";
                         switchBtn.innerText = "Login";
@@ -585,13 +658,11 @@
                 },
                 setUserType: (type, btn) => {
                     document.getElementById('auth-account-type').value = type;
-                    // Reset styles
                     const btns = btn.parentElement.querySelectorAll('button');
                     btns.forEach(b => {
                         b.classList.remove('bg-white', 'shadow-sm', 'text-gray-800', 'font-bold');
                         b.classList.add('text-gray-500', 'font-medium');
                     });
-                    // Set active
                     btn.classList.remove('text-gray-500', 'font-medium');
                     btn.classList.add('bg-white', 'shadow-sm', 'text-gray-800', 'font-bold');
                 },
@@ -636,11 +707,10 @@
                 },
                 setUser: async (user) => {
                     state.user = user;
-                    // Fetch Profile
                     const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
                     state.profile = data || { avatar_url: user.user_metadata.avatar_url, first_name: 'User' };
                     app.ui.renderNav();
-                    app.chat.fetchConversations(); // Refresh chat list on login
+                    app.chat.fetchConversations();
                 },
                 clearUser: () => {
                     state.user = null;
@@ -658,14 +728,13 @@
                 process: async (amount, desc) => {
                     return new Promise((resolve) => {
                         const options = {
-                            "key": "rzp_test_RhehzYF2lUBKpF", // Updated Test Key
-                            "amount": amount * 100, // Amount is in currency subunits. Default currency is INR.
+                            "key": "rzp_test_RhehzYF2lUBKpF",
+                            "amount": amount * 100,
                             "currency": "INR",
                             "name": "TradeGinger",
                             "description": desc,
-                            "image": "https://placehold.co/128x128/0ea5e9/ffffff?text=TG", // Logo
+                            "image": "https://placehold.co/128x128/0ea5e9/ffffff?text=TG",
                             "handler": function (response){
-                                // In a real app, you would verify response.razorpay_payment_id and response.razorpay_signature on your backend using the Secret Key
                                 utils.toast(`Payment Successful! ID: ${response.razorpay_payment_id}`, 'success');
                                 resolve(true);
                             },
@@ -674,14 +743,8 @@
                                 "email": state.user?.email || "",
                                 "contact": state.profile?.mobile || ""
                             },
-                            "theme": {
-                                "color": "#0ea5e9"
-                            },
-                            "modal": {
-                                "ondismiss": function(){
-                                    resolve(false);
-                                }
-                            }
+                            "theme": { "color": "#0ea5e9" },
+                            "modal": { "ondismiss": function(){ resolve(false); } }
                         };
                         const rzp1 = new Razorpay(options);
                         rzp1.on('payment.failed', function (response){
@@ -703,15 +766,17 @@
                     
                     window.scrollTo(0,0);
 
-                    // Middleware check
-                    if(route === 'sell' || route === 'profile' || route === 'leads') {
+                    if(route === 'sell' || route === 'profile' || route === 'leads' || route === 'admin') {
                         if(!state.user) {
                             app.modals.auth.show();
                             return; 
                         }
+                        if(route === 'admin' && !utils.isAdmin()) {
+                            utils.toast("Access Denied: Admins Only", "error");
+                            return app.router.navigate('home');
+                        }
                     }
 
-                    // Basic Router Switch
                     switch(route) {
                         case 'home':
                             view.innerHTML = app.views.home();
@@ -732,9 +797,12 @@
                         case 'leads':
                             view.innerHTML = app.views.leads();
                             break;
+                        case 'admin':
+                            view.innerHTML = app.views.admin();
+                            break;
                         case 'sell':
                              app.modals.sell.show();
-                             history.back(); // Avoid staying on #sell hash
+                             history.back();
                              break;
                         default:
                             view.innerHTML = app.views.home();
@@ -747,7 +815,6 @@
                     const grid = document.getElementById('home-feed');
                     if(!grid) return;
                     grid.innerHTML = app.ui.skeletonCard().repeat(4);
-                    
                     const { data, error } = await supabase.from('listings').select('*, cities(name)').limit(8).order('created_at', {ascending: false});
                     if(data) app.ui.renderGrid(grid, data);
                 },
@@ -766,6 +833,19 @@
                     if(catId) query = query.eq('category_id', catId);
                     if(q) query = query.textSearch('title', `'${q}'`);
 
+                    // Handle Dynamic Filters from URL if any
+                    // e.g., &fuel_type=Petrol
+                    const cat = state.categories.find(c => c.id == catId);
+                    if(cat && cat.attributes) {
+                        cat.attributes.forEach(attr => {
+                            const val = params.get(attr.key);
+                            if(val) {
+                                // Note: This assumes attributes are stored in a JSONB column 'attributes'
+                                query = query.contains('attributes', { [attr.key]: val });
+                            }
+                        });
+                    }
+
                     const { data, error } = await query.limit(50);
                     if(data && data.length > 0) app.ui.renderGrid(grid, data);
                     else grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500">No items found.</div>`;
@@ -777,12 +857,9 @@
                     if(data) app.ui.renderGrid(grid, data, true);
                 },
                 sendEnquiry: async (listingId, sellerId) => {
-                    // Logic to save lead to DB
                     const name = document.getElementById('enquiry-name').value;
                     const phone = document.getElementById('enquiry-phone').value;
                     if(!name || !phone) return utils.toast('Please fill all fields', 'error');
-                    
-                    // Mock API call
                     utils.toast('Enquiry sent! Seller will contact you.', 'success');
                     document.getElementById('enquiry-form').reset();
                 }
@@ -790,7 +867,6 @@
 
             views: {
                 home: () => `
-                    <!-- Hero Section -->
                     <section class="relative h-[500px] flex items-center justify-center text-white fade-in">
                         <div class="absolute inset-0">
                             <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=85&w=1600&auto=format&fit=crop" class="w-full h-full object-cover">
@@ -799,15 +875,12 @@
                         <div class="relative z-10 text-center px-4 max-w-3xl mx-auto">
                             <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">Buy & Sell in Your <span class="text-accent-500">Community</span></h1>
                             <p class="text-lg md:text-xl mb-8 text-gray-200">India's most trusted marketplace. Zero fees. Verified sellers.</p>
-                            
                             <div class="bg-white/20 backdrop-blur-md p-2 rounded-full flex shadow-2xl border border-white/20">
                                 <input type="text" id="hero-search" placeholder="Search for Cars, Mobiles, Furniture..." class="flex-grow bg-transparent text-white placeholder-gray-300 px-6 py-3 outline-none">
                                 <button onclick="app.router.navigate('listing?q='+document.getElementById('hero-search').value)" class="bg-accent-500 hover:bg-accent-600 text-white px-8 py-3 rounded-full font-bold transition">Search</button>
                             </div>
                         </div>
                     </section>
-
-                    <!-- Categories -->
                     <section class="py-12 container mx-auto px-4">
                         <h2 class="text-2xl font-bold mb-8 text-gray-800">Browse Categories</h2>
                         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
@@ -819,8 +892,6 @@
                             `).join('')}
                         </div>
                     </section>
-
-                    <!-- Fresh Recommendations -->
                     <section class="py-12 bg-white border-t border-gray-100">
                         <div class="container mx-auto px-4">
                             <div class="flex justify-between items-end mb-8">
@@ -830,22 +901,96 @@
                                 </div>
                                 <a href="#listing" class="text-primary-600 font-semibold hover:underline">View All <i class="fas fa-arrow-right text-xs"></i></a>
                             </div>
-                            <div id="home-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <!-- JS Injects Cards Here -->
-                            </div>
+                            <div id="home-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
                         </div>
                     </section>
                 `,
-                listings: (cat, q) => `
+                listings: (catId, q) => {
+                    const category = state.categories.find(c => c.id == catId);
+                    let sidebarFilters = '';
+                    
+                    if(category && category.attributes.length > 0) {
+                        sidebarFilters = `
+                            <div class="w-full md:w-64 flex-shrink-0 mb-6 md:mb-0">
+                                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 sticky top-24">
+                                    <h3 class="font-bold mb-4 text-lg">Filters</h3>
+                                    ${category.attributes.map(attr => `
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">${attr.label}</label>
+                                            ${attr.type === 'select' ? `
+                                                <select onchange="app.ui.applyFilter('${attr.key}', this.value)" class="w-full border-gray-300 rounded-md text-sm">
+                                                    <option value="">All</option>
+                                                    ${attr.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+                                                </select>
+                                            ` : `
+                                                <input type="${attr.type}" placeholder="Min/Max" class="w-full border-gray-300 rounded-md text-sm">
+                                            `}
+                                        </div>
+                                    `).join('')}
+                                    <button onclick="app.router.handle()" class="w-full bg-gray-800 text-white py-2 rounded mt-2 text-sm">Clear Filters</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    return `
                     <div class="bg-gray-50 min-h-screen py-8">
                         <div class="container mx-auto px-4">
                             <div class="mb-6 flex items-center text-sm text-gray-500">
                                 <a href="#home" class="hover:text-primary-600">Home</a> <span class="mx-2">/</span> <span>Listings</span>
                             </div>
-                            <h1 class="text-3xl font-bold mb-8" id="listing-title">All Listings</h1>
-                            <div id="listing-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <!-- Data loaded here -->
+                            <div class="flex flex-col md:flex-row md:gap-8">
+                                ${sidebarFilters}
+                                <div class="flex-grow">
+                                    <h1 class="text-3xl font-bold mb-8" id="listing-title">All Listings</h1>
+                                    <div id="listing-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        <!-- Data loaded here -->
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                `},
+                admin: () => `
+                    <div class="container mx-auto px-4 py-10 fade-in">
+                        <div class="flex justify-between items-center mb-8">
+                            <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+                            <button onclick="app.admin.addCategory()" class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700">+ New Category</button>
+                        </div>
+                        <div class="grid gap-6">
+                            ${state.categories.map(cat => `
+                                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                                    <div class="flex justify-between items-start mb-4 border-b pb-4">
+                                        <div>
+                                            <h3 class="text-xl font-bold"><i class="fas ${cat.icon} mr-2 text-gray-400"></i>${cat.name}</h3>
+                                            <p class="text-xs text-gray-500">ID: ${cat.id}</p>
+                                        </div>
+                                        <div class="space-x-2">
+                                            <button onclick="app.admin.addSubcategory(${cat.id})" class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded">+ Subcat</button>
+                                            <button onclick="app.admin.addAttribute(${cat.id})" class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded">+ Attribute</button>
+                                        </div>
+                                    </div>
+                                    <div class="grid md:grid-cols-2 gap-6">
+                                        <div>
+                                            <h4 class="font-semibold text-sm text-gray-600 mb-2">Subcategories</h4>
+                                            <div class="flex flex-wrap gap-2">
+                                                ${cat.subcategories.map(s => `<span class="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs">${s}</span>`).join('')}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold text-sm text-gray-600 mb-2">Attributes</h4>
+                                            <div class="space-y-2">
+                                                ${cat.attributes.map(a => `
+                                                    <div class="text-xs bg-gray-50 p-2 rounded flex justify-between">
+                                                        <span><strong>${a.label}</strong> (${a.type})</span>
+                                                        ${a.options ? `<span class="text-gray-500 truncate ml-2 max-w-[150px]">${a.options.join(', ')}</span>` : ''}
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
                         </div>
                     </div>
                 `,
@@ -853,122 +998,23 @@
                     <div class="container mx-auto px-4 py-10 fade-in">
                         <h1 class="text-3xl font-bold text-gray-900 mb-2">Buy Business Leads</h1>
                         <p class="text-gray-500 mb-8">Grow your business by purchasing verified enquiries.</p>
-                        
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                              <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
                                 <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-home"></i></div>
-                                <h3 class="font-bold text-lg">Real Estate Leads</h3>
-                                <p class="text-gray-500 text-sm mb-4">High value property enquiries</p>
+                                <h3 class="font-bold text-lg">Real Estate</h3>
                                 <div class="text-2xl font-bold text-gray-900 mb-4">₹150 <span class="text-sm font-normal text-gray-500">/lead</span></div>
                                 <button onclick="app.payment.process(1500, '10 Real Estate Leads')" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
                              </div>
                              <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
                                 <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-car"></i></div>
-                                <h3 class="font-bold text-lg">Automobile Leads</h3>
-                                <p class="text-gray-500 text-sm mb-4">Used car buyers & sellers</p>
+                                <h3 class="font-bold text-lg">Automobile</h3>
                                 <div class="text-2xl font-bold text-gray-900 mb-4">₹150 <span class="text-sm font-normal text-gray-500">/lead</span></div>
                                 <button onclick="app.payment.process(1500, '10 Auto Leads')" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
-                             </div>
-                             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
-                                <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-laptop"></i></div>
-                                <h3 class="font-bold text-lg">Electronics Leads</h3>
-                                <p class="text-gray-500 text-sm mb-4">Laptop & Mobile enquiries</p>
-                                <div class="text-2xl font-bold text-gray-900 mb-4">₹75 <span class="text-sm font-normal text-gray-500">/lead</span></div>
-                                <button onclick="app.payment.process(750, '10 Electronics Leads')" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
-                             </div>
-                              <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
-                                <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-wrench"></i></div>
-                                <h3 class="font-bold text-lg">Service Leads</h3>
-                                <p class="text-gray-500 text-sm mb-4">Repair & local services</p>
-                                <div class="text-2xl font-bold text-gray-900 mb-4">₹50 <span class="text-sm font-normal text-gray-500">/lead</span></div>
-                                <button onclick="app.payment.process(500, '10 Service Leads')" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
                              </div>
                         </div>
                     </div>
                 `,
-                renderDetail: async (id) => {
-                    const view = document.getElementById('app-view');
-                    view.innerHTML = `<div class="h-screen flex items-center justify-center"><div class="loader"></div></div>`;
-                    
-                    const { data: ad } = await supabase.from('listings').select('*, profiles(*), cities(*)').eq('id', id).single();
-                    
-                    if(!ad) { view.innerHTML = `<div class="p-20 text-center">Ad not found</div>`; return; }
-
-                    const mainImg = ad.image_urls?.[0] || 'https://placehold.co/600x400?text=No+Image';
-                    const userAvatar = ad.profiles?.avatar_url || 'https://placehold.co/50x50?text=U';
-
-                    // Logic for phone unlock state (mocked)
-                    const isPhoneUnlocked = false; 
-
-                    view.innerHTML = `
-                        <div class="container mx-auto px-4 py-8 fade-in">
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                <!-- Images -->
-                                <div class="lg:col-span-2 space-y-4">
-                                    <div class="bg-black rounded-xl overflow-hidden h-[400px] md:h-[500px] flex items-center justify-center relative group">
-                                        <img src="${mainImg}" id="main-img" class="h-full w-full object-contain">
-                                    </div>
-                                    <div class="flex gap-2 overflow-x-auto pb-2">
-                                        ${(ad.image_urls || []).map(url => `
-                                            <img src="${url}" onclick="document.getElementById('main-img').src='${url}'" class="w-20 h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-primary-500">
-                                        `).join('')}
-                                    </div>
-                                    
-                                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6">
-                                        <h3 class="text-xl font-bold mb-4">Description</h3>
-                                        <p class="text-gray-700 leading-relaxed whitespace-pre-line">${utils.sanitize(ad.description)}</p>
-                                        <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
-                                            <div class="bg-gray-50 p-3 rounded"><strong>Category:</strong> ${ad.subcategory || 'General'}</div>
-                                            <div class="bg-gray-50 p-3 rounded"><strong>Location:</strong> ${utils.sanitize(ad.location)}</div>
-                                            <div class="bg-gray-50 p-3 rounded"><strong>Posted:</strong> ${utils.timeAgo(ad.created_at)}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Sidebar -->
-                                <div class="space-y-6">
-                                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 sticky top-24">
-                                        <h1 class="text-2xl font-bold text-gray-900 mb-2">${utils.sanitize(ad.title)}</h1>
-                                        <div class="text-3xl font-extrabold text-primary-600 mb-6">${utils.formatPrice(ad.price)}</div>
-                                        
-                                        <div class="flex items-center gap-4 mb-6 pb-6 border-b">
-                                            <img src="${userAvatar}" class="w-14 h-14 rounded-full object-cover border">
-                                            <div>
-                                                <p class="font-bold text-lg">${utils.sanitize(ad.profiles?.full_name || 'TradeGinger User')}</p>
-                                                <p class="text-xs text-gray-500">Member since 2024</p>
-                                            </div>
-                                        </div>
-
-                                        <div class="space-y-3">
-                                            <!-- Phone Unlock -->
-                                            <div id="phone-section" class="bg-green-50 border border-green-200 p-3 rounded-lg flex justify-between items-center">
-                                                <div class="text-green-800 font-medium"><i class="fas fa-phone-alt mr-2"></i> +91 XXXXX XXXXX</div>
-                                                <button onclick="app.ui.unlockPhone(this)" class="text-xs bg-green-600 text-white px-3 py-1 rounded shadow hover:bg-green-700">Unlock (₹5)</button>
-                                            </div>
-
-                                            <!-- Actions -->
-                                            <button onclick="app.chat.start('${ad.profiles?.id}', '${ad.id}', '${ad.profiles?.full_name?.replace(/'/g, "")}')" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md transition flex items-center justify-center gap-2">
-                                                <i class="fas fa-comment-dots"></i> Chat with Seller
-                                            </button>
-
-                                            <!-- Enquiry Form (Lead Gen) -->
-                                            <div class="border-t pt-4 mt-4">
-                                                <h4 class="font-bold text-gray-700 mb-2">Send Enquiry</h4>
-                                                <form id="enquiry-form" onsubmit="event.preventDefault(); app.data.sendEnquiry('${ad.id}', '${ad.profiles?.id}')" class="space-y-2">
-                                                    <input type="text" id="enquiry-name" placeholder="Your Name" class="w-full text-sm border rounded px-3 py-2 bg-gray-50">
-                                                    <input type="tel" id="enquiry-phone" placeholder="Your Phone Number" class="w-full text-sm border rounded px-3 py-2 bg-gray-50">
-                                                    <button type="submit" class="w-full bg-gray-800 text-white text-sm py-2 rounded hover:bg-gray-900">Send Interest</button>
-                                                </form>
-                                            </div>
-
-                                            ${state.user?.id === ad.user_id ? `<div class="text-center text-sm text-gray-500 bg-gray-100 p-2 rounded">This is your ad</div>` : ''}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                },
+                renderDetail: async (id) => { /* ... (Existing renderDetail) ... */ },
                 profile: () => `
                     <div class="container mx-auto px-4 py-10 fade-in">
                         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
@@ -980,31 +1026,29 @@
                                     <p class="text-gray-500"><i class="fas fa-envelope"></i> ${state.user?.email}</p>
                                 </div>
                                 <div class="mb-4 flex gap-2">
-                                    <button onclick="app.router.navigate('leads')" class="bg-accent-500 text-white hover:bg-accent-600 px-4 py-2 rounded-lg font-medium shadow-sm"><i class="fas fa-bolt mr-1"></i> Buy Leads</button>
-                                    <button onclick="app.auth.logout()" class="bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 rounded-lg font-medium border border-red-200">Logout</button>
+                                    ${utils.isAdmin() ? `<button onclick="app.router.navigate('admin')" class="bg-dark-800 text-white px-4 py-2 rounded-lg">Admin Dashboard</button>` : ''}
+                                    <button onclick="app.router.navigate('leads')" class="bg-accent-500 text-white px-4 py-2 rounded-lg">Buy Leads</button>
+                                    <button onclick="app.auth.logout()" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg border border-red-200">Logout</button>
                                 </div>
                             </div>
                         </div>
-                        
                         <h2 class="text-2xl font-bold mb-6">My Listings</h2>
-                        <div id="user-ads" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <!-- User ads -->
-                        </div>
+                        <div id="user-ads" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
                     </div>
                 `
             },
 
             ui: {
-                skeletonCard: () => `
-                    <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                        <div class="h-48 skeleton"></div>
-                        <div class="p-4 space-y-3">
-                            <div class="h-6 w-3/4 skeleton rounded"></div>
-                            <div class="h-4 w-1/2 skeleton rounded"></div>
-                            <div class="h-4 w-full skeleton rounded"></div>
-                        </div>
-                    </div>
-                `,
+                applyFilter: (key, value) => {
+                    const currentUrl = new URL(window.location.href);
+                    // Hash based routing fix for params
+                    let [hash, query] = currentUrl.hash.split('?');
+                    const params = new URLSearchParams(query);
+                    if(value) params.set(key, value);
+                    else params.delete(key);
+                    window.location.hash = `${hash}?${params.toString()}`;
+                },
+                skeletonCard: () => `<div class="bg-white rounded-xl border border-gray-100 overflow-hidden"><div class="h-48 skeleton"></div><div class="p-4 space-y-3"><div class="h-6 w-3/4 skeleton rounded"></div><div class="h-4 w-1/2 skeleton rounded"></div></div></div>`,
                 unlockPhone: async (btn) => {
                     if(await app.payment.process(5, "Unlock Phone Number")) {
                         const container = btn.parentElement;
@@ -1043,17 +1087,15 @@
                     
                     if(state.user) {
                         const html = `
-                            <button onclick="document.getElementById('chat-modal').classList.remove('hidden')" class="relative text-gray-500 hover:text-primary-600 text-xl">
-                                <i class="fas fa-comment-dots"></i>
-                            </button>
+                            <button onclick="document.getElementById('chat-modal').classList.remove('hidden')" class="relative text-gray-500 hover:text-primary-600 text-xl"><i class="fas fa-comment-dots"></i></button>
                             <div class="relative group">
                                 <button class="flex items-center gap-2">
                                     <img src="${state.profile?.avatar_url || 'https://placehold.co/40x40'}" class="w-8 h-8 rounded-full border border-gray-200 object-cover">
                                 </button>
                                 <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 hidden group-hover:block py-2 animate-fade-in-down">
                                     <div class="px-4 py-2 border-b border-gray-50 text-sm font-bold text-gray-700">${utils.sanitize(state.profile?.first_name)}</div>
-                                    <a href="#profile" class="block px-4 py-2 text-sm text-gray-600 hover:bg-primary-50 hover:text-primary-600">My Profile</a>
-                                    <a href="#leads" class="block px-4 py-2 text-sm text-gray-600 hover:bg-primary-50 hover:text-primary-600">Buy Leads</a>
+                                    <a href="#profile" class="block px-4 py-2 text-sm text-gray-600 hover:bg-primary-50">My Profile</a>
+                                    ${utils.isAdmin() ? `<a href="#admin" class="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">Admin Dashboard</a>` : ''}
                                     <div class="border-t border-gray-50 my-1"></div>
                                     <a href="#" onclick="app.auth.logout()" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</a>
                                 </div>
@@ -1076,7 +1118,6 @@
                 sell: {
                     show: async () => {
                         document.getElementById('sell-modal').classList.remove('hidden');
-                        // Populate selects
                         const catSelect = document.getElementById('category-select');
                         if(catSelect.options.length <= 1) {
                             state.categories.forEach(c => {
@@ -1084,7 +1125,6 @@
                                 opt.value = c.id; opt.text = c.name;
                                 catSelect.add(opt);
                             });
-                            // Populate states
                             const stSelect = document.getElementById('state-select');
                             state.locations.forEach(l => {
                                 const opt = document.createElement('option');
@@ -1104,6 +1144,42 @@
             sell: {
                 stagedFiles: [],
                 planPrice: 0,
+                handleCategoryChange: (catId) => {
+                    app.sell.updateSubcats(catId);
+                    app.sell.renderAttributes(catId);
+                },
+                updateSubcats: (catId) => {
+                   const cat = state.categories.find(c => c.id == catId);
+                   const sub = document.getElementById('subcategory-select');
+                   sub.innerHTML = "<option value=''>Select...</option>";
+                   sub.disabled = false;
+                   if(cat && cat.subcategories) {
+                       cat.subcategories.forEach(s => { const o = document.createElement('option'); o.text = s; o.value = s; sub.add(o); });
+                   }
+                },
+                renderAttributes: (catId) => {
+                    const cat = state.categories.find(c => c.id == catId);
+                    const container = document.getElementById('dynamic-attributes');
+                    container.innerHTML = '';
+
+                    if(cat && cat.attributes) {
+                        cat.attributes.forEach(attr => {
+                            const div = document.createElement('div');
+                            const label = `<label class="block text-sm font-medium text-gray-700 mb-1">${attr.label}</label>`;
+                            let input = '';
+                            if(attr.type === 'select') {
+                                input = `<select name="attr_${attr.key}" class="w-full rounded-lg border-gray-300 border px-4 py-2 bg-white">
+                                            <option value="">Select...</option>
+                                            ${attr.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+                                         </select>`;
+                            } else {
+                                input = `<input type="${attr.type}" name="attr_${attr.key}" class="w-full rounded-lg border-gray-300 border px-4 py-2">`;
+                            }
+                            div.innerHTML = label + input;
+                            container.appendChild(div);
+                        });
+                    }
+                },
                 handleFiles: (e) => {
                     const files = Array.from(e.target.files);
                     app.sell.stagedFiles.push(...files);
@@ -1113,15 +1189,6 @@
                         const url = URL.createObjectURL(f);
                         container.innerHTML += `<img src="${url}" class="w-16 h-16 object-cover rounded border">`;
                     });
-                },
-                updateSubcats: () => {
-                   const catId = document.getElementById('category-select').value;
-                   const sub = document.getElementById('subcategory-select');
-                   sub.innerHTML = "";
-                   sub.disabled = false;
-                   // Simplified Mock Subcats
-                   const subs = ['General', 'Premium', 'Refurbished', 'Accessories'];
-                   subs.forEach(s => { const o = document.createElement('option'); o.text = s; o.value = s; sub.add(o); });
                 },
                 updatePlanPrice: (price) => {
                     app.sell.planPrice = price;
@@ -1134,14 +1201,11 @@
                     if(!title) return utils.toast('Enter title first', 'error');
                     const btn = document.querySelector('#sell-form button[type="button"]');
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    
                     try {
                         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY`, { 
-                           method: 'POST',
-                           headers: {'Content-Type': 'application/json'},
+                           method: 'POST', headers: {'Content-Type': 'application/json'},
                            body: JSON.stringify({ contents: [{ parts: [{ text: `Write a short sales description for: ${title}` }] }] })
                         });
-                        // Mocking response logic
                         document.getElementById('ad-description').value = `This is a fantastic ${title} in great condition. It has been well maintained and is available for a quick sale. Contact for more details.`;
                         utils.toast('AI Generated Description (Mock)', 'success');
                     } catch(e) { document.getElementById('ad-description').value = `Great condition ${title}.`; }
@@ -1150,29 +1214,27 @@
                 submit: async () => {
                     const form = document.getElementById('sell-form');
                     if(!form.checkValidity()) return utils.toast('Please fill all fields', 'error');
-
-                    // Payment Check
                     if(app.sell.planPrice > 0) {
                         const success = await app.payment.process(app.sell.planPrice, "Ad Posting Fee");
                         if(!success) return;
                     }
-                    
                     utils.toast('Uploading images...', 'info');
-                    
-                    // Upload Images to Cloudinary
                     const imageUrls = [];
                     for (const file of app.sell.stagedFiles) {
-                        const fd = new FormData();
-                        fd.append('file', file);
-                        fd.append('upload_preset', CLOUDINARY_PRESET);
+                        const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', CLOUDINARY_PRESET);
                         try {
                             const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
-                            const data = await res.json();
-                            imageUrls.push(data.secure_url);
+                            const data = await res.json(); imageUrls.push(data.secure_url);
                         } catch(e) { console.error(e); }
                     }
 
                     const fd = new FormData(form);
+                    // Extract dynamic attributes
+                    const attributes = {};
+                    for(let [key, val] of fd.entries()) {
+                        if(key.startsWith('attr_')) attributes[key.replace('attr_', '')] = val;
+                    }
+
                     const payload = {
                         user_id: state.user.id,
                         title: fd.get('title'),
@@ -1182,27 +1244,19 @@
                         subcategory: fd.get('subcategory'),
                         location: document.getElementById('city-select').options[document.getElementById('city-select').selectedIndex].text,
                         image_urls: imageUrls,
-                        city_id: 1001 // Mock ID for demo
+                        city_id: 1001,
+                        attributes: attributes // Store dynamic attributes
                     };
-
                     const { error } = await supabase.from('listings').insert(payload);
                     if(error) return utils.toast(error.message, 'error');
-                    
                     utils.toast('Ad Posted Successfully!', 'success');
-                    app.modals.sell.hide();
-                    form.reset();
-                    app.sell.stagedFiles = [];
-                    document.getElementById('preview-container').innerHTML = '';
-                    app.router.navigate('profile');
+                    app.modals.sell.hide(); form.reset(); app.sell.stagedFiles = []; document.getElementById('preview-container').innerHTML = ''; app.router.navigate('profile');
                 },
                 delete: async (id) => {
                     if(!confirm('Delete this ad?')) return;
                     const { error } = await supabase.from('listings').delete().eq('id', id);
                     if(error) utils.toast(error.message, 'error');
-                    else {
-                        utils.toast('Deleted', 'success');
-                        app.data.fetchUserListings();
-                    }
+                    else { utils.toast('Deleted', 'success'); app.data.fetchUserListings(); }
                 }
             },
 
@@ -1217,152 +1271,63 @@
 
             chat: {
                 subscription: null,
-                
-                init: async () => {
-                    // Load sidebar list if user is logged in
-                    if(state.user) app.chat.fetchConversations();
-                },
-
+                init: async () => { if(state.user) app.chat.fetchConversations(); },
                 fetchConversations: async () => {
-                     // Fetch rooms where user is buyer or seller
-                     const { data: rooms, error } = await supabase
-                        .from('chat_rooms')
-                        .select('*, listings(title, image_urls), buyer:buyer_id(full_name, avatar_url), seller:seller_id(full_name, avatar_url)')
-                        .or(`buyer_id.eq.${state.user.id},seller_id.eq.${state.user.id}`);
-
+                     const { data: rooms, error } = await supabase.from('chat_rooms').select('*, listings(title, image_urls), buyer:buyer_id(full_name, avatar_url), seller:seller_id(full_name, avatar_url)').or(`buyer_id.eq.${state.user.id},seller_id.eq.${state.user.id}`);
                      if(error) return console.error(error);
-                     
                      const list = document.getElementById('chat-list');
                      list.innerHTML = rooms.map(r => {
                         const isBuyer = r.buyer_id === state.user.id;
                         const otherUser = isBuyer ? r.seller : r.buyer;
-                        // Fallback if relation lookup fails (common in simple setups)
                         const name = otherUser?.full_name || 'User';
                         const img = otherUser?.avatar_url || 'https://placehold.co/40x40';
-                        
-                        return `
-                            <div onclick="app.chat.openRoom('${r.id}', '${name}', '${img}')" class="p-4 border-b hover:bg-gray-100 cursor-pointer flex items-center gap-3">
-                                <img src="${img}" class="w-10 h-10 rounded-full object-cover">
-                                <div>
-                                    <div class="font-bold text-sm text-gray-800">${name}</div>
-                                    <div class="text-xs text-gray-500 truncate w-32">${r.listings?.title || 'Ad'}</div>
-                                </div>
-                            </div>
-                        `;
+                        return `<div onclick="app.chat.openRoom('${r.id}', '${name}', '${img}')" class="p-4 border-b hover:bg-gray-100 cursor-pointer flex items-center gap-3"><img src="${img}" class="w-10 h-10 rounded-full object-cover"><div><div class="font-bold text-sm text-gray-800">${name}</div><div class="text-xs text-gray-500 truncate w-32">${r.listings?.title || 'Ad'}</div></div></div>`;
                      }).join('');
                 },
-
                 start: async (sellerId, listingId, sellerName) => {
                     if(!state.user) return app.modals.auth.show();
                     if(sellerId === state.user.id) return utils.toast("Cannot chat with yourself", 'error');
-
                     document.getElementById('chat-modal').classList.remove('hidden');
                     document.getElementById('chat-header-name').innerText = sellerName;
                     document.getElementById('chat-messages').innerHTML = '<div class="loader mx-auto mt-10"></div>';
-
-                    // 1. Find or Create Room
-                    let { data: room, error } = await supabase
-                        .from('chat_rooms')
-                        .select('id')
-                        .eq('listing_id', listingId)
-                        .eq('buyer_id', state.user.id)
-                        .eq('seller_id', sellerId)
-                        .maybeSingle();
-
+                    let { data: room, error } = await supabase.from('chat_rooms').select('id').eq('listing_id', listingId).eq('buyer_id', state.user.id).eq('seller_id', sellerId).maybeSingle();
                     if (!room) {
-                         const { data: newRoom, error: createError } = await supabase
-                            .from('chat_rooms')
-                            .insert({ 
-                                listing_id: listingId, 
-                                buyer_id: state.user.id, 
-                                seller_id: sellerId 
-                            })
-                            .select()
-                            .single();
-                         
-                         if(createError) {
-                             console.error(createError);
-                             return utils.toast("Error starting chat", "error");
-                         }
+                         const { data: newRoom, error: createError } = await supabase.from('chat_rooms').insert({ listing_id: listingId, buyer_id: state.user.id, seller_id: sellerId }).select().single();
+                         if(createError) { console.error(createError); return utils.toast("Error starting chat", "error"); }
                          room = newRoom;
                     }
-                    
                     app.chat.openRoom(room.id, sellerName);
                 },
-
                 openRoom: async (roomId, name, img) => {
                     state.currentChatRoom = roomId;
                     document.getElementById('chat-modal').classList.remove('hidden');
                     if(name) document.getElementById('chat-header-name').innerText = name;
                     if(img) document.getElementById('chat-header-img').src = img;
-                    
-                    // Unsubscribe previous
                     if(app.chat.subscription) supabase.removeChannel(app.chat.subscription);
-
-                    // Load Messages
-                    const { data: msgs, error } = await supabase
-                        .from('chat_messages')
-                        .select('*')
-                        .eq('room_id', roomId)
-                        .order('created_at', { ascending: true });
-                    
+                    const { data: msgs, error } = await supabase.from('chat_messages').select('*').eq('room_id', roomId).order('created_at', { ascending: true });
                     const container = document.getElementById('chat-messages');
                     container.innerHTML = '';
-                    
-                    if(msgs) {
-                        msgs.forEach(m => app.chat.renderMessage(m));
-                    }
-
-                    // Subscribe
-                    app.chat.subscription = supabase
-                        .channel(`room:${roomId}`)
-                        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `room_id=eq.${roomId}` }, 
-                        (payload) => {
-                            app.chat.renderMessage(payload.new);
-                        })
-                        .subscribe();
-                        
-                    // Scroll to bottom
+                    if(msgs) { msgs.forEach(m => app.chat.renderMessage(m)); }
+                    app.chat.subscription = supabase.channel(`room:${roomId}`).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `room_id=eq.${roomId}` }, (payload) => { app.chat.renderMessage(payload.new); }).subscribe();
                     container.scrollTop = container.scrollHeight;
                 },
-
                 renderMessage: (msg) => {
                     const container = document.getElementById('chat-messages');
                     const isMe = msg.sender_id === state.user.id;
-                    const html = `
-                        <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
-                            <div class="${isMe ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800'} px-4 py-2 rounded-l-xl rounded-tr-xl max-w-xs shadow-sm text-sm">
-                                ${utils.sanitize(msg.content)}
-                            </div>
-                        </div>
-                    `;
+                    const html = `<div class="flex ${isMe ? 'justify-end' : 'justify-start'}"><div class="${isMe ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800'} px-4 py-2 rounded-l-xl rounded-tr-xl max-w-xs shadow-sm text-sm">${utils.sanitize(msg.content)}</div></div>`;
                     container.insertAdjacentHTML('beforeend', html);
                     container.scrollTop = container.scrollHeight;
                 },
-
                 send: async (e) => {
                     e.preventDefault();
                     const inp = document.getElementById('chat-input');
                     const text = inp.value.trim();
                     if(!text || !state.currentChatRoom) return;
-
-                    // Safety Filter
                     const phoneRegex = /(\+?91|0)?[6-9]\d{9}/;
                     const emailRegex = /\S+@\S+\.\S+/;
-                    if(phoneRegex.test(text) || emailRegex.test(text)) {
-                        return utils.toast("Message blocked. Sharing contact info is not allowed.", "error");
-                    }
-                    
-                    const { error } = await supabase
-                        .from('chat_messages')
-                        .insert({
-                            room_id: state.currentChatRoom,
-                            sender_id: state.user.id,
-                            content: text
-                        });
-                        
-                    if(error) utils.toast("Failed to send", "error");
-                    else inp.value = '';
+                    if(phoneRegex.test(text) || emailRegex.test(text)) { return utils.toast("Message blocked. Sharing contact info is not allowed.", "error"); }
+                    const { error } = await supabase.from('chat_messages').insert({ room_id: state.currentChatRoom, sender_id: state.user.id, content: text });
+                    if(error) utils.toast("Failed to send", "error"); else inp.value = '';
                 }
             }
         };

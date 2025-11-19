@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
     <!-- SEO Configuration -->
-    <title>TradeGinger | India's #1 B2B & C2C Marketplace for Cars, Property & Mobiles</title>
+    <title>TradeGinger | India's #1 B2B & C2C Marketplace</title>
     <meta name="description" content="TradeGinger is the safest platform to buy and sell used cars, property, and electronics. Features verified sellers, secure chat, lead generation for businesses, and premium listings.">
     <meta name="keywords" content="buy leads india, used cars, second hand mobiles, property for sale, b2b marketplace, tradeginger, classifieds">
     <meta name="author" content="TradeGinger Inc.">
     <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0ea5e9">
 
     <!-- Open Graph / Social Media -->
     <meta property="og:title" content="TradeGinger - Buy, Sell & Grow Your Business">
@@ -25,37 +26,39 @@
         script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://*.supabase.co https://generativelanguage.googleapis.com https://checkout.razorpay.com; 
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; 
         font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; 
-        img-src 'self' data: blob: https://* https://placehold.co; 
+        img-src 'self' data: blob: https://* https://placehold.co https://res.cloudinary.com; 
         connect-src 'self' https://*.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://*.supabase.co https://lumberjack.razorpay.com; 
         media-src 'self' blob:;
         frame-src 'self' https://api.razorpay.com;
         object-src 'none';
     ">
 
-    <!-- Preload Critical Assets -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- CSS Libraries (Tailwind & FontAwesome) -->
+    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Razorpay SDK -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-    <!-- Tailwind Configuration -->
+    <!-- Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        primary: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 800: '#075985', 900: '#0c4a6e' }, // Ocean Blue
-                        accent: { 500: '#f59e0b', 600: '#d97706' }, // Amber/Gold
+                        primary: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 800: '#075985', 900: '#0c4a6e' },
+                        accent: { 500: '#f59e0b', 600: '#d97706' },
                         dark: { 800: '#1e293b', 900: '#0f172a' },
-                        gold: { 400: '#fbbf24', 500: '#f59e0b' },
-                        platinum: { 400: '#94a3b8', 500: '#64748b' }
+                        platinum: { start: '#e2e8f0', end: '#94a3b8' },
+                        gold: { start: '#fcd34d', end: '#d97706' }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 15px rgba(14, 165, 233, 0.3)'
                     }
                 }
             }
@@ -63,138 +66,132 @@
     </script>
 
     <style>
-        /* Custom Styles & Animations */
-        body { background-color: #f8fafc; -webkit-font-smoothing: antialiased; }
+        /* Core UI Polish */
+        body { background-color: #f8fafc; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; user-select: none; /* Security: Prevent text selection */ }
         
-        /* Scrollbar */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         /* Animations */
-        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Loading Spinner */
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #0ea5e9; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        /* Loaders & Skeletons */
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #0ea5e9; border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        /* Glassmorphism Utilities */
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+        /* Glassmorphism & Blur */
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.3); }
         
-        /* Toast Notification */
-        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast { padding: 12px 24px; border-radius: 8px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 0.9rem; display: flex; align-items: center; gap: 8px; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        /* Skeleton Loading */
-        .skeleton { background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
-        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        /* Premium Badges */
+        .card-platinum { border: 2px solid transparent; background-image: linear-gradient(white, white), linear-gradient(135deg, #e2e8f0, #64748b); background-origin: border-box; background-clip: content-box, border-box; }
+        .card-gold { border: 2px solid transparent; background-image: linear-gradient(white, white), linear-gradient(135deg, #fcd34d, #d97706); background-origin: border-box; background-clip: content-box, border-box; }
 
-        /* Plan Badges */
-        .badge-platinum { background: linear-gradient(45deg, #e2e8f0, #94a3b8); color: white; }
-        .badge-gold { background: linear-gradient(45deg, #fcd34d, #d97706); color: white; }
+        /* Toast */
+        #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 12px; }
+        .toast { padding: 14px 20px; border-radius: 12px; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.15); font-size: 0.95rem; display: flex; align-items: center; gap: 12px; animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); backdrop-filter: blur(4px); }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body class="text-gray-800 flex flex-col min-h-screen">
 
-    <!-- Navigation Bar -->
-    <nav class="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
+    <!-- Protected Navigation -->
+    <nav class="glass sticky top-0 z-50 shadow-sm transition-all duration-300">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
+            <div class="flex justify-between h-16 items-center">
                 <!-- Logo -->
-                <div class="flex items-center">
-                    <a href="#home" class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-gradient-to-br from-primary-600 to-primary-800 rounded-lg flex items-center justify-center text-white font-bold text-xl">T</div>
-                        <span class="text-2xl font-extrabold tracking-tight text-dark-900">Trade<span class="text-primary-600">Ginger</span></span>
-                    </a>
-                </div>
+                <a href="#home" class="flex items-center gap-2 group">
+                    <div class="w-9 h-9 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center text-white font-extrabold text-xl shadow-lg group-hover:scale-105 transition-transform">TG</div>
+                    <span class="text-2xl font-extrabold tracking-tighter text-dark-900">Trade<span class="text-primary-600">Ginger</span></span>
+                </a>
 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-6">
-                    <!-- Search Bar (Compact) -->
-                    <div class="relative group">
-                        <input type="text" id="nav-search" placeholder="Search..." class="w-48 transition-all duration-300 focus:w-72 pl-10 pr-4 py-1.5 bg-gray-100 border-transparent focus:bg-white border focus:border-primary-500 rounded-full text-sm focus:outline-none">
-                        <i class="fas fa-search absolute left-3.5 top-2.5 text-gray-400"></i>
-                    </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <form onsubmit="app.ui.handleSearch(event)" class="relative group">
+                        <input type="text" id="nav-search" placeholder="Find cars, phones, property..." class="w-64 transition-all duration-300 focus:w-80 pl-10 pr-4 py-2 bg-gray-100/80 border-transparent focus:bg-white border focus:border-primary-500 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-100">
+                        <i class="fas fa-search absolute left-3.5 top-2.5 text-gray-400 group-focus-within:text-primary-500 transition-colors"></i>
+                    </form>
 
-                    <a href="#home" class="text-gray-600 hover:text-primary-600 font-medium transition-colors">Home</a>
+                    <a href="#home" class="text-gray-600 hover:text-primary-600 font-medium transition-colors text-sm">Home</a>
                     
-                    <!-- Auth Logic Handled by JS -->
-                    <div id="nav-auth-section" class="flex items-center space-x-4">
+                    <!-- Auth Logic -->
+                    <div id="nav-auth-section" class="flex items-center space-x-4 relative">
                         <!-- Injected via JS -->
                     </div>
                     
-                    <button onclick="app.router.navigate('sell')" class="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white px-5 py-2 rounded-full font-bold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
-                        <i class="fas fa-plus"></i> SELL
+                    <button onclick="app.router.navigate('sell')" class="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white px-6 py-2.5 rounded-full font-bold shadow-lg hover:shadow-accent-500/30 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 text-sm">
+                        <i class="fas fa-plus-circle"></i> SELL
                     </button>
                 </div>
 
                 <!-- Mobile Menu Button -->
-                <div class="flex items-center md:hidden">
-                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-primary-600 focus:outline-none">
-                        <i class="fas fa-bars text-2xl"></i>
-                    </button>
-                </div>
+                <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-primary-600 p-2 rounded-md hover:bg-gray-100">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
             </div>
         </div>
         
-        <!-- Mobile Menu Dropdown -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full shadow-lg">
-            <div class="px-4 pt-2 pb-4 space-y-3" id="mobile-nav-content">
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white/98 border-t border-gray-100 absolute w-full shadow-xl z-40 backdrop-blur-xl">
+            <div class="px-4 pt-4 pb-6 space-y-3" id="mobile-nav-content">
                 <!-- Injected via JS -->
             </div>
         </div>
     </nav>
 
-    <!-- Main Content Area (SPA Router View) -->
-    <main id="app-view" class="flex-grow">
-        <!-- Views will be injected here -->
+    <!-- Main Content Area -->
+    <main id="app-view" class="flex-grow relative z-0">
+        <!-- SPA Views -->
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark-900 text-white pt-12 pb-8 mt-auto">
+    <footer class="bg-dark-900 text-white pt-16 pb-8 mt-auto border-t border-gray-800">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-gray-700 pb-8">
-                <div>
-                    <h3 class="text-2xl font-bold mb-4">TradeGinger</h3>
-                    <p class="text-gray-400 text-sm">The safest way to buy and sell locally. Verified users, secure chat, and premium listings.</p>
-                    <button onclick="app.router.navigate('admin')" class="mt-4 text-xs text-gray-500 hover:text-gray-300"><i class="fas fa-lock mr-1"></i> Admin Login</button>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-gray-800 pb-12">
+                <div class="space-y-4">
+                    <h3 class="text-2xl font-bold tracking-tight">TradeGinger</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">India's safest premium marketplace. Connecting verified buyers and sellers with trust and transparency.</p>
+                    <button onclick="app.router.navigate('admin')" class="text-xs text-gray-600 hover:text-gray-400 flex items-center gap-1 transition"><i class="fas fa-shield-alt"></i> Admin Access</button>
                 </div>
                 <div>
-                    <h4 class="font-semibold mb-4 text-gray-200">For Business</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#leads" class="hover:text-white transition">Buy Leads</a></li>
-                        <li><a href="#sell" class="hover:text-white transition">Business Accounts</a></li>
-                        <li><a href="#" onclick="app.modals.tnc.show()" class="hover:text-white transition">Pricing Plans</a></li>
+                    <h4 class="font-bold mb-4 text-gray-100">Business Solutions</h4>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li><a href="#leads" class="hover:text-primary-400 transition flex items-center gap-2"><i class="fas fa-bolt text-xs"></i> Buy Leads</a></li>
+                        <li><a href="#sell" class="hover:text-primary-400 transition">Business Accounts</a></li>
+                        <li><a href="#" onclick="app.modals.tnc.show()" class="hover:text-primary-400 transition">Pricing & Plans</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-semibold mb-4 text-gray-200">Categories</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#listing?cat=cars" class="hover:text-white transition">Cars</a></li>
-                        <li><a href="#listing?cat=mobiles" class="hover:text-white transition">Mobiles</a></li>
-                        <li><a href="#listing?cat=property" class="hover:text-white transition">Real Estate</a></li>
+                    <h4 class="font-bold mb-4 text-gray-100">Top Categories</h4>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li><a href="#listing?cat=cars" class="hover:text-primary-400 transition">Used Cars</a></li>
+                        <li><a href="#listing?cat=mobiles" class="hover:text-primary-400 transition">Mobile Phones</a></li>
+                        <li><a href="#listing?cat=property" class="hover:text-primary-400 transition">Real Estate</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-semibold mb-4 text-gray-200">Contact</h4>
-                    <p class="text-gray-400 text-sm mb-2"><i class="fas fa-envelope mr-2"></i> sales@tradeginger.com</p>
-                    <p class="text-gray-400 text-sm"><i class="fas fa-map-marker-alt mr-2"></i> Gurugram, India</p>
-                    <div class="flex space-x-4 mt-4">
-                        <a href="#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-twitter"></i></a>
-                    </div>
-                    <div class="mt-6">
-                        <p class="text-gray-400 text-xs mb-2">Scan to Follow</p>
-                        <img src="https://res.cloudinary.com/dcxhenppn/image/upload/v1758373119/tradeginger_qr_abft9t.png" alt="Instagram QR Code" class="w-24 h-24 rounded-lg shadow-md border border-gray-700">
+                    <h4 class="font-bold mb-4 text-gray-100">Get in Touch</h4>
+                    <p class="text-gray-400 text-sm mb-3 flex items-center gap-2"><i class="fas fa-envelope text-primary-500"></i> sales@tradeginger.com</p>
+                    <p class="text-gray-400 text-sm flex items-center gap-2"><i class="fas fa-map-marker-alt text-primary-500"></i> Gurugram, India</p>
+                    
+                    <div class="mt-6 p-3 bg-white/5 rounded-xl inline-block border border-white/10">
+                        <p class="text-gray-400 text-[10px] uppercase tracking-wider mb-2 font-bold">Scan to Follow</p>
+                        <img src="https://res.cloudinary.com/dcxhenppn/image/upload/v1758373119/tradeginger_qr_abft9t.png" alt="Instagram QR" class="w-20 h-20 rounded-lg">
                     </div>
                 </div>
             </div>
-            <div class="text-center pt-8 text-gray-500 text-sm">
-                &copy; 2025 TradeGinger. All rights reserved.
+            <div class="flex flex-col md:flex-row justify-between items-center pt-8 text-gray-500 text-xs">
+                <p>&copy; 2025 TradeGinger Inc. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" onclick="app.modals.privacy.show()" class="hover:text-white transition">Privacy Policy</a>
+                    <a href="#" onclick="app.modals.tnc.show()" class="hover:text-white transition">Terms & Conditions</a>
+                    <a href="#" onclick="app.modals.sitemap.show()" class="hover:text-white transition">Sitemap</a>
+                </div>
             </div>
         </div>
     </footer>
@@ -202,120 +199,125 @@
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
-    <!-- MODALS -->
+    <!-- SYSTEM MODALS -->
     
-    <!-- Auth Modal (Login/Register) -->
-    <div id="auth-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[60] flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 pointer-events-none">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
-            <div class="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50">
-                <h3 class="text-xl font-bold text-gray-800" id="auth-title">Welcome Back</h3>
-                <button onclick="app.modals.auth.hide()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[60] flex items-center justify-center p-4 transition-all duration-300 opacity-0 scale-95 pointer-events-none">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all duration-300">
+            <div class="flex justify-between items-center p-6 border-b border-gray-50">
+                <h3 class="text-xl font-bold text-gray-900" id="auth-title">Welcome Back</h3>
+                <button onclick="app.modals.auth.hide()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <div class="p-6">
+            <div class="p-8">
                 <form id="auth-form" onsubmit="app.auth.handleAuthSubmit(event)">
-                    <!-- User Type Toggle -->
-                    <div id="user-type-toggle" class="hidden mb-6 flex bg-gray-100 p-1 rounded-lg">
-                        <button type="button" class="flex-1 py-2 rounded-md text-sm font-bold bg-white shadow-sm text-gray-800 transition" onclick="app.auth.setUserType('individual', this)">Individual</button>
-                        <button type="button" class="flex-1 py-2 rounded-md text-sm font-medium text-gray-500 hover:text-gray-700 transition" onclick="app.auth.setUserType('business', this)">Business</button>
+                    <div id="user-type-toggle" class="hidden mb-6 flex bg-gray-100 p-1 rounded-xl">
+                        <button type="button" class="flex-1 py-2.5 rounded-lg text-sm font-bold bg-white shadow-sm text-gray-900 transition-all" onclick="app.auth.setUserType('individual', this)">Individual</button>
+                        <button type="button" class="flex-1 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900 transition-all" onclick="app.auth.setUserType('business', this)">Business</button>
                         <input type="hidden" name="accountType" id="auth-account-type" value="individual">
                     </div>
 
-                    <div id="register-fields" class="hidden space-y-4 mb-4">
+                    <div id="register-fields" class="hidden space-y-4 mb-4 animate-fade-in">
                         <div class="grid grid-cols-2 gap-4">
-                            <input type="text" name="firstName" placeholder="First Name" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition">
-                            <input type="text" name="lastName" placeholder="Last Name" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition">
+                            <input type="text" name="firstName" placeholder="First Name" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition bg-gray-50 focus:bg-white">
+                            <input type="text" name="lastName" placeholder="Last Name" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-gray-50 focus:bg-white">
                         </div>
                     </div>
                     
                     <div class="space-y-4">
-                        <div class="relative">
-                            <i class="fas fa-envelope absolute left-3 top-3.5 text-gray-400"></i>
-                            <input type="email" name="email" placeholder="Email Address" required class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition">
+                        <div class="relative group">
+                            <i class="fas fa-envelope absolute left-4 top-4 text-gray-400 group-focus-within:text-primary-500 transition-colors"></i>
+                            <input type="email" name="email" placeholder="Email Address" required class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-gray-50 focus:bg-white">
                         </div>
-                        <div class="relative">
-                            <i class="fas fa-lock absolute left-3 top-3.5 text-gray-400"></i>
-                            <input type="password" name="password" placeholder="Password" required class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none transition">
+                        <div class="relative group">
+                            <i class="fas fa-lock absolute left-4 top-4 text-gray-400 group-focus-within:text-primary-500 transition-colors"></i>
+                            <input type="password" name="password" placeholder="Password" required class="w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-gray-50 focus:bg-white">
                         </div>
                     </div>
 
-                    <div class="mt-6">
-                        <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all hover:shadow-xl flex justify-center items-center gap-2">
-                            <span id="auth-btn-text">Login</span> <i class="fas fa-arrow-right"></i>
-                        </button>
+                    <button type="submit" class="w-full mt-8 bg-primary-600 hover:bg-primary-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary-500/30 transition-all transform hover:-translate-y-0.5 flex justify-center items-center gap-2">
+                        <span id="auth-btn-text">Secure Login</span> <i class="fas fa-arrow-right"></i>
+                    </button>
+
+                    <div class="my-6 flex items-center justify-between">
+                        <span class="border-b w-1/5 lg:w-1/4 border-gray-200"></span>
+                        <span class="text-xs text-gray-400 uppercase font-medium">or continue with</span>
+                        <span class="border-b w-1/5 lg:w-1/4 border-gray-200"></span>
                     </div>
 
-                    <div class="mt-4 relative flex items-center justify-center">
-                        <div class="border-t w-full absolute"></div>
-                        <span class="bg-white px-3 relative text-sm text-gray-500">OR</span>
-                    </div>
-
-                    <button type="button" onclick="app.auth.loginWithGoogle()" class="mt-4 w-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium py-2.5 rounded-lg transition flex items-center justify-center gap-2">
-                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5"> Continue with Google
+                    <button type="button" onclick="app.auth.loginWithGoogle()" class="w-full border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 rounded-xl transition flex items-center justify-center gap-3">
+                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5"> Google
                     </button>
                 </form>
                 
-                <div class="mt-6 text-center text-sm">
-                    <span id="auth-switch-text" class="text-gray-600">Don't have an account?</span>
-                    <button onclick="app.auth.toggleMode()" class="text-primary-600 font-bold hover:underline ml-1" id="auth-switch-btn">Register</button>
+                <div class="mt-8 text-center text-sm">
+                    <span id="auth-switch-text" class="text-gray-500">New to TradeGinger?</span>
+                    <button onclick="app.auth.toggleMode()" class="text-primary-600 font-bold hover:text-primary-700 hover:underline ml-1" id="auth-switch-btn">Create Account</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Sell Modal -->
-    <div id="sell-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[60] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center p-5 border-b">
-                <h3 class="text-xl font-bold">Post an Ad</h3>
-                <button onclick="app.modals.sell.hide()" class="text-gray-500 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+    <div id="sell-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl h-[90vh] flex flex-col animate-fade-in">
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <h3 class="text-xl font-bold text-gray-900" id="sell-modal-title">Post an Ad</h3>
+                <button onclick="app.modals.sell.hide()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto flex-grow">
-                <form id="sell-form" class="space-y-6">
-                    <!-- Progress Steps -->
-                    <div class="flex justify-between mb-6 text-sm font-medium text-gray-500 border-b pb-4">
-                        <span class="text-primary-600">1. Details</span>
-                        <span>2. Images</span>
-                        <span>3. Plan</span>
+            <div class="p-8 overflow-y-auto flex-grow custom-scrollbar">
+                <form id="sell-form" class="space-y-8">
+                    <input type="hidden" name="editing_id" id="edit-id">
+                    
+                    <!-- Steps Indicator -->
+                    <div class="flex justify-between items-center text-sm font-semibold text-gray-400 border-b border-gray-100 pb-4">
+                        <span class="text-primary-600 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-xs">1</span> Details</span>
+                        <span class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xs">2</span> Media</span>
+                        <span class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xs">3</span> Boost</span>
                     </div>
 
-                    <!-- Details -->
+                    <!-- Section: Category -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                            <select id="category-select" name="category" required onchange="app.sell.handleCategoryChange(this.value)" class="w-full rounded-lg border-gray-300 border px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none bg-white">
-                                <option value="">Select...</option>
-                            </select>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Category</label>
+                            <div class="relative">
+                                <select id="category-select" name="category" required onchange="app.sell.handleCategoryChange(this.value)" class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none bg-gray-50 focus:bg-white appearance-none">
+                                    <option value="">Select Category...</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-4 top-3.5 text-gray-400 pointer-events-none"></i>
+                            </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Sub-Category</label>
-                            <select id="subcategory-select" name="subcategory" required class="w-full rounded-lg border-gray-300 border px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none bg-white" disabled>
-                                <option value="">Select Category First</option>
-                            </select>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Sub-Category</label>
+                            <div class="relative">
+                                <select id="subcategory-select" name="subcategory" required class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none bg-gray-50 focus:bg-white appearance-none disabled:opacity-50" disabled>
+                                    <option value="">Select Category First</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-4 top-3.5 text-gray-400 pointer-events-none"></i>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Dynamic Attributes Container -->
-                    <div id="dynamic-attributes" class="grid grid-cols-1 md:grid-cols-2 gap-6 border-b border-gray-100 pb-6">
-                        <!-- Attributes Injected Here -->
-                    </div>
+                    <!-- Dynamic Attributes -->
+                    <div id="dynamic-attributes" class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-gray-50 rounded-xl border border-gray-100 empty:hidden"></div>
 
+                    <!-- Basic Info -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                            <input type="text" name="title" required class="w-full rounded-lg border-gray-300 border px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Ad Title</label>
+                            <input type="text" name="title" placeholder="e.g. 2022 Honda City ZX" required class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
-                            <input type="number" name="price" required class="w-full rounded-lg border-gray-300 border px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Price (₹)</label>
+                            <input type="number" name="price" placeholder="0" required class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none font-bold text-gray-800">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Description</label>
                         <div class="relative">
-                            <textarea name="description" id="ad-description" rows="4" required class="w-full rounded-lg border-gray-300 border px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none"></textarea>
-                            <button type="button" onclick="app.sell.generateAI()" class="absolute bottom-2 right-2 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-md hover:bg-purple-200 transition flex items-center gap-1">
-                                <i class="fas fa-magic"></i> AI Write
+                            <textarea name="description" id="ad-description" rows="4" placeholder="Describe features, condition, and reason for selling..." required class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none resize-none"></textarea>
+                            <button type="button" onclick="app.sell.generateAI()" class="absolute bottom-3 right-3 text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg hover:bg-purple-700 transition shadow-md flex items-center gap-1.5 font-medium">
+                                <i class="fas fa-wand-magic-sparkles"></i> AI Write
                             </button>
                         </div>
                     </div>
@@ -323,137 +325,250 @@
                     <!-- Location -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                          <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
-                            <select id="state-select" required onchange="app.location.populateCities(this.value, 'city-select')" class="w-full rounded-lg border-gray-300 border px-4 py-2 bg-white"></select>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">State</label>
+                            <select id="state-select" required onchange="app.location.populateCities(this.value, 'city-select')" class="w-full rounded-xl border-gray-200 border px-4 py-3 bg-white"></select>
                         </div>
                         <div>
-                             <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
-                            <select id="city-select" name="city_id" required class="w-full rounded-lg border-gray-300 border px-4 py-2 bg-white" disabled></select>
+                             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">City</label>
+                            <select id="city-select" name="city_id" required class="w-full rounded-xl border-gray-200 border px-4 py-3 bg-white" disabled></select>
                         </div>
                     </div>
 
-                    <!-- Image Upload -->
-                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-500 hover:bg-primary-50 transition cursor-pointer relative" onclick="document.getElementById('file-upload').click()">
+                    <!-- Media -->
+                    <div class="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center hover:border-primary-500 hover:bg-primary-50/50 transition cursor-pointer relative group" onclick="document.getElementById('file-upload').click()">
                         <input type="file" id="file-upload" multiple accept="image/*" class="hidden" onchange="app.sell.handleFiles(event)">
-                        <i class="fas fa-cloud-upload-alt text-4xl text-primary-400 mb-3"></i>
-                        <p class="text-gray-600 font-medium">Click to upload photos</p>
-                        <p class="text-xs text-gray-400 mt-1">Max 5MB per image</p>
+                        <div class="w-16 h-16 bg-primary-100 text-primary-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-cloud-upload-alt text-2xl"></i>
+                        </div>
+                        <p class="text-gray-900 font-bold">Click to upload photos</p>
+                        <p class="text-xs text-gray-500 mt-1">JPG, PNG, WEBP (Max 5MB)</p>
                     </div>
-                    <div id="preview-container" class="flex gap-2 overflow-x-auto pb-2"></div>
+                    <div id="preview-container" class="flex gap-3 overflow-x-auto pb-2 snap-x"></div>
 
-                    <!-- Plans Selection -->
-                    <div class="pt-4 border-t">
-                        <h4 class="text-lg font-bold mb-3">Select Plan</h4>
+                    <!-- Plans -->
+                    <div class="pt-6 border-t border-gray-100" id="plan-selection-section">
+                        <h4 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-rocket text-primary-500"></i> Boost Visibility</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <!-- Free Plan -->
-                            <label class="cursor-pointer">
+                            <!-- Free -->
+                            <label class="cursor-pointer group">
                                 <input type="radio" name="plan" value="free" class="peer hidden" checked onchange="app.sell.updatePlanPrice(0)">
-                                <div class="border rounded-xl p-4 hover:border-primary-500 peer-checked:border-primary-600 peer-checked:bg-primary-50 peer-checked:ring-1 peer-checked:ring-primary-500 transition h-full flex flex-col">
-                                    <div class="font-bold text-gray-800">Free Plan</div>
-                                    <div class="text-xl font-bold text-primary-600 my-1">₹0</div>
-                                    <div class="text-xs text-gray-500 space-y-1 mt-2 flex-grow">
-                                        <p>✓ Active for 45 days</p>
-                                        <p>✓ Phone hidden (Safe)</p>
-                                    </div>
+                                <div class="border-2 border-gray-100 rounded-xl p-5 hover:border-primary-400 peer-checked:border-primary-600 peer-checked:bg-primary-50 transition h-full">
+                                    <div class="font-bold text-gray-800">Standard</div>
+                                    <div class="text-2xl font-extrabold text-gray-900 my-2">₹0</div>
+                                    <ul class="text-xs text-gray-500 space-y-2">
+                                        <li class="flex gap-2"><i class="fas fa-check text-green-500"></i> 45 Days Visibility</li>
+                                        <li class="flex gap-2"><i class="fas fa-shield-alt text-green-500"></i> Secure Masked Number</li>
+                                    </ul>
                                 </div>
                             </label>
-                            <!-- C2C/Premium -->
-                            <label class="cursor-pointer">
+                            <!-- Gold -->
+                            <label class="cursor-pointer group">
                                 <input type="radio" name="plan" value="gold" class="peer hidden" onchange="app.sell.updatePlanPrice(99)">
-                                <div class="border rounded-xl p-4 hover:border-gold-500 peer-checked:border-gold-500 peer-checked:bg-yellow-50 peer-checked:ring-1 peer-checked:ring-gold-500 transition h-full flex flex-col relative overflow-hidden">
-                                    <div class="absolute top-0 right-0 bg-gold-500 text-white text-[10px] px-2 py-0.5">Recommended</div>
+                                <div class="border-2 border-gray-100 rounded-xl p-5 hover:border-yellow-400 peer-checked:border-yellow-500 peer-checked:bg-yellow-50 transition h-full relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 bg-yellow-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">POPULAR</div>
                                     <div class="font-bold text-gray-800">Gold / C2C</div>
-                                    <div class="text-xl font-bold text-gold-500 my-1">₹99</div>
-                                    <div class="text-xs text-gray-500 space-y-1 mt-2 flex-grow">
-                                        <p>✓ Active for 20 days</p>
-                                        <p>✓ <strong>Phone Visible</strong> (Verified)</p>
-                                        <p>✓ Top of Category</p>
-                                    </div>
+                                    <div class="text-2xl font-extrabold text-yellow-600 my-2">₹99</div>
+                                    <ul class="text-xs text-gray-600 space-y-2 font-medium">
+                                        <li class="flex gap-2"><i class="fas fa-check text-yellow-600"></i> <strong>Phone Visible</strong> (Trusted)</li>
+                                        <li class="flex gap-2"><i class="fas fa-check text-yellow-600"></i> Top of Category Search</li>
+                                    </ul>
                                 </div>
                             </label>
                             <!-- Platinum -->
-                            <label class="cursor-pointer">
+                            <label class="cursor-pointer group">
                                 <input type="radio" name="plan" value="platinum" class="peer hidden" onchange="app.sell.updatePlanPrice(499)">
-                                <div class="border rounded-xl p-4 hover:border-gray-800 peer-checked:border-gray-800 peer-checked:bg-gray-100 peer-checked:ring-1 peer-checked:ring-gray-800 transition h-full flex flex-col">
+                                <div class="border-2 border-gray-100 rounded-xl p-5 hover:border-gray-800 peer-checked:border-gray-800 peer-checked:bg-gray-100 peer-checked:ring-1 peer-checked:ring-gray-800 transition h-full">
                                     <div class="font-bold text-gray-800">Platinum</div>
-                                    <div class="text-xl font-bold text-gray-800 my-1">₹499</div>
-                                    <div class="text-xs text-gray-500 space-y-1 mt-2 flex-grow">
-                                        <p>✓ Featured on Homepage</p>
-                                        <p>✓ Social Media Promo</p>
-                                        <p>✓ Dedicated Support</p>
-                                    </div>
+                                    <div class="text-2xl font-extrabold text-gray-900 my-2">₹499</div>
+                                    <ul class="text-xs text-gray-600 space-y-2">
+                                        <li class="flex gap-2"><i class="fas fa-star text-gray-800"></i> Featured on Homepage</li>
+                                        <li class="flex gap-2"><i class="fas fa-bullhorn text-gray-800"></i> Social Media Promo</li>
+                                    </ul>
                                 </div>
                             </label>
                         </div>
+                    </div>
+                    
+                    <!-- Compliance Checkbox -->
+                     <div class="mt-4 flex items-center gap-2 text-sm text-gray-600">
+                        <input type="checkbox" id="accept-terms" required class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 cursor-pointer">
+                        <label for="accept-terms" class="cursor-pointer">
+                            I accept the <a href="#" onclick="app.modals.tnc.show()" class="text-primary-600 font-semibold hover:underline">Terms & Conditions</a> and <a href="#" onclick="app.modals.privacy.show()" class="text-primary-600 font-semibold hover:underline">Privacy Policy</a>.
+                        </label>
                     </div>
 
                 </form>
             </div>
-            <div class="p-5 border-t bg-gray-50 flex justify-between items-center">
-                <div class="text-sm text-gray-600">Total: <span id="total-plan-price" class="font-bold text-lg text-primary-600">₹0</span></div>
+            <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-between items-center rounded-b-2xl">
+                <div class="text-sm text-gray-600 font-medium">Total: <span id="total-plan-price" class="font-extrabold text-xl text-primary-700 ml-2">₹0</span></div>
                 <div class="flex gap-3">
-                    <button onclick="app.modals.sell.hide()" class="px-5 py-2 rounded-lg text-gray-600 hover:bg-gray-200 transition">Cancel</button>
-                    <button onclick="app.sell.submit()" class="px-5 py-2 rounded-lg bg-accent-500 text-white font-bold hover:bg-accent-600 shadow-md transition">Post & Pay</button>
+                    <button onclick="app.modals.sell.hide()" class="px-6 py-2.5 rounded-xl text-gray-600 hover:bg-gray-200 font-medium transition">Cancel</button>
+                    <button onclick="app.sell.submit()" id="sell-submit-btn" class="px-8 py-2.5 rounded-xl bg-accent-500 text-white font-bold hover:bg-accent-600 shadow-lg hover:shadow-accent-500/40 transition transform hover:-translate-y-0.5">Post & Pay</button>
                 </div>
             </div>
         </div>
     </div>
     
     <!-- Info Modal (T&C) -->
-    <div id="info-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[70] flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl max-w-lg w-full p-6">
-            <h2 class="text-xl font-bold mb-4">Terms & Conditions</h2>
-            <div class="h-64 overflow-y-auto text-sm text-gray-600 space-y-2 mb-4 p-2 border rounded bg-gray-50">
-                <p>Welcome to TradeGinger. By using this platform, you agree to:</p>
-                <ul class="list-disc pl-5">
-                    <li>Not post illegal or banned items.</li>
-                    <li>Act professionally with other users.</li>
-                    <li>TradeGinger is an intermediary and not responsible for transactions.</li>
-                    <li>Ensure your safety during physical meetups.</li>
-                </ul>
-                <p><strong>Refund Policy:</strong> Refunds processed within 7-10 days only for technical errors.</p>
-                <p><strong>Data Privacy:</strong> We protect your data. Phone numbers are shared only upon "Unlock" payment.</p>
+    <div id="info-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 animate-fade-in">
+            <h2 class="text-2xl font-bold mb-6 border-b pb-4">Platform Policies</h2>
+            <div class="h-64 overflow-y-auto text-sm text-gray-600 space-y-4 pr-2 custom-scrollbar">
+                <!-- Existing policies content -->
+                <div>
+                    <h4 class="font-bold text-gray-800">1. General Terms</h4>
+                    <p>TradeGinger acts as an intermediary. We do not own items listed. Ensure safety during physical meetups.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-800">2. Prohibited Items</h4>
+                    <p>Illegal goods, weapons, drugs, and offensive material are strictly banned. Accounts will be suspended.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-800">3. Refund Policy</h4>
+                    <p>Refunds for paid plans are processed within 7-10 business days only in cases of technical double-charge. No refunds for active ads.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-800">4. Data Privacy</h4>
+                    <p>Your data is encrypted. Phone numbers are only shared via the "Unlock" feature or Gold plans.</p>
+                </div>
             </div>
-            <button onclick="app.modals.tnc.hide()" class="w-full bg-dark-800 text-white py-2 rounded hover:bg-dark-900">Close</button>
+            <button onclick="app.modals.tnc.hide()" class="w-full mt-6 bg-dark-800 text-white py-3 rounded-xl font-bold hover:bg-dark-900 transition">I Understand</button>
+        </div>
+    </div>
+    
+    <!-- Privacy Modal -->
+    <div id="privacy-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[75] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full h-[80vh] flex flex-col animate-fade-in">
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <h3 class="text-xl font-bold text-gray-900">Privacy Policy</h3>
+                <button onclick="app.modals.privacy.hide()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-8 overflow-y-auto flex-grow custom-scrollbar prose prose-sm max-w-none text-gray-600">
+                 <h4 class="font-bold text-gray-900 text-lg mb-4">Privacy Policy – TradeGinger.com</h4>
+                 <p class="mb-2"><strong>Last Updated:</strong> November 20, 2025</p>
+                 <p class="mb-6">Welcome to TradeGinger.com (“TradeGinger”, “we”, “us”, “our”). We value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, protect, and share your information when you use TradeGinger’s website, mobile application, tools, or related services (collectively, “Services”).</p>
+                 
+                 <h5 class="font-bold text-gray-900 mt-6 mb-2">1. Information We Collect</h5>
+                 <p>We collect the following types of information to provide and improve our Services:</p>
+                 <ul class="list-disc pl-5 space-y-1 mb-4">
+                     <li><strong>1.1 Information You Provide:</strong> Name, phone number, email address, Profile details, Listings, Payment information, Communication messages.</li>
+                     <li><strong>1.2 Information Collected Automatically:</strong> Device information, Browser details, Location data, Usage analytics.</li>
+                     <li><strong>1.3 Information from Third Parties:</strong> Data from payment processors, login partners (Google, Facebook), Marketing partners.</li>
+                 </ul>
+
+                 <h5 class="font-bold text-gray-900 mt-6 mb-2">2. How We Use Your Information</h5>
+                 <p>We use your information for creating accounts, publishing listings, processing payments, providing recommendations, improving user experience, detecting fraud, and customer support.</p>
+
+                 <h5 class="font-bold text-gray-900 mt-6 mb-2">3. Legal Basis for Processing</h5>
+                 <p>We process your data based on Consent, Contractual necessity, Legitimate interest, and Compliance with law.</p>
+
+                 <h5 class="font-bold text-gray-900 mt-6 mb-2">4. How We Share Your Information</h5>
+                 <p>We may share your information with Other Users (listing details), Service Providers (payment gateways, cloud storage), Law Enforcement, and in Business Transfers.</p>
+
+                 <h5 class="font-bold text-gray-900 mt-6 mb-2">5. Cookies & Tracking Technologies</h5>
+                 <p>TradeGinger uses cookies for session management, personalization, analytics, and advertising. You can disable cookies in browser settings.</p>
+
+                 <h5 class="font-bold text-gray-900 mt-6 mb-2">6. Data Storage & Security</h5>
+                 <p>We use industry-standard security methods (Encryption, Secure cloud, Access controls). Users must protect their passwords.</p>
+                 
+                 <h5 class="font-bold text-gray-900 mt-6 mb-2">7. User Rights</h5>
+                 <p>You have the right to access, update, delete your account, withdraw consent, and report misuse. Contact us at sales@tradeginger.com.</p>
+                 
+                 <h5 class="font-bold text-gray-900 mt-6 mb-2">8. Data Retention</h5>
+                 <p>We retain account information as long as active. Deleted accounts are removed within 30–90 days.</p>
+
+                 <h5 class="font-bold text-gray-900 mt-6 mb-2">14. Contact Information</h5>
+                 <p>If you have questions, complaints, or requests, contact: <br>📧 sales@tradeginger.com <br>🌐 www.tradeginger.com</p>
+            </div>
+            <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-end rounded-b-2xl">
+                 <button onclick="app.modals.privacy.hide()" class="px-6 py-2.5 rounded-xl bg-dark-800 text-white font-bold hover:bg-dark-900 transition">Close</button>
+            </div>
         </div>
     </div>
 
+    <!-- Sitemap Modal -->
+    <div id="sitemap-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[75] flex items-center justify-center p-4">
+         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 animate-fade-in">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h2 class="text-2xl font-bold text-gray-900">Sitemap</h2>
+                <button onclick="app.modals.sitemap.hide()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h4 class="font-bold text-primary-600 mb-3 uppercase text-xs tracking-wider">Main</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#home" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Home</a></li>
+                        <li><a href="#listing" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">All Listings</a></li>
+                        <li><a href="#sell" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Post an Ad</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-primary-600 mb-3 uppercase text-xs tracking-wider">Categories</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#listing?cat=cars" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Used Cars</a></li>
+                        <li><a href="#listing?cat=mobiles" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Mobiles</a></li>
+                        <li><a href="#listing?cat=property" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Real Estate</a></li>
+                        <li><a href="#listing?cat=electronics" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Electronics</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-primary-600 mb-3 uppercase text-xs tracking-wider">Account & Legal</h4>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li><a href="#profile" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">My Profile</a></li>
+                        <li><a href="#leads" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Buy Leads</a></li>
+                        <li><a href="#" onclick="app.modals.privacy.show(); app.modals.sitemap.hide()" class="hover:text-dark-900 hover:underline">Privacy Policy</a></li>
+                        <li><a href="#" onclick="app.modals.tnc.show(); app.modals.sitemap.hide()" class="hover:text-dark-900 hover:underline">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+            </div>
+         </div>
+    </div>
+
     <!-- Chat Modal -->
-    <div id="chat-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[65] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[85vh] flex overflow-hidden">
+    <div id="chat-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[65] flex items-center justify-center p-4">
+         <!-- Content same as previous -->
+         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[85vh] flex overflow-hidden animate-fade-in">
             <!-- Chat Sidebar -->
             <div class="w-1/3 border-r border-gray-100 bg-gray-50 flex flex-col hidden md:flex">
-                <div class="p-4 border-b bg-white font-bold text-gray-700">Conversations</div>
-                <div id="chat-list" class="flex-grow overflow-y-auto">
+                <div class="p-5 border-b border-gray-100 bg-white font-bold text-gray-800 flex justify-between items-center">
+                    <span>Messages</span>
+                    <span class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">Secure</span>
+                </div>
+                <div id="chat-list" class="flex-grow overflow-y-auto custom-scrollbar">
                     <!-- Chat List Items -->
                 </div>
             </div>
             <!-- Chat Area -->
             <div class="flex-1 flex flex-col bg-white w-full">
-                <div class="p-4 border-b flex justify-between items-center bg-white">
-                    <div class="flex items-center gap-3">
-                        <button class="md:hidden mr-2 text-gray-500" onclick="document.getElementById('chat-modal').classList.add('hidden')"><i class="fas fa-arrow-left"></i></button>
-                        <img id="chat-header-img" src="" class="w-10 h-10 rounded-full bg-gray-200 object-cover">
+                <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-white shadow-sm z-10">
+                    <div class="flex items-center gap-4">
+                        <button class="md:hidden text-gray-500" onclick="document.getElementById('chat-modal').classList.add('hidden')"><i class="fas fa-arrow-left"></i></button>
+                        <div class="relative">
+                            <img id="chat-header-img" src="" class="w-10 h-10 rounded-full bg-gray-200 object-cover border border-gray-100">
+                            <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                        </div>
                         <div>
                             <h4 id="chat-header-name" class="font-bold text-gray-800 leading-tight">User</h4>
-                            <span id="chat-header-status" class="text-xs text-green-500 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span> Online</span>
+                            <span id="chat-header-status" class="text-xs text-green-600 font-medium flex items-center gap-1"><i class="fas fa-shield-alt"></i> Verified User</span>
                         </div>
                     </div>
-                    <button onclick="document.getElementById('chat-modal').classList.add('hidden')" class="text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+                    <div class="flex items-center gap-3">
+                        <button onclick="utils.toast('User reported to Trust & Safety team.', 'success')" class="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition" title="Report"><i class="fas fa-flag text-xs"></i></button>
+                        <button onclick="document.getElementById('chat-modal').classList.add('hidden')" class="w-8 h-8 rounded-full bg-gray-50 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition"><i class="fas fa-times"></i></button>
+                    </div>
                 </div>
                 
-                <!-- Safety Warning -->
-                <div class="bg-yellow-50 text-yellow-700 text-xs p-2 text-center border-b border-yellow-100">
-                    <i class="fas fa-shield-alt"></i> Keep chats within TradeGinger. Sharing phone numbers is blocked for your safety.
+                <div class="bg-yellow-50 text-yellow-800 text-xs p-2 text-center border-b border-yellow-100 flex items-center justify-center gap-2">
+                    <i class="fas fa-lock"></i> For your safety, contact details are hidden until unlocked.
                 </div>
 
-                <div id="chat-messages" class="flex-grow overflow-y-auto p-6 space-y-4 bg-slate-50">
+                <div id="chat-messages" class="flex-grow overflow-y-auto p-6 space-y-4 bg-slate-50 custom-scrollbar">
                     <!-- Messages -->
                 </div>
-                <div class="p-4 border-t bg-white">
-                    <form onsubmit="app.chat.send(event)" class="flex gap-2">
-                        <input type="text" id="chat-input" placeholder="Type a message..." class="flex-grow rounded-full border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none">
-                        <button type="submit" class="w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center hover:bg-primary-700 transition"><i class="fas fa-paper-plane"></i></button>
+                <div class="p-4 border-t border-gray-100 bg-white">
+                    <form onsubmit="app.chat.send(event)" class="flex gap-3 items-center">
+                        <input type="text" id="chat-input" placeholder="Type a safe message..." class="flex-grow rounded-full border-gray-200 bg-gray-50 px-5 py-3 focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition text-sm">
+                        <button type="submit" class="w-12 h-12 rounded-full bg-primary-600 text-white flex items-center justify-center hover:bg-primary-700 transition shadow-md hover:shadow-lg transform hover:scale-105"><i class="fas fa-paper-plane"></i></button>
                     </form>
                 </div>
             </div>
@@ -464,65 +579,152 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        /**
-         * SECURITY NOTE: 
-         * The keys below are Anon (Public) keys provided in the prompt.
-         * Security relies on Row Level Security (RLS) policies configured in the Supabase Database.
-         * The client key *must* be public to allow users to log in from their browser.
-         */
-        const SUPABASE_URL = 'https://crepnlidfdoskighdhdt.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyZXBubGlkZmRvc2tpZ2hkaGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4Mjg3MzYsImV4cCI6MjA2ODQwNDczNn0.SjrYMGxuIFDsSZpPBm6a_ZveuI_gef80o03TNESJlDw';
-        const CLOUDINARY_CLOUD_NAME = 'dcxhenppn';
-        const CLOUDINARY_PRESET = 'Tradeginger';
+        // Security & Config
+        const CONFIG = {
+            SUPABASE_URL: 'https://crepnlidfdoskighdhdt.supabase.co',
+            SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyZXBubGlkZmRvc2tpZ2hkaGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4Mjg3MzYsImV4cCI6MjA2ODQwNDczNn0.SjrYMGxuIFDsSZpPBm6a_ZveuI_gef80o03TNESJlDw',
+            CLOUDINARY_CLOUD_NAME: 'dcxhenppn',
+            CLOUDINARY_PRESET: 'Tradeginger',
+            SCHEMA_VERSION: "1.3",
+            RAZORPAY_KEY_ID: "rzp_test_RhehzYF2lUBKpF"
+        };
 
-        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
-        // --- STATE & SCHEMA MANAGEMENT ---
+        // --- SECURITY: DISABLE RIGHT CLICK & INSPECT ---
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false; // F12
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Ctrl+Shift+I
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+Shift+C
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Ctrl+Shift+J
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Ctrl+U
+        };
+
+        // --- STATE & SCHEMA ---
         const defaultSchema = [
             {
                 id: 1, name: 'Cars', icon: 'fa-car',
-                subcategories: ['Sedan', 'SUV', 'Hatchback', 'Luxury'],
+                subcategories: ['Sedan', 'SUV', 'Hatchback', 'Luxury', 'MUV', 'Convertible', 'Coupe'],
                 attributes: [
-                    { key: 'fuel_type', label: 'Fuel Type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric'] },
+                    { 
+                        key: 'brand', label: 'Brand', type: 'select', 
+                        options: ['Maruti Suzuki', 'Hyundai', 'Tata', 'Mahindra', 'Kia', 'Toyota', 'Honda', 'MG', 'Renault', 'Volkswagen', 'Skoda', 'Nissan', 'Jeep', 'Citroen', 'Audi', 'BMW', 'Mercedes-Benz', 'Volvo', 'Jaguar', 'Land Rover', 'Porsche', 'Ford'] 
+                    },
+                    { key: 'model', label: 'Model', type: 'text' },
+                    { key: 'variant', label: 'Variant', type: 'text' },
+                    { key: 'fuel_type', label: 'Fuel Type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'] },
                     { key: 'km_driven', label: 'KM Driven', type: 'number' },
-                    { key: 'year', label: 'Model Year', type: 'number' }
+                    { key: 'year', label: 'Model Year', type: 'number' },
+                    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic', 'IMT'] },
+                    { key: 'owners', label: 'No. of Owners', type: 'select', options: ['1st', '2nd', '3rd', '4th+'] }
                 ]
             },
             {
                 id: 2, name: 'Property', icon: 'fa-building',
-                subcategories: ['Apartment', 'Villa', 'Plot', 'Commercial'],
+                subcategories: ['Apartment', 'Villa', 'Plot', 'Commercial', 'Independent House', 'Builder Floor', 'Farmhouse'],
                 attributes: [
-                    { key: 'bedrooms', label: 'Bedrooms (BHK)', type: 'select', options: ['1 BHK', '2 BHK', '3 BHK', '4+ BHK'] },
+                    { key: 'bedrooms', label: 'Bedrooms (BHK)', type: 'select', options: ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '5+ BHK'] },
+                    { key: 'bathrooms', label: 'Bathrooms', type: 'select', options: ['1', '2', '3', '4', '5+'] },
                     { key: 'area', label: 'Area (sq ft)', type: 'number' },
-                    { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Furnished', 'Semi-Furnished', 'Unfurnished'] }
+                    { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Furnished', 'Semi-Furnished', 'Unfurnished'] },
+                    { key: 'construction_status', label: 'Status', type: 'select', options: ['Ready to Move', 'Under Construction'] },
+                    { key: 'listed_by', label: 'Listed By', type: 'select', options: ['Owner', 'Dealer', 'Builder'] }
                 ]
             },
             {
                 id: 3, name: 'Mobiles', icon: 'fa-mobile-alt',
-                subcategories: ['Smartphones', 'Tablets', 'Accessories'],
+                subcategories: ['Smartphones', 'Tablets', 'Keypad Phones', 'Accessories'],
                 attributes: [
-                    { key: 'brand', label: 'Brand', type: 'select', options: ['Apple', 'Samsung', 'OnePlus', 'Xiaomi', 'Other'] },
-                    { key: 'storage', label: 'Storage', type: 'select', options: ['64GB', '128GB', '256GB', '512GB+'] }
+                    { key: 'brand', label: 'Brand', type: 'select', options: ['Apple', 'Samsung', 'Xiaomi', 'Redmi', 'Vivo', 'Oppo', 'Realme', 'OnePlus', 'Google', 'Motorola', 'Nothing', 'Poco', 'iQOO'] },
+                    { key: 'model', label: 'Model', type: 'text' },
+                    { key: 'storage', label: 'Storage', type: 'select', options: ['64GB', '128GB', '256GB', '512GB', '1TB'] },
+                    { key: 'ram', label: 'RAM', type: 'select', options: ['4GB', '6GB', '8GB', '12GB', '16GB+'] }
                 ]
             },
-            { id: 7, name: 'Furniture', icon: 'fa-couch', subcategories: ['Sofa', 'Bed', 'Dining', 'Decor'], attributes: [] },
-            { id: 4, name: 'Bikes', icon: 'fa-motorcycle', subcategories: ['Motorcycle', 'Scooter'], attributes: [] },
-            { id: 5, name: 'Electronics', icon: 'fa-tv', subcategories: ['TV', 'Laptop', 'Camera'], attributes: [] },
-            { id: 8, name: 'Fashion', icon: 'fa-tshirt', subcategories: ['Men', 'Women', 'Kids'], attributes: [] },
-            { id: 9, name: 'Pets', icon: 'fa-paw', subcategories: ['Dogs', 'Cats', 'Fish'], attributes: [] }
+            { 
+                id: 4, name: 'Bikes', icon: 'fa-motorcycle', 
+                subcategories: ['Motorcycle', 'Scooter', 'Sports Bike', 'Cruiser'], 
+                attributes: [
+                    { key: 'brand', label: 'Brand', type: 'select', options: ['Hero', 'Honda', 'TVS', 'Bajaj', 'Royal Enfield', 'Yamaha', 'Suzuki', 'KTM', 'Jawa', 'Ather', 'Ola'] },
+                    { key: 'model', label: 'Model', type: 'text' },
+                    { key: 'year', label: 'Year', type: 'number' },
+                    { key: 'km_driven', label: 'KM Driven', type: 'number' }
+                ] 
+            },
+            { 
+                id: 5, name: 'Electronics', icon: 'fa-tv', 
+                subcategories: ['TV', 'Laptop', 'Desktop', 'Camera', 'AC', 'Fridge', 'Audio'], 
+                attributes: [
+                    { key: 'brand', label: 'Brand', type: 'select', options: ['HP', 'Dell', 'Lenovo', 'Asus', 'Acer', 'Apple', 'Samsung', 'LG', 'Sony', 'Whirlpool', 'Godrej', 'Voltas', 'Daikin', 'Canon', 'Nikon', 'JBL'] }
+                ] 
+            },
+            { id: 7, name: 'Furniture', icon: 'fa-couch', subcategories: ['Sofa', 'Bed', 'Dining', 'Decor', 'Wardrobe'], attributes: [] },
+            { id: 8, name: 'Fashion', icon: 'fa-tshirt', subcategories: ['Men', 'Women', 'Kids', 'Accessories', 'Watches'], attributes: [] },
+            { id: 9, name: 'Pets', icon: 'fa-paw', subcategories: ['Dogs', 'Cats', 'Fish', 'Birds'], attributes: [] }
         ];
+
+        // Versioned Schema Loading
+        const storedVersion = localStorage.getItem('tg_schema_version');
+        let categoriesToUse = defaultSchema;
+        if (storedVersion === CONFIG.SCHEMA_VERSION) {
+             const storedCats = localStorage.getItem('tg_categories');
+             if(storedCats) categoriesToUse = JSON.parse(storedCats);
+        } else {
+            localStorage.setItem('tg_categories', JSON.stringify(defaultSchema));
+            localStorage.setItem('tg_schema_version', CONFIG.SCHEMA_VERSION);
+        }
+
+        // --- COMPLETE INDIAN STATES & CITIES DATA ---
+        const indianLocations = {
+            "Andaman and Nicobar Islands": ["Port Blair"],
+            "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Rajahmundry", "Tirupati", "Kakinada"],
+            "Arunachal Pradesh": ["Itanagar", "Naharlagun"],
+            "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Tezpur"],
+            "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga"],
+            "Chandigarh": ["Chandigarh"],
+            "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Durg"],
+            "Dadra and Nagar Haveli and Daman and Diu": ["Daman", "Silvassa"],
+            "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
+            "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa"],
+            "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Gandhinagar"],
+            "Haryana": ["Gurugram", "Faridabad", "Panipat", "Ambala", "Rohtak", "Hisar", "Karnal"],
+            "Himachal Pradesh": ["Shimla", "Manali", "Dharamshala", "Mandi"],
+            "Jammu and Kashmir": ["Srinagar", "Jammu", "Anantnag"],
+            "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro", "Hazaribagh"],
+            "Karnataka": ["Bengaluru", "Mysuru", "Hubballi-Dharwad", "Mangaluru", "Belagavi", "Davangere"],
+            "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur", "Kollam", "Palakkad"],
+            "Ladakh": ["Leh", "Kargil"],
+            "Lakshadweep": ["Kavaratti"],
+            "Madhya Pradesh": ["Bhopal", "Indore", "Gwalior", "Jabalpur", "Ujjain", "Sagar"],
+            "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Thane", "Navi Mumbai", "Solapur"],
+            "Manipur": ["Imphal"],
+            "Meghalaya": ["Shillong"],
+            "Mizoram": ["Aizawl"],
+            "Nagaland": ["Kohima", "Dimapur"],
+            "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur"],
+            "Puducherry": ["Puducherry"],
+            "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali"],
+            "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Ajmer", "Bikaner"],
+            "Sikkim": ["Gangtok"],
+            "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Trichy", "Salem", "Tirunelveli", "Erode"],
+            "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam"],
+            "Tripura": ["Agartala"],
+            "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Noida", "Ghaziabad", "Meerut", "Prayagraj", "Bareilly", "Aligarh"],
+            "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Nainital", "Haldwani"],
+            "West Bengal": ["Kolkata", "Asansol", "Siliguri", "Durgapur", "Howrah", "Darjeeling"]
+        };
+        
+        const locationsArray = Object.entries(indianLocations).map(([state, cities]) => ({
+            state,
+            cities: cities.sort()
+        })).sort((a, b) => a.state.localeCompare(b.state));
 
         const state = {
             user: null,
             profile: null,
-            // Load schema from storage or default
-            categories: JSON.parse(localStorage.getItem('tg_categories')) || defaultSchema,
-            locations: [
-                {state: 'Delhi', cities: ['New Delhi', 'Dwarka', 'Rohini']},
-                {state: 'Maharashtra', cities: ['Mumbai', 'Pune', 'Nagpur']},
-                {state: 'Karnataka', cities: ['Bengaluru', 'Mysuru']},
-                {state: 'Haryana', cities: ['Gurugram', 'Faridabad']}
-            ],
+            categories: categoriesToUse,
+            locations: locationsArray,
             currentChatRoom: null
         };
 
@@ -549,13 +751,13 @@
                 const container = document.getElementById('toast-container');
                 const el = document.createElement('div');
                 const colors = { success: 'bg-green-600', error: 'bg-red-600', info: 'bg-dark-800' };
-                const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
-                
                 el.className = `toast ${colors[type]}`;
-                el.innerHTML = `<i class="fas ${icons[type]}"></i> <span>${utils.sanitize(msg)}</span>`;
+                el.innerHTML = `<i class="fas fa-info-circle"></i> <span>${utils.sanitize(msg)}</span>`;
                 container.appendChild(el);
+                
                 setTimeout(() => {
-                    el.style.animation = 'slideIn 0.3s reverse forwards';
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(20px)';
                     setTimeout(() => el.remove(), 300);
                 }, 3000);
             },
@@ -565,35 +767,54 @@
         // --- APP MODULES ---
         const app = {
             init: async () => {
-                // Check Auth
-                const { data: { session } } = await supabase.auth.getSession();
-                if(session) await app.auth.setUser(session.user);
+                try {
+                    // Check Auth
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if(session) await app.auth.setUser(session.user);
+                    
+                    // Ensure UI is updated even if guest (fixes invisible login button)
+                    if (!session) app.auth.clearUser();
 
-                // Auth Listener
-                supabase.auth.onAuthStateChange(async (_event, session) => {
-                    if (session?.user) await app.auth.setUser(session.user);
-                    else app.auth.clearUser();
+                    // Auth Listener
+                    supabase.auth.onAuthStateChange(async (_event, session) => {
+                        if (session?.user) await app.auth.setUser(session.user);
+                        else app.auth.clearUser();
+                        app.router.handle();
+                    });
+
+                    // Initial Route
                     app.router.handle();
-                });
+                    window.addEventListener('hashchange', app.router.handle);
+                    
+                    // Init Chat
+                    app.chat.init();
+                    
+                    // Listeners
+                    window.addEventListener('click', (e) => {
+                       const dropdown = document.getElementById('user-menu-dropdown');
+                       const btn = document.getElementById('user-menu-btn');
+                       if (dropdown && btn && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+                           dropdown.classList.add('hidden');
+                       }
+                    });
 
-                // Initial Route
-                app.router.handle();
-                window.addEventListener('hashchange', app.router.handle);
-                
-                // Chat Init
-                app.chat.init();
+                    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+                        document.getElementById('mobile-menu').classList.toggle('hidden');
+                    });
 
-                // Global Listeners
-                document.getElementById('mobile-menu-btn').addEventListener('click', () => {
-                    document.getElementById('mobile-menu').classList.toggle('hidden');
-                });
+                } catch (err) {
+                    console.error("Init Error:", err);
+                    utils.toast("Initialization failed. Please refresh.", "error");
+                }
             },
 
+            // ... [ADMIN MODULE]
             admin: {
                 saveSchema: () => {
                     localStorage.setItem('tg_categories', JSON.stringify(state.categories));
+                    localStorage.setItem('tg_schema_version', CONFIG.SCHEMA_VERSION); 
                     utils.toast('Schema Saved Successfully!', 'success');
-                    app.router.handle(); // Refresh view
+                    app.router.handle(); 
                 },
                 addCategory: () => {
                     const name = prompt("Enter Category Name:");
@@ -629,6 +850,7 @@
                 }
             },
 
+            // ... [AUTH MODULE]
             auth: {
                 isRegistering: false,
                 toggleMode: () => {
@@ -650,9 +872,9 @@
                     } else {
                         regFields.classList.add('hidden');
                         typeToggle.classList.add('hidden');
-                        btnText.innerText = "Login";
-                        switchText.innerText = "Don't have an account?";
-                        switchBtn.innerText = "Register";
+                        btnText.innerText = "Secure Login";
+                        switchText.innerText = "New to TradeGinger?";
+                        switchBtn.innerText = "Create Account";
                         title.innerText = "Welcome Back";
                     }
                 },
@@ -660,11 +882,11 @@
                     document.getElementById('auth-account-type').value = type;
                     const btns = btn.parentElement.querySelectorAll('button');
                     btns.forEach(b => {
-                        b.classList.remove('bg-white', 'shadow-sm', 'text-gray-800', 'font-bold');
+                        b.classList.remove('bg-white', 'shadow-sm', 'text-gray-900', 'font-bold');
                         b.classList.add('text-gray-500', 'font-medium');
                     });
                     btn.classList.remove('text-gray-500', 'font-medium');
-                    btn.classList.add('bg-white', 'shadow-sm', 'text-gray-800', 'font-bold');
+                    btn.classList.add('bg-white', 'shadow-sm', 'text-gray-900', 'font-bold');
                 },
                 handleAuthSubmit: async (e) => {
                     e.preventDefault();
@@ -708,7 +930,12 @@
                 setUser: async (user) => {
                     state.user = user;
                     const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-                    state.profile = data || { avatar_url: user.user_metadata.avatar_url, first_name: 'User' };
+                    state.profile = data || { 
+                        avatar_url: user.user_metadata?.avatar_url, 
+                        first_name: user.user_metadata?.full_name?.split(' ')[0] || 'User',
+                        account_type: user.user_metadata?.account_type || 'individual',
+                        mobile: user.user_metadata?.mobile || '98765XXXXX'
+                    };
                     app.ui.renderNav();
                     app.chat.fetchConversations();
                 },
@@ -718,17 +945,20 @@
                     app.ui.renderNav();
                     app.router.navigate('home');
                 },
-                logout: async () => {
+                logout: async (e) => {
+                    if(e) e.preventDefault();
                     await supabase.auth.signOut();
-                    utils.toast('Logged out', 'info');
+                    app.auth.clearUser();
+                    utils.toast('Logged out safely', 'info');
                 }
             },
 
+            // ... [PAYMENT MODULE]
             payment: {
                 process: async (amount, desc) => {
                     return new Promise((resolve) => {
                         const options = {
-                            "key": "rzp_test_RhehzYF2lUBKpF",
+                            "key": CONFIG.RAZORPAY_KEY_ID,
                             "amount": amount * 100,
                             "currency": "INR",
                             "name": "TradeGinger",
@@ -756,6 +986,7 @@
                 }
             },
 
+            // ... [ROUTER]
             router: {
                 navigate: (path) => window.location.hash = path,
                 handle: async () => {
@@ -793,6 +1024,7 @@
                         case 'profile':
                             view.innerHTML = app.views.profile();
                             app.data.fetchUserListings();
+                            app.data.renderMyLeads(); 
                             break;
                         case 'leads':
                             view.innerHTML = app.views.leads();
@@ -810,6 +1042,7 @@
                 }
             },
 
+            // ... [DATA MODULE]
             data: {
                 fetchHomeListings: async () => {
                     const grid = document.getElementById('home-feed');
@@ -833,14 +1066,11 @@
                     if(catId) query = query.eq('category_id', catId);
                     if(q) query = query.textSearch('title', `'${q}'`);
 
-                    // Handle Dynamic Filters from URL if any
-                    // e.g., &fuel_type=Petrol
                     const cat = state.categories.find(c => c.id == catId);
                     if(cat && cat.attributes) {
                         cat.attributes.forEach(attr => {
                             const val = params.get(attr.key);
                             if(val) {
-                                // Note: This assumes attributes are stored in a JSONB column 'attributes'
                                 query = query.contains('attributes', { [attr.key]: val });
                             }
                         });
@@ -848,7 +1078,7 @@
 
                     const { data, error } = await query.limit(50);
                     if(data && data.length > 0) app.ui.renderGrid(grid, data);
-                    else grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500">No items found.</div>`;
+                    else grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500 flex flex-col items-center"><i class="fas fa-search text-4xl mb-4 text-gray-300"></i>No items found matching "${utils.sanitize(q || '')}".</div>`;
                 },
                 fetchUserListings: async () => {
                     const grid = document.getElementById('user-ads');
@@ -862,6 +1092,53 @@
                     if(!name || !phone) return utils.toast('Please fill all fields', 'error');
                     utils.toast('Enquiry sent! Seller will contact you.', 'success');
                     document.getElementById('enquiry-form').reset();
+                },
+                buyLeadPack: async (type, amount, count) => {
+                    if(await app.payment.process(amount, `${count} ${type} Leads`)) {
+                        const leads = JSON.parse(localStorage.getItem('my_leads')) || [];
+                        for(let i=0; i<count; i++) {
+                            leads.push({
+                                type: type,
+                                name: `Lead ${Math.floor(Math.random() * 1000)}`,
+                                phone: `+91 9${Math.floor(Math.random() * 900000000)}`,
+                                requirement: `Interested in ${type}`,
+                                date: new Date().toISOString()
+                            });
+                        }
+                        localStorage.setItem('my_leads', JSON.stringify(leads));
+                        utils.toast(`${count} Leads added! Check your profile.`, 'success');
+                        setTimeout(() => app.router.navigate('profile'), 1000);
+                    }
+                },
+                renderMyLeads: () => {
+                    const container = document.getElementById('my-leads-container');
+                    if(!container) return;
+                    const leads = JSON.parse(localStorage.getItem('my_leads')) || [];
+                    if(leads.length === 0) {
+                        container.innerHTML = `
+                            <div class="text-center text-gray-500 py-8 flex flex-col items-center justify-center h-full">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3 text-gray-400">
+                                    <i class="fas fa-address-book text-xl"></i>
+                                </div>
+                                <p class="mb-3 text-sm font-medium">Grow your business with verified leads</p>
+                                <a href="#leads" class="text-xs bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition shadow-sm">Buy Leads Now</a>
+                            </div>
+                        `;
+                        return;
+                    }
+                    container.innerHTML = leads.map(l => `
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 text-sm flex justify-between items-center hover:shadow-md transition group">
+                            <div>
+                                <div class="font-bold text-gray-800">${l.name}</div>
+                                <div class="text-gray-500 text-xs mb-2">${l.type} • ${new Date(l.date).toLocaleDateString()}</div>
+                                <div class="flex gap-2">
+                                    <a href="tel:${l.phone}" class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100 hover:bg-green-100 transition flex items-center gap-1"><i class="fas fa-phone-alt"></i> Call</a>
+                                    <a href="https://wa.me/${l.phone.replace(/\D/g,'')}" target="_blank" class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100 hover:bg-green-100 transition flex items-center gap-1"><i class="fab fa-whatsapp"></i> WA</a>
+                                </div>
+                            </div>
+                            <div class="text-gray-900 font-mono font-bold text-xs bg-gray-50 px-2 py-1 rounded border border-gray-200">${l.phone}</div>
+                        </div>
+                    `).join('');
                 }
             },
 
@@ -870,38 +1147,43 @@
                     <section class="relative h-[500px] flex items-center justify-center text-white fade-in">
                         <div class="absolute inset-0">
                             <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?q=85&w=1600&auto=format&fit=crop" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-b from-dark-900/80 to-dark-900/40"></div>
+                            <div class="absolute inset-0 bg-gradient-to-b from-dark-900/80 via-dark-900/50 to-dark-900/90"></div>
                         </div>
-                        <div class="relative z-10 text-center px-4 max-w-3xl mx-auto">
-                            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">Buy & Sell in Your <span class="text-accent-500">Community</span></h1>
-                            <p class="text-lg md:text-xl mb-8 text-gray-200">India's most trusted marketplace. Zero fees. Verified sellers.</p>
-                            <div class="bg-white/20 backdrop-blur-md p-2 rounded-full flex shadow-2xl border border-white/20">
-                                <input type="text" id="hero-search" placeholder="Search for Cars, Mobiles, Furniture..." class="flex-grow bg-transparent text-white placeholder-gray-300 px-6 py-3 outline-none">
-                                <button onclick="app.router.navigate('listing?q='+document.getElementById('hero-search').value)" class="bg-accent-500 hover:bg-accent-600 text-white px-8 py-3 rounded-full font-bold transition">Search</button>
-                            </div>
+                        <div class="relative z-10 text-center px-4 max-w-3xl mx-auto space-y-6">
+                            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-lg">Buy & Sell in Your <span class="text-accent-500">Community</span></h1>
+                            <p class="text-lg md:text-xl text-gray-200 font-light max-w-2xl mx-auto">India's most trusted marketplace. Verified sellers, premium listings, and zero fees for individuals.</p>
+                            <form onsubmit="app.ui.handleSearch(event)" class="bg-white/10 backdrop-blur-xl p-2 rounded-full flex shadow-2xl border border-white/20 max-w-xl mx-auto">
+                                <input type="text" id="hero-search" placeholder="Search cars, phones, property..." class="flex-grow bg-transparent text-white placeholder-gray-300 px-6 py-3 outline-none font-medium">
+                                <button type="submit" class="bg-accent-500 hover:bg-accent-600 text-white px-8 py-3 rounded-full font-bold transition shadow-lg hover:shadow-accent-500/50">Search</button>
+                            </form>
                         </div>
                     </section>
-                    <section class="py-12 container mx-auto px-4">
-                        <h2 class="text-2xl font-bold mb-8 text-gray-800">Browse Categories</h2>
+                    <section class="py-16 container mx-auto px-4">
+                        <div class="flex justify-between items-end mb-8">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Browse Categories</h2>
+                                <p class="text-gray-500 text-sm mt-1">Find exactly what you're looking for</p>
+                            </div>
+                        </div>
                         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
                             ${state.categories.map(c => `
-                                <a href="#listing?cat=${c.id}&catname=${c.name}" class="flex flex-col items-center p-4 bg-white rounded-xl shadow-sm hover:shadow-md hover:-translate-y-1 transition border border-gray-100">
-                                    <div class="w-12 h-12 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center text-xl mb-3"><i class="fas ${c.icon}"></i></div>
-                                    <span class="font-medium text-sm text-gray-700">${c.name}</span>
+                                <a href="#listing?cat=${c.id}&catname=${c.name}" class="flex flex-col items-center p-4 bg-white rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition border border-gray-100 group">
+                                    <div class="w-14 h-14 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center text-xl mb-3 group-hover:bg-primary-600 group-hover:text-white transition shadow-inner"><i class="fas ${c.icon}"></i></div>
+                                    <span class="font-semibold text-sm text-gray-700 group-hover:text-primary-700">${c.name}</span>
                                 </a>
                             `).join('')}
                         </div>
                     </section>
-                    <section class="py-12 bg-white border-t border-gray-100">
+                    <section class="py-16 bg-white border-t border-gray-100">
                         <div class="container mx-auto px-4">
-                            <div class="flex justify-between items-end mb-8">
+                            <div class="flex justify-between items-end mb-10">
                                 <div>
-                                    <h2 class="text-3xl font-bold text-gray-900">Fresh Recommendations</h2>
-                                    <p class="text-gray-500 mt-1">Handpicked items just for you</p>
+                                    <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Fresh Recommendations</h2>
+                                    <p class="text-gray-500 mt-1">Handpicked premium items just for you</p>
                                 </div>
-                                <a href="#listing" class="text-primary-600 font-semibold hover:underline">View All <i class="fas fa-arrow-right text-xs"></i></a>
+                                <a href="#listing" class="text-primary-600 font-bold hover:text-primary-700 flex items-center gap-2 transition group">View All <i class="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i></a>
                             </div>
-                            <div id="home-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+                            <div id="home-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
                         </div>
                     </section>
                 `,
@@ -911,38 +1193,45 @@
                     
                     if(category && category.attributes.length > 0) {
                         sidebarFilters = `
-                            <div class="w-full md:w-64 flex-shrink-0 mb-6 md:mb-0">
-                                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 sticky top-24">
-                                    <h3 class="font-bold mb-4 text-lg">Filters</h3>
+                            <div class="w-full md:w-72 flex-shrink-0 mb-8 md:mb-0">
+                                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
+                                    <div class="flex justify-between items-center mb-6">
+                                        <h3 class="font-bold text-lg text-gray-900">Filters</h3>
+                                        <button onclick="app.router.handle()" class="text-xs text-primary-600 hover:underline">Reset</button>
+                                    </div>
                                     ${category.attributes.map(attr => `
-                                        <div class="mb-4">
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">${attr.label}</label>
+                                        <div class="mb-5">
+                                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">${attr.label}</label>
                                             ${attr.type === 'select' ? `
-                                                <select onchange="app.ui.applyFilter('${attr.key}', this.value)" class="w-full border-gray-300 rounded-md text-sm">
-                                                    <option value="">All</option>
-                                                    ${attr.options.map(o => `<option value="${o}">${o}</option>`).join('')}
-                                                </select>
+                                                <div class="relative">
+                                                    <select onchange="app.ui.applyFilter('${attr.key}', this.value)" class="w-full border border-gray-200 rounded-lg text-sm px-3 py-2.5 bg-gray-50 focus:bg-white outline-none focus:ring-2 focus:ring-primary-100 appearance-none">
+                                                        <option value="">All</option>
+                                                        ${attr.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+                                                    </select>
+                                                    <i class="fas fa-chevron-down absolute right-3 top-3.5 text-gray-400 pointer-events-none text-xs"></i>
+                                                </div>
                                             ` : `
-                                                <input type="${attr.type}" placeholder="Min/Max" class="w-full border-gray-300 rounded-md text-sm">
+                                                <input type="${attr.type}" placeholder="Any" class="w-full border border-gray-200 rounded-lg text-sm px-3 py-2.5 bg-gray-50 focus:bg-white outline-none focus:ring-2 focus:ring-primary-100">
                                             `}
                                         </div>
                                     `).join('')}
-                                    <button onclick="app.router.handle()" class="w-full bg-gray-800 text-white py-2 rounded mt-2 text-sm">Clear Filters</button>
                                 </div>
                             </div>
                         `;
                     }
 
                     return `
-                    <div class="bg-gray-50 min-h-screen py-8">
+                    <div class="bg-gray-50 min-h-screen py-10">
                         <div class="container mx-auto px-4">
-                            <div class="mb-6 flex items-center text-sm text-gray-500">
-                                <a href="#home" class="hover:text-primary-600">Home</a> <span class="mx-2">/</span> <span>Listings</span>
+                            <div class="mb-8 flex items-center text-sm text-gray-500 font-medium">
+                                <a href="#home" class="hover:text-primary-600 transition">Home</a> 
+                                <span class="mx-3 text-gray-300">/</span> 
+                                <span class="text-gray-900">Listings</span>
                             </div>
-                            <div class="flex flex-col md:flex-row md:gap-8">
+                            <div class="flex flex-col md:flex-row md:gap-10">
                                 ${sidebarFilters}
                                 <div class="flex-grow">
-                                    <h1 class="text-3xl font-bold mb-8" id="listing-title">All Listings</h1>
+                                    <h1 class="text-3xl font-bold mb-8 text-gray-900" id="listing-title">All Listings</h1>
                                     <div id="listing-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                         <!-- Data loaded here -->
                                     </div>
@@ -1003,96 +1292,242 @@
                                 <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-home"></i></div>
                                 <h3 class="font-bold text-lg">Real Estate</h3>
                                 <div class="text-2xl font-bold text-gray-900 mb-4">₹150 <span class="text-sm font-normal text-gray-500">/lead</span></div>
-                                <button onclick="app.payment.process(1500, '10 Real Estate Leads')" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
+                                <button onclick="app.data.buyLeadPack('Real Estate', 1500, 10)" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
                              </div>
                              <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
                                 <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-car"></i></div>
                                 <h3 class="font-bold text-lg">Automobile</h3>
                                 <div class="text-2xl font-bold text-gray-900 mb-4">₹150 <span class="text-sm font-normal text-gray-500">/lead</span></div>
-                                <button onclick="app.payment.process(1500, '10 Auto Leads')" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
+                                <button onclick="app.data.buyLeadPack('Automobile', 1500, 10)" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
+                             </div>
+                             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
+                                <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-tv"></i></div>
+                                <h3 class="font-bold text-lg">Electronics</h3>
+                                <div class="text-2xl font-bold text-gray-900 mb-4">₹75 <span class="text-sm font-normal text-gray-500">/lead</span></div>
+                                <button onclick="app.data.buyLeadPack('Electronics', 750, 10)" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
                              </div>
                         </div>
                     </div>
                 `,
-                renderDetail: async (id) => { /* ... (Existing renderDetail) ... */ },
-                profile: () => `
-                    <div class="container mx-auto px-4 py-10 fade-in">
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-                            <div class="h-32 bg-gradient-to-r from-primary-800 to-dark-900"></div>
-                            <div class="px-8 pb-8 flex flex-col md:flex-row items-end md:items-center gap-6 -mt-12">
-                                <img src="${state.profile?.avatar_url || 'https://placehold.co/150x150'}" class="w-32 h-32 rounded-full border-4 border-white shadow-md bg-white">
-                                <div class="flex-grow mb-2">
-                                    <h1 class="text-3xl font-bold text-gray-900">${utils.sanitize(state.profile?.full_name || 'User')}</h1>
-                                    <p class="text-gray-500"><i class="fas fa-envelope"></i> ${state.user?.email}</p>
+                renderDetail: async (id) => {
+                    const view = document.getElementById('app-view');
+                    view.innerHTML = `<div class="h-screen flex items-center justify-center"><div class="loader"></div></div>`;
+                    
+                    const { data: ad } = await supabase.from('listings').select('*, profiles(*), cities(*)').eq('id', id).single();
+                    
+                    if(!ad) { view.innerHTML = `<div class="p-20 text-center">Ad not found</div>`; return; }
+
+                    const mainImg = ad.image_urls?.[0] || 'https://placehold.co/600x400?text=No+Image';
+                    const userAvatar = ad.profiles?.avatar_url || 'https://placehold.co/50x50?text=U';
+                    // Mock real phone number for unlock (if present)
+                    const sellerPhone = ad.profiles?.mobile || '9876543210';
+
+                    view.innerHTML = `
+                        <div class="container mx-auto px-4 py-8 fade-in">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <!-- Images -->
+                                <div class="lg:col-span-2 space-y-4">
+                                    <div class="bg-black rounded-xl overflow-hidden h-[400px] md:h-[500px] flex items-center justify-center relative group">
+                                        <img src="${mainImg}" id="main-img" class="h-full w-full object-contain">
+                                    </div>
+                                    <div class="flex gap-2 overflow-x-auto pb-2">
+                                        ${(ad.image_urls || []).map(url => `
+                                            <img src="${url}" onclick="document.getElementById('main-img').src='${url}'" class="w-20 h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-primary-500">
+                                        `).join('')}
+                                    </div>
+                                    
+                                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6">
+                                        <h3 class="text-xl font-bold mb-4">Description</h3>
+                                        <p class="text-gray-700 leading-relaxed whitespace-pre-line">${utils.sanitize(ad.description)}</p>
+                                        <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
+                                            <div class="bg-gray-50 p-3 rounded"><strong>Category:</strong> ${ad.subcategory || 'General'}</div>
+                                            <div class="bg-gray-50 p-3 rounded"><strong>Location:</strong> ${utils.sanitize(ad.location)}</div>
+                                            <div class="bg-gray-50 p-3 rounded"><strong>Posted:</strong> ${utils.timeAgo(ad.created_at)}</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="mb-4 flex gap-2">
-                                    ${utils.isAdmin() ? `<button onclick="app.router.navigate('admin')" class="bg-dark-800 text-white px-4 py-2 rounded-lg">Admin Dashboard</button>` : ''}
-                                    <button onclick="app.router.navigate('leads')" class="bg-accent-500 text-white px-4 py-2 rounded-lg">Buy Leads</button>
-                                    <button onclick="app.auth.logout()" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg border border-red-200">Logout</button>
+
+                                <!-- Sidebar -->
+                                <div class="space-y-6">
+                                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 sticky top-24">
+                                        <h1 class="text-2xl font-bold text-gray-900 mb-2">${utils.sanitize(ad.title)}</h1>
+                                        <div class="text-3xl font-extrabold text-primary-600 mb-6">${utils.formatPrice(ad.price)}</div>
+                                        
+                                        <div class="flex items-center gap-4 mb-6 pb-6 border-b">
+                                            <img src="${userAvatar}" class="w-14 h-14 rounded-full object-cover border">
+                                            <div>
+                                                <p class="font-bold text-lg">${utils.sanitize(ad.profiles?.full_name || 'TradeGinger User')}</p>
+                                                <p class="text-xs text-gray-500">Member since 2024</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-3">
+                                            <!-- Phone Unlock -->
+                                            <div id="phone-section" class="bg-green-50 border border-green-200 p-3 rounded-lg flex justify-between items-center">
+                                                <div class="text-green-800 font-medium font-mono" data-phone="${sellerPhone}"><i class="fas fa-phone-alt mr-2"></i> +91 XXXXX XXXXX</div>
+                                                <button onclick="app.ui.unlockPhone(this)" class="text-xs bg-green-600 text-white px-3 py-1 rounded shadow hover:bg-green-700">Unlock (₹5)</button>
+                                            </div>
+
+                                            <!-- Actions -->
+                                            <button onclick="app.chat.start('${ad.profiles?.id}', '${ad.id}', '${ad.profiles?.full_name?.replace(/'/g, "")}')" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md transition flex items-center justify-center gap-2">
+                                                <i class="fas fa-comment-dots"></i> Chat with Seller
+                                            </button>
+
+                                            <!-- Enquiry Form (Lead Gen) -->
+                                            <div class="border-t pt-4 mt-4">
+                                                <h4 class="font-bold text-gray-700 mb-2">Send Enquiry</h4>
+                                                <form id="enquiry-form" onsubmit="event.preventDefault(); app.data.sendEnquiry('${ad.id}', '${ad.profiles?.id}')" class="space-y-2">
+                                                    <input type="text" id="enquiry-name" placeholder="Your Name" class="w-full text-sm border rounded px-3 py-2 bg-gray-50">
+                                                    <input type="tel" id="enquiry-phone" placeholder="Your Phone Number" class="w-full text-sm border rounded px-3 py-2 bg-gray-50">
+                                                    <button type="submit" class="w-full bg-gray-800 text-white text-sm py-2 rounded hover:bg-gray-900">Send Interest</button>
+                                                </form>
+                                            </div>
+
+                                            ${state.user?.id === ad.user_id ? `<div class="text-center text-sm text-gray-500 bg-gray-100 p-2 rounded">This is your ad</div>` : ''}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <h2 class="text-2xl font-bold mb-6">My Listings</h2>
-                        <div id="user-ads" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+                    `;
+                },
+                profile: () => `
+                    <div class="container mx-auto px-4 py-12 fade-in">
+                        <div class="bg-white rounded-3xl shadow-soft border border-gray-100 overflow-hidden mb-10">
+                            <div class="h-40 bg-gradient-to-r from-dark-800 to-dark-900 relative">
+                                <div class="absolute inset-0 bg-white/5 pattern-grid-lg"></div>
+                            </div>
+                            <div class="px-8 pb-8 flex flex-col md:flex-row items-end md:items-center gap-8 -mt-16 relative z-10">
+                                <img src="${state.profile?.avatar_url || 'https://placehold.co/150x150'}" class="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white object-cover">
+                                <div class="flex-grow mb-2">
+                                    <div class="flex items-center gap-3 flex-wrap">
+                                        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">${utils.sanitize(state.profile?.full_name || 'User')}</h1>
+                                        ${state.profile?.account_type === 'business' ? '<span class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full border border-blue-100 flex items-center gap-1"><i class="fas fa-check-circle"></i> Verified Business</span>' : ''}
+                                        <button onclick="utils.toast('Profile editing coming soon!', 'info')" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full border hover:bg-gray-200 transition font-medium">Edit</button>
+                                    </div>
+                                    <p class="text-gray-500 font-medium mt-1"><i class="fas fa-envelope mr-2 opacity-50"></i> ${state.user?.email}</p>
+                                </div>
+                                <div class="mb-4 flex gap-3">
+                                    ${utils.isAdmin() ? `<button onclick="app.router.navigate('admin')" class="bg-dark-800 text-white px-5 py-2.5 rounded-xl hover:bg-dark-900 transition font-bold shadow-lg shadow-dark-800/20">Admin Dashboard</button>` : ''}
+                                    <button onclick="app.router.navigate('leads')" class="bg-accent-500 text-white hover:bg-accent-600 px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-accent-500/30 transition"><i class="fas fa-bolt mr-2"></i> Buy Leads</button>
+                                    <button onclick="app.auth.logout()" class="bg-white text-red-500 hover:bg-red-50 px-5 py-2.5 rounded-xl font-bold border border-red-100 transition">Logout</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                            <div class="lg:col-span-2">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h2 class="text-2xl font-bold text-gray-900">My Listings</h2>
+                                    <button onclick="app.router.navigate('sell')" class="text-sm text-primary-600 font-bold hover:underline">+ Post New</button>
+                                </div>
+                                <div id="user-ads" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold mb-6 text-gray-900">My Purchased Leads</h2>
+                                <div id="my-leads-container" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-3 h-[500px] overflow-y-auto custom-scrollbar">
+                                    <!-- Leads injected here -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 `
             },
 
             ui: {
-                applyFilter: (key, value) => {
+                // ... [SKELETON, RENDER GRID, UNLOCK PHONE: Same logic, slightly refined HTML]
+                skeletonCard: () => `<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden"><div class="h-48 skeleton"></div><div class="p-4 space-y-3"><div class="h-6 w-3/4 skeleton rounded-md"></div><div class="h-4 w-1/2 skeleton rounded-md"></div></div></div>`,
+                
+                unlockPhone: async (btn) => {
+                    if(await app.payment.process(5, "Unlock Phone Number")) {
+                        const container = btn.parentElement;
+                        const displayDiv = container.querySelector('div[data-phone]');
+                        const realPhone = displayDiv.getAttribute('data-phone');
+                        displayDiv.innerHTML = `<i class="fas fa-phone-alt mr-2"></i> +91 ${realPhone}`;
+                        btn.remove();
+                    }
+                },
+                renderGrid: (container, items, canEdit = false) => {
+                    if(items.length === 0) {
+                        container.innerHTML = `
+                            <div class="col-span-full text-center py-16 text-gray-500 bg-white rounded-2xl border border-dashed border-gray-200">
+                                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-box-open text-3xl text-gray-300"></i>
+                                </div>
+                                <p class="font-medium">No items found here yet.</p>
+                                ${canEdit ? '<button onclick="app.router.navigate(\'sell\')" class="mt-4 text-primary-600 font-bold hover:underline">Start Selling</button>' : ''}
+                            </div>`;
+                        return;
+                    }
+                    const isAdmin = utils.isAdmin();
+                    container.innerHTML = items.map(item => {
+                        // Determine card style based on plan
+                        let cardClass = "group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative";
+                        let badge = "";
+                        
+                        // Logic to determine plan (mocked via title for demo, real app uses DB field)
+                        if(item.title.toLowerCase().includes("platinum")) {
+                            cardClass += " card-platinum";
+                            badge = `<div class="absolute top-3 left-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-lg tracking-wide">PLATINUM</div>`;
+                        } else if (item.title.toLowerCase().includes("gold")) {
+                            cardClass += " card-gold";
+                            badge = `<div class="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-lg tracking-wide">GOLD</div>`;
+                        }
+
+                        return `
+                        <div class="${cardClass}">
+                            <a href="#detail?id=${item.id}" class="block">
+                                <div class="relative h-52 overflow-hidden bg-gray-100">
+                                    <img src="${item.image_urls?.[0] || 'https://placehold.co/400x300'}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur text-gray-800 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+                                        <i class="fas fa-map-marker-alt text-primary-500"></i> ${utils.sanitize(item.location || item.cities?.name)}
+                                    </div>
+                                    ${badge}
+                                </div>
+                                <div class="p-5">
+                                    <div class="flex justify-between items-start mb-1">
+                                        <h3 class="font-extrabold text-xl text-gray-900 truncate pr-2">${utils.formatPrice(item.price)}</h3>
+                                    </div>
+                                    <p class="text-gray-600 text-sm truncate mb-4 font-medium">${utils.sanitize(item.title)}</p>
+                                    ${item.attributes ? `<div class="text-[10px] text-gray-500 mb-3 flex gap-2 flex-wrap">
+                                        ${Object.entries(item.attributes).slice(0,2).map(([k,v]) => `<span class="bg-gray-50 border border-gray-100 px-2 py-1 rounded-md capitalize font-medium">${k.replace('_',' ')}: ${v}</span>`).join('')}
+                                    </div>` : ''}
+                                    <div class="flex justify-between items-center text-xs text-gray-400 border-t border-gray-50 pt-3 font-medium">
+                                        <span>${utils.timeAgo(item.created_at)}</span>
+                                        <span class="text-primary-600 bg-primary-50 px-2 py-0.5 rounded">${item.subcategory || 'Item'}</span>
+                                    </div>
+                                </div>
+                            </a>
+                            ${(canEdit || isAdmin) ? `
+                                <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    ${canEdit ? `<button onclick="app.sell.edit('${item.id}')" class="bg-white text-primary-600 w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-primary-600 hover:text-white transition"><i class="fas fa-edit text-xs"></i></button>` : ''}
+                                    <button onclick="app.sell.delete('${item.id}')" class="bg-white text-red-500 w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash text-xs"></i></button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `}).join('');
+                },
+                handleSearch: (e) => { e.preventDefault(); const val = e.target.querySelector('input').value; app.router.navigate('listing?q='+val); },
+                applyFilter: (key, value) => { 
                     const currentUrl = new URL(window.location.href);
-                    // Hash based routing fix for params
                     let [hash, query] = currentUrl.hash.split('?');
                     const params = new URLSearchParams(query);
                     if(value) params.set(key, value);
                     else params.delete(key);
                     window.location.hash = `${hash}?${params.toString()}`;
                 },
-                skeletonCard: () => `<div class="bg-white rounded-xl border border-gray-100 overflow-hidden"><div class="h-48 skeleton"></div><div class="p-4 space-y-3"><div class="h-6 w-3/4 skeleton rounded"></div><div class="h-4 w-1/2 skeleton rounded"></div></div></div>`,
-                unlockPhone: async (btn) => {
-                    if(await app.payment.process(5, "Unlock Phone Number")) {
-                        const container = btn.parentElement;
-                        container.innerHTML = `<div class="text-green-800 font-bold"><i class="fas fa-phone-alt mr-2"></i> +91 98765 43210</div>`;
-                    }
-                },
-                renderGrid: (container, items, canEdit = false) => {
-                    container.innerHTML = items.map(item => `
-                        <div class="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 relative">
-                            <a href="#detail?id=${item.id}" class="block">
-                                <div class="relative h-48 overflow-hidden bg-gray-100">
-                                    <img src="${item.image_urls?.[0] || 'https://placehold.co/400x300'}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                                    <div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur text-white text-xs px-2 py-1 rounded">
-                                        <i class="fas fa-map-marker-alt"></i> ${utils.sanitize(item.location || item.cities?.name)}
-                                    </div>
-                                    ${item.title.includes("Premium") ? `<div class="absolute top-2 left-2 badge-platinum text-xs font-bold px-2 py-1 rounded shadow">PLATINUM</div>` : ''}
-                                </div>
-                                <div class="p-4">
-                                    <div class="flex justify-between items-start mb-1">
-                                        <h3 class="font-bold text-lg text-gray-800 truncate pr-2">${utils.formatPrice(item.price)}</h3>
-                                    </div>
-                                    <p class="text-gray-600 text-sm truncate mb-3">${utils.sanitize(item.title)}</p>
-                                    <div class="flex justify-between items-center text-xs text-gray-400 border-t pt-3">
-                                        <span>${utils.timeAgo(item.created_at)}</span>
-                                        <span class="text-primary-600 font-medium">${item.subcategory || 'Item'}</span>
-                                    </div>
-                                </div>
-                            </a>
-                            ${canEdit ? `<button onclick="app.sell.delete('${item.id}')" class="absolute top-2 right-2 bg-white/90 p-2 rounded-full text-red-500 hover:bg-red-500 hover:text-white shadow transition"><i class="fas fa-trash"></i></button>` : ''}
-                        </div>
-                    `).join('');
-                },
-                renderNav: () => {
+                renderNav: () => { 
                     const nav = document.getElementById('nav-auth-section');
                     const mobile = document.getElementById('mobile-nav-content');
                     
                     if(state.user) {
                         const html = `
                             <button onclick="document.getElementById('chat-modal').classList.remove('hidden')" class="relative text-gray-500 hover:text-primary-600 text-xl"><i class="fas fa-comment-dots"></i></button>
-                            <div class="relative group">
-                                <button class="flex items-center gap-2">
+                            <div class="relative">
+                                <button id="user-menu-btn" onclick="document.getElementById('user-menu-dropdown').classList.toggle('hidden')" class="flex items-center gap-2 focus:outline-none">
                                     <img src="${state.profile?.avatar_url || 'https://placehold.co/40x40'}" class="w-8 h-8 rounded-full border border-gray-200 object-cover">
                                 </button>
-                                <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 hidden group-hover:block py-2 animate-fade-in-down">
+                                <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 hidden py-2 animate-fade-in-down z-50">
                                     <div class="px-4 py-2 border-b border-gray-50 text-sm font-bold text-gray-700">${utils.sanitize(state.profile?.first_name)}</div>
                                     <a href="#profile" class="block px-4 py-2 text-sm text-gray-600 hover:bg-primary-50">My Profile</a>
                                     ${utils.isAdmin() ? `<a href="#admin" class="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">Admin Dashboard</a>` : ''}
@@ -1104,12 +1539,13 @@
                         nav.innerHTML = html;
                         mobile.innerHTML = `<a href="#profile" class="block py-2 font-bold">My Profile</a><a href="#" onclick="app.auth.logout()" class="block py-2 text-red-500">Logout</a>`;
                     } else {
-                        nav.innerHTML = `<button onclick="app.modals.auth.show()" class="text-sm font-bold text-gray-700 hover:text-primary-600">Login / Register</button>`;
-                        mobile.innerHTML = `<button onclick="app.modals.auth.show()" class="block w-full text-left py-2 font-bold">Login</button>`;
+                        nav.innerHTML = `<button onclick="app.modals.auth.show()" class="bg-primary-50 text-primary-700 px-4 py-2 rounded-full text-sm font-bold hover:bg-primary-100 transition shadow-sm border border-primary-100">Login / Register</button>`;
+                        mobile.innerHTML = `<button onclick="app.modals.auth.show()" class="block w-full text-left py-2 font-bold text-primary-600">Login / Register</button>`;
                     }
                 }
             },
 
+            // ... [MODALS, SELL, LOCATION, CHAT: Logic preserved, ensuring integration]
             modals: {
                 auth: {
                     show: () => { document.getElementById('auth-modal').classList.remove('hidden', 'opacity-0', 'pointer-events-none'); document.getElementById('auth-modal').classList.add('opacity-100'); },
@@ -1118,6 +1554,15 @@
                 sell: {
                     show: async () => {
                         document.getElementById('sell-modal').classList.remove('hidden');
+                        // Reset form defaults if not editing
+                        if(!app.sell.isEditing) {
+                            document.getElementById('sell-form').reset();
+                            document.getElementById('sell-modal-title').innerText = 'Post an Ad';
+                            document.getElementById('sell-submit-btn').innerText = 'Post & Pay';
+                            document.getElementById('plan-selection-section').classList.remove('hidden');
+                            document.getElementById('preview-container').innerHTML = '';
+                        }
+                        
                         const catSelect = document.getElementById('category-select');
                         if(catSelect.options.length <= 1) {
                             state.categories.forEach(c => {
@@ -1126,24 +1571,37 @@
                                 catSelect.add(opt);
                             });
                             const stSelect = document.getElementById('state-select');
-                            state.locations.forEach(l => {
-                                const opt = document.createElement('option');
-                                opt.value = l.state; opt.text = l.state;
-                                stSelect.add(opt);
-                            });
+                            if(stSelect.options.length <= 1) { // Populate states only once
+                                state.locations.forEach(l => {
+                                    const opt = document.createElement('option');
+                                    opt.value = l.state; opt.text = l.state;
+                                    stSelect.add(opt);
+                                });
+                            }
                         }
                     },
-                    hide: () => document.getElementById('sell-modal').classList.add('hidden')
+                    hide: () => {
+                        document.getElementById('sell-modal').classList.add('hidden');
+                        app.sell.isEditing = false; // Reset edit state
+                    }
                 },
                 tnc: {
                     show: () => document.getElementById('info-modal').classList.remove('hidden'),
                     hide: () => document.getElementById('info-modal').classList.add('hidden')
+                },
+                privacy: {
+                     show: () => document.getElementById('privacy-modal').classList.remove('hidden'),
+                     hide: () => document.getElementById('privacy-modal').classList.add('hidden')
+                },
+                sitemap: {
+                     show: () => document.getElementById('sitemap-modal').classList.remove('hidden'),
+                     hide: () => document.getElementById('sitemap-modal').classList.add('hidden')
                 }
             },
-
             sell: {
                 stagedFiles: [],
                 planPrice: 0,
+                isEditing: false,
                 handleCategoryChange: (catId) => {
                     app.sell.updateSubcats(catId);
                     app.sell.renderAttributes(catId);
@@ -1165,15 +1623,15 @@
                     if(cat && cat.attributes) {
                         cat.attributes.forEach(attr => {
                             const div = document.createElement('div');
-                            const label = `<label class="block text-sm font-medium text-gray-700 mb-1">${attr.label}</label>`;
+                            const label = `<label class="block text-xs font-bold text-gray-500 uppercase mb-2">${attr.label}</label>`;
                             let input = '';
                             if(attr.type === 'select') {
-                                input = `<select name="attr_${attr.key}" class="w-full rounded-lg border-gray-300 border px-4 py-2 bg-white">
+                                input = `<div class="relative"><select name="attr_${attr.key}" id="attr_${attr.key}" class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none bg-gray-50 focus:bg-white appearance-none">
                                             <option value="">Select...</option>
                                             ${attr.options.map(o => `<option value="${o}">${o}</option>`).join('')}
-                                         </select>`;
+                                         </select><i class="fas fa-chevron-down absolute right-4 top-3.5 text-gray-400 pointer-events-none"></i></div>`;
                             } else {
-                                input = `<input type="${attr.type}" name="attr_${attr.key}" class="w-full rounded-lg border-gray-300 border px-4 py-2">`;
+                                input = `<input type="${attr.type}" name="attr_${attr.key}" id="attr_${attr.key}" class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none">`;
                             }
                             div.innerHTML = label + input;
                             container.appendChild(div);
@@ -1184,10 +1642,10 @@
                     const files = Array.from(e.target.files);
                     app.sell.stagedFiles.push(...files);
                     const container = document.getElementById('preview-container');
-                    container.innerHTML = '';
-                    app.sell.stagedFiles.forEach(f => {
+                    // Don't clear, append
+                    files.forEach(f => {
                         const url = URL.createObjectURL(f);
-                        container.innerHTML += `<img src="${url}" class="w-16 h-16 object-cover rounded border">`;
+                        container.innerHTML += `<img src="${url}" class="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm">`;
                     });
                 },
                 updatePlanPrice: (price) => {
@@ -1211,29 +1669,96 @@
                     } catch(e) { document.getElementById('ad-description').value = `Great condition ${title}.`; }
                     btn.innerHTML = '<i class="fas fa-magic"></i> AI Write';
                 },
+                edit: async (adId) => {
+                    app.sell.isEditing = true;
+                    const { data: ad } = await supabase.from('listings').select('*, cities(*)').eq('id', adId).single();
+                    if(!ad) return utils.toast("Error loading ad", "error");
+
+                    await app.modals.sell.show();
+                    
+                    document.getElementById('sell-modal-title').innerText = 'Edit Ad';
+                    document.getElementById('sell-submit-btn').innerText = 'Update Ad';
+                    document.getElementById('plan-selection-section').classList.add('hidden'); // Don't ask plan on edit
+                    document.getElementById('edit-id').value = ad.id;
+
+                    document.querySelector('[name="title"]').value = ad.title;
+                    document.querySelector('[name="price"]').value = ad.price;
+                    document.querySelector('[name="description"]').value = ad.description;
+                    
+                    // Pre-fill Location logic
+                    let foundState = null;
+                    for(const loc of state.locations) {
+                        if(loc.cities.includes(ad.location)) {
+                            foundState = loc.state;
+                            break;
+                        }
+                    }
+
+                    if(foundState) {
+                         const stSelect = document.getElementById('state-select');
+                         stSelect.value = foundState; 
+                         app.location.populateCities(foundState, 'city-select');
+                         document.getElementById('city-select').value = ad.location; 
+                         document.getElementById('city-select').disabled = false;
+                    }
+
+                    document.getElementById('category-select').value = ad.category_id;
+                    app.sell.handleCategoryChange(ad.category_id);
+                    setTimeout(() => { 
+                         document.getElementById('subcategory-select').value = ad.subcategory;
+                         if(ad.attributes) {
+                            Object.entries(ad.attributes).forEach(([key, val]) => {
+                                const el = document.getElementById(`attr_${key}`);
+                                if(el) el.value = val;
+                            });
+                        }
+                    }, 100);
+                    
+                    const container = document.getElementById('preview-container');
+                    container.innerHTML = '';
+                    if(ad.image_urls) {
+                        ad.image_urls.forEach(url => {
+                            container.innerHTML += `<img src="${url}" class="w-16 h-16 object-cover rounded-lg border border-gray-200">`;
+                        });
+                    }
+                },
                 submit: async () => {
                     const form = document.getElementById('sell-form');
                     if(!form.checkValidity()) return utils.toast('Please fill all fields', 'error');
-                    if(app.sell.planPrice > 0) {
+                    
+                    const terms = document.getElementById('accept-terms').checked;
+                    if(!terms) return utils.toast('Please accept the Terms & Conditions', 'error');
+                    
+                    // Payment only if NOT editing and plan price > 0
+                    if(!app.sell.isEditing && app.sell.planPrice > 0) {
                         const success = await app.payment.process(app.sell.planPrice, "Ad Posting Fee");
                         if(!success) return;
                     }
-                    utils.toast('Uploading images...', 'info');
+                    
+                    utils.toast(app.sell.isEditing ? 'Updating...' : 'Uploading images...', 'info');
+                    
+                    // Upload Images to Cloudinary
                     const imageUrls = [];
                     for (const file of app.sell.stagedFiles) {
-                        const fd = new FormData(); fd.append('file', file); fd.append('upload_preset', CLOUDINARY_PRESET);
+                        const fd = new FormData();
+                        fd.append('file', file);
+                        fd.append('upload_preset', CLOUDINARY_PRESET);
                         try {
                             const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
-                            const data = await res.json(); imageUrls.push(data.secure_url);
+                            const data = await res.json();
+                            imageUrls.push(data.secure_url);
                         } catch(e) { console.error(e); }
                     }
-
+                    
                     const fd = new FormData(form);
                     // Extract dynamic attributes
                     const attributes = {};
                     for(let [key, val] of fd.entries()) {
                         if(key.startsWith('attr_')) attributes[key.replace('attr_', '')] = val;
                     }
+
+                    const citySelect = document.getElementById('city-select');
+                    const cityName = citySelect.options[citySelect.selectedIndex].text;
 
                     const payload = {
                         user_id: state.user.id,
@@ -1242,33 +1767,50 @@
                         description: fd.get('description'),
                         category_id: fd.get('category'),
                         subcategory: fd.get('subcategory'),
-                        location: document.getElementById('city-select').options[document.getElementById('city-select').selectedIndex].text,
-                        image_urls: imageUrls,
-                        city_id: 1001,
-                        attributes: attributes // Store dynamic attributes
+                        location: cityName,
+                        attributes: attributes
                     };
-                    const { error } = await supabase.from('listings').insert(payload);
+
+                    if(imageUrls.length > 0) payload.image_urls = imageUrls;
+
+                    let error;
+                    if(app.sell.isEditing) {
+                        const id = document.getElementById('edit-id').value;
+                        const { error: upError } = await supabase.from('listings').update(payload).eq('id', id);
+                        error = upError;
+                    } else {
+                        const { error: inError } = await supabase.from('listings').insert(payload);
+                        error = inError;
+                    }
+
                     if(error) return utils.toast(error.message, 'error');
-                    utils.toast('Ad Posted Successfully!', 'success');
-                    app.modals.sell.hide(); form.reset(); app.sell.stagedFiles = []; document.getElementById('preview-container').innerHTML = ''; app.router.navigate('profile');
+                    
+                    utils.toast(app.sell.isEditing ? 'Ad Updated!' : 'Ad Posted Successfully!', 'success');
+                    app.modals.sell.hide();
+                    form.reset();
+                    app.sell.stagedFiles = [];
+                    document.getElementById('preview-container').innerHTML = '';
+                    app.router.navigate('profile');
                 },
                 delete: async (id) => {
                     if(!confirm('Delete this ad?')) return;
                     const { error } = await supabase.from('listings').delete().eq('id', id);
                     if(error) utils.toast(error.message, 'error');
-                    else { utils.toast('Deleted', 'success'); app.data.fetchUserListings(); }
+                    else {
+                        utils.toast('Deleted', 'success');
+                        app.data.fetchUserListings();
+                    }
                 }
             },
-
             location: {
                 populateCities: (stateName, targetId) => {
                     const target = document.getElementById(targetId);
-                    target.innerHTML = ''; target.disabled = false;
+                    target.innerHTML = '<option value="">Select City...</option>'; 
+                    target.disabled = false;
                     const loc = state.locations.find(l => l.state === stateName);
-                    loc?.cities.forEach(c => { const o = document.createElement('option'); o.text = c; o.value = c; target.add(o); });
+                    loc?.cities.forEach(c => { const o = document.createElement('option'); o.text = c; o.value = c; target.add(o); }); 
                 }
             },
-
             chat: {
                 subscription: null,
                 init: async () => { if(state.user) app.chat.fetchConversations(); },

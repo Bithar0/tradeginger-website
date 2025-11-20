@@ -26,7 +26,7 @@
         script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://*.supabase.co https://generativelanguage.googleapis.com https://checkout.razorpay.com; 
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; 
         font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; 
-        img-src 'self' data: blob: https://* https://placehold.co https://res.cloudinary.com; 
+        img-src 'self' data: blob: https://* https://placehold.co https://res.cloudinary.com https://lh3.googleusercontent.com; 
         connect-src 'self' https://*.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://*.supabase.co https://lumberjack.razorpay.com; 
         media-src 'self' blob:;
         frame-src 'self' https://api.razorpay.com;
@@ -348,7 +348,7 @@
                     <!-- Plans -->
                     <div class="pt-6 border-t border-gray-100" id="plan-selection-section">
                         <h4 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-rocket text-primary-500"></i> Boost Visibility</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                             <!-- Free -->
                             <label class="cursor-pointer group">
                                 <input type="radio" name="plan" value="free" class="peer hidden" checked onchange="app.sell.updatePlanPrice(0)">
@@ -358,6 +358,18 @@
                                     <ul class="text-xs text-gray-500 space-y-2">
                                         <li class="flex gap-2"><i class="fas fa-check text-green-500"></i> 45 Days Visibility</li>
                                         <li class="flex gap-2"><i class="fas fa-shield-alt text-green-500"></i> Secure Masked Number</li>
+                                    </ul>
+                                </div>
+                            </label>
+                            <!-- Silver -->
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="plan" value="silver" class="peer hidden" onchange="app.sell.updatePlanPrice(3999)">
+                                <div class="border-2 border-gray-100 rounded-xl p-5 hover:border-gray-400 peer-checked:border-gray-500 peer-checked:bg-gray-50 transition h-full relative overflow-hidden">
+                                    <div class="font-bold text-gray-800">Silver (B2B)</div>
+                                    <div class="text-2xl font-extrabold text-gray-500 my-2">₹3,999</div>
+                                    <ul class="text-xs text-gray-600 space-y-2 font-medium">
+                                        <li class="flex gap-2"><i class="fas fa-check text-gray-500"></i> 10 Highlighted Ads</li>
+                                        <li class="flex gap-2"><i class="fas fa-check text-gray-500"></i> 6 Months Validity</li>
                                     </ul>
                                 </div>
                             </label>
@@ -754,12 +766,7 @@
                 el.className = `toast ${colors[type]}`;
                 el.innerHTML = `<i class="fas fa-info-circle"></i> <span>${utils.sanitize(msg)}</span>`;
                 container.appendChild(el);
-                
-                setTimeout(() => {
-                    el.style.opacity = '0';
-                    el.style.transform = 'translateY(20px)';
-                    setTimeout(() => el.remove(), 300);
-                }, 3000);
+                setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; setTimeout(() => el.remove(), 300); }, 3000);
             },
             isAdmin: () => state.user && (state.user.email === 'admin@tradeginger.com' || state.user.email.includes('admin'))
         };
@@ -930,12 +937,20 @@
                 setUser: async (user) => {
                     state.user = user;
                     const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-                    state.profile = data || { 
-                        avatar_url: user.user_metadata?.avatar_url, 
-                        first_name: user.user_metadata?.full_name?.split(' ')[0] || 'User',
-                        account_type: user.user_metadata?.account_type || 'individual',
-                        mobile: user.user_metadata?.mobile || '98765XXXXX'
+                    
+                    // Fallback logic: DB > Metadata > Default
+                    const dbProfile = data || {};
+                    const meta = user.user_metadata || {};
+                    
+                    state.profile = {
+                        ...dbProfile,
+                        // Use DB avatar if exists, otherwise Google/Meta avatar, otherwise undefined (renderNav handles default)
+                        avatar_url: dbProfile.avatar_url || meta.avatar_url || meta.picture,
+                        first_name: dbProfile.first_name || meta.first_name || meta.full_name?.split(' ')[0] || 'User',
+                        account_type: dbProfile.account_type || meta.account_type || 'individual',
+                        mobile: dbProfile.mobile
                     };
+                    
                     app.ui.renderNav();
                     app.chat.fetchConversations();
                 },
@@ -1064,7 +1079,11 @@
                     if(title) title.innerText = q ? `Search: "${utils.sanitize(q)}"` : (params.get('catname') || 'All Listings');
 
                     if(catId) query = query.eq('category_id', catId);
-                    if(q) query = query.textSearch('title', `'${q}'`);
+                    
+                    // UPDATED: Use ilike for broader case-insensitive matching across title and description
+                    if(q) {
+                        query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
+                    }
 
                     const cat = state.categories.find(c => c.id == catId);
                     if(cat && cat.attributes) {

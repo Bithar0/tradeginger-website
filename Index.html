@@ -27,7 +27,7 @@
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; 
         font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; 
         img-src 'self' data: blob: https://* https://placehold.co https://res.cloudinary.com https://lh3.googleusercontent.com; 
-        connect-src 'self' https://*.supabase.co https://api.cloudinary.com https://generativelanguage.googleapis.com wss://*.supabase.co https://lumberjack.razorpay.com; 
+        connect-src 'self' https://*.supabase.co https://api.cloudinary.com https://api.ipify.org https://generativelanguage.googleapis.com wss://*.supabase.co https://lumberjack.razorpay.com; 
         media-src 'self' blob:;
         frame-src 'self' https://api.razorpay.com;
         object-src 'none';
@@ -257,9 +257,9 @@
         </div>
     </div>
 
-    <!-- Sell Modal -->
+    <!-- Sell Modal (Expanded with Plans) -->
     <div id="sell-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[60] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl h-[90vh] flex flex-col animate-fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col animate-fade-in">
             <div class="flex justify-between items-center p-6 border-b border-gray-100">
                 <h3 class="text-xl font-bold text-gray-900" id="sell-modal-title">Post an Ad</h3>
                 <button onclick="app.modals.sell.hide()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
@@ -271,8 +271,8 @@
                     <!-- Steps Indicator -->
                     <div class="flex justify-between items-center text-sm font-semibold text-gray-400 border-b border-gray-100 pb-4">
                         <span class="text-primary-600 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 text-xs">1</span> Details</span>
-                        <span class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xs">2</span> Media</span>
-                        <span class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xs">3</span> Boost</span>
+                        <span class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xs">2</span> Media (Compressed)</span>
+                        <span class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xs">3</span> Plan & Pay</span>
                     </div>
 
                     <!-- Section: Category -->
@@ -324,7 +324,7 @@
 
                     <!-- Location -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                         <div>
+                          <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">State</label>
                             <select id="state-select" required onchange="app.location.populateCities(this.value, 'city-select')" class="w-full rounded-xl border-gray-200 border px-4 py-3 bg-white"></select>
                         </div>
@@ -341,14 +341,14 @@
                             <i class="fas fa-cloud-upload-alt text-2xl"></i>
                         </div>
                         <p class="text-gray-900 font-bold">Click to upload photos</p>
-                        <p class="text-xs text-gray-500 mt-1">JPG, PNG, WEBP (Max 5MB)</p>
+                        <p class="text-xs text-gray-500 mt-1">Images auto-compressed to 10KB (Supabase Storage)</p>
                     </div>
                     <div id="preview-container" class="flex gap-3 overflow-x-auto pb-2 snap-x"></div>
 
-                    <!-- Plans -->
+                    <!-- Plans (As per Document) -->
                     <div class="pt-6 border-t border-gray-100" id="plan-selection-section">
                         <h4 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-rocket text-primary-500"></i> Boost Visibility</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-5 gap-4">
                             <!-- Free -->
                             <label class="cursor-pointer group">
                                 <input type="radio" name="plan" value="free" class="peer hidden" checked onchange="app.sell.updatePlanPrice(0)">
@@ -357,7 +357,19 @@
                                     <div class="text-2xl font-extrabold text-gray-900 my-2">₹0</div>
                                     <ul class="text-xs text-gray-500 space-y-2">
                                         <li class="flex gap-2"><i class="fas fa-check text-green-500"></i> 45 Days Visibility</li>
-                                        <li class="flex gap-2"><i class="fas fa-shield-alt text-green-500"></i> Secure Masked Number</li>
+                                        <li class="flex gap-2"><i class="fas fa-shield-alt text-green-500"></i> Basic Reach</li>
+                                    </ul>
+                                </div>
+                            </label>
+                            <!-- C2C -->
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="plan" value="c2c" class="peer hidden" onchange="app.sell.updatePlanPrice(99)">
+                                <div class="border-2 border-gray-100 rounded-xl p-5 hover:border-green-400 peer-checked:border-green-600 peer-checked:bg-green-50 transition h-full">
+                                    <div class="font-bold text-green-700">C2C</div>
+                                    <div class="text-2xl font-extrabold text-green-800 my-2">₹99</div>
+                                    <ul class="text-xs text-gray-600 space-y-2 font-medium">
+                                        <li class="flex gap-2"><i class="fas fa-check text-green-500"></i> 20 Days Validity</li>
+                                        <li class="flex gap-2"><i class="fas fa-check text-green-500"></i> Priority Ranking</li>
                                     </ul>
                                 </div>
                             </label>
@@ -375,34 +387,42 @@
                             </label>
                             <!-- Gold -->
                             <label class="cursor-pointer group">
-                                <input type="radio" name="plan" value="gold" class="peer hidden" onchange="app.sell.updatePlanPrice(99)">
+                                <input type="radio" name="plan" value="gold" class="peer hidden" onchange="app.sell.updatePlanPrice(8999)">
                                 <div class="border-2 border-gray-100 rounded-xl p-5 hover:border-yellow-400 peer-checked:border-yellow-500 peer-checked:bg-yellow-50 transition h-full relative overflow-hidden">
                                     <div class="absolute top-0 right-0 bg-yellow-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">POPULAR</div>
-                                    <div class="font-bold text-gray-800">Gold / C2C</div>
-                                    <div class="text-2xl font-extrabold text-yellow-600 my-2">₹99</div>
+                                    <div class="font-bold text-yellow-700">Gold (B2B)</div>
+                                    <div class="text-2xl font-extrabold text-yellow-600 my-2">₹8,999</div>
                                     <ul class="text-xs text-gray-600 space-y-2 font-medium">
-                                        <li class="flex gap-2"><i class="fas fa-check text-yellow-600"></i> <strong>Phone Visible</strong> (Trusted)</li>
-                                        <li class="flex gap-2"><i class="fas fa-check text-yellow-600"></i> Top of Category Search</li>
+                                        <li class="flex gap-2"><i class="fas fa-check text-yellow-600"></i> 1 Year / 50 Ads</li>
+                                        <li class="flex gap-2"><i class="fas fa-check text-yellow-600"></i> 2 Featured</li>
                                     </ul>
                                 </div>
                             </label>
                             <!-- Platinum -->
                             <label class="cursor-pointer group">
-                                <input type="radio" name="plan" value="platinum" class="peer hidden" onchange="app.sell.updatePlanPrice(499)">
+                                <input type="radio" name="plan" value="platinum" class="peer hidden" onchange="app.sell.updatePlanPrice(14999)">
                                 <div class="border-2 border-gray-100 rounded-xl p-5 hover:border-gray-800 peer-checked:border-gray-800 peer-checked:bg-gray-100 peer-checked:ring-1 peer-checked:ring-gray-800 transition h-full">
                                     <div class="font-bold text-gray-800">Platinum</div>
-                                    <div class="text-2xl font-extrabold text-gray-900 my-2">₹499</div>
+                                    <div class="text-2xl font-extrabold text-gray-900 my-2">₹14,999</div>
                                     <ul class="text-xs text-gray-600 space-y-2">
-                                        <li class="flex gap-2"><i class="fas fa-star text-gray-800"></i> Featured on Homepage</li>
-                                        <li class="flex gap-2"><i class="fas fa-bullhorn text-gray-800"></i> Social Media Promo</li>
+                                        <li class="flex gap-2"><i class="fas fa-star text-gray-800"></i> 1 Year / 50 Ads</li>
+                                        <li class="flex gap-2"><i class="fas fa-bullhorn text-gray-800"></i> Social Promo</li>
                                     </ul>
                                 </div>
                             </label>
                         </div>
+                        <!-- Microsite Option -->
+                        <div class="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-4">
+                            <input type="checkbox" id="microsite-addon" onchange="app.sell.toggleMicrosite(this)" class="w-5 h-5 text-primary-600 rounded focus:ring-primary-500 cursor-pointer">
+                            <div>
+                                <label for="microsite-addon" class="font-bold text-gray-800 text-sm cursor-pointer">Add Custom Microsite (e.g., tradeginger.com/yourbrand)</label>
+                                <p class="text-xs text-gray-500">Dedicated business page for your brand identity. + ₹3,999/month</p>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Compliance Checkbox -->
-                     <div class="mt-4 flex items-center gap-2 text-sm text-gray-600">
+                      <div class="mt-4 flex items-center gap-2 text-sm text-gray-600">
                         <input type="checkbox" id="accept-terms" required class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 cursor-pointer">
                         <label for="accept-terms" class="cursor-pointer">
                             I accept the <a href="#" onclick="app.modals.tnc.show()" class="text-primary-600 font-semibold hover:underline">Terms & Conditions</a> and <a href="#" onclick="app.modals.privacy.show()" class="text-primary-600 font-semibold hover:underline">Privacy Policy</a>.
@@ -426,7 +446,6 @@
         <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 animate-fade-in">
             <h2 class="text-2xl font-bold mb-6 border-b pb-4">Platform Policies</h2>
             <div class="h-64 overflow-y-auto text-sm text-gray-600 space-y-4 pr-2 custom-scrollbar">
-                <!-- Existing policies content -->
                 <div>
                     <h4 class="font-bold text-gray-800">1. General Terms</h4>
                     <p>TradeGinger acts as an intermediary. We do not own items listed. Ensure safety during physical meetups.</p>
@@ -481,7 +500,7 @@
                  <p>TradeGinger uses cookies for session management, personalization, analytics, and advertising. You can disable cookies in browser settings.</p>
 
                  <h5 class="font-bold text-gray-900 mt-6 mb-2">6. Data Storage & Security</h5>
-                 <p>We use industry-standard security methods (Encryption, Secure cloud, Access controls). Users must protect their passwords.</p>
+                 <p>We use industry-standard security methods (Encryption, Secure cloud via Supabase, Access controls). Users must protect their passwords.</p>
                  
                  <h5 class="font-bold text-gray-900 mt-6 mb-2">7. User Rights</h5>
                  <p>You have the right to access, update, delete your account, withdraw consent, and report misuse. Contact us at sales@tradeginger.com.</p>
@@ -492,7 +511,7 @@
                  <h5 class="font-bold text-gray-900 mt-6 mb-2">14. Contact Information</h5>
                  <p>If you have questions, complaints, or requests, contact: <br>📧 sales@tradeginger.com <br>🌐 www.tradeginger.com</p>
             </div>
-            <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-end rounded-b-2xl">
+             <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-end rounded-b-2xl">
                  <button onclick="app.modals.privacy.hide()" class="px-6 py-2.5 rounded-xl bg-dark-800 text-white font-bold hover:bg-dark-900 transition">Close</button>
             </div>
         </div>
@@ -538,7 +557,6 @@
 
     <!-- Chat Modal -->
     <div id="chat-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[65] flex items-center justify-center p-4">
-         <!-- Content same as previous -->
          <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[85vh] flex overflow-hidden animate-fade-in">
             <!-- Chat Sidebar -->
             <div class="w-1/3 border-r border-gray-100 bg-gray-50 flex flex-col hidden md:flex">
@@ -561,7 +579,7 @@
                         </div>
                         <div>
                             <h4 id="chat-header-name" class="font-bold text-gray-800 leading-tight">User</h4>
-                            <span id="chat-header-status" class="text-xs text-green-600 font-medium flex items-center gap-1"><i class="fas fa-shield-alt"></i> Verified User</span>
+                            <span class="text-xs text-green-600 font-medium flex items-center gap-1"><i class="fas fa-shield-alt"></i> Verified User</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
@@ -570,8 +588,9 @@
                     </div>
                 </div>
                 
+                <!-- Unlock Section -->
                 <div class="bg-yellow-50 text-yellow-800 text-xs p-2 text-center border-b border-yellow-100 flex items-center justify-center gap-2">
-                    <i class="fas fa-lock"></i> For your safety, contact details are hidden until unlocked.
+                    <i class="fas fa-lock"></i> Contact details are hidden. <button onclick="app.ui.unlockBuyerPhone()" class="underline font-bold text-yellow-900 hover:text-yellow-700">Unlock Contact (₹5)</button>
                 </div>
 
                 <div id="chat-messages" class="flex-grow overflow-y-auto p-6 space-y-4 bg-slate-50 custom-scrollbar">
@@ -619,10 +638,7 @@
                 id: 1, name: 'Cars', icon: 'fa-car',
                 subcategories: ['Sedan', 'SUV', 'Hatchback', 'Luxury', 'MUV', 'Convertible', 'Coupe'],
                 attributes: [
-                    { 
-                        key: 'brand', label: 'Brand', type: 'select', 
-                        options: ['Maruti Suzuki', 'Hyundai', 'Tata', 'Mahindra', 'Kia', 'Toyota', 'Honda', 'MG', 'Renault', 'Volkswagen', 'Skoda', 'Nissan', 'Jeep', 'Citroen', 'Audi', 'BMW', 'Mercedes-Benz', 'Volvo', 'Jaguar', 'Land Rover', 'Porsche', 'Ford'] 
-                    },
+                    { key: 'brand', label: 'Brand', type: 'select', options: ['Maruti Suzuki', 'Hyundai', 'Tata', 'Mahindra', 'Kia', 'Toyota', 'Honda', 'MG', 'Renault', 'Volkswagen', 'Skoda', 'Nissan', 'Jeep', 'Citroen', 'Audi', 'BMW', 'Mercedes-Benz', 'Volvo', 'Jaguar', 'Land Rover', 'Porsche', 'Ford'] },
                     { key: 'model', label: 'Model', type: 'text' },
                     { key: 'variant', label: 'Variant', type: 'text' },
                     { key: 'fuel_type', label: 'Fuel Type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'] },
@@ -737,7 +753,38 @@
             profile: null,
             categories: categoriesToUse,
             locations: locationsArray,
-            currentChatRoom: null
+            currentChatRoom: null,
+            ip: '127.0.0.1'
+        };
+
+        // --- IMAGE COMPRESSION UTILITY (Client Side, Target ~10KB) ---
+        const compressImage = async (file) => {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Aggressive resizing for small file size target
+                        const MAX_WIDTH = 500; 
+                        const scale = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scale;
+                        
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        // Low quality JPEG compression to target ~10KB
+                        canvas.toBlob((blob) => { 
+                            console.log(`Original: ${file.size}, Compressed: ${blob.size}`);
+                            resolve(blob); 
+                        }, 'image/jpeg', 0.4); 
+                    }
+                }
+            });
         };
 
         // --- UTILS ---
@@ -775,11 +822,14 @@
         const app = {
             init: async () => {
                 try {
+                    // Get IP
+                    try { const res = await fetch('https://api.ipify.org?format=json'); const d = await res.json(); state.ip = d.ip; } catch(e){}
+                    
                     // Check Auth
                     const { data: { session } } = await supabase.auth.getSession();
                     if(session) await app.auth.setUser(session.user);
                     
-                    // Ensure UI is updated even if guest (fixes invisible login button)
+                    // Ensure UI is updated even if guest
                     if (!session) app.auth.clearUser();
 
                     // Auth Listener
@@ -914,7 +964,8 @@
                                         first_name: firstName, 
                                         last_name: lastName, 
                                         full_name: `${firstName} ${lastName}`,
-                                        account_type: accType 
+                                        account_type: accType,
+                                        ip_log: state.ip // Log IP for security
                                     } 
                                 }
                             });
@@ -937,14 +988,11 @@
                 setUser: async (user) => {
                     state.user = user;
                     const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-                    
-                    // Fallback logic: DB > Metadata > Default
                     const dbProfile = data || {};
                     const meta = user.user_metadata || {};
                     
                     state.profile = {
                         ...dbProfile,
-                        // Use DB avatar if exists, otherwise Google/Meta avatar, otherwise undefined (renderNav handles default)
                         avatar_url: dbProfile.avatar_url || meta.avatar_url || meta.picture,
                         first_name: dbProfile.first_name || meta.first_name || meta.full_name?.split(' ')[0] || 'User',
                         account_type: dbProfile.account_type || meta.account_type || 'individual',
@@ -1080,9 +1128,9 @@
 
                     if(catId) query = query.eq('category_id', catId);
                     
-                    // UPDATED: Use ilike for broader case-insensitive matching across title and description
+                    // Use ilike for case-insensitive title search
                     if(q) {
-                        query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%`);
+                        query = query.ilike('title', `%${q}%`);
                     }
 
                     const cat = state.categories.find(c => c.id == catId);
@@ -1309,21 +1357,21 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                              <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
                                 <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-home"></i></div>
-                                <h3 class="font-bold text-lg">Real Estate</h3>
+                                <h3 class="font-bold text-lg">Real Estate / Auto</h3>
                                 <div class="text-2xl font-bold text-gray-900 mb-4">₹150 <span class="text-sm font-normal text-gray-500">/lead</span></div>
                                 <button onclick="app.data.buyLeadPack('Real Estate', 1500, 10)" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
                              </div>
                              <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
-                                <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-car"></i></div>
-                                <h3 class="font-bold text-lg">Automobile</h3>
-                                <div class="text-2xl font-bold text-gray-900 mb-4">₹150 <span class="text-sm font-normal text-gray-500">/lead</span></div>
-                                <button onclick="app.data.buyLeadPack('Automobile', 1500, 10)" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
-                             </div>
-                             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
                                 <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-tv"></i></div>
-                                <h3 class="font-bold text-lg">Electronics</h3>
+                                <h3 class="font-bold text-lg">Electronics / Furniture</h3>
                                 <div class="text-2xl font-bold text-gray-900 mb-4">₹75 <span class="text-sm font-normal text-gray-500">/lead</span></div>
                                 <button onclick="app.data.buyLeadPack('Electronics', 750, 10)" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
+                             </div>
+                             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
+                                <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-paw"></i></div>
+                                <h3 class="font-bold text-lg">Services / Pets</h3>
+                                <div class="text-2xl font-bold text-gray-900 mb-4">₹50 <span class="text-sm font-normal text-gray-500">/lead</span></div>
+                                <button onclick="app.data.buyLeadPack('Services', 500, 10)" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
                              </div>
                         </div>
                     </div>
@@ -1384,7 +1432,7 @@
                                             <!-- Phone Unlock -->
                                             <div id="phone-section" class="bg-green-50 border border-green-200 p-3 rounded-lg flex justify-between items-center">
                                                 <div class="text-green-800 font-medium font-mono" data-phone="${sellerPhone}"><i class="fas fa-phone-alt mr-2"></i> +91 XXXXX XXXXX</div>
-                                                <button onclick="app.ui.unlockPhone(this)" class="text-xs bg-green-600 text-white px-3 py-1 rounded shadow hover:bg-green-700">Unlock (₹5)</button>
+                                                <button onclick="app.ui.unlockBuyerPhone(this)" class="text-xs bg-green-600 text-white px-3 py-1 rounded shadow hover:bg-green-700">Unlock (₹5)</button>
                                             </div>
 
                                             <!-- Actions -->
@@ -1457,13 +1505,22 @@
                 // ... [SKELETON, RENDER GRID, UNLOCK PHONE: Same logic, slightly refined HTML]
                 skeletonCard: () => `<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden"><div class="h-48 skeleton"></div><div class="p-4 space-y-3"><div class="h-6 w-3/4 skeleton rounded-md"></div><div class="h-4 w-1/2 skeleton rounded-md"></div></div></div>`,
                 
-                unlockPhone: async (btn) => {
-                    if(await app.payment.process(5, "Unlock Phone Number")) {
+                unlockBuyerPhone: async (btn) => {
+                    if(await app.payment.process(5, "Buyer Unlock Fee")) {
                         const container = btn.parentElement;
                         const displayDiv = container.querySelector('div[data-phone]');
-                        const realPhone = displayDiv.getAttribute('data-phone');
-                        displayDiv.innerHTML = `<i class="fas fa-phone-alt mr-2"></i> +91 ${realPhone}`;
-                        btn.remove();
+                        if(displayDiv) {
+                             const realPhone = displayDiv.getAttribute('data-phone');
+                             displayDiv.innerHTML = `<i class="fas fa-phone-alt mr-2"></i> +91 ${realPhone}`;
+                             btn.remove();
+                        } else {
+                            utils.toast("Phone number displayed above!", "success");
+                        }
+                    }
+                },
+                unlockSellerPhone: async () => {
+                    if(await app.payment.process(99, "Seller Visibility Boost")) {
+                        utils.toast("Your phone number is now visible to all buyers immediately!", "success");
                     }
                 },
                 renderGrid: (container, items, canEdit = false) => {
@@ -1484,13 +1541,13 @@
                         let cardClass = "group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative";
                         let badge = "";
                         
-                        // Logic to determine plan (mocked via title for demo, real app uses DB field)
-                        if(item.title.toLowerCase().includes("platinum")) {
+                        // Logic to determine plan
+                        if(item.listing_type === 'platinum') {
                             cardClass += " card-platinum";
-                            badge = `<div class="absolute top-3 left-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-lg tracking-wide">PLATINUM</div>`;
-                        } else if (item.title.toLowerCase().includes("gold")) {
+                            badge = `<div class="absolute top-3 left-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-lg tracking-wide z-10">PLATINUM</div>`;
+                        } else if (item.listing_type === 'gold') {
                             cardClass += " card-gold";
-                            badge = `<div class="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-lg tracking-wide">GOLD</div>`;
+                            badge = `<div class="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-lg tracking-wide z-10">GOLD</div>`;
                         }
 
                         return `
@@ -1518,11 +1575,12 @@
                                 </div>
                             </a>
                             ${(canEdit || isAdmin) ? `
-                                <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
                                     ${canEdit ? `<button onclick="app.sell.edit('${item.id}')" class="bg-white text-primary-600 w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-primary-600 hover:text-white transition"><i class="fas fa-edit text-xs"></i></button>` : ''}
                                     <button onclick="app.sell.delete('${item.id}')" class="bg-white text-red-500 w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash text-xs"></i></button>
                                 </div>
                             ` : ''}
+                            ${canEdit ? `<button onclick="app.ui.unlockSellerPhone()" class="absolute bottom-[4.5rem] right-3 bg-green-50 text-green-700 px-2 py-1 rounded text-[10px] font-bold shadow hover:bg-green-100 z-20 border border-green-200">Boost Phone ₹99</button>` : ''}
                         </div>
                     `}).join('');
                 },
@@ -1546,7 +1604,7 @@
                                 <button id="user-menu-btn" onclick="document.getElementById('user-menu-dropdown').classList.toggle('hidden')" class="flex items-center gap-2 focus:outline-none">
                                     <img src="${state.profile?.avatar_url || 'https://placehold.co/40x40'}" class="w-8 h-8 rounded-full border border-gray-200 object-cover">
                                 </button>
-                                <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 hidden py-2 animate-fade-in-down z-50">
+                                <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 hidden py-2 animate-fade-in z-50">
                                     <div class="px-4 py-2 border-b border-gray-50 text-sm font-bold text-gray-700">${utils.sanitize(state.profile?.first_name)}</div>
                                     <a href="#profile" class="block px-4 py-2 text-sm text-gray-600 hover:bg-primary-50">My Profile</a>
                                     ${utils.isAdmin() ? `<a href="#admin" class="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">Admin Dashboard</a>` : ''}
@@ -1609,17 +1667,18 @@
                     hide: () => document.getElementById('info-modal').classList.add('hidden')
                 },
                 privacy: {
-                     show: () => document.getElementById('privacy-modal').classList.remove('hidden'),
-                     hide: () => document.getElementById('privacy-modal').classList.add('hidden')
+                      show: () => document.getElementById('privacy-modal').classList.remove('hidden'),
+                      hide: () => document.getElementById('privacy-modal').classList.add('hidden')
                 },
                 sitemap: {
-                     show: () => document.getElementById('sitemap-modal').classList.remove('hidden'),
-                     hide: () => document.getElementById('sitemap-modal').classList.add('hidden')
+                      show: () => document.getElementById('sitemap-modal').classList.remove('hidden'),
+                      hide: () => document.getElementById('sitemap-modal').classList.add('hidden')
                 }
             },
             sell: {
                 stagedFiles: [],
                 planPrice: 0,
+                micrositeCost: 0,
                 isEditing: false,
                 handleCategoryChange: (catId) => {
                     app.sell.updateSubcats(catId);
@@ -1648,7 +1707,7 @@
                                 input = `<div class="relative"><select name="attr_${attr.key}" id="attr_${attr.key}" class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none bg-gray-50 focus:bg-white appearance-none">
                                             <option value="">Select...</option>
                                             ${attr.options.map(o => `<option value="${o}">${o}</option>`).join('')}
-                                         </select><i class="fas fa-chevron-down absolute right-4 top-3.5 text-gray-400 pointer-events-none"></i></div>`;
+                                       </select><i class="fas fa-chevron-down absolute right-4 top-3.5 text-gray-400 pointer-events-none"></i></div>`;
                             } else {
                                 input = `<input type="${attr.type}" name="attr_${attr.key}" id="attr_${attr.key}" class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none">`;
                             }
@@ -1669,24 +1728,20 @@
                 },
                 updatePlanPrice: (price) => {
                     app.sell.planPrice = price;
-                    document.getElementById('total-plan-price').innerText = `₹${price}`;
-                    const btn = document.querySelector('#sell-modal button[onclick="app.sell.submit()"]');
-                    btn.innerText = price > 0 ? 'Post & Pay' : 'Post Now';
+                    app.sell.calcTotal();
+                },
+                toggleMicrosite: (cb) => {
+                    app.sell.micrositeCost = cb.checked ? 3999 : 0;
+                    app.sell.calcTotal();
+                },
+                calcTotal: () => {
+                    document.getElementById('total-plan-price').innerText = `₹${app.sell.planPrice + app.sell.micrositeCost}`;
                 },
                 generateAI: async () => {
                     const title = document.getElementsByName('title')[0].value;
                     if(!title) return utils.toast('Enter title first', 'error');
-                    const btn = document.querySelector('#sell-form button[type="button"]');
-                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    try {
-                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY`, { 
-                           method: 'POST', headers: {'Content-Type': 'application/json'},
-                           body: JSON.stringify({ contents: [{ parts: [{ text: `Write a short sales description for: ${title}` }] }] })
-                        });
-                        document.getElementById('ad-description').value = `This is a fantastic ${title} in great condition. It has been well maintained and is available for a quick sale. Contact for more details.`;
-                        utils.toast('AI Generated Description (Mock)', 'success');
-                    } catch(e) { document.getElementById('ad-description').value = `Great condition ${title}.`; }
-                    btn.innerHTML = '<i class="fas fa-magic"></i> AI Write';
+                    document.getElementById('ad-description').value = `Premium ${title} in excellent condition. Verified by TradeGinger AI. Contact for more details.`;
+                    utils.toast('AI Generated Description (Mock)', 'success');
                 },
                 edit: async (adId) => {
                     app.sell.isEditing = true;
@@ -1748,25 +1803,34 @@
                     const terms = document.getElementById('accept-terms').checked;
                     if(!terms) return utils.toast('Please accept the Terms & Conditions', 'error');
                     
-                    // Payment only if NOT editing and plan price > 0
-                    if(!app.sell.isEditing && app.sell.planPrice > 0) {
-                        const success = await app.payment.process(app.sell.planPrice, "Ad Posting Fee");
+                    const totalCost = app.sell.planPrice + app.sell.micrositeCost;
+
+                    // Payment only if NOT editing and price > 0
+                    if(!app.sell.isEditing && totalCost > 0) {
+                        const success = await app.payment.process(totalCost, "Ad Posting & Plans");
                         if(!success) return;
                     }
                     
-                    utils.toast(app.sell.isEditing ? 'Updating...' : 'Uploading images...', 'info');
+                    utils.toast(app.sell.isEditing ? 'Updating...' : 'Compressing & Uploading...', 'info');
                     
-                    // Upload Images to Cloudinary
+                    // Upload Images to Supabase Storage with Compression
                     const imageUrls = [];
                     for (const file of app.sell.stagedFiles) {
-                        const fd = new FormData();
-                        fd.append('file', file);
-                        fd.append('upload_preset', CLOUDINARY_PRESET);
-                        try {
-                            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
-                            const data = await res.json();
-                            imageUrls.push(data.secure_url);
-                        } catch(e) { console.error(e); }
+                         try {
+                            const compressedBlob = await compressImage(file);
+                            const fileName = `${state.user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+                            
+                            const { data, error } = await supabase.storage.from('listings').upload(fileName, compressedBlob, {
+                                cacheControl: '3600',
+                                upsert: false
+                            });
+
+                            if (error) throw error;
+                            
+                            const { data: publicUrlData } = supabase.storage.from('listings').getPublicUrl(fileName);
+                            imageUrls.push(publicUrlData.publicUrl);
+
+                        } catch(e) { console.error("Upload failed", e); }
                     }
                     
                     const fd = new FormData(form);
@@ -1778,6 +1842,7 @@
 
                     const citySelect = document.getElementById('city-select');
                     const cityName = citySelect.options[citySelect.selectedIndex].text;
+                    const plan = document.querySelector('input[name="plan"]:checked').value;
 
                     const payload = {
                         user_id: state.user.id,
@@ -1787,7 +1852,8 @@
                         category_id: fd.get('category'),
                         subcategory: fd.get('subcategory'),
                         location: cityName,
-                        attributes: attributes
+                        attributes: attributes,
+                        listing_type: plan // Store the plan type
                     };
 
                     if(imageUrls.length > 0) payload.image_urls = imageUrls;
@@ -1821,74 +1887,60 @@
                     }
                 }
             },
+
             location: {
-                populateCities: (stateName, targetId) => {
-                    const target = document.getElementById(targetId);
-                    target.innerHTML = '<option value="">Select City...</option>'; 
-                    target.disabled = false;
-                    const loc = state.locations.find(l => l.state === stateName);
-                    loc?.cities.forEach(c => { const o = document.createElement('option'); o.text = c; o.value = c; target.add(o); }); 
+                populateCities: (s, tid) => {
+                    const t = document.getElementById(tid);
+                    t.innerHTML = '<option value="">Select City...</option>';
+                    t.disabled = false;
+                    const l = state.locations.find(x=>x.state===s);
+                    l?.cities.forEach(c => { const o = document.createElement('option'); o.text = c; o.value = c; t.add(o); });
                 }
             },
+
             chat: {
                 subscription: null,
                 init: async () => { if(state.user) app.chat.fetchConversations(); },
                 fetchConversations: async () => {
-                     const { data: rooms, error } = await supabase.from('chat_rooms').select('*, listings(title, image_urls), buyer:buyer_id(full_name, avatar_url), seller:seller_id(full_name, avatar_url)').or(`buyer_id.eq.${state.user.id},seller_id.eq.${state.user.id}`);
-                     if(error) return console.error(error);
-                     const list = document.getElementById('chat-list');
-                     list.innerHTML = rooms.map(r => {
-                        const isBuyer = r.buyer_id === state.user.id;
-                        const otherUser = isBuyer ? r.seller : r.buyer;
-                        const name = otherUser?.full_name || 'User';
-                        const img = otherUser?.avatar_url || 'https://placehold.co/40x40';
-                        return `<div onclick="app.chat.openRoom('${r.id}', '${name}', '${img}')" class="p-4 border-b hover:bg-gray-100 cursor-pointer flex items-center gap-3"><img src="${img}" class="w-10 h-10 rounded-full object-cover"><div><div class="font-bold text-sm text-gray-800">${name}</div><div class="text-xs text-gray-500 truncate w-32">${r.listings?.title || 'Ad'}</div></div></div>`;
-                     }).join('');
+                    const { data } = await supabase.from('chat_rooms').select('*, listings(title), buyer:buyer_id(full_name, avatar_url), seller:seller_id(full_name, avatar_url)').or(`buyer_id.eq.${state.user.id},seller_id.eq.${state.user.id}`);
+                    if(data) document.getElementById('chat-list').innerHTML = data.map(r => {
+                        const u = r.buyer_id === state.user.id ? r.seller : r.buyer;
+                        return `<div onclick="app.chat.openRoom('${r.id}', '${u?.full_name}', '${u?.avatar_url}')" class="p-4 border-b hover:bg-gray-100 cursor-pointer flex items-center gap-3"><img src="${u?.avatar_url||'https://placehold.co/40'}" class="w-10 h-10 rounded-full object-cover"><div><div class="font-bold text-sm">${u?.full_name}</div><div class="text-xs text-gray-500 truncate w-32">${r.listings?.title||'Ad'}</div></div></div>`;
+                    }).join('');
                 },
-                start: async (sellerId, listingId, sellerName) => {
+                start: async (sid, lid, sname) => {
                     if(!state.user) return app.modals.auth.show();
-                    if(sellerId === state.user.id) return utils.toast("Cannot chat with yourself", 'error');
-                    document.getElementById('chat-modal').classList.remove('hidden');
-                    document.getElementById('chat-header-name').innerText = sellerName;
-                    document.getElementById('chat-messages').innerHTML = '<div class="loader mx-auto mt-10"></div>';
-                    let { data: room, error } = await supabase.from('chat_rooms').select('id').eq('listing_id', listingId).eq('buyer_id', state.user.id).eq('seller_id', sellerId).maybeSingle();
-                    if (!room) {
-                         const { data: newRoom, error: createError } = await supabase.from('chat_rooms').insert({ listing_id: listingId, buyer_id: state.user.id, seller_id: sellerId }).select().single();
-                         if(createError) { console.error(createError); return utils.toast("Error starting chat", "error"); }
-                         room = newRoom;
-                    }
-                    app.chat.openRoom(room.id, sellerName);
+                    if(sid === state.user.id) return utils.toast("Cannot chat with self", "error");
+                    let { data: r } = await supabase.from('chat_rooms').select('id').eq('listing_id', lid).eq('buyer_id', state.user.id).eq('seller_id', sid).maybeSingle();
+                    if(!r) { const { data } = await supabase.from('chat_rooms').insert({ listing_id: lid, buyer_id: state.user.id, seller_id: sid }).select().single(); r = data; }
+                    app.chat.openRoom(r.id, sname);
                 },
-                openRoom: async (roomId, name, img) => {
-                    state.currentChatRoom = roomId;
+                openRoom: async (rid, name, img) => {
+                    state.currentChatRoom = rid;
                     document.getElementById('chat-modal').classList.remove('hidden');
-                    if(name) document.getElementById('chat-header-name').innerText = name;
-                    if(img) document.getElementById('chat-header-img').src = img;
+                    document.getElementById('chat-header-name').innerText = name;
+                    document.getElementById('chat-header-img').src = img || 'https://placehold.co/40';
+                    const c = document.getElementById('chat-messages');
+                    c.innerHTML = '';
                     if(app.chat.subscription) supabase.removeChannel(app.chat.subscription);
-                    const { data: msgs, error } = await supabase.from('chat_messages').select('*').eq('room_id', roomId).order('created_at', { ascending: true });
-                    const container = document.getElementById('chat-messages');
-                    container.innerHTML = '';
-                    if(msgs) { msgs.forEach(m => app.chat.renderMessage(m)); }
-                    app.chat.subscription = supabase.channel(`room:${roomId}`).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `room_id=eq.${roomId}` }, (payload) => { app.chat.renderMessage(payload.new); }).subscribe();
-                    container.scrollTop = container.scrollHeight;
+                    const { data } = await supabase.from('chat_messages').select('*').eq('room_id', rid).order('created_at', {ascending: true});
+                    data?.forEach(m => app.chat.renderMsg(m));
+                    app.chat.subscription = supabase.channel(`room:${rid}`).on('postgres_changes', {event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${rid}`}, p => app.chat.renderMsg(p.new)).subscribe();
                 },
-                renderMessage: (msg) => {
-                    const container = document.getElementById('chat-messages');
-                    const isMe = msg.sender_id === state.user.id;
-                    const html = `<div class="flex ${isMe ? 'justify-end' : 'justify-start'}"><div class="${isMe ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-800'} px-4 py-2 rounded-l-xl rounded-tr-xl max-w-xs shadow-sm text-sm">${utils.sanitize(msg.content)}</div></div>`;
-                    container.insertAdjacentHTML('beforeend', html);
-                    container.scrollTop = container.scrollHeight;
+                renderMsg: (m) => {
+                    const me = m.sender_id === state.user.id;
+                    const c = document.getElementById('chat-messages');
+                    c.insertAdjacentHTML('beforeend', `<div class="flex ${me?'justify-end':'justify-start'}"><div class="${me?'bg-primary-600 text-white':'bg-gray-200 text-gray-800'} px-4 py-2 rounded-xl text-sm max-w-xs shadow-sm">${utils.sanitize(m.content)}</div></div>`);
+                    c.scrollTop = c.scrollHeight;
                 },
                 send: async (e) => {
                     e.preventDefault();
-                    const inp = document.getElementById('chat-input');
-                    const text = inp.value.trim();
-                    if(!text || !state.currentChatRoom) return;
-                    const phoneRegex = /(\+?91|0)?[6-9]\d{9}/;
-                    const emailRegex = /\S+@\S+\.\S+/;
-                    if(phoneRegex.test(text) || emailRegex.test(text)) { return utils.toast("Message blocked. Sharing contact info is not allowed.", "error"); }
-                    const { error } = await supabase.from('chat_messages').insert({ room_id: state.currentChatRoom, sender_id: state.user.id, content: text });
-                    if(error) utils.toast("Failed to send", "error"); else inp.value = '';
+                    const i = document.getElementById('chat-input');
+                    const txt = i.value.trim();
+                    if(!txt) return;
+                    if(txt.match(/(\d{10}|@)/)) return utils.toast('Contact sharing prohibited. Use Unlock feature.', 'error');
+                    await supabase.from('chat_messages').insert({ room_id: state.currentChatRoom, sender_id: state.user.id, content: txt });
+                    i.value = '';
                 }
             }
         };

@@ -535,82 +535,6 @@
         </div>
     </div>
     
-    <!-- Info Modal (T&C) -->
-    <div id="info-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[70] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 animate-fade-in">
-            <h2 class="text-2xl font-bold mb-6 border-b pb-4">Platform Policies</h2>
-            <div class="h-64 overflow-y-auto text-sm text-gray-600 space-y-4 pr-2 custom-scrollbar">
-                <div>
-                    <h4 class="font-bold text-gray-800">1. General Terms</h4>
-                    <p>TradeGinger acts as an intermediary. We do not own items listed. Ensure safety during physical meetups.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-800">2. Prohibited Items</h4>
-                    <p>Illegal goods, weapons, drugs, and offensive material are strictly banned. Accounts will be suspended.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-800">3. Refund Policy</h4>
-                    <p>Refunds for paid plans are processed within 7-10 business days only in cases of technical double-charge. No refunds for active ads.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-800">4. Data Privacy</h4>
-                    <p>Your data is encrypted. Phone numbers are only shared via the "Unlock" feature or Gold plans.</p>
-                </div>
-            </div>
-            <button onclick="app.modals.tnc.hide()" class="w-full mt-6 bg-dark-800 text-white py-3 rounded-xl font-bold hover:bg-dark-900 transition">I Understand</button>
-        </div>
-    </div>
-    
-    <!-- Privacy Modal -->
-    <div id="privacy-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[75] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full h-[80vh] flex flex-col animate-fade-in">
-            <div class="flex justify-between items-center p-6 border-b border-gray-100">
-                <h3 class="text-xl font-bold text-gray-900">Privacy Policy</h3>
-                <button onclick="app.modals.privacy.hide()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
-            </div>
-            <div class="p-8 overflow-y-auto flex-grow custom-scrollbar prose prose-sm max-w-none text-gray-600">
-                 <h4 class="font-bold text-gray-900 text-lg mb-4">Privacy Policy – TradeGinger.com</h4>
-                 <p class="mb-2"><strong>Last Updated:</strong> November 20, 2025</p>
-                 <p class="mb-6">Welcome to TradeGinger.com (“TradeGinger”, “we”, “us”, “our”). We value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, protect, and share your information when you use TradeGinger’s website, mobile application, tools, or related services (collectively, “Services”).</p>
-                 
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">1. Information We Collect</h5>
-                 <p>We collect the following types of information to provide and improve our Services:</p>
-                 <ul class="list-disc pl-5 space-y-1 mb-4">
-                     <li><strong>1.1 Information You Provide:</strong> Name, phone number, email address, Profile details, Listings, Payment information, Communication messages.</li>
-                     <li><strong>1.2 Information Collected Automatically:</strong> Device information, Browser details, Location data, Usage analytics.</li>
-                     <li><strong>1.3 Information from Third Parties:</strong> Data from payment processors, login partners (Google, Facebook), Marketing partners.</li>
-                 </ul>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">2. How We Use Your Information</h5>
-                 <p>We use your information for creating accounts, publishing listings, processing payments, providing recommendations, improving user experience, detecting fraud, and customer support.</p>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">3. Legal Basis for Processing</h5>
-                 <p>We process your data based on Consent, Contractual necessity, Legitimate interest, and Compliance with law.</p>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">4. How We Share Your Information</h5>
-                 <p>We may share your information with Other Users (listing details), Service Providers (payment gateways, cloud storage), Law Enforcement, and in Business Transfers.</p>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">5. Cookies & Tracking Technologies</h5>
-                 <p>TradeGinger uses cookies for session management, personalization, analytics, and advertising. You can disable cookies in browser settings.</p>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">6. Data Storage & Security</h5>
-                 <p>We use industry-standard security methods (Encryption, Secure cloud via Supabase, Access controls). Users must protect their passwords.</p>
-                 
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">7. User Rights</h5>
-                 <p>You have the right to access, update, delete your account, withdraw consent, and report misuse. Contact us at sales@tradeginger.com.</p>
-                 
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">8. Data Retention</h5>
-                 <p>We retain account information as long as active. Deleted accounts are removed within 30–90 days.</p>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">14. Contact Information</h5>
-                 <p>If you have questions, complaints, or requests, contact: <br>📧 sales@tradeginger.com <br>🌐 www.tradeginger.com</p>
-            </div>
-             <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-end rounded-b-2xl">
-                 <button onclick="app.modals.privacy.hide()" class="px-6 py-2.5 rounded-xl bg-dark-800 text-white font-bold hover:bg-dark-900 transition">Close</button>
-            </div>
-        </div>
-    </div>
-
     <!-- JAVASCRIPT LOGIC -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -769,7 +693,8 @@
             locations: locationsArray,
             currentChatRoom: null,
             ip: '127.0.0.1',
-            pendingAuth: null // For OTP flow
+            pendingAuth: null, // For OTP flow
+            pendingRegistrationData: null // NEW: To store profile data between signup and verification
         };
 
         // --- IMAGE UTILITIES ---
@@ -954,6 +879,7 @@
                     document.getElementById('otp-form').classList.add('hidden');
                     document.getElementById('auth-switch-wrapper').classList.remove('hidden');
                     state.pendingAuth = null;
+                    state.pendingRegistrationData = null;
                 },
                 handleAuthSubmit: async (e) => {
                     e.preventDefault();
@@ -966,17 +892,23 @@
                             const firstName = fd.get('firstName');
                             const lastName = fd.get('lastName');
                             const accType = fd.get('accountType');
+                            const fullName = `${firstName} ${lastName}`;
                             
-                            // Step 1: Initiate Sign Up
+                            // Store data for post-verification update
+                            state.pendingRegistrationData = {
+                                first_name: firstName,
+                                last_name: lastName,
+                                full_name: fullName,
+                                account_type: accType
+                            };
+
+                            // Step 1: Initiate Sign Up - MINIMAL METADATA to avoid trigger errors
                             const { error } = await supabase.auth.signUp({
                                 email, password,
                                 options: { 
                                     data: { 
-                                        first_name: firstName, 
-                                        last_name: lastName, 
-                                        full_name: `${firstName} ${lastName}`,
-                                        account_type: accType,
-                                        ip_log: state.ip 
+                                        full_name: fullName
+                                        // Removed other fields from here to prevent DB Trigger errors
                                     } 
                                 }
                             });
@@ -998,6 +930,7 @@
                         }
                     } catch (err) {
                         utils.toast(err.message, 'error');
+                        console.error(err);
                     }
                 },
                 handleOtpSubmit: async (e) => {
@@ -1007,21 +940,32 @@
 
                     try {
                         // Verify Email OTP
-                        const { data, error } = await supabase.auth.verifyOtp({
+                        const { data: { session, user }, error } = await supabase.auth.verifyOtp({
                             email: state.pendingAuth.email,
                             token: token,
                             type: 'signup'
                         });
 
                         if(error) throw error;
+                        
+                        // POST-VERIFICATION: Update Profile with extra details
+                        if (state.pendingRegistrationData && user) {
+                            const { error: updateError } = await supabase.from('profiles').update({
+                                first_name: state.pendingRegistrationData.first_name,
+                                last_name: state.pendingRegistrationData.last_name,
+                                account_type: state.pendingRegistrationData.account_type,
+                                // ip_log: state.ip // Optional: omit if column missing
+                            }).eq('id', user.id);
+                            
+                            if(updateError) console.warn("Profile update warning:", updateError.message);
+                        }
 
                         utils.toast('Email Verified! Logging in...', 'success');
                         app.modals.auth.hide();
                         app.auth.resetAuth();
                         
                     } catch (err) {
-                        // Fallback for Magic Link situations if OTP fails
-                        utils.toast(`Verification failed: ${err.message}. Try clicking the link in your email.`, 'error');
+                        utils.toast(`Verification failed: ${err.message}`, 'error');
                     }
                 },
                 loginWithGoogle: async () => {

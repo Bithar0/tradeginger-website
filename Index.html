@@ -1646,15 +1646,18 @@
                     }
                     const isAdmin = utils.isAdmin();
                     container.innerHTML = items.map(item => {
-                        // Determine card style based on plan
+                        // Determine card style based on plan (Check attributes if col missing)
                         let cardClass = "group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative";
                         let badge = "";
                         
+                        // Fallback logic for plan type since column might be missing
+                        const planType = item.listing_type || item.attributes?.listing_type;
+                        
                         // Logic to determine plan
-                        if(item.listing_type === 'platinum') {
+                        if(planType === 'platinum') {
                             cardClass += " card-platinum";
                             badge = `<div class="absolute top-3 left-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-lg tracking-wide z-10">PLATINUM</div>`;
-                        } else if (item.listing_type === 'gold') {
+                        } else if (planType === 'gold') {
                             cardClass += " card-gold";
                             badge = `<div class="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-lg tracking-wide z-10">GOLD</div>`;
                         }
@@ -1675,7 +1678,7 @@
                                     </div>
                                     <p class="text-gray-600 text-sm truncate mb-4 font-medium">${utils.sanitize(item.title)}</p>
                                     ${item.attributes ? `<div class="text-[10px] text-gray-500 mb-3 flex gap-2 flex-wrap">
-                                        ${Object.entries(item.attributes).slice(0,2).map(([k,v]) => `<span class="bg-gray-50 border border-gray-100 px-2 py-1 rounded-md capitalize font-medium">${k.replace('_',' ')}: ${v}</span>`).join('')}
+                                        ${Object.entries(item.attributes).slice(0,2).filter(([k])=>k!=='listing_type').map(([k,v]) => `<span class="bg-gray-50 border border-gray-100 px-2 py-1 rounded-md capitalize font-medium">${k.replace('_',' ')}: ${v}</span>`).join('')}
                                     </div>` : ''}
                                     <div class="flex justify-between items-center text-xs text-gray-400 border-t border-gray-50 pt-3 font-medium">
                                         <span>${utils.timeAgo(item.created_at)}</span>
@@ -1979,6 +1982,9 @@
                     const cityName = citySelect.options[citySelect.selectedIndex].text;
                     const plan = document.querySelector('input[name="plan"]:checked').value;
 
+                    // FIX: Add listing_type to attributes because column doesn't exist in DB
+                    if(plan) attributes['listing_type'] = plan;
+
                     const payload = {
                         user_id: state.user.id,
                         title: fd.get('title'),
@@ -1988,7 +1994,7 @@
                         subcategory: fd.get('subcategory'),
                         location: cityName,
                         attributes: attributes,
-                        listing_type: plan // Store the plan type
+                        // listing_type: plan <-- REMOVED CAUSING ERROR
                     };
 
                     if(imageUrls.length > 0) payload.image_urls = imageUrls;

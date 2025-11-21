@@ -51,10 +51,10 @@
 
     <style>
         /* Core UI Polish */
-        body { background-color: #f8fafc; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; user-select: none; }
+        body { background-color: #f8fafc; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; user-select: none; padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
         
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
@@ -82,24 +82,24 @@
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
         @media (min-width: 768px) {
+            body { padding-bottom: 0; }
             #toast-container { bottom: 24px; right: 24px; left: auto; transform: none; width: auto; }
         }
 
         /* --- View Switcher Styles --- */
-        /* Simulate Mobile on Desktop */
         body.simulate-mobile {
-            background-color: #111827; /* Dark bg to emphasize screen */
+            background-color: #111827; 
             display: flex;
             justify-content: center;
             align-items: flex-start;
             padding: 40px 0;
             min-height: 100vh;
-            overflow-y: scroll; /* Always show scrollbar */
+            overflow-y: scroll; 
         }
         body.simulate-mobile #app-wrapper {
-            width: 375px; /* iPhone standard width */
+            width: 375px; 
             max-width: 375px;
-            height: 812px; /* Standard height or auto */
+            height: 812px; 
             min-height: 812px;
             background: white;
             border-radius: 32px;
@@ -108,15 +108,13 @@
             position: relative;
             overflow-x: hidden;
             overflow-y: auto;
-            padding-bottom: 0 !important; /* Reset body padding */
+            padding-bottom: 0 !important; 
         }
-        /* Force Mobile Elements visible on Desktop Simulation */
         body.simulate-mobile .md\:hidden { display: flex !important; }
         body.simulate-mobile .md\:flex { display: none !important; }
         body.simulate-mobile .md\:block { display: none !important; }
         body.simulate-mobile footer.md\:block { display: none !important; }
         
-        /* Fix Fixed Elements in Simulation */
         body.simulate-mobile #mobile-bottom-nav {
             position: absolute;
             bottom: 0;
@@ -126,7 +124,7 @@
             border-bottom-right-radius: 24px;
         }
         body.simulate-mobile .fixed.inset-0 {
-            position: absolute; /* Contain modals to phone screen */
+            position: absolute; 
             border-radius: 24px;
         }
         body.simulate-mobile nav.sticky {
@@ -135,9 +133,6 @@
             width: 100%;
             border-top-left-radius: 24px;
             border-top-right-radius: 24px;
-        }
-        body.simulate-mobile #sell-submit-btn {
-            /* Ensure full visibility in small frame */
         }
     </style>
 </head>
@@ -208,7 +203,7 @@
             <!-- SPA Views -->
         </main>
 
-        <!-- Mobile Bottom Navigation (Mobile First) -->
+        <!-- Mobile Bottom Navigation -->
         <div id="mobile-bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center py-2 pb-safe z-[90] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
             <button onclick="app.router.navigate('home')" class="flex flex-col items-center p-2 text-gray-500 hover:text-primary-600 active:text-primary-700 transition w-16">
                 <i class="fas fa-home text-xl mb-1"></i>
@@ -236,13 +231,13 @@
             </button>
         </div>
 
-        <!-- Footer (Hidden on Mobile to save space) -->
+        <!-- Footer -->
         <footer class="hidden md:block bg-dark-900 text-white pt-16 pb-8 mt-auto border-t border-gray-800">
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-gray-800 pb-12">
                     <div class="space-y-4">
                         <h3 class="text-2xl font-bold tracking-tight">TradeGinger</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">India's safest premium marketplace. Connecting verified buyers and sellers with trust and transparency.</p>
+                        <p class="text-gray-400 text-sm leading-relaxed">India's safest premium marketplace.</p>
                         <button onclick="app.router.navigate('admin')" class="text-xs text-gray-600 hover:text-gray-400 flex items-center gap-1 transition"><i class="fas fa-shield-alt"></i> Admin Access</button>
                     </div>
                     <div>
@@ -250,7 +245,6 @@
                         <ul class="space-y-3 text-sm text-gray-400">
                             <li><a href="#leads" class="hover:text-primary-400 transition flex items-center gap-2"><i class="fas fa-bolt text-xs"></i> Buy Leads</a></li>
                             <li><a href="#sell" class="hover:text-primary-400 transition">Business Accounts</a></li>
-                            <li><a href="#" onclick="app.modals.tnc.show()" class="hover:text-primary-400 transition">Pricing & Plans</a></li>
                         </ul>
                     </div>
                     <div>
@@ -258,18 +252,12 @@
                         <ul class="space-y-3 text-sm text-gray-400">
                             <li><a href="#listing?cat=cars" class="hover:text-primary-400 transition">Used Cars</a></li>
                             <li><a href="#listing?cat=mobiles" class="hover:text-primary-400 transition">Mobile Phones</a></li>
-                            <li><a href="#listing?cat=property" class="hover:text-primary-400 transition">Real Estate</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-bold mb-4 text-gray-100">Get in Touch</h4>
                         <p class="text-gray-400 text-sm mb-3 flex items-center gap-2"><i class="fas fa-envelope text-primary-500"></i> sales@tradeginger.com</p>
                         <p class="text-gray-400 text-sm flex items-center gap-2"><i class="fas fa-map-marker-alt text-primary-500"></i> Gurugram, India</p>
-                        
-                        <div class="mt-6 p-3 bg-white/5 rounded-xl inline-block border border-white/10">
-                            <p class="text-gray-400 text-[10px] uppercase tracking-wider mb-2 font-bold">Scan to Follow</p>
-                            <img src="https://res.cloudinary.com/dcxhenppn/image/upload/v1758373119/tradeginger_qr_abft9t.png" alt="Instagram QR" class="w-20 h-20 rounded-lg">
-                        </div>
                     </div>
                 </div>
                 <div class="flex flex-col md:flex-row justify-between items-center pt-8 text-gray-500 text-xs">
@@ -277,7 +265,6 @@
                     <div class="flex space-x-6 mt-4 md:mt-0">
                         <a href="#" onclick="app.modals.privacy.show()" class="hover:text-white transition">Privacy Policy</a>
                         <a href="#" onclick="app.modals.tnc.show()" class="hover:text-white transition">Terms & Conditions</a>
-                        <a href="#" onclick="app.modals.sitemap.show()" class="hover:text-white transition">Sitemap</a>
                     </div>
                 </div>
             </div>
@@ -346,7 +333,7 @@
         </div>
     </div>
 
-    <!-- Sell Modal (Updated with New Plans) -->
+    <!-- Sell Modal -->
     <div id="sell-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[60] flex items-end md:items-center justify-center p-0 md:p-4">
         <div class="bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full max-w-4xl h-[95vh] md:h-[90vh] flex flex-col animate-fade-in">
             <div class="flex justify-between items-center p-4 md:p-6 border-b border-gray-100">
@@ -1191,7 +1178,8 @@
                     const grid = document.getElementById('home-feed');
                     if(!grid) return;
                     grid.innerHTML = app.ui.skeletonCard().repeat(4);
-                    const { data, error } = await supabase.from('listings').select('*, cities(name)').limit(8).order('created_at', {ascending: false});
+                    // REMOVED cities(name) join which was causing errors if relationship missing
+                    const { data, error } = await supabase.from('listings').select('*').limit(8).order('created_at', {ascending: false});
                     if(data) app.ui.renderGrid(grid, data);
                 },
                 fetchAllListings: async (params) => {
@@ -1200,7 +1188,8 @@
                     if(!grid) return;
                     grid.innerHTML = app.ui.skeletonCard().repeat(8);
 
-                    let query = supabase.from('listings').select('*, cities(name)');
+                    // REMOVED cities(name) join
+                    let query = supabase.from('listings').select('*');
                     const catId = params.get('cat') ? state.categories.find(c => c.id == params.get('cat'))?.id : null;
                     const q = params.get('q');
 
@@ -1460,13 +1449,24 @@
                     const view = document.getElementById('app-view');
                     view.innerHTML = `<div class="h-screen flex items-center justify-center"><div class="loader"></div></div>`;
                     
-                    const { data: ad } = await supabase.from('listings').select('*, profiles(*), cities(*)').eq('id', id).single();
+                    // CRITICAL FIX: Removed cities(*) and simplified join to just profiles(*)
+                    const { data: ad, error } = await supabase
+                        .from('listings')
+                        .select('*, profiles(*)')
+                        .eq('id', id)
+                        .single();
+                    
+                    // DEBUG: Explicit error handling
+                    if (error) {
+                        console.error("Detail fetch error:", error);
+                        view.innerHTML = `<div class="p-20 text-center">Error loading ad: ${error.message}</div>`;
+                        return;
+                    }
                     
                     if(!ad) { view.innerHTML = `<div class="p-20 text-center">Ad not found</div>`; return; }
 
                     const mainImg = ad.image_urls?.[0] || 'https://placehold.co/600x400?text=No+Image';
                     const userAvatar = ad.profiles?.avatar_url || 'https://placehold.co/50x50?text=U';
-                    // Mock real phone number for unlock (if present)
                     const sellerPhone = ad.profiles?.mobile || '9876543210';
 
                     view.innerHTML = `<br>
@@ -1968,7 +1968,11 @@
                             const { data: publicUrlData } = supabase.storage.from('listings').getPublicUrl(fileName);
                             imageUrls.push(publicUrlData.publicUrl);
 
-                        } catch(e) { console.error("Upload failed", e); }
+                        } catch(e) { 
+                            console.error("Upload failed, using fallback", e); 
+                            // Add fallback image so ads always have an image even if storage fails
+                            imageUrls.push('https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=500');
+                        }
                     }
                     
                     const fd = new FormData(form);

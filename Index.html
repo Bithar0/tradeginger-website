@@ -842,7 +842,7 @@
             ip: '127.0.0.1'
         };
 
-        // --- IMAGE COMPRESSION UTILITY ---
+        // --- IMAGE UTILITIES ---
         const compressImage = async (file) => {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -861,6 +861,16 @@
                         canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.4); 
                     }
                 }
+            });
+        };
+
+        // NEW: Fallback converter for local display
+        const blobToBase64 = (blob) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
             });
         };
 
@@ -899,10 +909,8 @@
         const app = {
             init: async () => {
                 try {
-                    // Get IP
                     try { const res = await fetch('https://api.ipify.org?format=json'); const d = await res.json(); state.ip = d.ip; } catch(e){}
                     
-                    // Check Auth
                     const { data: { session } } = await supabase.auth.getSession();
                     if(session) await app.auth.setUser(session.user);
                     if (!session) app.auth.clearUser();
@@ -917,7 +925,6 @@
                     window.addEventListener('hashchange', app.router.handle);
                     app.chat.init();
                     
-                    // Close Menus on click outside
                     window.addEventListener('click', (e) => {
                        const dropdown = document.getElementById('user-menu-dropdown');
                        const btn = document.getElementById('user-menu-btn');
@@ -932,7 +939,7 @@
                 }
             },
 
-            // ... [ADMIN MODULE]
+            // ... [ADMIN]
             admin: {
                 saveSchema: () => {
                     localStorage.setItem('tg_categories', JSON.stringify(state.categories));
@@ -974,7 +981,7 @@
                 }
             },
 
-            // ... [AUTH MODULE]
+            // ... [AUTH]
             auth: {
                 isRegistering: false,
                 toggleMode: () => {
@@ -1032,7 +1039,7 @@
                                         last_name: lastName, 
                                         full_name: `${firstName} ${lastName}`,
                                         account_type: accType,
-                                        ip_log: state.ip // Log IP for security
+                                        ip_log: state.ip 
                                     } 
                                 }
                             });
@@ -1083,7 +1090,7 @@
                 }
             },
 
-            // ... [PAYMENT MODULE]
+            // ... [PAYMENT]
             payment: {
                 process: async (amount, desc) => {
                     return new Promise((resolve) => {
@@ -1172,13 +1179,12 @@
                 }
             },
 
-            // ... [DATA MODULE]
+            // ... [DATA]
             data: {
                 fetchHomeListings: async () => {
                     const grid = document.getElementById('home-feed');
                     if(!grid) return;
                     grid.innerHTML = app.ui.skeletonCard().repeat(4);
-                    // REMOVED cities(name) join which was causing errors if relationship missing
                     const { data, error } = await supabase.from('listings').select('*').limit(8).order('created_at', {ascending: false});
                     if(data) app.ui.renderGrid(grid, data);
                 },
@@ -1188,7 +1194,6 @@
                     if(!grid) return;
                     grid.innerHTML = app.ui.skeletonCard().repeat(8);
 
-                    // REMOVED cities(name) join
                     let query = supabase.from('listings').select('*');
                     const catId = params.get('cat') ? state.categories.find(c => c.id == params.get('cat'))?.id : null;
                     const q = params.get('q');
@@ -1196,11 +1201,7 @@
                     if(title) title.innerText = q ? `Search: "${utils.sanitize(q)}"` : (params.get('catname') || 'All Listings');
 
                     if(catId) query = query.eq('category_id', catId);
-                    
-                    // Use ilike for case-insensitive title search
-                    if(q) {
-                        query = query.ilike('title', `%${q}%`);
-                    }
+                    if(q) query = query.ilike('title', `%${q}%`);
 
                     const cat = state.categories.find(c => c.id == catId);
                     if(cat && cat.attributes) {
@@ -1449,94 +1450,100 @@
                     const view = document.getElementById('app-view');
                     view.innerHTML = `<div class="h-screen flex items-center justify-center"><div class="loader"></div></div>`;
                     
-                    // CRITICAL FIX: Removed cities(*) and simplified join to just profiles(*)
-                    const { data: ad, error } = await supabase
-                        .from('listings')
-                        .select('*, profiles(*)')
-                        .eq('id', id)
-                        .single();
-                    
-                    // DEBUG: Explicit error handling
-                    if (error) {
-                        console.error("Detail fetch error:", error);
-                        view.innerHTML = `<div class="p-20 text-center">Error loading ad: ${error.message}</div>`;
-                        return;
-                    }
-                    
-                    if(!ad) { view.innerHTML = `<div class="p-20 text-center">Ad not found</div>`; return; }
+                    try {
+                        // FIX 1: Decoupled queries to avoid FK error
+                        const { data: ad, error: adError } = await supabase
+                            .from('listings')
+                            .select('*')
+                            .eq('id', id)
+                            .single();
+                        
+                        if (adError) throw adError;
+                        if (!ad) { view.innerHTML = `<div class="p-20 text-center">Ad not found</div>`; return; }
 
-                    const mainImg = ad.image_urls?.[0] || 'https://placehold.co/600x400?text=No+Image';
-                    const userAvatar = ad.profiles?.avatar_url || 'https://placehold.co/50x50?text=U';
-                    const sellerPhone = ad.profiles?.mobile || '9876543210';
+                        // Fetch profile separately (safe fetch)
+                        let userProfile = {};
+                        if (ad.user_id) {
+                            const { data: profile } = await supabase
+                                .from('profiles')
+                                .select('*')
+                                .eq('id', ad.user_id)
+                                .single();
+                            userProfile = profile || {};
+                        }
 
-                    view.innerHTML = `<br>
-                        <div class="container mx-auto px-4 py-8 fade-in">
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                <!-- Images -->
-                                <div class="lg:col-span-2 space-y-4">
-                                    <div class="bg-black rounded-xl overflow-hidden h-[400px] md:h-[500px] flex items-center justify-center relative group">
-                                        <img src="${mainImg}" id="main-img" class="h-full w-full object-contain">
-                                    </div>
-                                    <div class="flex gap-2 overflow-x-auto pb-2">
-                                        ${(ad.image_urls || []).map(url => `<br>
-                                            <img src="${url}" onclick="document.getElementById('main-img').src='${url}'" class="w-20 h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-primary-500">
-                                        `).join('')}
-                                    </div>
-                                    
-                                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6">
-                                        <h3 class="text-xl font-bold mb-4">Description</h3>
-                                        <p class="text-gray-700 leading-relaxed whitespace-pre-line">${utils.sanitize(ad.description)}</p>
-                                        <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
-                                            <div class="bg-gray-50 p-3 rounded"><strong>Category:</strong> ${ad.subcategory || 'General'}</div>
-                                            <div class="bg-gray-50 p-3 rounded"><strong>Location:</strong> ${utils.sanitize(ad.location)}</div>
-                                            <div class="bg-gray-50 p-3 rounded"><strong>Posted:</strong> ${utils.timeAgo(ad.created_at)}</div>
+                        const mainImg = ad.image_urls?.[0] || 'https://placehold.co/600x400?text=No+Image';
+                        const userAvatar = userProfile.avatar_url || 'https://placehold.co/50x50?text=U';
+                        const sellerName = userProfile.full_name || 'TradeGinger User';
+                        const sellerPhone = userProfile.mobile || '9876543210';
+
+                        view.innerHTML = `<br>
+                            <div class="container mx-auto px-4 py-8 fade-in">
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                    <div class="lg:col-span-2 space-y-4">
+                                        <div class="bg-black rounded-xl overflow-hidden h-[400px] md:h-[500px] flex items-center justify-center relative group">
+                                            <img src="${mainImg}" id="main-img" class="h-full w-full object-contain">
                                         </div>
-                                    </div>
-                                </div>
-
-                                <!-- Sidebar -->
-                                <div class="space-y-6">
-                                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 sticky top-24">
-                                        <h1 class="text-2xl font-bold text-gray-900 mb-2">${utils.sanitize(ad.title)}</h1>
-                                        <div class="text-3xl font-extrabold text-primary-600 mb-6">${utils.formatPrice(ad.price)}</div>
+                                        <div class="flex gap-2 overflow-x-auto pb-2">
+                                            ${(ad.image_urls || []).map(url => `<br>
+                                                <img src="${url}" onclick="document.getElementById('main-img').src='${url}'" class="w-20 h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-primary-500">
+                                            `).join('')}
+                                        </div>
                                         
-                                        <div class="flex items-center gap-4 mb-6 pb-6 border-b">
-                                            <img src="${userAvatar}" class="w-14 h-14 rounded-full object-cover border">
-                                            <div>
-                                                <p class="font-bold text-lg">${utils.sanitize(ad.profiles?.full_name || 'TradeGinger User')}</p>
-                                                <p class="text-xs text-gray-500">Member since 2024</p>
+                                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6">
+                                            <h3 class="text-xl font-bold mb-4">Description</h3>
+                                            <p class="text-gray-700 leading-relaxed whitespace-pre-line">${utils.sanitize(ad.description)}</p>
+                                            <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
+                                                <div class="bg-gray-50 p-3 rounded"><strong>Category:</strong> ${ad.subcategory || 'General'}</div>
+                                                <div class="bg-gray-50 p-3 rounded"><strong>Location:</strong> ${utils.sanitize(ad.location)}</div>
+                                                <div class="bg-gray-50 p-3 rounded"><strong>Posted:</strong> ${utils.timeAgo(ad.created_at)}</div>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <div class="space-y-3">
-                                            <!-- Phone Unlock -->
-                                            <div id="phone-section" class="bg-green-50 border border-green-200 p-3 rounded-lg flex justify-between items-center">
-                                                <div class="text-green-800 font-medium font-mono" data-phone="${sellerPhone}"><i class="fas fa-phone-alt mr-2"></i> +91 XXXXX XXXXX</div>
-                                                <button onclick="app.ui.unlockBuyerPhone(this)" class="text-xs bg-green-600 text-white px-3 py-1 rounded shadow hover:bg-green-700">Unlock (₹5)</button>
+                                    <div class="space-y-6">
+                                        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 sticky top-24">
+                                            <h1 class="text-2xl font-bold text-gray-900 mb-2">${utils.sanitize(ad.title)}</h1>
+                                            <div class="text-3xl font-extrabold text-primary-600 mb-6">${utils.formatPrice(ad.price)}</div>
+                                            
+                                            <div class="flex items-center gap-4 mb-6 pb-6 border-b">
+                                                <img src="${userAvatar}" class="w-14 h-14 rounded-full object-cover border">
+                                                <div>
+                                                    <p class="font-bold text-lg">${utils.sanitize(sellerName)}</p>
+                                                    <p class="text-xs text-gray-500">Member since 2024</p>
+                                                </div>
                                             </div>
 
-                                            <!-- Actions -->
-                                            <button onclick="app.chat.start('${ad.profiles?.id}', '${ad.id}', '${ad.profiles?.full_name?.replace(/'/g, "")}')" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md transition flex items-center justify-center gap-2">
-                                                <i class="fas fa-comment-dots"></i> Chat with Seller
-                                            </button>
+                                            <div class="space-y-3">
+                                                <div id="phone-section" class="bg-green-50 border border-green-200 p-3 rounded-lg flex justify-between items-center">
+                                                    <div class="text-green-800 font-medium font-mono" data-phone="${sellerPhone}"><i class="fas fa-phone-alt mr-2"></i> +91 XXXXX XXXXX</div>
+                                                    <button onclick="app.ui.unlockBuyerPhone(this)" class="text-xs bg-green-600 text-white px-3 py-1 rounded shadow hover:bg-green-700">Unlock (₹5)</button>
+                                                </div>
 
-                                            <!-- Enquiry Form (Lead Gen) -->
-                                            <div class="border-t pt-4 mt-4">
-                                                <h4 class="font-bold text-gray-700 mb-2">Send Enquiry</h4>
-                                                <form id="enquiry-form" onsubmit="event.preventDefault(); app.data.sendEnquiry('${ad.id}', '${ad.profiles?.id}')" class="space-y-2">
-                                                    <input type="text" id="enquiry-name" placeholder="Your Name" class="w-full text-sm border rounded px-3 py-2 bg-gray-50">
-                                                    <input type="tel" id="enquiry-phone" placeholder="Your Phone Number" class="w-full text-sm border rounded px-3 py-2 bg-gray-50">
-                                                    <button type="submit" class="w-full bg-gray-800 text-white text-sm py-2 rounded hover:bg-gray-900">Send Interest</button>
-                                                </form>
+                                                <button onclick="app.chat.start('${ad.user_id}', '${ad.id}', '${sellerName.replace(/'/g, "")}')" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md transition flex items-center justify-center gap-2">
+                                                    <i class="fas fa-comment-dots"></i> Chat with Seller
+                                                </button>
+
+                                                <div class="border-t pt-4 mt-4">
+                                                    <h4 class="font-bold text-gray-700 mb-2">Send Enquiry</h4>
+                                                    <form id="enquiry-form" onsubmit="event.preventDefault(); app.data.sendEnquiry('${ad.id}', '${ad.user_id}')" class="space-y-2">
+                                                        <input type="text" id="enquiry-name" placeholder="Your Name" class="w-full text-sm border rounded px-3 py-2 bg-gray-50">
+                                                        <input type="tel" id="enquiry-phone" placeholder="Your Phone Number" class="w-full text-sm border rounded px-3 py-2 bg-gray-50">
+                                                        <button type="submit" class="w-full bg-gray-800 text-white text-sm py-2 rounded hover:bg-gray-900">Send Interest</button>
+                                                    </form>
+                                                </div>
+
+                                                ${state.user?.id === ad.user_id ? `<div class="text-center text-sm text-gray-500 bg-gray-100 p-2 rounded">This is your ad</div>` : ''}
                                             </div>
-
-                                            ${state.user?.id === ad.user_id ? `<div class="text-center text-sm text-gray-500 bg-gray-100 p-2 rounded">This is your ad</div>` : ''}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    } catch(e) {
+                        console.error(e);
+                        view.innerHTML = `<div class="p-10 text-center text-red-500">Error loading ad details.</div>`;
+                    }
                 },
                 profile: () => `<br>
                     <div class="container mx-auto px-4 py-12 fade-in">
@@ -1951,13 +1958,14 @@
                     
                     utils.toast(app.sell.isEditing ? 'Updating...' : 'Compressing & Uploading...', 'info');
                     
-                    // Upload Images to Supabase Storage with Compression
+                    // FIX 2: Robust Image Handling (Upload or Base64 Fallback)
                     const imageUrls = [];
                     for (const file of app.sell.stagedFiles) {
                          try {
                             const compressedBlob = await compressImage(file);
                             const fileName = `${state.user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
                             
+                            // Try uploading to Supabase Storage
                             const { data, error } = await supabase.storage.from('listings').upload(fileName, compressedBlob, {
                                 cacheControl: '3600',
                                 upsert: false
@@ -1969,9 +1977,16 @@
                             imageUrls.push(publicUrlData.publicUrl);
 
                         } catch(e) { 
-                            console.error("Upload failed, using fallback", e); 
-                            // Add fallback image so ads always have an image even if storage fails
-                            imageUrls.push('https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=500');
+                            console.warn("Storage upload failed, falling back to Base64:", e.message);
+                            // Fallback: Convert image to Base64 string and store directly
+                            // This ensures the user's actual image is shown even without storage bucket access
+                            try {
+                                const base64 = await blobToBase64(file); 
+                                imageUrls.push(base64);
+                            } catch(b64err) {
+                                console.error("Base64 conversion failed", b64err);
+                                imageUrls.push('https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=500'); // Last resort
+                            }
                         }
                     }
                     

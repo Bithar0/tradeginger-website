@@ -2,11 +2,11 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta id="viewport-meta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
     <title>TradeGinger | India's #1 B2B & C2C Marketplace</title>
-    <meta name="description" content="TradeGinger is the safest platform to buy and sell used cars, property, and electronics.">
+    <meta name="description" content="TradeGinger is the safest platform to buy and sell used cars, property, and electronics. Features verified sellers, secure chat, lead generation for businesses, and premium listings.">
     <meta name="theme-color" content="#0ea5e9">
 
     <!-- Libraries -->
@@ -175,7 +175,8 @@
     
     <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 bg-dark-900/80 backdrop-blur-md hidden z-[60] flex items-end md:items-center justify-center p-0 md:p-4 transition-all duration-300 opacity-0 pointer-events-none scale-95">
-        <div class="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden transform transition-all h-[85vh] md:h-auto">
+        <!-- CHANGED: Added overflow-y-auto and max-h constraints to enable scrolling -->
+        <div class="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl shadow-2xl overflow-y-auto transform transition-all h-[85vh] md:h-auto md:max-h-[90vh] flex flex-col">
             <div class="p-8">
                 <div class="flex justify-between items-center mb-8">
                     <div>
@@ -200,7 +201,12 @@
 
                     <div class="space-y-4">
                         <input type="email" name="email" placeholder="Email Address" required class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition font-medium">
-                        <input type="password" name="password" placeholder="Password" required class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition font-medium">
+                        <div>
+                            <input type="password" name="password" placeholder="Password" required class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition font-medium">
+                            <div class="text-right mt-2" id="forgot-password-link">
+                                <button type="button" onclick="app.auth.showForgotPassword()" class="text-xs text-primary-600 font-bold hover:underline">Forgot Password?</button>
+                            </div>
+                        </div>
                     </div>
 
                     <button type="submit" id="auth-btn-main" class="w-full mt-8 bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary-500/25 transition transform hover:-translate-y-0.5 text-lg flex justify-center items-center gap-2">
@@ -217,10 +223,10 @@
                         <img src="https://www.google.com/favicon.ico" class="w-5 h-5"> Google
                     </button>
 
-                    <p class="mt-8 text-center text-sm text-slate-500">
+                    <div class="mt-8 text-center text-sm text-slate-500" id="auth-switch-wrapper">
                         <span id="auth-switch-text">New to TradeGinger?</span>
                         <button type="button" onclick="app.auth.toggleMode()" id="auth-switch-btn" class="text-primary-600 font-bold hover:underline ml-1">Create Account</button>
-                    </p>
+                    </div>
                 </form>
 
                 <!-- OTP Verify -->
@@ -233,6 +239,18 @@
                     <input type="text" name="otp" placeholder="000000" maxlength="6" required class="w-full text-center px-4 py-5 border-2 border-primary-100 rounded-2xl focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none tracking-[1em] text-3xl font-bold bg-white text-slate-800 transition-all placeholder-slate-200">
                     <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-green-600/20 transition transform hover:-translate-y-0.5 text-lg">Verify & Login</button>
                     <button type="button" onclick="app.auth.resetAuth()" class="text-sm text-slate-400 hover:text-slate-600">Change Email</button>
+                </form>
+
+                 <!-- Forgot Password Form -->
+                <form id="forgot-password-form" onsubmit="app.auth.handlePasswordReset(event)" class="hidden flex-col animate-fade-in space-y-6">
+                    <div class="text-center mb-2">
+                         <div class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 text-2xl mx-auto mb-4"><i class="fas fa-key"></i></div>
+                         <h3 class="text-xl font-bold text-slate-900">Reset Password</h3>
+                         <p class="text-sm text-slate-500 mt-1">Enter your email to receive a reset link.</p>
+                    </div>
+                    <input type="email" name="resetEmail" placeholder="Email Address" required class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition">
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-2xl shadow-lg transition">Send Reset Link</button>
+                    <button type="button" onclick="app.auth.resetAuth()" class="text-sm text-slate-500 hover:text-slate-800 text-center w-full">Back to Login</button>
                 </form>
             </div>
         </div>
@@ -468,19 +486,54 @@
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
         const indianLocations = {
-            "Andaman and Nicobar Islands": ["Port Blair"], "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore"], "Arunachal Pradesh": ["Itanagar"], "Assam": ["Guwahati", "Silchar"], "Bihar": ["Patna", "Gaya"], "Chandigarh": ["Chandigarh"], "Chhattisgarh": ["Raipur", "Bhilai"], "Dadra and Nagar Haveli": ["Daman"], "Delhi": ["New Delhi", "North Delhi", "South Delhi", "Gurgaon", "Noida"], "Goa": ["Panaji", "Margao"], "Gujarat": ["Ahmedabad", "Surat", "Vadodara"], "Haryana": ["Gurugram", "Faridabad"], "Himachal Pradesh": ["Shimla"], "Jammu and Kashmir": ["Srinagar"], "Jharkhand": ["Ranchi", "Jamshedpur"], "Karnataka": ["Bengaluru", "Mysuru", "Mangaluru"], "Kerala": ["Thiruvananthapuram", "Kochi"], "Ladakh": ["Leh"], "Madhya Pradesh": ["Bhopal", "Indore"], "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik"], "Manipur": ["Imphal"], "Meghalaya": ["Shillong"], "Mizoram": ["Aizawl"], "Nagaland": ["Kohima"], "Odisha": ["Bhubaneswar", "Cuttack"], "Puducherry": ["Puducherry"], "Punjab": ["Ludhiana", "Amritsar", "Chandigarh"], "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur"], "Sikkim": ["Gangtok"], "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai"], "Telangana": ["Hyderabad", "Warangal"], "Tripura": ["Agartala"], "Uttar Pradesh": ["Lucknow", "Kanpur", "Noida"], "Uttarakhand": ["Dehradun", "Haridwar"], "West Bengal": ["Kolkata", "Siliguri"]
+            "Andaman and Nicobar Islands": ["Port Blair"], "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Rajahmundry", "Tirupati", "Kakinada"],
+            "Arunachal Pradesh": ["Itanagar", "Naharlagun"],
+            "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Tezpur"],
+            "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga"],
+            "Chandigarh": ["Chandigarh"],
+            "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Durg"],
+            "Dadra and Nagar Haveli and Daman and Diu": ["Daman", "Silvassa"],
+            "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi", "Dwarka", "Rohini", "Saket"],
+            "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa"],
+            "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Gandhinagar"],
+            "Haryana": ["Gurugram", "Faridabad", "Panipat", "Ambala", "Rohtak", "Hisar", "Karnal"],
+            "Himachal Pradesh": ["Shimla", "Manali", "Dharamshala", "Mandi"],
+            "Jammu and Kashmir": ["Srinagar", "Jammu", "Anantnag"],
+            "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro", "Hazaribagh"],
+            "Karnataka": ["Bengaluru", "Mysuru", "Hubballi-Dharwad", "Mangaluru", "Belagavi", "Davangere"],
+            "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur", "Kollam", "Palakkad"],
+            "Ladakh": ["Leh", "Kargil"],
+            "Lakshadweep": ["Kavaratti"],
+            "Madhya Pradesh": ["Bhopal", "Indore", "Gwalior", "Jabalpur", "Ujjain", "Sagar"],
+            "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Thane", "Navi Mumbai", "Solapur"],
+            "Manipur": ["Imphal"],
+            "Meghalaya": ["Shillong"],
+            "Mizoram": ["Aizawl"],
+            "Nagaland": ["Kohima", "Dimapur"],
+            "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur"],
+            "Puducherry": ["Puducherry"],
+            "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali"],
+            "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Ajmer", "Bikaner"],
+            "Sikkim": ["Gangtok"],
+            "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Trichy", "Salem", "Tirunelveli", "Erode"],
+            "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam"],
+            "Tripura": ["Agartala"],
+            "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Noida", "Ghaziabad", "Meerut", "Prayagraj", "Bareilly", "Aligarh"],
+            "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Nainital", "Haldwani"],
+            "West Bengal": ["Kolkata", "Asansol", "Siliguri", "Durgapur", "Howrah", "Darjeeling"]
         };
         const locationsArray = Object.entries(indianLocations).map(([state, cities]) => ({ state, cities: cities.sort() })).sort((a, b) => a.state.localeCompare(b.state));
         
         const defaultSchema = [
-            { id: 1, name: 'Cars', icon: 'fa-car', subcategories: ['Sedan', 'SUV', 'Hatchback', 'Luxury'], attributes: [{ key: 'brand', label: 'Brand', type: 'select', options: ['Maruti', 'Hyundai', 'Tata', 'Mahindra'] }, { key: 'km', label: 'KM Driven', type: 'number' }, { key: 'fuel', label: 'Fuel Type', type: 'select', options: ['Petrol', 'Diesel', 'CNG'] }] },
-            { id: 2, name: 'Property', icon: 'fa-building', subcategories: ['Apartment', 'Villa', 'Plot'], attributes: [{ key: 'bhk', label: 'Bedrooms', type: 'select', options: ['1 BHK', '2 BHK', '3 BHK'] }, { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Furnished', 'Unfurnished'] }] },
-            { id: 3, name: 'Mobiles', icon: 'fa-mobile-alt', subcategories: ['Smartphones', 'Tablets'], attributes: [{ key: 'brand', label: 'Brand', type: 'select', options: ['Apple', 'Samsung', 'OnePlus'] }, { key: 'storage', label: 'Storage', type: 'select', options: ['64GB', '128GB', '256GB'] }] },
-            { id: 4, name: 'Bikes', icon: 'fa-motorcycle', subcategories: ['Motorcycle', 'Scooter'], attributes: [{ key: 'brand', label: 'Brand', type: 'text' }, { key: 'km', label: 'KM Driven', type: 'number' }] },
-            { id: 5, name: 'Electronics', icon: 'fa-tv', subcategories: ['TV', 'Laptop', 'Camera'], attributes: [{ key: 'brand', label: 'Brand', type: 'text' }] },
-            { id: 6, name: 'Furniture', icon: 'fa-couch', subcategories: ['Sofa', 'Bed', 'Table'], attributes: [] },
-            { id: 7, name: 'Jobs', icon: 'fa-briefcase', subcategories: ['Sales', 'IT', 'Driver'], attributes: [{ key: 'salary', label: 'Salary', type: 'number' }] },
-            { id: 8, name: 'Services', icon: 'fa-tools', subcategories: ['Plumber', 'Electrician'], attributes: [] }
+            { id: 1, name: 'Cars', icon: 'fa-car', subcategories: ['Sedan', 'SUV', 'Hatchback', 'Luxury', 'MUV', 'Convertible', 'Coupe'], attributes: [{ key: 'brand', label: 'Brand', type: 'select', options: ['Maruti Suzuki', 'Hyundai', 'Tata', 'Mahindra', 'Kia', 'Toyota', 'Honda', 'MG', 'Renault', 'Volkswagen', 'Skoda', 'Nissan', 'Jeep', 'Citroen', 'Audi', 'BMW', 'Mercedes-Benz', 'Volvo', 'Jaguar', 'Land Rover', 'Porsche', 'Ford'] }, { key: 'model', label: 'Model', type: 'text' }, { key: 'variant', label: 'Variant', type: 'text' }, { key: 'fuel_type', label: 'Fuel Type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'] }, { key: 'km_driven', label: 'KM Driven', type: 'number' }, { key: 'year', label: 'Model Year', type: 'number' }, { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic', 'IMT'] }, { key: 'owners', label: 'No. of Owners', type: 'select', options: ['1st', '2nd', '3rd', '4th+'] }] },
+            { id: 2, name: 'Property', icon: 'fa-building', subcategories: ['Apartment', 'Villa', 'Plot', 'Commercial', 'Independent House', 'Builder Floor', 'Farmhouse'], attributes: [{ key: 'bedrooms', label: 'Bedrooms (BHK)', type: 'select', options: ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '5+ BHK'] }, { key: 'bathrooms', label: 'Bathrooms', type: 'select', options: ['1', '2', '3', '4', '5+'] }, { key: 'area', label: 'Area (sq ft)', type: 'number' }, { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Furnished', 'Semi-Furnished', 'Unfurnished'] }, { key: 'construction_status', label: 'Status', type: 'select', options: ['Ready to Move', 'Under Construction'] }, { key: 'listed_by', label: 'Listed By', type: 'select', options: ['Owner', 'Dealer', 'Builder'] }] },
+            { id: 3, name: 'Mobiles', icon: 'fa-mobile-alt', subcategories: ['Smartphones', 'Tablets', 'Keypad Phones', 'Accessories'], attributes: [{ key: 'brand', label: 'Brand', type: 'select', options: ['Apple', 'Samsung', 'Xiaomi', 'Redmi', 'Vivo', 'Oppo', 'Realme', 'OnePlus', 'Google', 'Motorola', 'Nothing', 'Poco', 'iQOO'] }, { key: 'model', label: 'Model', type: 'text' }, { key: 'storage', label: 'Storage', type: 'select', options: ['64GB', '128GB', '256GB', '512GB', '1TB'] }, { key: 'ram', label: 'RAM', type: 'select', options: ['4GB', '6GB', '8GB', '12GB', '16GB+'] }] },
+            { id: 4, name: 'Bikes', icon: 'fa-motorcycle', subcategories: ['Motorcycle', 'Scooter', 'Sports Bike', 'Cruiser'], attributes: [{ key: 'brand', label: 'Brand', type: 'select', options: ['Hero', 'Honda', 'TVS', 'Bajaj', 'Royal Enfield', 'Yamaha', 'Suzuki', 'KTM', 'Jawa', 'Ather', 'Ola'] }, { key: 'model', label: 'Model', type: 'text' }, { key: 'year', label: 'Year', type: 'number' }, { key: 'km_driven', label: 'KM Driven', type: 'number' }] },
+            { id: 5, name: 'Electronics', icon: 'fa-tv', subcategories: ['TV', 'Laptop', 'Desktop', 'Camera', 'AC', 'Fridge', 'Audio'], attributes: [{ key: 'brand', label: 'Brand', type: 'select', options: ['HP', 'Dell', 'Lenovo', 'Asus', 'Acer', 'Apple', 'Samsung', 'LG', 'Sony', 'Whirlpool', 'Godrej', 'Voltas', 'Daikin', 'Canon', 'Nikon', 'JBL'] }] },
+            { id: 6, name: 'Services', icon: 'fa-tools', subcategories: ['Electrician', 'Plumber', 'Carpenter', 'Painter', 'Cleaning', 'Appliance Repair', 'Pest Control', 'Packers & Movers'], attributes: [{ key: 'experience', label: 'Experience (Years)', type: 'number' }, { key: 'visiting_charge', label: 'Visiting Charge (₹)', type: 'number' }, { key: 'availability', label: 'Availability', type: 'select', options: ['Anytime', 'Weekdays', 'Weekends', '24x7 Emergency'] }] },
+            { id: 7, name: 'Furniture', icon: 'fa-couch', subcategories: ['Sofa', 'Bed', 'Dining', 'Decor', 'Wardrobe'], attributes: [] },
+            { id: 8, name: 'Fashion', icon: 'fa-tshirt', subcategories: ['Men', 'Women', 'Kids', 'Accessories', 'Watches'], attributes: [] },
+            { id: 9, name: 'Pets', icon: 'fa-paw', subcategories: ['Dogs', 'Cats', 'Fish', 'Birds'], attributes: [] }
         ];
         
         let categoriesToUse = defaultSchema;
@@ -545,7 +598,7 @@
                 el.className = `toast ${bg}`; 
                 el.innerHTML = `<i class="fas fa-info-circle text-lg"></i> <span class="font-medium">${utils.sanitize(msg)}</span>`; 
                 c.appendChild(el); 
-                setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; setTimeout(() => el.remove(), 300); }, 3000); 
+                setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; setTimeout(() => el.remove(), 3000); }, 3000); 
             },
             isAdmin: () => state.user?.email === 'admin@tradeginger.com',
             getIp: async () => { try { const res = await fetch('https://api.ipify.org?format=json'); const d = await res.json(); return d.ip; } catch { return '0.0.0.0'; } }
@@ -603,6 +656,7 @@
                     document.getElementById('auth-form').classList.remove('hidden');
                     document.getElementById('otp-form').classList.add('hidden');
                     document.getElementById('auth-switch-wrapper').classList.remove('hidden');
+                    document.getElementById('forgot-password-form').classList.add('hidden');
                     state.pendingAuth = null;
                 },
                 handleInitialSubmit: async (e) => {
@@ -648,19 +702,36 @@
 
                         // Critical Fix: Ensure profile data is updated post-verification
                         if (state.pendingRegistrationData) {
-                            await supabase.from('profiles').update({
+                            await supabase.from('profiles').upsert({
+                                id: user.id,
+                                email: user.email,
                                 first_name: state.pendingRegistrationData.firstName,
-                                last_name: state.pendingRegistrationData.last_name,
+                                last_name: state.pendingRegistrationData.lastName,
                                 account_type: state.pendingRegistrationData.accountType,
                                 full_name: `${state.pendingRegistrationData.firstName} ${state.pendingRegistrationData.lastName}`,
                                 last_ip: state.ip,
                                 last_login: new Date().toISOString()
-                            }).eq('id', user.id);
+                            });
                         }
                         await app.auth.onLoginSuccess(user);
                         app.modals.auth.hide();
                         utils.toast('Account verified!', 'success');
                     } catch (err) { utils.toast(err.message, 'error'); }
+                },
+                showForgotPassword: () => {
+                    document.getElementById('auth-form').classList.add('hidden');
+                    document.getElementById('forgot-password-form').classList.remove('hidden');
+                    document.getElementById('auth-title').innerText = "Reset Password";
+                },
+                handlePasswordReset: async (e) => {
+                    e.preventDefault();
+                    const email = e.target.querySelector('input[name="resetEmail"]').value;
+                    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+                    if (error) utils.toast(error.message, 'error');
+                    else {
+                        utils.toast('Password reset link sent!', 'success');
+                        app.auth.resetAuth();
+                    }
                 },
                 onLoginSuccess: async (user) => {
                     state.user = user;
@@ -672,6 +743,7 @@
                 resetView: () => {
                     document.getElementById('auth-form').classList.remove('hidden');
                     document.getElementById('otp-form').classList.add('hidden');
+                    document.getElementById('forgot-password-form').classList.add('hidden');
                     app.auth.isRegistering = true; 
                     app.auth.toggleMode(); 
                 },
@@ -1084,7 +1156,7 @@
                             ${(edit || isAdmin) ? `
                                 <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20 transform translate-y-2 group-hover:translate-y-0">
                                     ${edit ? `<button onclick="app.sell.edit('${i.id}')" class="bg-white text-primary-600 w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:bg-primary-600 hover:text-white transition"><i class="fas fa-edit"></i></button>` : ''}
-                                    <button onclick="app.sell.delete('${i.id}')" class="bg-white text-red-500 w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash"></i></button>
+                                    <button onclick="app.sell.delete('${i.id}')" class="bg-white text-red-500 w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash text-xs"></i></button>
                                 </div>
                             ` : ''}
                         </div>
@@ -1309,13 +1381,12 @@
                     app.modals.chat.show(name);
                     
                     const c = document.getElementById('chat-messages');
-                    c.innerHTML = '<div class="text-center text-slate-400 mt-10 text-sm flex flex-col items-center gap-2"><div class="loader"></div>Loading history...</div>';
+                    c.innerHTML = '<div class="text-center text-gray-400 mt-4 text-sm">Loading messages...</div>';
                     
                     if(app.chat.subscription) supabase.removeChannel(app.chat.subscription);
                     
                     const { data } = await supabase.from('chat_messages').select('*').eq('room_id', rid).order('created_at', {ascending: true});
                     c.innerHTML = ''; 
-                    if(!data || data.length === 0) c.innerHTML = '<div class="text-center text-slate-300 mt-10 text-xs">No messages yet. Start the conversation!</div>';
                     data?.forEach(m => app.chat.renderMsg(m));
                     
                     app.chat.subscription = supabase.channel(`room:${rid}`).on('postgres_changes', {event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${rid}`}, p => app.chat.renderMsg(p.new)).subscribe();
@@ -1323,7 +1394,7 @@
                 renderMsg: (m) => {
                     const me = m.sender_id === state.user.id;
                     const c = document.getElementById('chat-messages');
-                    c.insertAdjacentHTML('beforeend', `<div class="flex ${me?'justify-end':'justify-start'} mb-2 fade-in"><div class="${me?'bg-primary-600 text-white rounded-br-none':'bg-white text-slate-700 border border-slate-100 rounded-bl-none'} px-5 py-3 rounded-2xl text-sm max-w-[80%] shadow-sm font-medium">${utils.sanitize(m.content)}</div></div>`);
+                    c.insertAdjacentHTML('beforeend', `<div class="flex ${me?'justify-end':'justify-start'}"><div class="${me?'bg-primary-600 text-white rounded-br-none':'bg-white text-gray-800 border border-gray-200 rounded-bl-none'} px-4 py-2.5 rounded-2xl text-sm max-w-[80%] shadow-sm mb-2">${utils.sanitize(m.content)}</div></div>`);
                     c.scrollTop = c.scrollHeight;
                 },
                 send: async (e) => {
@@ -1331,9 +1402,6 @@
                     const i = document.getElementById('chat-input');
                     const txt = i.value.trim();
                     if(!txt) return;
-                    // Basic phone number blocking regex for safety
-                    if(txt.match(/(\+?\d[\d -]{8,}\d)/)) return utils.toast('Phone numbers not allowed in chat. Please use the "Unlock Phone" feature.', 'error');
-                    
                     await supabase.from('chat_messages').insert({ room_id: state.currentChatRoom, sender_id: state.user.id, content: txt });
                     i.value = '';
                 }

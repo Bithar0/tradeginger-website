@@ -2,11 +2,11 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta id="viewport-meta" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
     <title>TradeGinger | India's #1 B2B & C2C Marketplace</title>
-    <meta name="description" content="TradeGinger is the safest platform to buy and sell used cars, property, and electronics. Features verified sellers, secure chat, lead generation for businesses, and premium listings.">
+    <meta name="description" content="TradeGinger is the safest platform to buy and sell used cars, property, and electronics.">
     <meta name="theme-color" content="#0ea5e9">
 
     <!-- Libraries -->
@@ -21,7 +21,7 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        primary: { 50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' },
+                        primary: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' },
                         accent: { 500: '#f59e0b', 600: '#d97706' },
                         dark: { 800: '#1e293b', 900: '#0f172a' }
                     },
@@ -29,161 +29,124 @@
                         'soft': '0 10px 40px -10px rgba(0,0,0,0.08)',
                         'glow': '0 0 20px rgba(14, 165, 233, 0.5)'
                     },
-                    padding: { 'safe-bottom': 'env(safe-area-inset-bottom)' },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out forwards',
-                        'slide-up': 'slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-                    },
-                    keyframes: {
-                        fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-                        slideUp: { '0%': { transform: 'translateY(50px) scale(0.9)', opacity: '0' }, '100%': { transform: 'translateY(0) scale(1)', opacity: '1' } }
-                    }
+                    padding: { 'safe-bottom': 'env(safe-area-inset-bottom)' }
                 }
             }
         }
     </script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
         body { background-color: #f8fafc; -webkit-font-smoothing: antialiased; }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.6); }
         
-        /* Loader */
-        .loader { width: 48px; height: 48px; border: 5px solid #e2e8f0; border-bottom-color: #0ea5e9; border-radius: 50%; display: inline-block; box-sizing: border-box; animation: rotation 1s linear infinite; }
-        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Plan Badges */
+        .card-platinum { position: relative; overflow: hidden; border: 2px solid #1e293b; }
+        .card-gold { position: relative; overflow: hidden; border: 2px solid #f59e0b; }
 
         /* Toast */
-        #toast-container { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; pointer-events: none; }
-        .toast { pointer-events: auto; padding: 12px 20px; border-radius: 12px; color: white; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.3); font-weight: 600; display: flex; align-items: center; gap: 12px; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); backdrop-filter: blur(10px); font-size: 0.9rem; }
+        #toast-container { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 16px 24px; border-radius: 16px; color: white; box-shadow: 0 15px 50px rgba(0,0,0,0.2); font-weight: 600; display: flex; align-items: center; gap: 12px; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); backdrop-filter: blur(10px); }
+        @keyframes slideUp { from { transform: translateY(50px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         
         @media (min-width: 768px) {
-            #toast-container { bottom: 30px; right: 30px; left: auto; transform: none; width: auto; }
+            body { padding-bottom: 0; }
+            #toast-container { bottom: 24px; right: 24px; left: auto; transform: none; width: auto; }
         }
 
-        /* Mobile Simulation Mode - Robust Frame */
-        body.simulate-mobile { background: #1f2937; height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0; margin: 0; }
-        body.simulate-mobile #app-wrapper { 
-            width: 375px; 
-            height: 812px; 
-            max-height: 90vh; 
-            background: white; 
-            border-radius: 40px; 
-            border: 14px solid #111827; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 4px #374151; 
-            position: relative; 
-            overflow-y: auto; 
-            overflow-x: hidden; 
-            scrollbar-width: thin;
-        }
-        body.simulate-mobile #app-wrapper::-webkit-scrollbar { width: 4px; }
+        /* Mobile Sim */
+        body.simulate-mobile { background: #111827; display: flex; justify-content: center; align-items: flex-start; padding: 40px 0; min-height: 100vh; overflow-y: scroll; }
+        body.simulate-mobile #app-wrapper { width: 390px; min-height: 844px; background: white; border-radius: 40px; border: 12px solid #374151; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5); position: relative; overflow-x: hidden; }
         body.simulate-mobile .md\:hidden { display: flex !important; }
         body.simulate-mobile .md\:flex { display: none !important; }
         body.simulate-mobile footer.md\:block { display: none !important; }
-        body.simulate-mobile .fixed.bottom-0 { position: absolute; border-radius: 0 0 25px 25px; }
-        body.simulate-mobile nav.sticky { position: absolute; top: 0; width: 100%; }
-        body.simulate-mobile #toast-container { position: absolute; bottom: 80px; width: 90%; left: 5%; transform: none; }
+        body.simulate-mobile .fixed.bottom-0 { position: absolute; border-bottom-left-radius: 28px; border-bottom-right-radius: 28px; }
+        body.simulate-mobile nav.sticky { position: absolute; top: 0; border-top-left-radius: 28px; border-top-right-radius: 28px; }
     </style>
 </head>
 <body class="text-slate-800 flex flex-col min-h-screen bg-slate-50">
 
-    <!-- View Switcher (Floating Action Button) -->
-    <div id="view-switch-btn-container" class="fixed bottom-8 left-8 z-[100] animate-bounce">
-        <button onclick="app.ui.toggleView()" id="view-switch-btn" title="Toggle Mobile View" class="bg-dark-900 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition border-2 border-white/20 ring-4 ring-dark-900/10">
-            <i class="fas fa-mobile-alt text-xl" id="view-switch-icon"></i>
+    <!-- View Switcher -->
+    <div class="fixed bottom-8 left-8 z-[100] animate-bounce">
+        <button onclick="app.ui.toggleView()" id="view-switch-btn" class="bg-dark-900 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition border-2 border-white/20 ring-4 ring-dark-900/10">
+            <i class="fas fa-desktop text-xl" id="view-switch-icon"></i>
         </button>
     </div>
 
-    <div id="app-wrapper" class="flex flex-col min-h-screen relative transition-all duration-300 w-full pb-[70px] md:pb-0">
+    <div id="app-wrapper" class="flex flex-col min-h-screen relative transition-all duration-300 w-full pb-[80px] md:pb-0">
         
         <!-- Navigation -->
-        <nav class="glass sticky top-0 z-50 transition-all duration-300">
-            <div class="container mx-auto px-4 h-16 md:h-20 flex justify-between items-center">
-                <!-- Logo -->
-                <a href="#home" class="flex items-center gap-2.5 group select-none">
-                    <div class="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center text-white font-bold text-lg md:text-xl shadow-lg group-hover:scale-105 transition-transform transform group-hover:rotate-3">TG</div>
-                    <span class="text-xl md:text-2xl font-extrabold tracking-tighter text-slate-900">Trade<span class="text-primary-600">Ginger</span></span>
+        <nav class="glass sticky top-0 z-50">
+            <div class="container mx-auto px-4 h-20 flex justify-between items-center">
+                <a href="#home" class="flex items-center gap-2.5 group">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg group-hover:scale-105 transition-transform transform group-hover:rotate-3">TG</div>
+                    <span class="text-2xl font-extrabold tracking-tighter text-slate-900">Trade<span class="text-primary-600">Ginger</span></span>
                 </a>
 
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
+                <div class="hidden md:flex items-center space-x-8">
                     <form onsubmit="app.ui.handleSearch(event)" class="relative group">
-                        <input type="text" class="w-64 lg:w-80 pl-10 pr-4 py-2.5 bg-slate-100/80 border-0 rounded-full text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all font-medium placeholder-slate-400" placeholder="Search cars, mobiles, properties...">
-                        <i class="fas fa-search absolute left-3.5 top-3 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
+                        <input type="text" class="w-72 pl-11 pr-5 py-2.5 bg-slate-100/50 border-0 rounded-full text-sm focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all font-medium placeholder-slate-400" placeholder="Search items...">
+                        <i class="fas fa-search absolute left-4 top-3 text-slate-400 group-focus-within:text-primary-500 transition-colors"></i>
                     </form>
-                    
                     <a href="#home" class="text-sm font-bold text-slate-600 hover:text-primary-600 transition">Home</a>
-                    <a href="#listing" class="text-sm font-bold text-slate-600 hover:text-primary-600 transition">Explore</a>
-                    
                     <div id="nav-auth-section"></div>
-                    
-                    <button onclick="app.router.navigate('sell')" class="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-accent-500/20 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 text-sm">
+                    <button onclick="app.router.navigate('sell')" class="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white px-7 py-2.5 rounded-full font-bold shadow-lg shadow-accent-500/20 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 text-sm">
                         <i class="fas fa-plus-circle"></i> SELL
                     </button>
                 </div>
 
-                <!-- Mobile Menu Toggle -->
                 <div class="md:hidden flex items-center gap-4">
-                    <button onclick="document.getElementById('mobile-search').classList.toggle('hidden')" class="text-slate-600 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full"><i class="fas fa-search text-sm"></i></button>
+                    <button onclick="document.getElementById('mobile-search').classList.toggle('hidden')" class="text-slate-600"><i class="fas fa-search text-xl"></i></button>
                     <div id="nav-auth-section-mobile"></div>
                 </div>
             </div>
-            
-            <!-- Mobile Search Bar (Collapsible) -->
-            <div id="mobile-search" class="hidden md:hidden pb-4 px-4 animate-fade-in border-t border-slate-100 bg-white/50 backdrop-blur-sm">
-                <form onsubmit="app.ui.handleSearch(event)" class="relative mt-3">
-                    <input type="text" class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none shadow-sm" placeholder="Search anything...">
-                    <i class="fas fa-search absolute left-3.5 top-3.5 text-slate-400"></i>
+            <div id="mobile-search" class="hidden md:hidden pb-4 px-4 animate-fade-in border-t border-slate-100">
+                <form onsubmit="app.ui.handleSearch(event)" class="relative mt-4">
+                    <input type="text" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Search...">
+                    <i class="fas fa-search absolute left-4 top-3.5 text-slate-400"></i>
                 </form>
             </div>
         </nav>
 
-        <!-- Main View Container -->
+        <!-- Main View -->
         <main id="app-view" class="flex-grow relative z-0"></main>
 
-        <!-- Mobile Bottom Navigation Bar -->
-        <div id="mobile-bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center py-2 pb-safe z-[90] shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)]">
-            <button onclick="app.router.navigate('home')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary-600 w-1/5 transition active:scale-90 p-2"><i class="fas fa-home text-xl"></i><span class="text-[10px] font-bold">Home</span></button>
-            <button onclick="app.router.navigate('listing')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary-600 w-1/5 transition active:scale-90 p-2"><i class="fas fa-compass text-xl"></i><span class="text-[10px] font-bold">Browse</span></button>
-            <div class="relative -top-6 w-1/5 flex justify-center">
-                <button onclick="app.router.navigate('sell')" class="bg-gradient-to-r from-accent-500 to-accent-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-xl shadow-accent-500/40 transform transition active:scale-95 border-4 border-slate-50"><i class="fas fa-plus text-2xl"></i></button>
+        <!-- Mobile Bottom Bar -->
+        <div id="mobile-bottom-nav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center py-3 pb-safe z-[90] shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
+            <button onclick="app.router.navigate('home')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary-600 w-16 transition"><i class="fas fa-home text-xl"></i><span class="text-[10px] font-bold">Home</span></button>
+            <button onclick="app.router.navigate('listing')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary-600 w-16 transition"><i class="fas fa-th-large text-xl"></i><span class="text-[10px] font-bold">Browse</span></button>
+            <div class="relative -top-8">
+                <button onclick="app.router.navigate('sell')" class="bg-gradient-to-r from-accent-500 to-accent-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-xl shadow-accent-500/40 transform hover:scale-105 transition active:scale-95 border-4 border-slate-50"><i class="fas fa-plus text-2xl"></i></button>
             </div>
-            <button onclick="document.getElementById('chat-modal').classList.remove('hidden')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary-600 w-1/5 transition active:scale-90 p-2"><i class="fas fa-comment-dots text-xl"></i><span class="text-[10px] font-bold">Chat</span></button>
-            <button onclick="app.router.navigate('profile')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary-600 w-1/5 transition active:scale-90 p-2"><i class="fas fa-user text-xl"></i><span class="text-[10px] font-bold">Profile</span></button>
+            <button onclick="document.getElementById('chat-modal').classList.remove('hidden')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary-600 w-16 transition"><i class="fas fa-comment-dots text-xl"></i><span class="text-[10px] font-bold">Chat</span></button>
+            <button onclick="app.router.navigate('profile')" class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary-600 w-16 transition"><i class="fas fa-user text-xl"></i><span class="text-[10px] font-bold">Profile</span></button>
         </div>
 
-        <!-- Desktop Footer -->
-        <footer class="hidden md:block bg-dark-900 text-white pt-16 pb-8 mt-auto">
+        <!-- Footer -->
+        <footer class="hidden md:block bg-dark-900 text-white pt-20 pb-10 mt-auto">
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-4 gap-12 border-b border-slate-800 pb-12">
                     <div class="space-y-6">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">TG</div>
-                            <h3 class="text-2xl font-bold">TradeGinger</h3>
-                        </div>
+                        <h3 class="text-3xl font-bold">TradeGinger</h3>
                         <p class="text-slate-400 text-sm leading-relaxed">India's most trusted marketplace. Verified sellers, secure payments, and premium listings.</p>
                         <button onclick="app.router.navigate('admin')" class="text-xs text-slate-500 hover:text-white flex items-center gap-2 transition"><i class="fas fa-shield-alt"></i> Admin Panel</button>
                     </div>
                     <div>
                         <h4 class="font-bold mb-6 text-slate-100">Explore</h4>
-                        <ul class="space-y-3 text-sm text-slate-400">
-                            <li><a href="#listing?cat=1" class="hover:text-primary-400 transition">Used Cars</a></li>
-                            <li><a href="#listing?cat=3" class="hover:text-primary-400 transition">Mobile Phones</a></li>
-                            <li><a href="#listing?cat=2" class="hover:text-primary-400 transition">Real Estate</a></li>
+                        <ul class="space-y-4 text-sm text-slate-400">
+                            <li><a href="#listing?cat=cars" class="hover:text-primary-400 transition">Used Cars</a></li>
+                            <li><a href="#listing?cat=mobiles" class="hover:text-primary-400 transition">Mobile Phones</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-bold mb-6 text-slate-100">For Business</h4>
-                        <ul class="space-y-3 text-sm text-slate-400">
+                        <ul class="space-y-4 text-sm text-slate-400">
                             <li><a href="#leads" class="hover:text-primary-400 transition flex items-center gap-2"><i class="fas fa-bolt text-accent-500"></i> Buy Leads</a></li>
                             <li><a href="#sell" class="hover:text-primary-400 transition">Business Profile</a></li>
                         </ul>
@@ -197,7 +160,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="pt-8 text-center text-slate-600 text-xs">
+                <div class="pt-10 text-center text-slate-600 text-xs">
                     &copy; 2025 TradeGinger Inc. All rights reserved.
                 </div>
             </div>
@@ -205,234 +168,261 @@
 
     </div>
 
-    <!-- Toast Notification Container -->
+    <!-- Toast -->
     <div id="toast-container"></div>
 
     <!-- MODALS -->
     
-    <!-- Authentication Modal -->
+    <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 bg-dark-900/80 backdrop-blur-md hidden z-[60] flex items-end md:items-center justify-center p-0 md:p-4 transition-all duration-300 opacity-0 pointer-events-none scale-95">
-        <div class="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl shadow-2xl overflow-y-auto transform transition-all h-[90vh] md:h-auto md:max-h-[90vh] flex flex-col">
+        <div class="bg-white w-full max-w-md rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden transform transition-all h-[85vh] md:h-auto">
             <div class="p-8">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex justify-between items-center mb-8">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-900" id="auth-title">Welcome Back</h2>
                         <p class="text-sm text-slate-500 mt-1">Sign in to continue to TradeGinger</p>
                     </div>
-                    <button onclick="app.modals.auth.hide()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition"><i class="fas fa-times"></i></button>
+                    <button onclick="app.modals.auth.hide()" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-red-500 transition"><i class="fas fa-times text-lg"></i></button>
                 </div>
 
-                <!-- Login/Register Form -->
+                <!-- Login/Register -->
                 <form id="auth-form" onsubmit="app.auth.handleInitialSubmit(event)">
-                    <div id="user-type-toggle" class="hidden flex bg-slate-100 p-1.5 rounded-xl mb-6">
-                        <button type="button" class="flex-1 py-2 rounded-lg text-sm font-bold bg-white shadow-sm text-slate-900 transition" onclick="app.auth.setUserType('individual', this)">Individual</button>
-                        <button type="button" class="flex-1 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-900 transition" onclick="app.auth.setUserType('business', this)">Business</button>
+                    <div id="user-type-toggle" class="hidden flex bg-slate-100 p-1.5 rounded-2xl mb-6">
+                        <button type="button" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-white shadow-sm text-slate-900 transition" onclick="app.auth.setUserType('individual', this)">Individual</button>
+                        <button type="button" class="flex-1 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-slate-900 transition" onclick="app.auth.setUserType('business', this)">Business</button>
                         <input type="hidden" name="accountType" id="auth-account-type" value="individual">
                     </div>
 
-                    <div id="register-fields" class="hidden grid grid-cols-2 gap-3 mb-3 animate-fade-in">
-                        <input type="text" name="firstName" placeholder="First Name" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition">
-                        <input type="text" name="lastName" placeholder="Last Name" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition">
+                    <div id="register-fields" class="hidden grid grid-cols-2 gap-4 mb-4 animate-fade-in">
+                        <input type="text" name="firstName" placeholder="First Name" class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition">
+                        <input type="text" name="lastName" placeholder="Last Name" class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition">
                     </div>
 
-                    <div class="space-y-3">
-                        <input type="email" name="email" placeholder="Email Address" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition font-medium">
-                        <div>
-                            <input type="password" name="password" placeholder="Password" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition font-medium">
-                            <div class="text-right mt-2" id="forgot-password-link">
-                                <button type="button" onclick="app.auth.showForgotPassword()" class="text-xs text-primary-600 font-bold hover:underline">Forgot Password?</button>
-                            </div>
-                        </div>
+                    <div class="space-y-4">
+                        <input type="email" name="email" placeholder="Email Address" required class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition font-medium">
+                        <input type="password" name="password" placeholder="Password" required class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition font-medium">
                     </div>
 
-                    <button type="submit" id="auth-btn-main" class="w-full mt-6 bg-primary-600 hover:bg-primary-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary-500/25 transition transform hover:-translate-y-0.5 text-lg flex justify-center items-center gap-2">
+                    <button type="submit" id="auth-btn-main" class="w-full mt-8 bg-primary-600 hover:bg-primary-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary-500/25 transition transform hover:-translate-y-0.5 text-lg flex justify-center items-center gap-2">
                         <span>Secure Login</span> <i class="fas fa-arrow-right text-sm"></i>
                     </button>
 
-                    <div class="my-6 flex items-center justify-between" id="auth-divider">
-                        <span class="border-b w-1/3 border-slate-200"></span>
-                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-widest">OR</span>
-                        <span class="border-b w-1/3 border-slate-200"></span>
+                    <div class="my-8 flex items-center justify-between" id="auth-divider">
+                        <span class="border-b w-1/4 border-slate-200"></span>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 tracking-widest">or continue with</span>
+                        <span class="border-b w-1/4 border-slate-200"></span>
                     </div>
 
-                    <button type="button" onclick="app.auth.loginWithGoogle()" class="w-full border border-slate-200 hover:bg-slate-50 bg-white text-slate-700 font-bold py-3 rounded-xl transition flex items-center justify-center gap-3">
-                        <img src="https://www.google.com/favicon.ico" class="w-5 h-5" alt="Google"> Continue with Google
+                    <button type="button" onclick="app.auth.loginWithGoogle()" class="w-full border-2 border-slate-100 hover:border-slate-200 bg-white text-slate-700 font-bold py-3.5 rounded-2xl transition flex items-center justify-center gap-3">
+                        <img src="https://www.google.com/favicon.ico" class="w-5 h-5"> Google
                     </button>
 
-                    <div class="mt-6 text-center text-sm text-slate-500" id="auth-switch-wrapper">
+                    <p class="mt-8 text-center text-sm text-slate-500">
                         <span id="auth-switch-text">New to TradeGinger?</span>
                         <button type="button" onclick="app.auth.toggleMode()" id="auth-switch-btn" class="text-primary-600 font-bold hover:underline ml-1">Create Account</button>
-                    </div>
+                    </p>
                 </form>
 
-                <!-- OTP Verification Form -->
-                <form id="otp-form" onsubmit="app.auth.handleOtpSubmit(event)" class="hidden flex-col items-center animate-fade-in space-y-6">
-                    <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-green-600 text-2xl mb-2"><i class="fas fa-envelope-open-text"></i></div>
+                <!-- OTP Verify -->
+                <form id="otp-form" onsubmit="app.auth.handleOtpSubmit(event)" class="hidden flex-col items-center animate-fade-in space-y-8">
+                    <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center text-green-600 text-3xl mb-2"><i class="fas fa-envelope-open-text"></i></div>
                     <div class="text-center">
                         <h3 class="text-xl font-bold text-slate-900">Check your Email</h3>
                         <p class="text-sm text-slate-500 mt-1">We sent a 6-digit code to <br><span id="otp-email-display" class="font-bold text-slate-900"></span></p>
                     </div>
-                    <input type="text" name="otp" placeholder="000000" maxlength="6" required class="w-full text-center px-4 py-4 border-2 border-primary-100 rounded-xl focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none tracking-[1em] text-2xl font-bold bg-white text-slate-800 transition-all placeholder-slate-200">
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-green-600/20 transition transform hover:-translate-y-0.5">Verify & Login</button>
+                    <input type="text" name="otp" placeholder="000000" maxlength="6" required class="w-full text-center px-4 py-5 border-2 border-primary-100 rounded-2xl focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none tracking-[1em] text-3xl font-bold bg-white text-slate-800 transition-all placeholder-slate-200">
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-green-600/20 transition transform hover:-translate-y-0.5 text-lg">Verify & Login</button>
                     <button type="button" onclick="app.auth.resetAuth()" class="text-sm text-slate-400 hover:text-slate-600">Change Email</button>
-                </form>
-
-                 <!-- Forgot Password Form -->
-                <form id="forgot-password-form" onsubmit="app.auth.handlePasswordReset(event)" class="hidden flex-col animate-fade-in space-y-4">
-                    <div class="text-center mb-2">
-                         <div class="w-14 h-14 bg-orange-50 rounded-full flex items-center justify-center text-orange-500 text-xl mx-auto mb-3"><i class="fas fa-key"></i></div>
-                         <h3 class="text-lg font-bold text-slate-900">Reset Password</h3>
-                         <p class="text-sm text-slate-500">Enter your email to receive a reset link.</p>
-                    </div>
-                    <input type="email" name="resetEmail" placeholder="Email Address" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition">
-                    <button type="submit" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-3 rounded-xl shadow-lg transition">Send Reset Link</button>
-                    <button type="button" onclick="app.auth.resetAuth()" class="text-sm text-slate-500 hover:text-slate-800 text-center w-full">Back to Login</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Sell/Post Ad Modal -->
+    <!-- Sell Modal -->
     <div id="sell-modal" class="fixed inset-0 bg-dark-900/80 backdrop-blur-md hidden z-[60] flex items-end md:items-center justify-center p-0 md:p-4">
         <div class="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl w-full max-w-5xl h-[95vh] md:h-[85vh] flex flex-col animate-fade-in overflow-hidden">
-            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-white z-10">
+            <div class="flex justify-between items-center p-6 border-b border-slate-100 bg-white z-10">
                 <div>
-                    <h3 class="text-xl font-bold text-slate-900" id="sell-modal-title">Post an Ad</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Reach verified buyers across India</p>
+                    <h3 class="text-2xl font-bold text-slate-900" id="sell-modal-title">Post an Ad</h3>
+                    <p class="text-xs text-slate-400 mt-1">Reach verified buyers across India</p>
                 </div>
-                <button onclick="app.modals.sell.hide()" class="w-9 h-9 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition"><i class="fas fa-times"></i></button>
+                <button onclick="app.modals.sell.hide()" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition"><i class="fas fa-times text-lg"></i></button>
             </div>
             
-            <div class="flex-grow overflow-y-auto custom-scrollbar bg-slate-50 p-4 md:p-8">
-                <form id="sell-form" class="space-y-6 max-w-4xl mx-auto">
+            <div class="flex-grow overflow-y-auto custom-scrollbar bg-slate-50 p-6 md:p-10">
+                <form id="sell-form" class="space-y-8 max-w-4xl mx-auto">
                     <input type="hidden" name="editing_id" id="edit-id">
                     
                     <!-- Category Section -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100/50">
-                        <h4 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2"><i class="fas fa-layer-group text-primary-500"></i> Categorization</h4>
-                        <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100/50">
+                        <h4 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2"><i class="fas fa-layer-group text-primary-500"></i> Categorization</h4>
+                        <div class="grid md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Category</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Category</label>
                                 <div class="relative">
-                                    <select id="category-select" name="category" required onchange="app.sell.handleCategoryChange(this.value)" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none appearance-none font-medium text-slate-700"><option value="">Select...</option></select>
-                                    <i class="fas fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none text-xs"></i>
+                                    <select id="category-select" name="category" required onchange="app.sell.handleCategoryChange(this.value)" class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none appearance-none font-medium text-slate-700"><option value="">Select...</option></select>
+                                    <i class="fas fa-chevron-down absolute right-5 top-5 text-slate-400 pointer-events-none"></i>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Sub-Category</label>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Sub-Category</label>
                                 <div class="relative">
-                                    <select id="subcategory-select" name="subcategory" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none appearance-none font-medium text-slate-700 disabled:opacity-50" disabled><option value="">Select Category First</option></select>
-                                    <i class="fas fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none text-xs"></i>
+                                    <select id="subcategory-select" name="subcategory" required class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none appearance-none font-medium text-slate-700 disabled:opacity-50" disabled><option value="">Select Category First</option></select>
+                                    <i class="fas fa-chevron-down absolute right-5 top-5 text-slate-400 pointer-events-none"></i>
                                 </div>
                             </div>
                         </div>
-                        <div id="dynamic-attributes" class="grid md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-slate-50 empty:hidden animate-fade-in"></div>
+                        <div id="dynamic-attributes" class="grid md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-slate-50 empty:hidden animate-fade-in"></div>
                     </div>
 
                     <!-- Details Section -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100/50">
-                        <h4 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2"><i class="fas fa-info-circle text-primary-500"></i> Item Details</h4>
-                        <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100/50">
+                        <h4 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2"><i class="fas fa-info-circle text-primary-500"></i> Item Details</h4>
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Title</label>
-                                <input type="text" name="title" placeholder="e.g. iPhone 14 Pro Max - 256GB" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-medium">
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Title</label>
+                                <input type="text" name="title" placeholder="e.g. iPhone 14 Pro Max - 256GB" required class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-medium">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Price (₹)</label>
-                                <input type="number" name="price" placeholder="0" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none font-bold text-slate-900">
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Price (₹)</label>
+                                <input type="number" name="price" placeholder="0" required class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none font-bold text-slate-900">
                             </div>
                         </div>
-                        <div class="mb-4">
-                            <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">Description</label>
+                        <div class="mb-6">
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Description</label>
                             <div class="relative">
-                                <textarea name="description" id="ad-description" rows="4" placeholder="Describe condition, features, and reason for selling..." required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none resize-none font-medium text-slate-600"></textarea>
-                                <button type="button" onclick="app.sell.generateAI()" class="absolute bottom-3 right-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition flex items-center gap-1.5"><i class="fas fa-wand-magic-sparkles"></i> AI Write</button>
+                                <textarea name="description" id="ad-description" rows="5" placeholder="Describe condition, features, and reason for selling..." required class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none resize-none font-medium text-slate-600"></textarea>
+                                <button type="button" onclick="app.sell.generateAI()" class="absolute bottom-3 right-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 transition flex items-center gap-1.5"><i class="fas fa-wand-magic-sparkles"></i> AI Write</button>
                             </div>
                         </div>
-                        <div class="grid md:grid-cols-2 gap-4">
+                        <div class="grid md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">State</label>
-                                <select id="state-select" required onchange="app.location.populateCities(this.value, 'city-select')" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none appearance-none font-medium"><option value="">Select State</option></select>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">State</label>
+                                <select id="state-select" required onchange="app.location.populateCities(this.value, 'city-select')" class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none appearance-none font-medium"><option value="">Select State</option></select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5 ml-1">City</label>
-                                <select id="city-select" name="city_id" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 outline-none appearance-none font-medium" disabled><option value="">Select City</option></select>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">City</label>
+                                <select id="city-select" name="city_id" required class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none appearance-none font-medium" disabled><option value="">Select City</option></select>
                             </div>
                         </div>
                     </div>
 
                     <!-- Media Section -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100/50">
-                        <h4 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2"><i class="fas fa-images text-primary-500"></i> Photos</h4>
-                        <div class="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center hover:border-primary-500 hover:bg-primary-50/30 transition cursor-pointer group" onclick="document.getElementById('file-upload').click()">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100/50">
+                        <h4 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2"><i class="fas fa-images text-primary-500"></i> Photos</h4>
+                        <div class="border-2 border-dashed border-slate-200 rounded-3xl p-10 text-center hover:border-primary-500 hover:bg-primary-50/30 transition cursor-pointer group" onclick="document.getElementById('file-upload').click()">
                             <input type="file" id="file-upload" multiple accept="image/*" class="hidden" onchange="app.sell.handleFiles(event)">
-                            <div class="w-16 h-16 bg-primary-50 text-primary-500 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform shadow-sm">
-                                <i class="fas fa-cloud-upload-alt text-2xl"></i>
+                            <div class="w-20 h-20 bg-primary-50 text-primary-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-sm">
+                                <i class="fas fa-cloud-upload-alt text-3xl"></i>
                             </div>
-                            <p class="font-bold text-slate-700">Click to upload photos</p>
-                            <p class="text-xs text-slate-400 mt-1">JPG, PNG. Max 5MB each.</p>
+                            <p class="font-bold text-slate-700 text-lg">Click to upload photos</p>
+                            <p class="text-sm text-slate-400 mt-1">JPG, PNG, WEBP. Max 5MB each.</p>
                         </div>
-                        <div id="preview-container" class="flex gap-3 overflow-x-auto pb-2 pt-4 snap-x scrollbar-hide"></div>
+                        <div id="preview-container" class="flex gap-4 overflow-x-auto pb-2 pt-6 snap-x scrollbar-hide"></div>
                     </div>
 
                     <!-- Plan Selection -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100/50" id="plan-selection-section">
-                        <h4 class="text-base font-bold mb-4 flex items-center gap-2"><i class="fas fa-rocket text-accent-500"></i> Boost Visibility</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100/50" id="plan-selection-section">
+                        <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i class="fas fa-rocket text-accent-500"></i> Boost Visibility</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                             <!-- Standard -->
                             <label class="cursor-pointer group h-full">
                                 <input type="radio" name="plan" value="free" class="peer hidden" checked onchange="app.sell.updatePlanPrice(0)">
-                                <div class="border border-slate-200 rounded-xl p-4 h-full flex flex-col justify-between hover:border-primary-400 peer-checked:border-primary-600 peer-checked:bg-primary-50 peer-checked:ring-1 peer-checked:ring-primary-200 transition">
+                                <div class="border-2 border-slate-100 rounded-2xl p-5 h-full flex flex-col justify-between hover:border-primary-400 peer-checked:border-primary-600 peer-checked:bg-primary-50 peer-checked:ring-1 peer-checked:ring-primary-200 transition">
                                     <div>
-                                        <div class="font-bold text-slate-700 text-sm">Standard</div>
-                                        <div class="text-xl font-extrabold text-slate-900 mt-0.5">₹0</div>
+                                        <div class="font-bold text-slate-700">Standard</div>
+                                        <div class="text-2xl font-extrabold text-slate-900 mt-1">₹0</div>
                                     </div>
-                                    <div class="text-[10px] text-slate-500 font-bold mt-2"><i class="fas fa-check text-green-500"></i> 45 Days Active</div>
+                                    <ul class="text-[11px] text-slate-500 font-bold space-y-2 mt-4">
+                                        <li class="flex items-center gap-1"><i class="fas fa-check text-green-500"></i> 45 Days</li>
+                                        <li class="flex items-center gap-1"><i class="fas fa-check text-green-500"></i> Basic Support</li>
+                                    </ul>
                                 </div>
                             </label>
-                            <!-- Gold -->
+                            <!-- C2C -->
                             <label class="cursor-pointer group h-full">
-                                <input type="radio" name="plan" value="gold" class="peer hidden" onchange="app.sell.updatePlanPrice(499)">
-                                <div class="border border-slate-200 rounded-xl p-4 h-full flex flex-col justify-between hover:border-yellow-400 peer-checked:border-yellow-500 peer-checked:bg-yellow-50 peer-checked:ring-1 peer-checked:ring-yellow-200 transition relative overflow-hidden">
+                                <input type="radio" name="plan" value="c2c" class="peer hidden" onchange="app.sell.updatePlanPrice(99)">
+                                <div class="border-2 border-slate-100 rounded-2xl p-5 h-full flex flex-col justify-between hover:border-green-400 peer-checked:border-green-600 peer-checked:bg-green-50 peer-checked:ring-1 peer-checked:ring-green-200 transition">
+                                    <div>
+                                        <div class="font-bold text-green-700">Urgent</div>
+                                        <div class="text-2xl font-extrabold text-green-800 mt-1">₹99</div>
+                                    </div>
+                                    <ul class="text-[11px] text-slate-500 font-bold space-y-2 mt-4">
+                                        <li class="flex items-center gap-1"><i class="fas fa-check text-green-600"></i> Priority Rank</li>
+                                        <li class="flex items-center gap-1"><i class="fas fa-check text-green-600"></i> 20 Days</li>
+                                    </ul>
+                                </div>
+                            </label>
+                             <!-- Silver -->
+                             <label class="cursor-pointer group h-full">
+                                <input type="radio" name="plan" value="silver" class="peer hidden" onchange="app.sell.updatePlanPrice(3999)">
+                                <div class="border-2 border-slate-100 rounded-2xl p-5 h-full flex flex-col justify-between hover:border-slate-400 peer-checked:border-slate-600 peer-checked:bg-slate-50 peer-checked:ring-1 peer-checked:ring-slate-200 transition">
+                                    <div>
+                                        <div class="font-bold text-slate-600">Silver (B2B)</div>
+                                        <div class="text-2xl font-extrabold text-slate-700 mt-1">₹3,999</div>
+                                    </div>
+                                    <ul class="text-[11px] text-slate-500 font-bold space-y-2 mt-4">
+                                        <li class="flex items-center gap-1"><i class="fas fa-check text-slate-600"></i> 1 Year</li>
+                                        <li class="flex items-center gap-1"><i class="fas fa-check text-slate-600"></i> 10 Ads</li>
+                                    </ul>
+                                </div>
+                            </label>
+                             <!-- Gold -->
+                             <label class="cursor-pointer group h-full">
+                                <input type="radio" name="plan" value="gold" class="peer hidden" onchange="app.sell.updatePlanPrice(8999)">
+                                <div class="border-2 border-slate-100 rounded-2xl p-5 h-full flex flex-col justify-between hover:border-yellow-400 peer-checked:border-yellow-500 peer-checked:bg-yellow-50 peer-checked:ring-1 peer-checked:ring-yellow-200 transition relative overflow-hidden">
                                     <div class="absolute top-0 right-0 bg-yellow-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-bl-lg">BEST</div>
                                     <div>
-                                        <div class="font-bold text-yellow-700 text-sm">Gold</div>
-                                        <div class="text-xl font-extrabold text-yellow-600 mt-0.5">₹499</div>
+                                        <div class="font-bold text-yellow-700">Gold (B2B)</div>
+                                        <div class="text-2xl font-extrabold text-yellow-600 mt-1">₹8,999</div>
                                     </div>
-                                    <div class="text-[10px] text-slate-500 font-bold mt-2"><i class="fas fa-check text-yellow-600"></i> Featured (30 Days)</div>
+                                    <ul class="text-[11px] text-slate-500 font-bold space-y-2 mt-4">
+                                        <li class="flex items-center gap-1"><i class="fas fa-check text-yellow-600"></i> 100 Ads</li>
+                                        <li class="flex items-center gap-1"><i class="fas fa-check text-yellow-600"></i> Featured</li>
+                                    </ul>
                                 </div>
                             </label>
-                            <!-- Platinum -->
-                            <label class="cursor-pointer group h-full">
-                                <input type="radio" name="plan" value="platinum" class="peer hidden" onchange="app.sell.updatePlanPrice(999)">
-                                <div class="border border-slate-200 rounded-xl p-4 h-full flex flex-col justify-between hover:border-slate-800 peer-checked:border-slate-900 peer-checked:bg-slate-50 peer-checked:ring-1 peer-checked:ring-slate-400 transition">
+                             <!-- Platinum -->
+                             <label class="cursor-pointer group h-full">
+                                <input type="radio" name="plan" value="platinum" class="peer hidden" onchange="app.sell.updatePlanPrice(14999)">
+                                <div class="border-2 border-slate-100 rounded-2xl p-5 h-full flex flex-col justify-between hover:border-dark-800 peer-checked:border-dark-900 peer-checked:bg-gray-100 peer-checked:ring-2 peer-checked:ring-gray-400 transition">
                                     <div>
-                                        <div class="font-bold text-slate-900 text-sm">Platinum</div>
-                                        <div class="text-xl font-extrabold text-slate-900 mt-0.5">₹999</div>
+                                        <div class="font-bold text-gray-900">Platinum</div>
+                                        <div class="text-2xl font-extrabold text-gray-900 mt-1">₹14,999</div>
                                     </div>
-                                    <div class="text-[10px] text-slate-500 font-bold mt-2"><i class="fas fa-star text-slate-900"></i> Top Rank (60 Days)</div>
+                                    <ul class="text-[11px] text-slate-500 font-bold space-y-2 mt-4">
+                                        <li class="flex items-center gap-1"><i class="fas fa-star text-gray-900"></i> Unlimited</li>
+                                        <li class="flex items-center gap-1"><i class="fas fa-globe text-gray-900"></i> Free Microsite</li>
+                                    </ul>
                                 </div>
                             </label>
                         </div>
+                        <div class="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-center gap-4 transition-colors hover:bg-blue-100/50">
+                            <input type="checkbox" id="microsite-addon" onchange="app.sell.toggleMicrosite(this)" class="w-6 h-6 text-primary-600 rounded focus:ring-primary-500 cursor-pointer border-slate-300">
+                            <div>
+                                <label for="microsite-addon" class="font-bold text-slate-900 text-sm cursor-pointer">Add Custom Microsite</label>
+                                <p class="text-xs text-slate-500" id="microsite-desc">Your own branded page (tradeginger.com/yourbrand). + ₹3,999/month</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Terms -->
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-start gap-3">
-                        <input type="checkbox" id="accept-terms" required class="w-4 h-4 text-primary-600 border-slate-300 rounded mt-0.5 focus:ring-primary-500 cursor-pointer">
-                        <label for="accept-terms" class="text-xs text-slate-500 cursor-pointer leading-relaxed">
-                            I agree to the <a href="#" onclick="app.modals.tnc.show()" class="text-primary-600 font-bold hover:underline">Terms</a> and <a href="#" onclick="app.modals.privacy.show()" class="text-primary-600 font-bold hover:underline">Privacy Policy</a>.
+                    <!-- Terms Checkbox (Visually Separated) -->
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex items-start gap-3">
+                        <input type="checkbox" id="accept-terms" required class="w-5 h-5 text-primary-600 border-slate-300 rounded mt-0.5 focus:ring-primary-500 cursor-pointer">
+                        <label for="accept-terms" class="text-sm text-slate-500 cursor-pointer leading-relaxed">
+                            I have read and agree to the TradeGinger <a href="#" onclick="app.modals.tnc.show()" class="text-primary-600 font-bold hover:underline">Terms & Conditions</a> and <a href="#" onclick="app.modals.privacy.show()" class="text-primary-600 font-bold hover:underline">Privacy Policy</a>.
                         </label>
                     </div>
                 </form>
             </div>
             
-            <!-- Footer Action -->
-            <div class="p-5 border-t border-gray-100 bg-white flex flex-col md:flex-row justify-between items-center gap-4 pb-safe">
-                <div class="text-slate-500 font-medium text-sm">Total: <span id="total-plan-price" class="font-extrabold text-2xl text-primary-700 ml-1">₹0</span></div>
-                <div class="flex gap-3 w-full md:w-auto">
-                    <button onclick="app.modals.sell.hide()" class="flex-1 md:flex-none px-6 py-3 rounded-xl text-slate-500 font-bold hover:bg-slate-50 transition text-sm">Cancel</button>
-                    <button onclick="app.sell.submit()" id="sell-submit-btn" class="flex-1 md:flex-none px-8 py-3 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 text-white font-bold hover:shadow-lg hover:shadow-accent-500/30 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm">
-                        Post Ad <i class="fas fa-arrow-right"></i>
+            <!-- Sticky Footer Action -->
+            <div class="p-6 md:p-8 border-t border-gray-100 bg-white flex flex-col md:flex-row justify-between items-center gap-4 rounded-b-2xl pb-safe">
+                <div class="text-slate-500 font-medium text-sm">Total Payable: <span id="total-plan-price" class="font-extrabold text-3xl text-primary-700 ml-2">₹0</span></div>
+                <div class="flex gap-4 w-full md:w-auto">
+                    <button onclick="app.modals.sell.hide()" class="flex-1 md:flex-none px-8 py-3.5 rounded-xl text-slate-500 font-bold hover:bg-slate-50 transition">Cancel</button>
+                    <button onclick="app.sell.submit()" id="sell-submit-btn" class="flex-1 md:flex-none px-10 py-3.5 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 text-white font-bold hover:shadow-lg hover:shadow-accent-500/30 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                        Post & Pay <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
@@ -444,25 +434,25 @@
         <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden h-[80vh] flex flex-col border border-slate-200 animate-slide-up">
             <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-white shadow-sm z-10">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-500"><i class="fas fa-user"></i></div>
+                    <img id="chat-header-img" src="" class="w-10 h-10 rounded-full object-cover border border-slate-200">
                     <div>
                         <h3 id="chat-header-name" class="font-bold text-slate-900 text-sm">Chat</h3>
-                        <p class="text-[10px] text-green-500 font-medium flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online</p>
+                        <p class="text-xs text-green-500 font-medium flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Online</p>
                     </div>
                 </div>
                 <button onclick="document.getElementById('chat-modal').classList.add('hidden')" class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-gray-400 hover:text-red-500 transition"><i class="fas fa-times"></i></button>
             </div>
             <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-3 bg-slate-50 scrollbar-thin"></div>
             <form onsubmit="app.chat.send(event)" class="p-3 border-t bg-white flex gap-2 items-center">
-                <input type="text" id="chat-input" placeholder="Type a message..." class="flex-grow border border-slate-200 rounded-full px-5 py-3 focus:ring-2 focus:ring-primary-500 outline-none bg-slate-50 focus:bg-white transition text-sm">
+                <input type="text" id="chat-input" placeholder="Type a message..." class="flex-grow border border-slate-200 rounded-full px-5 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none bg-slate-50 focus:bg-white transition text-sm">
                 <button type="submit" class="bg-primary-600 text-white w-11 h-11 rounded-full flex items-center justify-center hover:bg-primary-700 transition shadow-md transform active:scale-95"><i class="fas fa-paper-plane"></i></button>
             </form>
         </div>
     </div>
 
     <!-- Info Modals -->
-    <div id="info-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[80] flex items-center justify-center p-4"><div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl animate-fade-in"><h2 class="text-xl font-bold mb-3 text-slate-900">Terms & Conditions</h2><p class="text-slate-600 mb-6 leading-relaxed text-sm">By using TradeGinger, you agree to our standard marketplace terms. All transactions are between buyers and sellers. We verify identities to ensure safety.</p><button onclick="document.getElementById('info-modal').classList.add('hidden')" class="w-full bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-black transition text-sm">I Understand</button></div></div>
-    <div id="privacy-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[80] flex items-center justify-center p-4"><div class="bg-white p-6 rounded-2xl max-w-md w-full shadow-2xl animate-fade-in"><h2 class="text-xl font-bold mb-3 text-slate-900">Privacy Policy</h2><p class="text-slate-600 mb-6 leading-relaxed text-sm">We value your data privacy. Your contact details are only shared when you explicitly allow it or when a buyer pays to unlock your contact.</p><button onclick="document.getElementById('privacy-modal').classList.add('hidden')" class="w-full bg-slate-900 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-black transition text-sm">Close</button></div></div>
+    <div id="info-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[80] flex items-center justify-center p-4"><div class="bg-white p-8 rounded-2xl max-w-lg w-full shadow-2xl animate-fade-in"><h2 class="text-2xl font-bold mb-4 text-slate-900">Terms & Conditions</h2><p class="text-slate-600 mb-8 leading-relaxed text-sm">By using TradeGinger, you agree to our standard marketplace terms. All transactions are between buyers and sellers. We verify identities to ensure safety.</p><button onclick="document.getElementById('info-modal').classList.add('hidden')" class="w-full bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-black transition">I Understand</button></div></div>
+    <div id="privacy-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[80] flex items-center justify-center p-4"><div class="bg-white p-8 rounded-2xl max-w-lg w-full shadow-2xl animate-fade-in"><h2 class="text-2xl font-bold mb-4 text-slate-900">Privacy Policy</h2><p class="text-slate-600 mb-8 leading-relaxed text-sm">We value your data privacy. Your contact details are only shared when you explicitly allow it or when a buyer pays to unlock your contact.</p><button onclick="document.getElementById('privacy-modal').classList.add('hidden')" class="w-full bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-black transition">Close</button></div></div>
 
     <!-- Main Script -->
     <script type="module">
@@ -478,25 +468,19 @@
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
         const indianLocations = {
-            "Delhi": ["New Delhi", "Dwarka", "Rohini", "Saket"],
-            "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Thane"],
-            "Karnataka": ["Bengaluru", "Mysuru", "Hubballi"],
-            "Telangana": ["Hyderabad", "Warangal"],
-            "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai"],
-            "West Bengal": ["Kolkata", "Siliguri"],
-            "Uttar Pradesh": ["Lucknow", "Noida", "Ghaziabad", "Kanpur"],
-            "Gujarat": ["Ahmedabad", "Surat", "Vadodara"],
-            "Haryana": ["Gurugram", "Faridabad"]
+            "Andaman and Nicobar Islands": ["Port Blair"], "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore"], "Arunachal Pradesh": ["Itanagar"], "Assam": ["Guwahati", "Silchar"], "Bihar": ["Patna", "Gaya"], "Chandigarh": ["Chandigarh"], "Chhattisgarh": ["Raipur", "Bhilai"], "Dadra and Nagar Haveli": ["Daman"], "Delhi": ["New Delhi", "North Delhi", "South Delhi", "Gurgaon", "Noida"], "Goa": ["Panaji", "Margao"], "Gujarat": ["Ahmedabad", "Surat", "Vadodara"], "Haryana": ["Gurugram", "Faridabad"], "Himachal Pradesh": ["Shimla"], "Jammu and Kashmir": ["Srinagar"], "Jharkhand": ["Ranchi", "Jamshedpur"], "Karnataka": ["Bengaluru", "Mysuru", "Mangaluru"], "Kerala": ["Thiruvananthapuram", "Kochi"], "Ladakh": ["Leh"], "Madhya Pradesh": ["Bhopal", "Indore"], "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik"], "Manipur": ["Imphal"], "Meghalaya": ["Shillong"], "Mizoram": ["Aizawl"], "Nagaland": ["Kohima"], "Odisha": ["Bhubaneswar", "Cuttack"], "Puducherry": ["Puducherry"], "Punjab": ["Ludhiana", "Amritsar", "Chandigarh"], "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur"], "Sikkim": ["Gangtok"], "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai"], "Telangana": ["Hyderabad", "Warangal"], "Tripura": ["Agartala"], "Uttar Pradesh": ["Lucknow", "Kanpur", "Noida"], "Uttarakhand": ["Dehradun", "Haridwar"], "West Bengal": ["Kolkata", "Siliguri"]
         };
         const locationsArray = Object.entries(indianLocations).map(([state, cities]) => ({ state, cities: cities.sort() })).sort((a, b) => a.state.localeCompare(b.state));
         
         const defaultSchema = [
-            { id: 1, name: 'Cars', icon: 'fa-car', subcategories: ['Sedan', 'SUV', 'Hatchback', 'Luxury'], attributes: [{ key: 'brand', label: 'Brand', type: 'select', options: ['Maruti', 'Hyundai', 'Tata', 'Honda', 'Toyota', 'Kia'] }, { key: 'year', label: 'Model Year', type: 'number' }, { key: 'km_driven', label: 'KM Driven', type: 'number' }] },
-            { id: 2, name: 'Property', icon: 'fa-building', subcategories: ['Apartment', 'Villa', 'Plot', 'Office'], attributes: [{ key: 'bedrooms', label: 'BHK', type: 'select', options: ['1 BHK', '2 BHK', '3 BHK', '4+ BHK'] }, { key: 'area', label: 'Area (sq ft)', type: 'number' }] },
-            { id: 3, name: 'Mobiles', icon: 'fa-mobile-alt', subcategories: ['Smartphones', 'Tablets', 'Accessories'], attributes: [{ key: 'brand', label: 'Brand', type: 'select', options: ['Apple', 'Samsung', 'Xiaomi', 'OnePlus'] }, { key: 'storage', label: 'Storage', type: 'select', options: ['64GB', '128GB', '256GB'] }] },
-            { id: 4, name: 'Electronics', icon: 'fa-laptop', subcategories: ['Laptops', 'Cameras', 'TVs'], attributes: [{ key: 'brand', label: 'Brand', type: 'text' }] },
-            { id: 5, name: 'Furniture', icon: 'fa-couch', subcategories: ['Sofa', 'Bed', 'Table'], attributes: [] },
-            { id: 6, name: 'Bikes', icon: 'fa-motorcycle', subcategories: ['Motorcycle', 'Scooter'], attributes: [{ key: 'brand', label: 'Brand', type: 'text' }] }
+            { id: 1, name: 'Cars', icon: 'fa-car', subcategories: ['Sedan', 'SUV', 'Hatchback', 'Luxury'], attributes: [{ key: 'brand', label: 'Brand', type: 'select', options: ['Maruti', 'Hyundai', 'Tata', 'Mahindra'] }, { key: 'km', label: 'KM Driven', type: 'number' }, { key: 'fuel', label: 'Fuel Type', type: 'select', options: ['Petrol', 'Diesel', 'CNG'] }] },
+            { id: 2, name: 'Property', icon: 'fa-building', subcategories: ['Apartment', 'Villa', 'Plot'], attributes: [{ key: 'bhk', label: 'Bedrooms', type: 'select', options: ['1 BHK', '2 BHK', '3 BHK'] }, { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Furnished', 'Unfurnished'] }] },
+            { id: 3, name: 'Mobiles', icon: 'fa-mobile-alt', subcategories: ['Smartphones', 'Tablets'], attributes: [{ key: 'brand', label: 'Brand', type: 'select', options: ['Apple', 'Samsung', 'OnePlus'] }, { key: 'storage', label: 'Storage', type: 'select', options: ['64GB', '128GB', '256GB'] }] },
+            { id: 4, name: 'Bikes', icon: 'fa-motorcycle', subcategories: ['Motorcycle', 'Scooter'], attributes: [{ key: 'brand', label: 'Brand', type: 'text' }, { key: 'km', label: 'KM Driven', type: 'number' }] },
+            { id: 5, name: 'Electronics', icon: 'fa-tv', subcategories: ['TV', 'Laptop', 'Camera'], attributes: [{ key: 'brand', label: 'Brand', type: 'text' }] },
+            { id: 6, name: 'Furniture', icon: 'fa-couch', subcategories: ['Sofa', 'Bed', 'Table'], attributes: [] },
+            { id: 7, name: 'Jobs', icon: 'fa-briefcase', subcategories: ['Sales', 'IT', 'Driver'], attributes: [{ key: 'salary', label: 'Salary', type: 'number' }] },
+            { id: 8, name: 'Services', icon: 'fa-tools', subcategories: ['Plumber', 'Electrician'], attributes: [] }
         ];
         
         let categoriesToUse = defaultSchema;
@@ -514,10 +498,10 @@
             profile: null, 
             categories: categoriesToUse, 
             locations: locationsArray, 
-            currentChatRoom: null,
-            ip: '127.0.0.1',
-            pendingAuth: null,
-            pendingRegistrationData: null
+            currentChatRoom: null, 
+            ip: '127.0.0.1', 
+            pendingAuth: null, 
+            pendingRegistrationData: null 
         };
 
         // UTILITIES
@@ -531,11 +515,11 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        const scale = 600 / img.width;
-                        canvas.width = 600;
+                        const scale = 500 / img.width;
+                        canvas.width = 500;
                         canvas.height = img.height * scale;
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.6);
+                        canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.4);
                     }
                 }
             });
@@ -561,7 +545,7 @@
                 el.className = `toast ${bg}`; 
                 el.innerHTML = `<i class="fas fa-info-circle text-lg"></i> <span class="font-medium">${utils.sanitize(msg)}</span>`; 
                 c.appendChild(el); 
-                setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; setTimeout(() => el.remove(), 3000); }, 3000); 
+                setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; setTimeout(() => el.remove(), 300); }, 3000); 
             },
             isAdmin: () => state.user?.email === 'admin@tradeginger.com',
             getIp: async () => { try { const res = await fetch('https://api.ipify.org?format=json'); const d = await res.json(); return d.ip; } catch { return '0.0.0.0'; } }
@@ -604,22 +588,22 @@
                     const r = app.auth.isRegistering;
                     document.getElementById('register-fields').classList.toggle('hidden', !r);
                     document.getElementById('user-type-toggle').classList.toggle('hidden', !r);
-                    document.getElementById('auth-btn-main').innerText = r ? "Send Code" : "Secure Login";
+                    document.getElementById('auth-btn-main').innerText = r ? "Send Verification Code" : "Secure Login";
                     document.getElementById('auth-title').innerText = r ? "Create Account" : "Welcome Back";
                     document.getElementById('auth-switch-text').innerText = r ? "Already have an account?" : "New to TradeGinger?";
                     document.getElementById('auth-switch-btn').innerText = r ? "Login" : "Create Account";
                 },
+                switchTab: (mode) => { if ((mode === 'register') !== app.auth.isRegistering) app.auth.toggleMode(); },
                 setUserType: (type, btn) => {
                     document.getElementById('auth-account-type').value = type;
-                    btn.parentElement.querySelectorAll('button').forEach(b => b.className = "flex-1 py-2 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-900 transition");
-                    btn.className = "flex-1 py-2 rounded-lg text-sm font-bold bg-white shadow-sm text-slate-900 transition";
+                    btn.parentElement.querySelectorAll('button').forEach(b => b.className = "flex-1 py-2.5 rounded-lg text-sm font-medium text-slate-500 hover:text-slate-900 transition-all");
+                    btn.className = "flex-1 py-2.5 rounded-lg text-sm font-bold bg-white shadow-sm text-slate-900 transition-all";
                 },
                 resetAuth: () => {
                     document.getElementById('auth-form').classList.remove('hidden');
                     document.getElementById('otp-form').classList.add('hidden');
                     document.getElementById('auth-switch-wrapper').classList.remove('hidden');
-                    document.getElementById('forgot-password-form').classList.add('hidden');
-                    app.auth.pendingAuth = null;
+                    state.pendingAuth = null;
                 },
                 handleInitialSubmit: async (e) => {
                     e.preventDefault();
@@ -631,26 +615,16 @@
                         if (app.auth.isRegistering) {
                             const firstName = fd.get('firstName');
                             const lastName = fd.get('lastName');
-                            const accountType = fd.get('accountType');
-                            
-                            // Persist registration data for retrieval after OTP
-                            const regData = { firstName, lastName, accountType };
-                            app.auth.pendingRegistrationData = regData;
-                            localStorage.setItem('tg_pending_reg', JSON.stringify(regData));
+                            state.pendingRegistrationData = { firstName, lastName, accountType: fd.get('accountType') };
                             
                             const { error } = await supabase.auth.signUp({ 
                                 email, 
                                 password, 
-                                options: { 
-                                    data: { 
-                                        full_name: `${firstName} ${lastName}`,
-                                        account_type: accountType 
-                                    } 
-                                } 
+                                options: { data: { full_name: `${firstName} ${lastName}` } } 
                             });
                             if (error) throw error;
 
-                            app.auth.pendingAuth = { email };
+                            state.pendingAuth = { email };
                             document.getElementById('auth-form').classList.add('hidden');
                             document.getElementById('auth-switch-wrapper').classList.add('hidden');
                             document.getElementById('otp-form').classList.remove('hidden');
@@ -669,93 +643,37 @@
                     e.preventDefault();
                     const otp = e.target.querySelector('input[name="otp"]').value;
                     try {
-                        const { data: { user }, error } = await supabase.auth.verifyOtp({ email: app.auth.pendingAuth.email, token: otp, type: 'signup' });
+                        const { data: { user }, error } = await supabase.auth.verifyOtp({ email: state.pendingAuth.email, token: otp, type: 'signup' });
                         if (error) throw error;
 
-                        // Retrieve registration data
-                        let regData = app.auth.pendingRegistrationData;
-                        if (!regData) {
-                            try {
-                                const stored = localStorage.getItem('tg_pending_reg');
-                                if (stored) regData = JSON.parse(stored);
-                            } catch (e) { console.warn('No stored reg data'); }
-                        }
-
-                        // Fallback to metadata if local storage failed
-                        if (!regData && user.user_metadata) {
-                            const parts = (user.user_metadata.full_name || '').split(' ');
-                            regData = {
-                                firstName: parts[0] || 'User',
-                                lastName: parts.slice(1).join(' ') || '',
-                                accountType: user.user_metadata.account_type || 'individual'
-                            };
-                        }
-
-                        // Final fallback
-                        if(!regData) {
-                             regData = { firstName: 'User', lastName: '', accountType: 'individual' };
-                        }
-
-                        // Attempt to create profile but do NOT block login if it fails due to RLS
-                        try {
-                            const { error: profileError } = await supabase.from('profiles').upsert({
-                                id: user.id,
-                                email: user.email,
-                                first_name: regData.firstName || 'User',
-                                last_name: regData.lastName || '',
-                                account_type: regData.accountType || 'individual',
-                                full_name: `${regData.firstName} ${regData.lastName}`.trim() || 'User',
-                                last_ip: state.ip || '0.0.0.0',
+                        // Critical Fix: Ensure profile data is updated post-verification
+                        if (state.pendingRegistrationData) {
+                            await supabase.from('profiles').update({
+                                first_name: state.pendingRegistrationData.firstName,
+                                last_name: state.pendingRegistrationData.last_name,
+                                account_type: state.pendingRegistrationData.accountType,
+                                full_name: `${state.pendingRegistrationData.firstName} ${state.pendingRegistrationData.lastName}`,
+                                last_ip: state.ip,
                                 last_login: new Date().toISOString()
-                            });
-                            
-                            if(profileError) {
-                                console.warn("Profile DB insert failed (likely RLS), continuing with auth metadata:", profileError);
-                            } else {
-                                localStorage.removeItem('tg_pending_reg');
-                            }
-                        } catch (dbErr) {
-                            console.warn("Profile creation exception:", dbErr);
+                            }).eq('id', user.id);
                         }
-
                         await app.auth.onLoginSuccess(user);
                         app.modals.auth.hide();
                         utils.toast('Account verified!', 'success');
                     } catch (err) { utils.toast(err.message, 'error'); }
                 },
-                showForgotPassword: () => {
-                    document.getElementById('auth-form').classList.add('hidden');
-                    document.getElementById('forgot-password-form').classList.remove('hidden');
-                    document.getElementById('auth-title').innerText = "Reset Password";
-                },
-                handlePasswordReset: async (e) => {
-                    e.preventDefault();
-                    const email = e.target.querySelector('input[name="resetEmail"]').value;
-                    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
-                    if (error) utils.toast(error.message, 'error');
-                    else {
-                        utils.toast('Password reset link sent!', 'success');
-                        app.auth.resetAuth();
-                    }
-                },
                 onLoginSuccess: async (user) => {
                     state.user = user;
-                    // Use maybeSingle() to avoid errors if profile doesn't exist yet
-                    const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
-                    
-                    // Robust fallback to user metadata if profile table fetch fails
-                    if (error || !data) {
-                        console.warn("Using metadata fallback for profile");
-                        state.profile = {
-                            full_name: user.user_metadata?.full_name || 'User',
-                            account_type: user.user_metadata?.account_type || 'individual',
-                            avatar_url: null,
-                            email: user.email
-                        };
-                    } else {
-                        state.profile = data;
-                    }
+                    if(state.ip) await supabase.from('profiles').update({ last_ip: state.ip, last_login: new Date().toISOString() }).eq('id', user.id);
+                    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+                    state.profile = data || {};
                     app.ui.renderNav();
+                },
+                resetView: () => {
+                    document.getElementById('auth-form').classList.remove('hidden');
+                    document.getElementById('otp-form').classList.add('hidden');
+                    app.auth.isRegistering = true; 
+                    app.auth.toggleMode(); 
                 },
                 loginWithGoogle: async () => {
                     await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
@@ -824,7 +742,7 @@
                     if(sp.get('q')) q = q.ilike('title', `%${sp.get('q')}%`);
                     const { data } = await q.limit(50);
                     if(data && data.length) app.ui.renderGrid(grid, data);
-                    else grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500"><i class="fas fa-search text-4xl mb-4 text-slate-300 block"></i>No listings found.</div>`;
+                    else grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500"><i class="fas fa-search text-4xl mb-4 text-slate-300 block"></i>No listings found matching your criteria.</div>`;
                 },
                 fetchUserListings: async () => {
                     const grid = document.getElementById('user-ads');
@@ -842,52 +760,67 @@
                     const c = document.getElementById('my-leads-container');
                     if(!c) return;
                     const leads = JSON.parse(localStorage.getItem('my_leads')) || [];
-                    c.innerHTML = leads.length ? leads.map(l => `<div class="p-4 border-b border-slate-100 hover:bg-slate-50 transition last:border-0"><div class="font-bold text-slate-800">${l.name}</div><div class="text-xs text-slate-500 mt-1 flex items-center gap-2"><span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded">${l.type}</span> ${new Date(l.date).toLocaleDateString()}</div><div class="mt-2 font-mono text-sm bg-slate-100 inline-block px-2 py-1 rounded text-slate-700">${l.phone}</div></div>`).join('') : `<div class="text-center p-10 text-slate-400"><i class="fas fa-inbox text-3xl mb-2"></i><p>No leads purchased yet.</p></div>`;
+                    c.innerHTML = leads.length ? leads.map(l => `<div class="p-4 border-b border-slate-100 hover:bg-slate-50 transition last:border-0">
+                        <div class="font-bold text-slate-800">${l.name}</div>
+                        <div class="text-xs text-slate-500 mt-1 flex items-center gap-2">
+                            <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded">${l.type}</span> 
+                            ${new Date(l.date).toLocaleDateString()}
+                        </div>
+                        <div class="mt-2 font-mono text-sm bg-slate-100 inline-block px-2 py-1 rounded text-slate-700">${l.phone}</div>
+                    </div>`).join('') : `<div class="text-center p-10 text-slate-400"><i class="fas fa-inbox text-3xl mb-2"></i><p>No leads purchased yet.</p></div>`;
                 }
             },
 
+            // VIEWS - FULLY EXPANDED
             views: {
                 home: () => `
-                    <div class="fade-in py-16 md:py-20 text-center bg-gradient-to-br from-primary-600 via-primary-700 to-dark-900 text-white md:rounded-[3rem] md:mb-16 md:mx-4 shadow-2xl shadow-primary-900/20 relative overflow-hidden">
+                    <div class="fade-in py-16 md:py-24 text-center bg-gradient-to-br from-primary-600 via-primary-700 to-dark-900 text-white rounded-[3rem] mb-16 shadow-2xl shadow-primary-900/20 relative overflow-hidden mx-4 md:mx-0">
+                        <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
                         <div class="relative z-10 px-6">
-                            <span class="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-xs font-bold tracking-wide mb-4 animate-pulse">INDIA'S #1 MARKETPLACE</span>
-                            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight leading-tight">Buy, Sell & Grow <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-primary-200">Securely.</span></h1>
-                            <p class="mb-8 text-lg md:text-xl text-primary-100 font-light max-w-2xl mx-auto leading-relaxed">Join 5M+ verified businesses and individuals.</p>
-                            <div class="max-w-xl mx-auto bg-white/10 backdrop-blur-xl p-1.5 rounded-full flex border border-white/20 shadow-xl transition-all hover:bg-white/20 focus-within:bg-white/25">
-                                <input onkeyup="if(event.key==='Enter') app.ui.handleSearch(event)" type="text" placeholder="Try 'iPhone 14' or '2BHK Flat'..." class="flex-grow bg-transparent px-6 py-3 outline-none text-white placeholder-primary-200 text-base font-medium w-full">
-                                <button class="bg-white text-primary-700 px-6 py-3 rounded-full font-bold hover:bg-primary-50 transition-all shadow-lg flex items-center gap-2 transform active:scale-95 whitespace-nowrap" onclick="app.ui.handleSearch(event)">
+                            <span class="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-xs font-bold tracking-wide mb-6 animate-pulse">INDIA'S #1 MARKETPLACE</span>
+                            <h1 class="text-4xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight drop-shadow-sm">Buy, Sell & Grow <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-primary-200">Securely.</span></h1>
+                            <p class="mb-10 text-lg md:text-xl text-primary-100 font-light max-w-2xl mx-auto leading-relaxed">Join 5M+ verified businesses and individuals on the safest platform for cars, electronics, and real estate.</p>
+                            <div class="max-w-2xl mx-auto bg-white/10 backdrop-blur-xl p-2.5 rounded-full flex border border-white/20 shadow-2xl transition-all hover:bg-white/20 hover:scale-[1.01] focus-within:bg-white/25 focus-within:ring-4 focus-within:ring-primary-400/30">
+                                <input onkeyup="if(event.key==='Enter') app.ui.handleSearch(event)" type="text" placeholder="Try 'iPhone 14' or '2BHK Flat'..." class="flex-grow bg-transparent px-6 py-3 outline-none text-white placeholder-primary-200 text-lg font-medium">
+                                <button class="bg-white text-primary-700 px-8 py-3.5 rounded-full font-bold hover:bg-primary-50 transition-all shadow-lg flex items-center gap-2 transform active:scale-95" onclick="app.ui.handleSearch(event)">
                                     <i class="fas fa-search"></i> Search
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-16 container mx-auto px-4">
-                        <div class="flex justify-between items-end mb-6">
-                            <div><h2 class="text-2xl font-bold text-slate-900 tracking-tight">Browse Categories</h2></div>
-                            <a href="#listing" class="hidden md:block text-primary-600 font-bold hover:text-primary-700 text-sm">View All <i class="fas fa-arrow-right ml-1"></i></a>
+                    <div class="mb-20 container mx-auto px-4">
+                        <div class="flex justify-between items-end mb-8">
+                            <div>
+                                <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Browse Categories</h2>
+                                <p class="text-slate-500 mt-1">Find exactly what you're looking for</p>
+                            </div>
+                            <a href="#listing" class="hidden md:flex items-center gap-2 text-primary-600 font-bold hover:text-primary-700 transition">View All <i class="fas fa-arrow-right"></i></a>
                         </div>
-                        <div class="grid grid-cols-3 md:grid-cols-6 gap-3 md:gap-6">
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
                             ${state.categories.map(c => `
-                                <a href="#listing?cat=${c.id}" class="flex flex-col items-center p-4 bg-white rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all border border-slate-100 group cursor-pointer">
-                                    <div class="w-12 h-12 bg-primary-50 text-primary-600 rounded-xl flex items-center justify-center mb-3 text-xl group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">
+                                <a href="#listing?cat=${c.id}&catname=${c.name}" class="flex flex-col items-center p-6 bg-white rounded-3xl shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 group cursor-pointer">
+                                    <div class="w-16 h-16 bg-primary-50 text-primary-600 rounded-2xl flex items-center justify-center mb-4 text-2xl group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300 shadow-inner">
                                         <i class="fas ${c.icon}"></i>
                                     </div>
-                                    <span class="text-xs md:text-sm font-bold text-slate-700 group-hover:text-primary-700 transition-colors">${c.name}</span>
+                                    <span class="text-sm font-bold text-slate-700 group-hover:text-primary-700 transition-colors">${c.name}</span>
                                 </a>
                             `).join('')}
                         </div>
                     </div>
 
-                    <div class="bg-white md:rounded-[2.5rem] -mx-0 md:mx-4 px-4 py-16 border-t border-slate-100 shadow-sm">
+                    <div class="bg-white -mx-4 md:-mx-8 px-4 md:px-8 py-20 border-t border-slate-100">
                         <div class="container mx-auto">
-                            <div class="flex justify-between items-end mb-8">
+                            <div class="flex justify-between items-end mb-12">
                                 <div>
-                                    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Fresh Recommendations</h2>
-                                    <p class="text-slate-500 text-sm mt-1">Handpicked premium items just for you</p>
+                                    <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Fresh Recommendations</h2>
+                                    <p class="text-slate-500 mt-1">Handpicked premium items just for you</p>
                                 </div>
+                                <a href="#listing" class="text-primary-600 font-bold hover:text-primary-800 flex items-center gap-2 group transition-colors bg-primary-50 px-4 py-2 rounded-full">
+                                    View All <i class="fas fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                                </a>
                             </div>
-                            <div id="home-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+                            <div id="home-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
                         </div>
                     </div>
                 `,
@@ -896,10 +829,12 @@
                     <div class="fade-in container mx-auto py-8 px-4">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                             <div>
-                                <h1 class="text-2xl font-bold text-slate-900">${q ? 'Search: "' + utils.sanitize(q) + '"' : (cat ? (state.categories.find(c=>c.id==cat)?.name || 'Category') : 'All Listings')}</h1>
-                                <p class="text-slate-500 text-sm mt-1">Showing best matches</p>
+                                <h1 class="text-3xl font-bold text-slate-900">${q ? 'Search Results for: "' + utils.sanitize(q) + '"' : (cat ? 'Category: ' + (state.categories.find(c=>c.id==cat)?.name || 'Unknown') : 'All Listings')}</h1>
+                                <p class="text-slate-500 mt-1">Showing best matches based on your preferences</p>
                             </div>
-                            <button onclick="app.router.navigate('listing')" class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold hover:bg-slate-50 shadow-sm transition text-slate-600"><i class="fas fa-undo mr-1"></i> Reset</button>
+                            <div class="flex gap-3">
+                                <button onclick="app.router.navigate('listing')" class="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold hover:bg-slate-50 shadow-sm transition text-slate-600 flex items-center gap-2"><i class="fas fa-undo"></i> Reset Filters</button>
+                            </div>
                         </div>
                         <div id="listing-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
                     </div>
@@ -907,74 +842,98 @@
 
                 renderDetail: async (id) => {
                     const v = document.getElementById('app-view');
-                    v.innerHTML = `<div class="h-[60vh] flex flex-col items-center justify-center text-primary-600"><div class="loader mb-4"></div></div>`;
+                    v.innerHTML = `<div class="h-[60vh] flex flex-col items-center justify-center text-primary-600"><div class="loader mb-4"></div><p class="font-medium animate-pulse">Loading premium details...</p></div>`;
                     const { data: ad } = await supabase.from('listings').select('*').eq('id', id).single();
-                    if(!ad) { v.innerHTML = `<div class="flex flex-col items-center justify-center h-96 text-slate-400"><p class="text-xl font-medium">Listing not found</p><button onclick="history.back()" class="mt-4 text-primary-600 hover:underline">Go Back</button></div>`; return; }
+                    if(!ad) { v.innerHTML = `<div class="flex flex-col items-center justify-center h-96 text-slate-400"><i class="fas fa-exclamation-circle text-5xl mb-4"></i><p class="text-xl font-medium">Listing not found</p><button onclick="history.back()" class="mt-4 text-primary-600 hover:underline">Go Back</button></div>`; return; }
                     const img = ad.image_urls?.[0] || 'https://placehold.co/600x400';
                     
-                    let sellerName = 'User';
+                    let sellerName = 'TradeGinger User';
                     if (ad.user_id) {
-                        const { data: u } = await supabase.from('profiles').select('full_name').eq('id', ad.user_id).maybeSingle();
+                        const { data: u } = await supabase.from('profiles').select('full_name').eq('id', ad.user_id).single();
                         if(u) sellerName = u.full_name;
                     }
 
                     v.innerHTML = `
-                        <div class="container mx-auto px-4 py-6 fade-in max-w-6xl">
-                            <button onclick="history.back()" class="mb-4 text-slate-500 hover:text-slate-800 flex items-center gap-2 font-bold text-sm bg-white px-3 py-1.5 rounded-lg border border-slate-200 w-fit"><i class="fas fa-arrow-left"></i> Back</button>
+                        <div class="container mx-auto px-4 py-8 fade-in max-w-7xl">
+                            <button onclick="history.back()" class="mb-6 text-slate-500 hover:text-slate-800 flex items-center gap-2 font-bold transition-colors bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-100 w-fit"><i class="fas fa-arrow-left"></i> Back</button>
                             
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <!-- Image Section -->
                                 <div class="lg:col-span-2 space-y-6">
-                                    <div class="bg-black rounded-3xl overflow-hidden shadow-lg relative group h-[350px] md:h-[500px] flex items-center justify-center bg-slate-900">
-                                        <img src="${img}" id="main-img" class="max-h-full max-w-full object-contain">
-                                        <div class="absolute top-4 left-4 bg-white/20 backdrop-blur-md border border-white/20 text-white px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase">
+                                    <div class="bg-black rounded-3xl overflow-hidden shadow-2xl relative group h-[500px] flex items-center justify-center bg-slate-900">
+                                        <img src="${img}" id="main-img" class="max-h-full max-w-full object-contain transition-transform duration-500">
+                                        <div class="absolute top-6 left-6 bg-white/10 backdrop-blur-md border border-white/20 text-white px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase">
                                             ${ad.category_id ? state.categories.find(c=>c.id==ad.category_id)?.name : 'Item'}
                                         </div>
                                     </div>
+                                    
                                     ${ad.image_urls && ad.image_urls.length > 1 ? `
-                                        <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                                        <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                                             ${ad.image_urls.map(url => `
-                                                <img src="${url}" onclick="document.getElementById('main-img').src='${url}'" class="w-20 h-20 object-cover rounded-xl cursor-pointer border-2 border-transparent hover:border-primary-500 transition-all shadow-sm">
+                                                <img src="${url}" onclick="document.getElementById('main-img').src='${url}'" class="w-24 h-24 object-cover rounded-2xl cursor-pointer border-2 border-transparent hover:border-primary-500 transition-all shadow-md hover:shadow-lg">
                                             `).join('')}
                                         </div>
                                     ` : ''}
-                                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                                        <h3 class="text-lg font-bold mb-3 text-slate-900 border-b border-slate-100 pb-3">Description</h3>
-                                        <p class="text-slate-600 leading-relaxed whitespace-pre-line text-sm">${utils.sanitize(ad.description)}</p>
-                                        <div class="mt-6 grid grid-cols-2 gap-3">
+
+                                    <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                                        <h3 class="text-2xl font-bold mb-4 text-slate-900 border-b border-slate-100 pb-4">Description</h3>
+                                        <p class="text-slate-600 leading-relaxed whitespace-pre-line text-lg">${utils.sanitize(ad.description)}</p>
+                                        
+                                        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                                             ${Object.entries(ad.attributes || {}).map(([k,v]) => `
-                                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex justify-between items-center">
-                                                    <span class="text-slate-500 font-medium capitalize text-xs">${k.replace(/_/g, ' ')}</span>
-                                                    <span class="font-bold text-slate-900 text-xs">${v}</span>
+                                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex justify-between items-center hover:border-primary-200 transition">
+                                                    <span class="text-slate-500 font-medium capitalize">${k.replace(/_/g, ' ')}</span>
+                                                    <span class="font-bold text-slate-900">${v}</span>
                                                 </div>
                                             `).join('')}
                                         </div>
                                     </div>
                                 </div>
 
+                                <!-- Info Section -->
                                 <div class="space-y-6">
-                                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
-                                        <h1 class="text-2xl font-bold text-slate-900 leading-tight mb-2">${utils.sanitize(ad.title)}</h1>
-                                        <div class="text-3xl font-extrabold text-primary-600 mb-4">${utils.formatPrice(ad.price)}</div>
+                                    <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 sticky top-24">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <h1 class="text-3xl font-extrabold text-slate-900 leading-tight">${utils.sanitize(ad.title)}</h1>
+                                        </div>
+                                        <div class="text-4xl font-extrabold text-primary-600 mb-6 tracking-tight">${utils.formatPrice(ad.price)}</div>
                                         
-                                        <div class="flex items-center gap-2 text-slate-500 text-xs mb-6 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                                            <i class="fas fa-map-marker-alt text-primary-500"></i> <span class="font-medium">${utils.sanitize(ad.location)}</span>
+                                        <div class="flex items-center gap-2 text-slate-500 text-sm mb-8 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                            <i class="fas fa-map-marker-alt text-primary-500"></i> 
+                                            <span class="font-medium">${utils.sanitize(ad.location)}</span>
                                             <span class="mx-2 text-slate-300">|</span>
-                                            <i class="far fa-clock text-primary-500"></i> <span>${utils.timeAgo(ad.created_at)}</span>
+                                            <i class="far fa-clock text-primary-500"></i>
+                                            <span>${utils.timeAgo(ad.created_at)}</span>
                                         </div>
 
-                                        <div class="border-t border-slate-100 pt-4 mb-4">
-                                            <div class="flex items-center gap-3 mb-4">
-                                                <div class="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center text-primary-700 font-bold text-xl">
-                                                    ${sellerName.charAt(0).toUpperCase()}
-                                                </div>
-                                                <div>
-                                                    <p class="font-bold text-slate-900 text-sm">${utils.sanitize(sellerName)}</p>
-                                                    <p class="text-[10px] text-green-600 font-bold flex items-center gap-1 bg-green-50 px-1.5 py-0.5 rounded w-fit mt-0.5"><i class="fas fa-check-circle"></i> Verified Seller</p>
+                                        <div class="border-t border-slate-100 pt-6 mb-6">
+                                            <div class="flex items-center justify-between mb-6">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="w-14 h-14 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center text-primary-700 font-bold text-2xl shadow-inner">
+                                                        ${sellerName.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <p class="font-bold text-slate-900 text-lg">${utils.sanitize(sellerName)}</p>
+                                                        <p class="text-xs text-green-600 font-bold flex items-center gap-1 bg-green-50 px-2 py-0.5 rounded-full w-fit mt-1"><i class="fas fa-check-circle"></i> Verified</p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <button onclick="app.chat.start('${ad.user_id}','${ad.id}','${sellerName.replace(/'/g,"")}')" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary-500/30 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm">
-                                                <i class="fas fa-comment-dots text-base"></i> Chat with Seller
+                                            
+                                            <button onclick="app.chat.start('${ad.user_id}','${ad.id}','${sellerName.replace(/'/g,"")}')" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary-500/30 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 mb-3">
+                                                <i class="fas fa-comment-dots text-lg"></i> Chat with Seller
                                             </button>
+                                            <button class="w-full bg-white border-2 border-slate-200 text-slate-700 font-bold py-3.5 rounded-2xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-2" onclick="alert('Make Offer feature coming soon!')">
+                                                <i class="fas fa-hand-holding-usd"></i> Make an Offer
+                                            </button>
+                                        </div>
+
+                                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                                            <h4 class="font-bold text-slate-900 mb-3 flex items-center gap-2"><i class="fas fa-shield-alt text-green-600"></i> Safety Tips</h4>
+                                            <ul class="text-sm text-slate-600 space-y-2 list-disc pl-4 marker:text-slate-400">
+                                                <li>Avoid paying in advance.</li>
+                                                <li>Meet at a safe, public location.</li>
+                                                <li>Inspect the item thoroughly.</li>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
@@ -988,6 +947,7 @@
                         <div class="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden mb-12 relative group">
                             <div class="h-52 bg-gradient-to-r from-slate-800 to-slate-900 relative overflow-hidden">
                                 <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+                                <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-primary-500/20 rounded-full blur-3xl"></div>
                                 <div class="absolute bottom-6 right-6 flex gap-3 z-10">
                                     <button onclick="app.auth.logout()" class="bg-white/10 backdrop-blur-md hover:bg-red-500 hover:text-white text-white px-5 py-2.5 rounded-xl text-sm font-bold transition border border-white/20 shadow-lg flex items-center gap-2">
                                         <i class="fas fa-sign-out-alt"></i> Logout
@@ -1085,39 +1045,46 @@
                             `).join('')}
                         </div>
                     </div>
-                `
+                `,
+
+                toggleView: () => { document.body.classList.toggle('simulate-mobile'); utils.toast('View Toggled', 'success'); }
             },
 
             ui: {
-                skeletonCard: () => `<div class="bg-white rounded-2xl border border-slate-100 overflow-hidden"><div class="h-48 skeleton w-full bg-slate-200 animate-pulse"></div><div class="p-4 space-y-3"><div class="h-4 w-3/4 skeleton bg-slate-200 animate-pulse rounded"></div><div class="h-3 w-1/2 skeleton bg-slate-200 animate-pulse rounded"></div></div></div>`,
+                skeletonCard: () => `<div class="bg-white rounded-2xl border border-slate-100 overflow-hidden"><div class="h-52 skeleton w-full"></div><div class="p-5 space-y-3"><div class="h-5 w-3/4 skeleton rounded-lg"></div><div class="h-4 w-1/2 skeleton rounded-lg"></div><div class="h-3 w-full skeleton rounded mt-4 opacity-50"></div></div></div>`,
                 handleSearch: (e) => { e.preventDefault(); const v = e.target.closest('div,form').querySelector('input').value; app.router.navigate('listing?q='+v); },
                 renderGrid: (c, items, edit=false) => {
                     if(items.length === 0) {
-                        c.innerHTML = `<div class="col-span-full py-16 text-center bg-white rounded-2xl border border-dashed border-gray-300"><p class="text-gray-500 font-medium">No listings found.</p>${edit ? '<button onclick="app.router.navigate(\'sell\')" class="mt-2 text-primary-600 font-bold hover:underline">Create First Ad</button>' : ''}</div>`;
+                        c.innerHTML = `<div class="col-span-full py-20 text-center bg-white rounded-2xl border border-dashed border-gray-300"><i class="fas fa-ghost text-4xl text-gray-300 mb-4"></i><p class="text-gray-500 font-medium">No listings found.</p>${edit ? '<button onclick="app.router.navigate(\'sell\')" class="mt-4 text-primary-600 font-bold hover:underline">Create First Ad</button>' : ''}</div>`;
                         return;
                     }
+                    const isAdmin = utils.isAdmin();
                     c.innerHTML = items.map(i => `
-                        <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-xl hover:shadow-primary-900/5 transition-all duration-300 group relative transform hover:-translate-y-1 h-full flex flex-col">
+                        <div class="bg-white rounded-3xl border border-slate-100 overflow-hidden hover:shadow-xl hover:shadow-primary-900/5 transition-all duration-300 group relative transform hover:-translate-y-1 h-full flex flex-col">
                             <a href="#detail?id=${i.id}" class="block flex-col flex h-full">
-                                <div class="h-48 bg-slate-100 relative overflow-hidden">
+                                <div class="h-56 bg-slate-100 relative overflow-hidden">
                                     <img src="${i.image_urls?.[0] || 'https://placehold.co/400'}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                                    <div class="absolute bottom-2 left-2 bg-white/95 backdrop-blur-md text-slate-800 text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1">
+                                    <div class="absolute bottom-3 left-3 bg-white/95 backdrop-blur-md text-slate-800 text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5">
                                         <i class="fas fa-map-marker-alt text-red-500"></i> ${utils.sanitize(i.location || 'India')}
                                     </div>
-                                    ${i.attributes?.listing_type === 'platinum' ? '<div class="absolute top-2 left-2 bg-slate-900 text-white text-[9px] font-bold px-2 py-1 rounded shadow-md"><i class="fas fa-crown text-yellow-400"></i> PLATINUM</div>' : ''}
+                                    ${i.attributes?.listing_type === 'platinum' ? '<div class="absolute top-3 left-3 bg-gradient-to-r from-slate-800 to-black text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-lg tracking-wide flex items-center gap-1"><i class="fas fa-crown text-yellow-400"></i> PLATINUM</div>' : ''}
+                                    ${i.attributes?.listing_type === 'gold' ? '<div class="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-lg tracking-wide flex items-center gap-1"><i class="fas fa-star"></i> GOLD</div>' : ''}
                                 </div>
-                                <div class="p-4 flex flex-col flex-grow">
-                                    <div class="font-extrabold text-lg text-slate-900 truncate mb-1">${utils.formatPrice(i.price)}</div>
-                                    <p class="text-slate-600 text-sm truncate mb-3 font-medium">${utils.sanitize(i.title)}</p>
-                                    <div class="mt-auto pt-3 border-t border-slate-50 flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-wide">
-                                        <span>${i.subcategory || 'Item'}</span>
-                                        <span>${utils.timeAgo(i.created_at)}</span>
+                                <div class="p-6 flex flex-col flex-grow">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h3 class="font-extrabold text-2xl text-slate-900 truncate pr-2">${utils.formatPrice(i.price)}</h3>
+                                    </div>
+                                    <p class="text-slate-600 text-sm truncate mb-6 font-medium leading-relaxed">${utils.sanitize(i.title)}</p>
+                                    <div class="mt-auto pt-4 border-t border-slate-50 flex justify-between items-center text-xs text-slate-400 font-medium">
+                                        <span class="bg-primary-50 text-primary-700 px-2.5 py-1 rounded-md uppercase tracking-wider text-[10px]">${i.subcategory || 'Item'}</span>
+                                        <span class="flex items-center gap-1"><i class="far fa-clock"></i> ${utils.timeAgo(i.created_at)}</span>
                                     </div>
                                 </div>
                             </a>
-                            ${edit ? `
-                                <div class="absolute top-2 right-2 flex gap-2 z-20">
-                                    <button onclick="app.sell.delete('${i.id}')" class="bg-white text-red-500 w-8 h-8 rounded-full flex items-center justify-center shadow-md hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash text-xs"></i></button>
+                            ${(edit || isAdmin) ? `
+                                <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20 transform translate-y-2 group-hover:translate-y-0">
+                                    ${edit ? `<button onclick="app.sell.edit('${i.id}')" class="bg-white text-primary-600 w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:bg-primary-600 hover:text-white transition"><i class="fas fa-edit"></i></button>` : ''}
+                                    <button onclick="app.sell.delete('${i.id}')" class="bg-white text-red-500 w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash"></i></button>
                                 </div>
                             ` : ''}
                         </div>
@@ -1127,32 +1094,72 @@
                     const n = document.getElementById('nav-auth-section');
                     const m = document.getElementById('nav-auth-section-mobile');
                     const html = state.user ? 
-                        `<div class="relative group">
-                            <button id="user-menu-btn" onclick="document.getElementById('user-menu-dropdown').classList.toggle('hidden')" class="focus:outline-none flex items-center gap-2">
-                                <img src="${state.profile?.avatar_url || 'https://placehold.co/40'}" class="w-8 h-8 rounded-full object-cover border border-slate-200">
-                                <span class="text-sm font-bold text-slate-700 hidden lg:block">${state.profile?.full_name?.split(' ')[0]}</span>
-                            </button>
-                            <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 hidden py-1 animate-fade-in z-50">
-                                <a href="#profile" class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 transition">Profile</a>
-                                <a href="#" onclick="app.auth.logout(event)" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">Logout</a>
+                        `<div class="flex items-center gap-4">
+                            <div class="hidden md:block text-right leading-tight">
+                                <div class="text-xs font-bold text-slate-900">${state.profile?.full_name?.split(' ')[0] || 'User'}</div>
+                                <div class="text-[10px] text-green-500 font-bold uppercase tracking-wider flex justify-end items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</div>
+                            </div>
+                            <div class="relative">
+                                <button id="user-menu-btn" onclick="document.getElementById('user-menu-dropdown').classList.toggle('hidden')" class="focus:outline-none group">
+                                    <img src="${state.profile?.avatar_url || 'https://placehold.co/40'}" class="w-10 h-10 rounded-full cursor-pointer border-2 border-white shadow-md group-hover:border-primary-500 transition object-cover ring-2 ring-slate-100">
+                                </button>
+                                <div id="user-menu-dropdown" class="absolute right-0 mt-4 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 hidden py-2 animate-fade-in z-50 overflow-hidden">
+                                    <div class="px-5 py-3 border-b border-slate-50 bg-slate-50/50">
+                                        <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Signed in as</p>
+                                        <p class="text-sm font-bold text-slate-800 truncate">${utils.sanitize(state.profile?.first_name)}</p>
+                                    </div>
+                                    <a href="#profile" class="block px-5 py-3 text-sm text-slate-600 hover:bg-primary-50 hover:text-primary-700 transition flex items-center gap-3"><i class="fas fa-user text-slate-400"></i> My Profile</a>
+                                    ${utils.isAdmin() ? `<a href="#admin" class="block px-5 py-3 text-sm text-blue-600 hover:bg-blue-50 transition flex items-center gap-3"><i class="fas fa-shield-alt"></i> Admin Dashboard</a>` : ''}
+                                    <div class="border-t border-slate-50 my-1"></div>
+                                    <a href="#" onclick="app.auth.logout(event)" class="block px-5 py-3 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-3"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                                </div>
                             </div>
                         </div>` : 
-                        `<button onclick="app.modals.auth.show()" class="text-primary-600 font-bold text-sm hover:text-primary-700">Login</button>`;
+                        `<button onclick="app.modals.auth.show()" class="bg-primary-50 text-primary-700 border border-primary-100 px-6 py-2.5 rounded-full text-sm font-bold shadow-sm hover:shadow-md hover:bg-primary-100 transition transform hover:-translate-y-0.5 flex items-center gap-2">Login <i class="fas fa-arrow-right text-xs"></i></button>`;
                     if(n) n.innerHTML = html;
-                    if(m) m.innerHTML = state.user ? `<button onclick="app.router.navigate('profile')"><img src="${state.profile?.avatar_url || 'https://placehold.co/40'}" class="w-8 h-8 rounded-full border border-slate-200 object-cover"></button>` : `<button onclick="app.modals.auth.show()" class="text-xs font-bold text-primary-600 bg-primary-50 px-3 py-1.5 rounded-lg">Login</button>`;
+                    if(m) m.innerHTML = state.user ? `<button onclick="app.router.navigate('profile')"><img src="${state.profile?.avatar_url || 'https://placehold.co/40'}" class="w-9 h-9 rounded-full border-2 border-white object-cover shadow-sm"></button>` : `<button onclick="app.modals.auth.show()" class="text-sm font-bold text-primary-600 bg-primary-50 px-4 py-2 rounded-lg">Login</button>`;
+                }
+            },
+
+            modals: {
+                auth: { 
+                    show: () => { 
+                        const m = document.getElementById('auth-modal');
+                        m.classList.remove('hidden', 'pointer-events-none', 'opacity-0'); 
+                        m.classList.add('opacity-100'); 
+                    }, 
+                    hide: () => { 
+                        const m = document.getElementById('auth-modal');
+                        m.classList.remove('opacity-100');
+                        m.classList.add('hidden', 'pointer-events-none', 'opacity-0');
+                        app.auth.resetAuth(); 
+                    } 
                 },
-                toggleView: () => { 
-                    document.body.classList.toggle('simulate-mobile'); 
-                    const isSim = document.body.classList.contains('simulate-mobile');
-                    const btn = document.getElementById('view-switch-icon');
-                    if(btn) btn.className = `fas ${isSim ? 'fa-desktop' : 'fa-mobile-alt'} text-xl`;
-                    utils.toast(isSim ? 'Mobile View' : 'Desktop View', 'success'); 
+                sell: { 
+                    show: () => {
+                        document.getElementById('sell-modal').classList.remove('hidden');
+                        const s = document.getElementById('category-select');
+                        // Pre-populate if empty
+                        if(s.options.length <= 1) state.categories.forEach(c => s.add(new Option(c.name, c.id)));
+                        const l = document.getElementById('state-select');
+                        if(l.options.length <= 1) state.locations.forEach(x => l.add(new Option(x.state, x.state)));
+                    },
+                    hide: () => document.getElementById('sell-modal').classList.add('hidden')
+                },
+                tnc: { show: () => document.getElementById('info-modal').classList.remove('hidden') },
+                privacy: { show: () => document.getElementById('privacy-modal').classList.remove('hidden') },
+                chat: {
+                    show: (name) => {
+                        document.getElementById('chat-modal').classList.remove('hidden');
+                        document.getElementById('chat-header-name').innerText = name || "Chat";
+                    }
                 }
             },
 
             sell: {
                 stagedFiles: [],
                 planPrice: 0,
+                micrositeCost: 0,
                 isEditing: false,
                 handleCategoryChange: (id) => {
                     const sub = document.getElementById('subcategory-select');
@@ -1163,7 +1170,7 @@
                     da.innerHTML = '';
                     c?.attributes.forEach(a => {
                         const d = document.createElement('div');
-                        d.innerHTML = `<label class="block text-xs font-bold mb-1.5 uppercase text-slate-500 ml-1">${a.label}</label>` + (a.type === 'select' ? `<div class="relative"><select name="attr_${a.key}" id="attr_${a.key}" class="w-full border border-slate-200 px-4 py-3 rounded-xl bg-white outline-none focus:border-primary-500 transition appearance-none font-medium text-slate-700"><option value="">Select...</option>${a.options.map(o=>`<option>${o}</option>`).join('')}</select><i class="fas fa-chevron-down absolute right-4 top-4 text-slate-400 pointer-events-none text-xs"></i></div>` : `<input name="attr_${a.key}" id="attr_${a.key}" type="${a.type}" class="w-full border border-slate-200 px-4 py-3 rounded-xl bg-white outline-none focus:border-primary-500 transition font-medium text-slate-700">`);
+                        d.innerHTML = `<label class="block text-xs font-bold mb-2 uppercase text-slate-500 ml-1">${a.label}</label>` + (a.type === 'select' ? `<div class="relative"><select name="attr_${a.key}" id="attr_${a.key}" class="w-full border border-slate-200 p-4 rounded-2xl bg-white outline-none focus:border-primary-500 transition appearance-none font-medium text-slate-700"><option value="">Select...</option>${a.options.map(o=>`<option>${o}</option>`).join('')}</select><i class="fas fa-chevron-down absolute right-5 top-5 text-slate-400 pointer-events-none"></i></div>` : `<input name="attr_${a.key}" id="attr_${a.key}" type="${a.type}" class="w-full border border-slate-200 p-4 rounded-2xl bg-white outline-none focus:border-primary-500 transition font-medium text-slate-700">`);
                         da.appendChild(d);
                     });
                 },
@@ -1171,22 +1178,54 @@
                     const files = Array.from(e.target.files);
                     app.sell.stagedFiles.push(...files);
                     const c = document.getElementById('preview-container');
-                    files.forEach(f => c.innerHTML += `<img src="${URL.createObjectURL(f)}" class="w-16 h-16 rounded-xl object-cover border border-slate-200 shadow-sm">`);
+                    files.forEach(f => c.innerHTML += `<img src="${URL.createObjectURL(f)}" class="w-20 h-20 rounded-2xl object-cover border-2 border-white shadow-md hover:scale-105 transition-transform">`);
                 },
-                updatePlanPrice: (p) => { app.sell.planPrice = p; document.getElementById('total-plan-price').innerText = `₹${p}`; },
+                updatePlanPrice: (p) => { app.sell.planPrice = p; document.getElementById('total-plan-price').innerText = `₹${p + app.sell.micrositeCost}`; },
+                toggleMicrosite: (cb) => { app.sell.micrositeCost = cb.checked ? 3999 : 0; app.sell.updatePlanPrice(app.sell.planPrice); },
                 generateAI: () => { document.getElementById('ad-description').value = `Premium Item in excellent condition. Verified by TradeGinger AI. Contact for more details regarding condition and price negotiation.`; utils.toast('AI Generated Description', 'success'); },
+                edit: async (adId) => {
+                    app.sell.isEditing = true;
+                    const { data: ad } = await supabase.from('listings').select('*').eq('id', adId).single();
+                    if(!ad) return utils.toast("Error loading ad", "error");
+
+                    await app.modals.sell.show();
+                    document.getElementById('edit-id').value = ad.id;
+                    document.querySelector('[name="title"]').value = ad.title;
+                    document.querySelector('[name="price"]').value = ad.price;
+                    document.querySelector('[name="description"]').value = ad.description;
+                    
+                    // populate selects with slight delay to ensure options exist
+                    document.getElementById('category-select').value = ad.category_id;
+                    app.sell.handleCategoryChange(ad.category_id);
+                    
+                    setTimeout(() => {
+                        document.getElementById('subcategory-select').value = ad.subcategory;
+                        if(ad.attributes) {
+                            Object.entries(ad.attributes).forEach(([k,v]) => {
+                                const el = document.getElementById(`attr_${k}`);
+                                if(el) el.value = v;
+                            });
+                        }
+                    }, 200);
+                },
                 submit: async () => {
                     const f = document.getElementById('sell-form');
                     if(!f.checkValidity()) return utils.toast('Fill all fields', 'error');
+                    
                     if(!state.user) return app.modals.auth.show();
 
                     utils.toast('Processing...', 'info');
-                    const urls = [];
                     
+                    const urls = [];
                     for (const file of app.sell.stagedFiles) {
                         try {
-                             urls.push(await blobToBase64(file));
+                            const blob = await compressImage(file);
+                            const name = `${state.user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+                            await supabase.storage.from('listings').upload(name, blob);
+                            const { data } = supabase.storage.from('listings').getPublicUrl(name);
+                            urls.push(data.publicUrl);
                         } catch {
+                            // Fallback if storage fails (e.g. RLS issue or quota)
                             urls.push(await blobToBase64(file));
                         }
                     }
@@ -1195,8 +1234,9 @@
                     const attrs = {};
                     for(const [k,v] of fd.entries()) if(k.startsWith('attr_')) attrs[k.replace('attr_','')] = v;
                     
+                    // Add listing type from radio if visible
                     const planEl = document.querySelector('input[name="plan"]:checked');
-                    if(planEl) attrs['listing_type'] = planEl.value;
+                    if(planEl && !app.sell.isEditing) attrs['listing_type'] = planEl.value;
 
                     const payload = {
                         user_id: state.user.id,
@@ -1206,18 +1246,29 @@
                         category_id: fd.get('category'),
                         subcategory: fd.get('subcategory'),
                         location: document.getElementById('city-select').value || 'India',
-                        attributes: attrs,
-                        image_urls: urls
+                        attributes: attrs
                     };
 
-                    const { error } = await supabase.from('listings').insert(payload);
+                    if(urls.length) payload.image_urls = urls;
+
+                    let error;
+                    if(app.sell.isEditing) {
+                        const id = document.getElementById('edit-id').value;
+                        const res = await supabase.from('listings').update(payload).eq('id', id);
+                        error = res.error;
+                    } else {
+                        const res = await supabase.from('listings').insert(payload);
+                        error = res.error;
+                    }
+
                     if(error) return utils.toast(error.message, 'error');
                     
-                    utils.toast('Ad Posted Successfully!', 'success');
+                    utils.toast(app.sell.isEditing ? 'Ad Updated!' : 'Ad Posted Successfully!', 'success');
                     app.modals.sell.hide();
                     f.reset();
                     app.sell.stagedFiles = [];
                     document.getElementById('preview-container').innerHTML = '';
+                    app.sell.isEditing = false;
                     app.router.navigate('profile');
                 },
                 delete: async (id) => {
@@ -1238,38 +1289,41 @@
             },
 
             chat: {
-                init: async () => { /* Realtime logic placeholder */ },
+                init: async () => { if(state.user) { /* Realtime subscription logic can be added here */ } },
                 start: async (uid, lid, name) => {
                     if(!state.user) return app.modals.auth.show();
                     if(uid === state.user.id) return utils.toast("Cannot chat with yourself", "error");
                     
-                    // Check existing room
                     let { data: r } = await supabase.from('chat_rooms').select('id').eq('listing_id', lid).eq('buyer_id', state.user.id).eq('seller_id', uid).maybeSingle();
+                    
                     if(!r) {
                         const { data, error } = await supabase.from('chat_rooms').insert({ listing_id: lid, buyer_id: state.user.id, seller_id: uid }).select().single();
-                        if(data) r = data;
+                        if(error) return utils.toast("Chat error: " + error.message, "error");
+                        r = data;
                     }
-                    app.chat.openRoom(r?.id || 'demo_room', name);
+                    
+                    app.chat.openRoom(r.id, name);
                 },
-                openRoom: async (rid, name) => {
+                openRoom: async (rid, name, img) => {
                     state.currentChatRoom = rid;
                     app.modals.chat.show(name);
-                    const c = document.getElementById('chat-messages');
                     
-                    if(rid === 'demo_room') {
-                        c.innerHTML = '<div class="text-center text-gray-400 text-xs mt-4">Start conversation...</div>';
-                        return;
-                    }
-
-                    c.innerHTML = '<div class="text-center text-gray-400 mt-4 text-xs"><div class="loader w-6 h-6 border-2"></div></div>';
+                    const c = document.getElementById('chat-messages');
+                    c.innerHTML = '<div class="text-center text-slate-400 mt-10 text-sm flex flex-col items-center gap-2"><div class="loader"></div>Loading history...</div>';
+                    
+                    if(app.chat.subscription) supabase.removeChannel(app.chat.subscription);
+                    
                     const { data } = await supabase.from('chat_messages').select('*').eq('room_id', rid).order('created_at', {ascending: true});
                     c.innerHTML = ''; 
+                    if(!data || data.length === 0) c.innerHTML = '<div class="text-center text-slate-300 mt-10 text-xs">No messages yet. Start the conversation!</div>';
                     data?.forEach(m => app.chat.renderMsg(m));
+                    
+                    app.chat.subscription = supabase.channel(`room:${rid}`).on('postgres_changes', {event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${rid}`}, p => app.chat.renderMsg(p.new)).subscribe();
                 },
                 renderMsg: (m) => {
                     const me = m.sender_id === state.user.id;
                     const c = document.getElementById('chat-messages');
-                    c.insertAdjacentHTML('beforeend', `<div class="flex ${me?'justify-end':'justify-start'}"><div class="${me?'bg-primary-600 text-white rounded-br-none':'bg-white text-gray-800 border border-gray-200 rounded-bl-none'} px-4 py-2 rounded-2xl text-sm max-w-[80%] shadow-sm mb-2">${utils.sanitize(m.content)}</div></div>`);
+                    c.insertAdjacentHTML('beforeend', `<div class="flex ${me?'justify-end':'justify-start'} mb-2 fade-in"><div class="${me?'bg-primary-600 text-white rounded-br-none':'bg-white text-slate-700 border border-slate-100 rounded-bl-none'} px-5 py-3 rounded-2xl text-sm max-w-[80%] shadow-sm font-medium">${utils.sanitize(m.content)}</div></div>`);
                     c.scrollTop = c.scrollHeight;
                 },
                 send: async (e) => {
@@ -1277,39 +1331,11 @@
                     const i = document.getElementById('chat-input');
                     const txt = i.value.trim();
                     if(!txt) return;
+                    // Basic phone number blocking regex for safety
+                    if(txt.match(/(\+?\d[\d -]{8,}\d)/)) return utils.toast('Phone numbers not allowed in chat. Please use the "Unlock Phone" feature.', 'error');
                     
-                    // Optimistic render
-                    app.chat.renderMsg({ sender_id: state.user.id, content: txt });
+                    await supabase.from('chat_messages').insert({ room_id: state.currentChatRoom, sender_id: state.user.id, content: txt });
                     i.value = '';
-
-                    if(state.currentChatRoom !== 'demo_room') {
-                         await supabase.from('chat_messages').insert({ room_id: state.currentChatRoom, sender_id: state.user.id, content: txt });
-                    }
-                }
-            },
-            
-            modals: {
-                auth: { 
-                    show: () => { document.getElementById('auth-modal').classList.remove('hidden', 'pointer-events-none', 'opacity-0'); document.getElementById('auth-modal').classList.add('opacity-100'); }, 
-                    hide: () => { document.getElementById('auth-modal').classList.remove('opacity-100'); document.getElementById('auth-modal').classList.add('hidden', 'pointer-events-none', 'opacity-0'); app.auth.resetAuth(); } 
-                },
-                sell: { 
-                    show: () => {
-                        document.getElementById('sell-modal').classList.remove('hidden');
-                        const s = document.getElementById('category-select');
-                        if(s.options.length <= 1) state.categories.forEach(c => s.add(new Option(c.name, c.id)));
-                        const l = document.getElementById('state-select');
-                        if(l.options.length <= 1) state.locations.forEach(x => l.add(new Option(x.state, x.state)));
-                    },
-                    hide: () => document.getElementById('sell-modal').classList.add('hidden')
-                },
-                tnc: { show: () => document.getElementById('info-modal').classList.remove('hidden') },
-                privacy: { show: () => document.getElementById('privacy-modal').classList.remove('hidden') },
-                chat: {
-                    show: (name) => {
-                        document.getElementById('chat-modal').classList.remove('hidden');
-                        document.getElementById('chat-header-name').innerText = name || "Chat";
-                    }
                 }
             }
         };

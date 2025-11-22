@@ -633,7 +633,7 @@
                             const lastName = fd.get('lastName');
                             const accountType = fd.get('accountType');
                             
-                            // Fix: Persist registration data
+                            // Persist registration data for retrieval after OTP
                             const regData = { firstName, lastName, accountType };
                             app.auth.pendingRegistrationData = regData;
                             localStorage.setItem('tg_pending_reg', JSON.stringify(regData));
@@ -672,7 +672,7 @@
                         const { data: { user }, error } = await supabase.auth.verifyOtp({ email: app.auth.pendingAuth.email, token: otp, type: 'signup' });
                         if (error) throw error;
 
-                        // Fix: Retrieve registration data from storage with robust fallback
+                        // Retrieve registration data
                         let regData = app.auth.pendingRegistrationData;
                         if (!regData) {
                             try {
@@ -681,7 +681,7 @@
                             } catch (e) { console.warn('No stored reg data'); }
                         }
 
-                        // Ultimate fallback to metadata
+                        // Fallback to metadata if local storage failed
                         if (!regData && user.user_metadata) {
                             const parts = (user.user_metadata.full_name || '').split(' ');
                             regData = {
@@ -691,12 +691,13 @@
                             };
                         }
 
-                        // Fallback if everything fails
+                        // Final fallback
                         if(!regData) {
                              regData = { firstName: 'User', lastName: '', accountType: 'individual' };
                         }
 
-                        if (regData) {
+                        // Attempt to create profile but do NOT block login if it fails due to RLS
+                        try {
                             const { error: profileError } = await supabase.from('profiles').upsert({
                                 id: user.id,
                                 email: user.email,
@@ -708,12 +709,15 @@
                                 last_login: new Date().toISOString()
                             });
                             
-                            if(!profileError) {
-                                localStorage.removeItem('tg_pending_reg');
+                            if(profileError) {
+                                console.warn("Profile DB insert failed (likely RLS), continuing with auth metadata:", profileError);
                             } else {
-                                console.error("Profile creation error", profileError);
+                                localStorage.removeItem('tg_pending_reg');
                             }
+                        } catch (dbErr) {
+                            console.warn("Profile creation exception:", dbErr);
                         }
+
                         await app.auth.onLoginSuccess(user);
                         app.modals.auth.hide();
                         utils.toast('Account verified!', 'success');
@@ -736,8 +740,21 @@
                 },
                 onLoginSuccess: async (user) => {
                     state.user = user;
-                    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-                    state.profile = data || {};
+                    // Use maybeSingle() to avoid errors if profile doesn't exist yet
+                    const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+                    
+                    // Robust fallback to user metadata if profile table fetch fails
+                    if (error || !data) {
+                        console.warn("Using metadata fallback for profile");
+                        state.profile = {
+                            full_name: user.user_metadata?.full_name || 'User',
+                            account_type: user.user_metadata?.account_type || 'individual',
+                            avatar_url: null,
+                            email: user.email
+                        };
+                    } else {
+                        state.profile = data;
+                    }
                     app.ui.renderNav();
                 },
                 loginWithGoogle: async () => {
@@ -897,7 +914,7 @@
                     
                     let sellerName = 'User';
                     if (ad.user_id) {
-                        const { data: u } = await supabase.from('profiles').select('full_name').eq('id', ad.user_id).single();
+                        const { data: u } = await supabase.from('profiles').select('full_name').eq('id', ad.user_id).maybeSingle();
                         if(u) sellerName = u.full_name;
                     }
 

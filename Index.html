@@ -72,7 +72,7 @@
         }
 
         /* Mobile Simulation Mode - Robust Frame */
-        body.simulate-mobile { background: #111827; height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0; margin: 0; }
+        body.simulate-mobile { background: #1f2937; height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0; margin: 0; }
         body.simulate-mobile #app-wrapper { 
             width: 375px; 
             height: 812px; 
@@ -93,6 +93,11 @@
         body.simulate-mobile .fixed.bottom-0 { position: absolute; border-radius: 0 0 25px 25px; }
         body.simulate-mobile nav.sticky { position: absolute; top: 0; width: 100%; border-radius: 25px 25px 0 0; }
         body.simulate-mobile #toast-container { position: absolute; bottom: 80px; width: 90%; left: 5%; transform: none; }
+        
+        /* Hide switcher on small screens to avoid blocking content */
+        @media (max-width: 768px) {
+            #view-switch-btn-container { display: none; }
+        }
     </style>
 </head>
 <body class="text-slate-800 flex flex-col min-h-screen bg-slate-50">
@@ -276,6 +281,12 @@
                     <input type="text" name="otp" placeholder="000000" maxlength="6" required class="w-full text-center px-4 py-4 border-2 border-primary-100 rounded-xl focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none tracking-[1em] text-2xl font-bold bg-white text-slate-800 transition-all placeholder-slate-200">
                     <button type="submit" id="otp-submit-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-green-600/20 transition transform hover:-translate-y-0.5">Verify & Login</button>
                     <button type="button" onclick="app.auth.resetAuth()" class="text-sm text-slate-400 hover:text-slate-600">Change Email</button>
+                    
+                    <!-- Resend OTP Section -->
+                    <div id="resend-container" class="text-center mt-4 text-sm text-slate-500">
+                        <span id="resend-timer-text">Resend code in <span id="resend-timer" class="font-bold text-slate-900">30s</span></span>
+                        <button type="button" id="resend-btn" onclick="app.auth.resendOtp()" class="hidden text-primary-600 font-bold hover:underline">Resend Code</button>
+                    </div>
                 </form>
 
                  <!-- Forgot Password Form -->
@@ -478,14 +489,6 @@
         };
         const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
-        // MOCK DATA (Backup for when DB is empty/failing)
-        const MOCK_LISTINGS = [
-            { id: 'm1', title: 'iPhone 14 Pro Max - 256GB Deep Purple', price: 95000, category_id: 3, subcategory: 'Smartphones', location: 'Mumbai', created_at: new Date().toISOString(), image_urls: ['https://placehold.co/600x400/222/fff?text=iPhone+14'], attributes: { seller_name: 'Rajesh Kumar' } },
-            { id: 'm2', title: 'Honda City 2021 ZX CVT', price: 1250000, category_id: 1, subcategory: 'Sedan', location: 'Delhi', created_at: new Date(Date.now() - 86400000).toISOString(), image_urls: ['https://placehold.co/600x400/333/fff?text=Honda+City'], attributes: { seller_name: 'Car World', listing_type: 'platinum' } },
-            { id: 'm3', title: '3BHK Luxury Apartment in Indiranagar', price: 15000000, category_id: 2, subcategory: 'Apartment', location: 'Bengaluru', created_at: new Date(Date.now() - 172800000).toISOString(), image_urls: ['https://placehold.co/600x400/444/fff?text=Apartment'], attributes: { seller_name: 'Prestige Estate' } },
-            { id: 'm4', title: 'MacBook Air M2 - 8GB/256GB', price: 85000, category_id: 4, subcategory: 'Laptops', location: 'Pune', created_at: new Date(Date.now() - 250000000).toISOString(), image_urls: ['https://placehold.co/600x400/555/fff?text=MacBook'], attributes: { seller_name: 'Tech Hub' } }
-        ];
-
         const indianLocations = {
             "Delhi": ["New Delhi", "Dwarka", "Rohini", "Saket"],
             "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Thane"],
@@ -526,7 +529,8 @@
             currentChatRoom: null,
             ip: '127.0.0.1',
             pendingAuth: null,
-            pendingRegistrationData: null
+            pendingRegistrationData: null,
+            resendTimer: null
         };
 
         // UTILITIES
@@ -629,6 +633,39 @@
                     document.getElementById('auth-switch-wrapper').classList.remove('hidden');
                     document.getElementById('forgot-password-form').classList.add('hidden');
                     app.auth.pendingAuth = null;
+                    clearInterval(state.resendTimer);
+                },
+                startResendTimer: () => {
+                    let sec = 30;
+                    const txt = document.getElementById('resend-timer-text');
+                    const span = document.getElementById('resend-timer');
+                    const btn = document.getElementById('resend-btn');
+                    
+                    txt.classList.remove('hidden');
+                    btn.classList.add('hidden');
+                    
+                    if(state.resendTimer) clearInterval(state.resendTimer);
+                    state.resendTimer = setInterval(() => {
+                        sec--;
+                        span.innerText = sec + "s";
+                        if(sec <= 0) {
+                            clearInterval(state.resendTimer);
+                            txt.classList.add('hidden');
+                            btn.classList.remove('hidden');
+                        }
+                    }, 1000);
+                },
+                resendOtp: async () => {
+                    try {
+                        if(!app.auth.pendingAuth) return;
+                        utils.toast('Resending code...', 'info');
+                        const { error } = await supabase.auth.resend({ type: 'signup', email: app.auth.pendingAuth.email });
+                        if(error) throw error;
+                        utils.toast('Code sent successfully!', 'success');
+                        app.auth.startResendTimer();
+                    } catch(e) {
+                        utils.toast(e.message, 'error');
+                    }
                 },
                 handleInitialSubmit: async (e) => {
                     e.preventDefault();
@@ -647,7 +684,6 @@
                             const lastName = fd.get('lastName');
                             const accountType = fd.get('accountType');
                             
-                            // Fix: Persist registration data to storage AND metadata
                             const regData = { firstName, lastName, accountType };
                             app.auth.pendingRegistrationData = regData;
                             localStorage.setItem('tg_pending_reg', JSON.stringify(regData));
@@ -662,7 +698,16 @@
                                     } 
                                 } 
                             });
-                            if (error) throw error;
+                            
+                            if (error) {
+                                if(error.message.includes('already registered')) {
+                                    if(confirm("This email is already registered. Do you want to log in instead?")) {
+                                        app.auth.toggleMode();
+                                        return;
+                                    }
+                                }
+                                throw error;
+                            }
 
                             app.auth.pendingAuth = { email };
                             document.getElementById('auth-form').classList.add('hidden');
@@ -670,6 +715,7 @@
                             document.getElementById('otp-form').classList.remove('hidden');
                             document.getElementById('otp-email-display').innerText = email;
                             utils.toast('Verification code sent!', 'success');
+                            app.auth.startResendTimer();
                         } else {
                             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                             if (error) throw error;
@@ -691,7 +737,6 @@
                         const { data: { user }, error } = await supabase.auth.verifyOtp({ email: app.auth.pendingAuth.email, token: otp, type: 'signup' });
                         if (error) throw error;
 
-                        // Robust User Data Recovery
                         let regData = app.auth.pendingRegistrationData;
                         if (!regData) {
                             try { const stored = localStorage.getItem('tg_pending_reg'); if (stored) regData = JSON.parse(stored); } catch (e) {}
@@ -703,7 +748,6 @@
                         if(!regData) regData = { firstName: 'User', lastName: '', accountType: 'individual' };
 
                         // NON-BLOCKING PROFILE CREATION
-                        // We attempt to save to DB, but if it fails (RLS/Table missing), we DO NOT block login
                         supabase.from('profiles').upsert({
                             id: user.id,
                             email: user.email,

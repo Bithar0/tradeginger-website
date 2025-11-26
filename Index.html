@@ -839,7 +839,8 @@
             categories: categoriesToUse,
             locations: locationsArray,
             currentChatRoom: null,
-            ip: '127.0.0.1'
+            ip: '127.0.0.1',
+            debugAdmin: false // Added for demo purposes
         };
 
         // --- IMAGE UTILITIES ---
@@ -902,11 +903,11 @@
                 container.appendChild(el);
                 setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; setTimeout(() => el.remove(), 300); }, 3000);
             },
-            // UPDATED: Checks role in DB or Metadata ONLY. Removed hardcoded email fallback.
-            isAdmin: () => state.user && (
+            // UPDATED: Added Debug Mode check for previewing
+            isAdmin: () => state.debugAdmin || (state.user && (
                 state.profile?.role === 'admin' || 
                 state.user?.user_metadata?.role === 'admin'
-            )
+            ))
         };
 
         // --- APP MODULES ---
@@ -945,6 +946,12 @@
 
             // ... [ADMIN]
             admin: {
+                toggleDemoMode: () => {
+                    state.debugAdmin = !state.debugAdmin;
+                    utils.toast(state.debugAdmin ? "Admin Mode Enabled (Demo)" : "Admin Mode Disabled", "success");
+                    app.ui.renderNav();
+                    app.router.handle(); // Refresh view
+                },
                 saveSchema: () => {
                     localStorage.setItem('tg_categories', JSON.stringify(state.categories));
                     localStorage.setItem('tg_schema_version', CONFIG.SCHEMA_VERSION); 
@@ -1535,6 +1542,7 @@
                                         <h1 class="text-3xl font-bold text-gray-900 tracking-tight">${utils.sanitize(state.profile?.full_name || 'User')}</h1>
                                         ${state.profile?.account_type === 'business' ? '<span class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full border border-blue-100 flex items-center gap-1"><i class="fas fa-check-circle"></i> Verified Business</span>' : ''}
                                         <button onclick="utils.toast('Profile editing coming soon!', 'info')" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full border hover:bg-gray-200 transition font-medium">Edit</button>
+                                        <button onclick="app.admin.toggleDemoMode()" class="text-xs ${state.debugAdmin ? 'bg-red-100 text-red-700' : 'bg-purple-100 text-purple-700'} px-3 py-1 rounded-full border hover:opacity-80 transition font-bold flex items-center gap-1"><i class="fas fa-user-shield"></i> ${state.debugAdmin ? 'Disable' : 'Enable'} Admin Demo</button>
                                     </div>
                                     <p class="text-gray-500 font-medium mt-1"><i class="fas fa-envelope mr-2 opacity-50"></i> ${state.user?.email}</p>
                                 </div>

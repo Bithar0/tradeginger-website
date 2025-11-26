@@ -902,8 +902,11 @@
                 container.appendChild(el);
                 setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; setTimeout(() => el.remove(), 300); }, 3000);
             },
-            // UPDATED: Checks ONLY if role is 'admin' based on Supabase profile
-            isAdmin: () => state.user && state.profile?.role === 'admin'
+            // UPDATED: Checks role in DB or Metadata ONLY. Removed hardcoded email fallback.
+            isAdmin: () => state.user && (
+                state.profile?.role === 'admin' || 
+                state.user?.user_metadata?.role === 'admin'
+            )
         };
 
         // --- APP MODULES ---
@@ -1418,32 +1421,6 @@
                                     </div>
                                 </div>
                             `).join('')}
-                        </div>
-                    </div>
-                `,
-                leads: () => `
-                    <div class="container mx-auto px-4 py-10 fade-in">
-                        <h1 class="text-3xl font-bold text-gray-900 mb-2">Buy Business Leads</h1>
-                        <p class="text-gray-500 mb-8">Grow your business by purchasing verified enquiries.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
-                                <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-home"></i></div>
-                                <h3 class="font-bold text-lg">Real Estate / Auto</h3>
-                                <div class="text-2xl font-bold text-gray-900 mb-4">₹150 <span class="text-sm font-normal text-gray-500">/lead</span></div>
-                                <button onclick="app.data.buyLeadPack('Real Estate', 1500, 10)" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
-                             </div>
-                             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
-                                <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-tv"></i></div>
-                                <h3 class="font-bold text-lg">Electronics / Furniture</h3>
-                                <div class="text-2xl font-bold text-gray-900 mb-4">₹75 <span class="text-sm font-normal text-gray-500">/lead</span></div>
-                                <button onclick="app.data.buyLeadPack('Electronics', 750, 10)" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
-                             </div>
-                             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 text-center hover:shadow-md transition">
-                                <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fas fa-paw"></i></div>
-                                <h3 class="font-bold text-lg">Services / Pets</h3>
-                                <div class="text-2xl font-bold text-gray-900 mb-4">₹50 <span class="text-sm font-normal text-gray-500">/lead</span></div>
-                                <button onclick="app.data.buyLeadPack('Services', 500, 10)" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700">Buy 10 Pack</button>
-                             </div>
                         </div>
                     </div>
                 `,

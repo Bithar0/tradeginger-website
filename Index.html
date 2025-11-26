@@ -902,7 +902,8 @@
                 container.appendChild(el);
                 setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; setTimeout(() => el.remove(), 300); }, 3000);
             },
-            isAdmin: () => state.user && (state.profile?.role === 'admin' || state.user.email === 'admin@tradeginger.com')
+            // UPDATED: Checks ONLY if role is 'admin' based on Supabase profile
+            isAdmin: () => state.user && state.profile?.role === 'admin'
         };
 
         // --- APP MODULES ---

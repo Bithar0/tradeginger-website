@@ -8,9 +8,6 @@
     <!-- SEO Configuration -->
     <title>TradeGinger | India's #1 B2B & C2C Marketplace</title>
     <meta name="description" content="TradeGinger is the safest platform to buy and sell used cars, property, and electronics. Features verified sellers, secure chat, lead generation for businesses, and premium listings.">
-    <meta name="keywords" content="buy leads india, used cars, second hand mobiles, property for sale, b2b marketplace, tradeginger, classifieds">
-    <meta name="author" content="TradeGinger Inc.">
-    <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#0ea5e9">
 
     <!-- Preconnects for Performance -->
@@ -123,10 +120,16 @@
             border-bottom-left-radius: 24px;
             border-bottom-right-radius: 24px;
         }
+        
+        /* FIX: Modals in simulation must be absolute to the fake phone, not fixed to window */
         body.simulate-mobile .fixed.inset-0 {
-            position: absolute; 
+            position: absolute !important; 
             border-radius: 24px;
+            z-index: 200 !important; /* Higher Z-Index than nav */
+            height: 100%;
+            width: 100%;
         }
+        
         body.simulate-mobile nav.sticky {
             position: absolute;
             top: 0;
@@ -139,7 +142,7 @@
 <body class="text-gray-800 flex flex-col min-h-screen">
 
     <!-- View Switcher FAB -->
-    <div class="fixed bottom-24 md:bottom-6 left-4 z-[100] animate-bounce">
+    <div class="fixed bottom-24 md:bottom-6 left-4 z-[200] animate-bounce">
         <button onclick="app.ui.toggleView()" id="view-switch-btn" class="bg-dark-900 text-white w-12 h-12 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition border-2 border-white/20" title="Switch Mobile/Desktop View">
             <i class="fas fa-desktop text-lg" id="view-switch-icon"></i>
         </button>
@@ -173,7 +176,7 @@
                             <!-- Injected via JS -->
                         </div>
                         
-                        <button onclick="app.router.navigate('sell')" class="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white px-6 py-2.5 rounded-full font-bold shadow-lg hover:shadow-accent-500/30 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 text-sm">
+                        <button onclick="app.modals.sell.show()" class="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white px-6 py-2.5 rounded-full font-bold shadow-lg hover:shadow-accent-500/30 transition-all transform hover:-translate-y-0.5 flex items-center gap-2 text-sm">
                             <i class="fas fa-plus-circle"></i> SELL
                         </button>
                     </div>
@@ -216,7 +219,7 @@
             
             <!-- Floating Sell Button -->
             <div class="relative -top-6">
-                <button onclick="app.router.navigate('sell')" class="bg-gradient-to-r from-accent-500 to-accent-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-accent-500/40 transform hover:scale-105 transition active:scale-95 border-4 border-white">
+                <button onclick="app.modals.sell.show()" class="bg-gradient-to-r from-accent-500 to-accent-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-accent-500/40 transform hover:scale-105 transition active:scale-95 border-4 border-white">
                     <i class="fas fa-plus text-2xl"></i>
                 </button>
             </div>
@@ -244,7 +247,7 @@
                         <h4 class="font-bold mb-4 text-gray-100">Business Solutions</h4>
                         <ul class="space-y-3 text-sm text-gray-400">
                             <li><a href="#leads" class="hover:text-primary-400 transition flex items-center gap-2"><i class="fas fa-bolt text-xs"></i> Buy Leads</a></li>
-                            <li><a href="#sell" class="hover:text-primary-400 transition">Business Accounts</a></li>
+                            <li><a href="#" onclick="app.modals.sell.show()" class="hover:text-primary-400 transition">Business Accounts</a></li>
                         </ul>
                     </div>
                     <div>
@@ -263,8 +266,8 @@
                 <div class="flex flex-col md:flex-row justify-between items-center pt-8 text-gray-500 text-xs">
                     <p>&copy; 2025 TradeGinger Inc. All rights reserved.</p>
                     <div class="flex space-x-6 mt-4 md:mt-0">
-                        <a href="#" onclick="app.modals.privacy.show()" class="hover:text-white transition">Privacy Policy</a>
-                        <a href="#" onclick="app.modals.tnc.show()" class="hover:text-white transition">Terms & Conditions</a>
+                        <a href="#" class="hover:text-white transition">Privacy Policy</a>
+                        <a href="#" class="hover:text-white transition">Terms & Conditions</a>
                     </div>
                 </div>
             </div>
@@ -278,7 +281,7 @@
     <!-- SYSTEM MODALS -->
     
     <!-- Auth Modal -->
-    <div id="auth-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[60] flex items-end md:items-center justify-center p-0 md:p-4 transition-all duration-300 opacity-0 scale-95 pointer-events-none">
+    <div id="auth-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[200] flex items-end md:items-center justify-center p-0 md:p-4 transition-all duration-300 opacity-0 scale-95 pointer-events-none">
         <div class="bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center p-6 border-b border-gray-50">
                 <h3 class="text-xl font-bold text-gray-900" id="auth-title">Welcome Back</h3>
@@ -313,30 +316,27 @@
                     <button type="submit" class="w-full mt-8 bg-primary-600 hover:bg-primary-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary-500/30 transition-all transform hover:-translate-y-0.5 flex justify-center items-center gap-2">
                         <span id="auth-btn-text">Secure Login</span> <i class="fas fa-arrow-right"></i>
                     </button>
-
-                    <div class="my-6 flex items-center justify-between">
-                        <span class="border-b w-1/5 lg:w-1/4 border-gray-200"></span>
-                        <span class="text-xs text-gray-400 uppercase font-medium">or continue with</span>
-                        <span class="border-b w-1/5 lg:w-1/4 border-gray-200"></span>
-                    </div>
-
-                    <button type="button" onclick="app.auth.loginWithGoogle()" class="w-full border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 rounded-xl transition flex items-center justify-center gap-3">
-                        <img src="https://www.google.com/favicon.ico" alt="Google" class="w-5 h-5"> Google
-                    </button>
                 </form>
                 
                 <div class="mt-8 text-center text-sm">
                     <span id="auth-switch-text" class="text-gray-500">New to TradeGinger?</span>
                     <button onclick="app.auth.toggleMode()" class="text-primary-600 font-bold hover:text-primary-700 hover:underline ml-1" id="auth-switch-btn">Create Account</button>
                 </div>
+
+                <div class="mt-6 pt-4 border-t text-center">
+                    <button onclick="app.auth.devLogin()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg border border-gray-300 w-full flex justify-center items-center gap-2">
+                        <i class="fas fa-code"></i> Developer Quick Login (Simulate)
+                    </button>
+                    <p class="text-[10px] text-gray-400 mt-2">Use this if the preview environment signs you out.</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Sell Modal -->
-    <div id="sell-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[60] flex items-end md:items-center justify-center p-0 md:p-4">
-        <div class="bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full max-w-4xl h-[95vh] md:h-[90vh] flex flex-col animate-fade-in">
-            <div class="flex justify-between items-center p-4 md:p-6 border-b border-gray-100">
+    <!-- Sell Modal (FIX: Z-Index 100 to appear above nav) -->
+    <div id="sell-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[100] flex items-end md:items-center justify-center p-0 md:p-4">
+        <div class="bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full max-w-4xl h-[95vh] md:h-[90vh] flex flex-col animate-fade-in relative">
+            <div class="flex justify-between items-center p-4 md:p-6 border-b border-gray-100 flex-shrink-0">
                 <h3 class="text-xl font-bold text-gray-900" id="sell-modal-title">Post an Ad</h3>
                 <button onclick="app.modals.sell.hide()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
             </div>
@@ -392,8 +392,8 @@
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Description</label>
                         <div class="relative">
                             <textarea name="description" id="ad-description" rows="4" placeholder="Describe features, condition, and reason for selling..." required class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none resize-none"></textarea>
-                            <button type="button" onclick="app.sell.generateAI()" class="absolute bottom-3 right-3 text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg hover:bg-purple-700 transition shadow-md flex items-center gap-1.5 font-medium">
-                                <i class="fas fa-wand-magic-sparkles"></i> AI Write
+                            <button type="button" onclick="app.sell.generateAI()" id="ai-btn" class="absolute bottom-3 right-3 text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg hover:bg-purple-700 transition shadow-md flex items-center gap-1.5 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-wand-magic-sparkles"></i> <span>AI Write</span>
                             </button>
                         </div>
                     </div>
@@ -421,7 +421,7 @@
                     </div>
                     <div id="preview-container" class="flex gap-3 overflow-x-auto pb-2 snap-x"></div>
 
-                    <!-- Plans (REVISED) -->
+                    <!-- Plans -->
                     <div class="pt-6 border-t border-gray-100" id="plan-selection-section">
                         <h4 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-rocket text-primary-500"></i> Boost Visibility</h4>
                         <div class="space-y-3 md:space-y-0 md:grid md:grid-cols-5 md:gap-4">
@@ -432,7 +432,7 @@
                                     <div class="font-bold text-gray-800">Standard</div>
                                     <div class="text-xl font-extrabold text-gray-900 my-1">₹0</div>
                                     <ul class="text-[10px] text-gray-500 space-y-1">
-                                        <li><i class="fas fa-check text-green-500"></i> 45 Days</li>
+                                        <li><i class="fas fa-check text-green-500"></i> 45 Days Validity</li>
                                         <li><i class="fas fa-check text-green-500"></i> Auto-approved</li>
                                     </ul>
                                 </div>
@@ -444,7 +444,7 @@
                                     <div class="font-bold text-green-700">C2C</div>
                                     <div class="text-xl font-extrabold text-green-800 my-1">₹99</div>
                                     <ul class="text-[10px] text-gray-600 space-y-1 font-medium">
-                                        <li><i class="fas fa-check text-green-500"></i> 20 Days</li>
+                                        <li><i class="fas fa-check text-green-500"></i> 20 Days Validity</li>
                                         <li><i class="fas fa-check text-green-500"></i> Priority Rank</li>
                                     </ul>
                                 </div>
@@ -456,8 +456,8 @@
                                     <div class="font-bold text-gray-800">Silver (B2B)</div>
                                     <div class="text-xl font-extrabold text-gray-500 my-1">₹3,999</div>
                                     <ul class="text-[10px] text-gray-600 space-y-1 font-medium">
-                                        <li><i class="fas fa-check text-gray-500"></i> Yearly</li>
-                                        <li><i class="fas fa-check text-gray-500"></i> 10 Highlighted</li>
+                                        <li><i class="fas fa-check text-gray-500"></i> 6 Months Validity</li>
+                                        <li><i class="fas fa-check text-gray-500"></i> 10 Highlighted Ads</li>
                                     </ul>
                                 </div>
                             </label>
@@ -465,12 +465,13 @@
                             <label class="cursor-pointer group block">
                                 <input type="radio" name="plan" value="gold" class="peer hidden" onchange="app.sell.updatePlanPrice(8999)">
                                 <div class="border-2 border-gray-100 rounded-xl p-4 hover:border-yellow-400 peer-checked:border-yellow-500 peer-checked:bg-yellow-50 transition h-full relative overflow-hidden">
-                                    <div class="absolute top-0 right-0 bg-yellow-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-bl-lg">BEST</div>
+                                    <div class="absolute top-0 right-0 bg-yellow-500 text-white text-[8px] font-bold px-2 py-0.5 rounded-bl-lg">POPULAR</div>
                                     <div class="font-bold text-yellow-700">Gold (B2B)</div>
                                     <div class="text-xl font-extrabold text-yellow-600 my-1">₹8,999</div>
                                     <ul class="text-[10px] text-gray-600 space-y-1 font-medium">
-                                        <li><i class="fas fa-check text-yellow-600"></i> Yearly / 100 Ads</li>
-                                        <li><i class="fas fa-check text-yellow-600"></i> 10 Highlighted</li>
+                                        <li><i class="fas fa-check text-yellow-600"></i> 1 Year / 50 Ads</li>
+                                        <li><i class="fas fa-check text-yellow-600"></i> 2 Featured Ads</li>
+                                        <li><i class="fas fa-check text-yellow-600"></i> Social Promo</li>
                                     </ul>
                                 </div>
                             </label>
@@ -481,19 +482,12 @@
                                     <div class="font-bold text-gray-800">Platinum</div>
                                     <div class="text-xl font-extrabold text-gray-900 my-1">₹14,999</div>
                                     <ul class="text-[10px] text-gray-600 space-y-1">
-                                        <li><i class="fas fa-star text-gray-800"></i> Yearly / 100 Ads</li>
-                                        <li><i class="fas fa-globe text-gray-800"></i> Free Microsite</li>
+                                        <li><i class="fas fa-star text-gray-800"></i> 1 Year / 50 Ads</li>
+                                        <li><i class="fas fa-star text-gray-800"></i> 5 Featured Ads</li>
+                                        <li><i class="fas fa-globe text-gray-800"></i> Homepage + Social</li>
                                     </ul>
                                 </div>
                             </label>
-                        </div>
-                        <!-- Microsite Option (Smart) -->
-                        <div class="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-center gap-4" id="microsite-container">
-                            <input type="checkbox" id="microsite-addon" onchange="app.sell.toggleMicrosite(this)" class="w-5 h-5 text-primary-600 rounded focus:ring-primary-500 cursor-pointer">
-                            <div>
-                                <label for="microsite-addon" class="font-bold text-gray-800 text-sm cursor-pointer">Add Custom Microsite (tradeginger.com/yourbrand)</label>
-                                <p class="text-xs text-gray-500" id="microsite-desc">Dedicated business page. + ₹3,999/month</p>
-                            </div>
                         </div>
                     </div>
                     
@@ -501,13 +495,13 @@
                       <div class="mt-4 flex items-center gap-2 text-sm text-gray-600">
                         <input type="checkbox" id="accept-terms" required class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 cursor-pointer">
                         <label for="accept-terms" class="cursor-pointer">
-                            I accept the <a href="#" onclick="app.modals.tnc.show()" class="text-primary-600 font-semibold hover:underline">Terms & Conditions</a> and <a href="#" onclick="app.modals.privacy.show()" class="text-primary-600 font-semibold hover:underline">Privacy Policy</a>.
+                            I accept the Terms & Conditions and Privacy Policy.
                         </label>
                     </div>
 
                 </form>
             </div>
-            <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-between items-center rounded-b-2xl pb-safe">
+            <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-between items-center rounded-b-2xl pb-safe flex-shrink-0">
                 <div class="text-sm text-gray-600 font-medium">Total: <span id="total-plan-price" class="font-extrabold text-xl text-primary-700 ml-2">₹0</span></div>
                 <div class="flex gap-3">
                     <button onclick="app.modals.sell.hide()" class="px-6 py-2.5 rounded-xl text-gray-600 hover:bg-gray-200 font-medium transition">Cancel</button>
@@ -515,120 +509,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Info Modal (T&C) -->
-    <div id="info-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[70] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 animate-fade-in">
-            <h2 class="text-2xl font-bold mb-6 border-b pb-4">Platform Policies</h2>
-            <div class="h-64 overflow-y-auto text-sm text-gray-600 space-y-4 pr-2 custom-scrollbar">
-                <div>
-                    <h4 class="font-bold text-gray-800">1. General Terms</h4>
-                    <p>TradeGinger acts as an intermediary. We do not own items listed. Ensure safety during physical meetups.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-800">2. Prohibited Items</h4>
-                    <p>Illegal goods, weapons, drugs, and offensive material are strictly banned. Accounts will be suspended.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-800">3. Refund Policy</h4>
-                    <p>Refunds for paid plans are processed within 7-10 business days only in cases of technical double-charge. No refunds for active ads.</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-gray-800">4. Data Privacy</h4>
-                    <p>Your data is encrypted. Phone numbers are only shared via the "Unlock" feature or Gold plans.</p>
-                </div>
-            </div>
-            <button onclick="app.modals.tnc.hide()" class="w-full mt-6 bg-dark-800 text-white py-3 rounded-xl font-bold hover:bg-dark-900 transition">I Understand</button>
-        </div>
-    </div>
-    
-    <!-- Privacy Modal -->
-    <div id="privacy-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[75] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full h-[80vh] flex flex-col animate-fade-in">
-            <div class="flex justify-between items-center p-6 border-b border-gray-100">
-                <h3 class="text-xl font-bold text-gray-900">Privacy Policy</h3>
-                <button onclick="app.modals.privacy.hide()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
-            </div>
-            <div class="p-8 overflow-y-auto flex-grow custom-scrollbar prose prose-sm max-w-none text-gray-600">
-                 <h4 class="font-bold text-gray-900 text-lg mb-4">Privacy Policy – TradeGinger.com</h4>
-                 <p class="mb-2"><strong>Last Updated:</strong> November 20, 2025</p>
-                 <p class="mb-6">Welcome to TradeGinger.com (“TradeGinger”, “we”, “us”, “our”). We value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, protect, and share your information when you use TradeGinger’s website, mobile application, tools, or related services (collectively, “Services”).</p>
-                 
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">1. Information We Collect</h5>
-                 <p>We collect the following types of information to provide and improve our Services:</p>
-                 <ul class="list-disc pl-5 space-y-1 mb-4">
-                     <li><strong>1.1 Information You Provide:</strong> Name, phone number, email address, Profile details, Listings, Payment information, Communication messages.</li>
-                     <li><strong>1.2 Information Collected Automatically:</strong> Device information, Browser details, Location data, Usage analytics.</li>
-                     <li><strong>1.3 Information from Third Parties:</strong> Data from payment processors, login partners (Google, Facebook), Marketing partners.</li>
-                 </ul>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">2. How We Use Your Information</h5>
-                 <p>We use your information for creating accounts, publishing listings, processing payments, providing recommendations, improving user experience, detecting fraud, and customer support.</p>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">3. Legal Basis for Processing</h5>
-                 <p>We process your data based on Consent, Contractual necessity, Legitimate interest, and Compliance with law.</p>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">4. How We Share Your Information</h5>
-                 <p>We may share your information with Other Users (listing details), Service Providers (payment gateways, cloud storage), Law Enforcement, and in Business Transfers.</p>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">5. Cookies & Tracking Technologies</h5>
-                 <p>TradeGinger uses cookies for session management, personalization, analytics, and advertising. You can disable cookies in browser settings.</p>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">6. Data Storage & Security</h5>
-                 <p>We use industry-standard security methods (Encryption, Secure cloud via Supabase, Access controls). Users must protect their passwords.</p>
-                 
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">7. User Rights</h5>
-                 <p>You have the right to access, update, delete your account, withdraw consent, and report misuse. Contact us at sales@tradeginger.com.</p>
-                 
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">8. Data Retention</h5>
-                 <p>We retain account information as long as active. Deleted accounts are removed within 30–90 days.</p>
-
-                 <h5 class="font-bold text-gray-900 mt-6 mb-2">14. Contact Information</h5>
-                 <p>If you have questions, complaints, or requests, contact: <br>📧 sales@tradeginger.com <br>🌐 www.tradeginger.com</p>
-            </div>
-             <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-end rounded-b-2xl">
-                 <button onclick="app.modals.privacy.hide()" class="px-6 py-2.5 rounded-xl bg-dark-800 text-white font-bold hover:bg-dark-900 transition">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sitemap Modal -->
-    <div id="sitemap-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[75] flex items-center justify-center p-4">
-         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 animate-fade-in">
-            <div class="flex justify-between items-center mb-6 border-b pb-4">
-                <h2 class="text-2xl font-bold text-gray-900">Sitemap</h2>
-                <button onclick="app.modals.sitemap.hide()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-xl"></i></button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <h4 class="font-bold text-primary-600 mb-3 uppercase text-xs tracking-wider">Main</h4>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="#home" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Home</a></li>
-                        <li><a href="#listing" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">All Listings</a></li>
-                        <li><a href="#sell" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Post an Ad</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-primary-600 mb-3 uppercase text-xs tracking-wider">Categories</h4>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="#listing?cat=cars" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Used Cars</a></li>
-                        <li><a href="#listing?cat=mobiles" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Mobiles</a></li>
-                        <li><a href="#listing?cat=property" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Real Estate</a></li>
-                        <li><a href="#listing?cat=electronics" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Electronics</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-bold text-primary-600 mb-3 uppercase text-xs tracking-wider">Account & Legal</h4>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li><a href="#profile" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">My Profile</a></li>
-                        <li><a href="#leads" class="hover:text-dark-900 hover:underline" onclick="app.modals.sitemap.hide()">Buy Leads</a></li>
-                        <li><a href="#" onclick="app.modals.privacy.show(); app.modals.sitemap.hide()" class="hover:text-dark-900 hover:underline">Privacy Policy</a></li>
-                        <li><a href="#" onclick="app.modals.tnc.show(); app.modals.sitemap.hide()" class="hover:text-dark-900 hover:underline">Terms & Conditions</a></li>
-                    </ul>
-                </div>
-            </div>
-         </div>
     </div>
 
     <!-- Chat Modal -->
@@ -659,19 +539,22 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button onclick="utils.toast('User reported to Trust & Safety team.', 'success')" class="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition" title="Report"><i class="fas fa-flag text-xs"></i></button>
                         <button onclick="document.getElementById('chat-modal').classList.add('hidden')" class="w-8 h-8 rounded-full bg-gray-50 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition"><i class="fas fa-times"></i></button>
                     </div>
                 </div>
                 
                 <!-- Unlock Section -->
                 <div class="bg-yellow-50 text-yellow-800 text-xs p-2 text-center border-b border-yellow-100 flex items-center justify-center gap-2">
-                    <i class="fas fa-lock"></i> Contact details are hidden. <button onclick="app.ui.unlockBuyerPhone()" class="underline font-bold text-yellow-900 hover:text-yellow-700">Unlock Contact (₹5)</button>
+                    <i class="fas fa-lock"></i> Contact details are hidden. <button onclick="app.ui.unlockBuyerPhone(this)" class="underline font-bold text-yellow-900 hover:text-yellow-700">Unlock Contact (₹5)</button>
                 </div>
 
-                <div id="chat-messages" class="flex-grow overflow-y-auto p-6 space-y-4 bg-slate-50 custom-scrollbar">
+                <div id="chat-messages" class="flex-grow overflow-y-auto p-6 space-y-4 bg-slate-50 custom-scrollbar relative">
                     <!-- Messages -->
                 </div>
+                
+                <!-- ✨ Smart Replies Container -->
+                <div id="smart-replies" class="px-4 pb-2 flex gap-2 overflow-x-auto text-xs hidden"></div>
+
                 <div class="p-4 border-t border-gray-100 bg-white">
                     <form onsubmit="app.chat.send(event)" class="flex gap-3 items-center">
                         <input type="text" id="chat-input" placeholder="Type a safe message..." class="flex-grow rounded-full border-gray-200 bg-gray-50 px-5 py-3 focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition text-sm">
@@ -684,148 +567,33 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script type="module">
-        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        // Use ESM for better browser compatibility
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+        const apiKey = ""; // Gemini API Key (Injected by Environment)
 
         // Security & Config
         const CONFIG = {
             SUPABASE_URL: 'https://crepnlidfdoskighdhdt.supabase.co',
             SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNyZXBubGlkZmRvc2tpZ2hkaGR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4Mjg3MzYsImV4cCI6MjA2ODQwNDczNn0.SjrYMGxuIFDsSZpPBm6a_ZveuI_gef80o03TNESJlDw',
-            CLOUDINARY_CLOUD_NAME: 'dcxhenppn',
-            CLOUDINARY_PRESET: 'Tradeginger',
             SCHEMA_VERSION: "1.3",
             RAZORPAY_KEY_ID: "rzp_test_RhehzYF2lUBKpF"
         };
 
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY, {
+            auth: {
+                persistSession: true, 
+                storage: window.localStorage // Explicit storage
+            }
+        });
 
-        // --- SECURITY: DISABLE RIGHT CLICK & INSPECT ---
-        document.addEventListener('contextmenu', (e) => e.preventDefault());
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false; // F12
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Ctrl+Shift+I
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+Shift+C
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Ctrl+Shift+J
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Ctrl+U
-        };
-
-        // --- STATE & SCHEMA ---
-        const defaultSchema = [
-            {
-                id: 1, name: 'Cars', icon: 'fa-car',
-                subcategories: ['Sedan', 'SUV', 'Hatchback', 'Luxury', 'MUV', 'Convertible', 'Coupe'],
-                attributes: [
-                    { key: 'brand', label: 'Brand', type: 'select', options: ['Maruti Suzuki', 'Hyundai', 'Tata', 'Mahindra', 'Kia', 'Toyota', 'Honda', 'MG', 'Renault', 'Volkswagen', 'Skoda', 'Nissan', 'Jeep', 'Citroen', 'Audi', 'BMW', 'Mercedes-Benz', 'Volvo', 'Jaguar', 'Land Rover', 'Porsche', 'Ford'] },
-                    { key: 'model', label: 'Model', type: 'text' },
-                    { key: 'variant', label: 'Variant', type: 'text' },
-                    { key: 'fuel_type', label: 'Fuel Type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'] },
-                    { key: 'km_driven', label: 'KM Driven', type: 'number' },
-                    { key: 'year', label: 'Model Year', type: 'number' },
-                    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic', 'IMT'] },
-                    { key: 'owners', label: 'No. of Owners', type: 'select', options: ['1st', '2nd', '3rd', '4th+'] }
-                ]
-            },
-            {
-                id: 2, name: 'Property', icon: 'fa-building',
-                subcategories: ['Apartment', 'Villa', 'Plot', 'Commercial', 'Independent House', 'Builder Floor', 'Farmhouse'],
-                attributes: [
-                    { key: 'bedrooms', label: 'Bedrooms (BHK)', type: 'select', options: ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '5+ BHK'] },
-                    { key: 'bathrooms', label: 'Bathrooms', type: 'select', options: ['1', '2', '3', '4', '5+'] },
-                    { key: 'area', label: 'Area (sq ft)', type: 'number' },
-                    { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Furnished', 'Semi-Furnished', 'Unfurnished'] },
-                    { key: 'construction_status', label: 'Status', type: 'select', options: ['Ready to Move', 'Under Construction'] },
-                    { key: 'listed_by', label: 'Listed By', type: 'select', options: ['Owner', 'Dealer', 'Builder'] }
-                ]
-            },
-            {
-                id: 3, name: 'Mobiles', icon: 'fa-mobile-alt',
-                subcategories: ['Smartphones', 'Tablets', 'Keypad Phones', 'Accessories'],
-                attributes: [
-                    { key: 'brand', label: 'Brand', type: 'select', options: ['Apple', 'Samsung', 'Xiaomi', 'Redmi', 'Vivo', 'Oppo', 'Realme', 'OnePlus', 'Google', 'Motorola', 'Nothing', 'Poco', 'iQOO'] },
-                    { key: 'model', label: 'Model', type: 'text' },
-                    { key: 'storage', label: 'Storage', type: 'select', options: ['64GB', '128GB', '256GB', '512GB', '1TB'] },
-                    { key: 'ram', label: 'RAM', type: 'select', options: ['4GB', '6GB', '8GB', '12GB', '16GB+'] }
-                ]
-            },
-            { 
-                id: 4, name: 'Bikes', icon: 'fa-motorcycle', 
-                subcategories: ['Motorcycle', 'Scooter', 'Sports Bike', 'Cruiser'], 
-                attributes: [
-                    { key: 'brand', label: 'Brand', type: 'select', options: ['Hero', 'Honda', 'TVS', 'Bajaj', 'Royal Enfield', 'Yamaha', 'Suzuki', 'KTM', 'Jawa', 'Ather', 'Ola'] },
-                    { key: 'model', label: 'Model', type: 'text' },
-                    { key: 'year', label: 'Year', type: 'number' },
-                    { key: 'km_driven', label: 'KM Driven', type: 'number' }
-                ] 
-            },
-            { 
-                id: 5, name: 'Electronics', icon: 'fa-tv', 
-                subcategories: ['TV', 'Laptop', 'Desktop', 'Camera', 'AC', 'Fridge', 'Audio'], 
-                attributes: [
-                    { key: 'brand', label: 'Brand', type: 'select', options: ['HP', 'Dell', 'Lenovo', 'Asus', 'Acer', 'Apple', 'Samsung', 'LG', 'Sony', 'Whirlpool', 'Godrej', 'Voltas', 'Daikin', 'Canon', 'Nikon', 'JBL'] }
-                ] 
-            },
-            {
-                id: 6, name: 'Services', icon: 'fa-tools',
-                subcategories: ['Electrician', 'Plumber', 'Carpenter', 'Painter', 'Cleaning', 'Appliance Repair', 'Pest Control', 'Packers & Movers'],
-                attributes: [
-                    { key: 'experience', label: 'Experience (Years)', type: 'number' },
-                    { key: 'visiting_charge', label: 'Visiting Charge (₹)', type: 'number' },
-                    { key: 'availability', label: 'Availability', type: 'select', options: ['Anytime', 'Weekdays', 'Weekends', '24x7 Emergency'] }
-                ]
-            },
-            { id: 7, name: 'Furniture', icon: 'fa-couch', subcategories: ['Sofa', 'Bed', 'Dining', 'Decor', 'Wardrobe'], attributes: [] },
-            { id: 8, name: 'Fashion', icon: 'fa-tshirt', subcategories: ['Men', 'Women', 'Kids', 'Accessories', 'Watches'], attributes: [] },
-            { id: 9, name: 'Pets', icon: 'fa-paw', subcategories: ['Dogs', 'Cats', 'Fish', 'Birds'], attributes: [] }
-        ];
-
-        // Versioned Schema Loading
-        const storedVersion = localStorage.getItem('tg_schema_version');
-        let categoriesToUse = defaultSchema;
-        if (storedVersion === CONFIG.SCHEMA_VERSION) {
-             const storedCats = localStorage.getItem('tg_categories');
-             if(storedCats) categoriesToUse = JSON.parse(storedCats);
-        } else {
-            localStorage.setItem('tg_categories', JSON.stringify(defaultSchema));
-            localStorage.setItem('tg_schema_version', CONFIG.SCHEMA_VERSION);
-        }
-
-        // --- COMPLETE INDIAN STATES & CITIES DATA ---
+        // --- DATA ---
         const indianLocations = {
-            "Andaman and Nicobar Islands": ["Port Blair"],
-            "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Rajahmundry", "Tirupati", "Kakinada"],
-            "Arunachal Pradesh": ["Itanagar", "Naharlagun"],
-            "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Tezpur"],
-            "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga"],
-            "Chandigarh": ["Chandigarh"],
-            "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Durg"],
-            "Dadra and Nagar Haveli and Daman and Diu": ["Daman", "Silvassa"],
-            "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
-            "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa"],
-            "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Gandhinagar"],
-            "Haryana": ["Gurugram", "Faridabad", "Panipat", "Ambala", "Rohtak", "Hisar", "Karnal"],
-            "Himachal Pradesh": ["Shimla", "Manali", "Dharamshala", "Mandi"],
-            "Jammu and Kashmir": ["Srinagar", "Jammu", "Anantnag"],
-            "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro", "Hazaribagh"],
-            "Karnataka": ["Bengaluru", "Mysuru", "Hubballi-Dharwad", "Mangaluru", "Belagavi", "Davangere"],
-            "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur", "Kollam", "Palakkad"],
-            "Ladakh": ["Leh", "Kargil"],
-            "Lakshadweep": ["Kavaratti"],
-            "Madhya Pradesh": ["Bhopal", "Indore", "Gwalior", "Jabalpur", "Ujjain", "Sagar"],
-            "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Thane", "Navi Mumbai", "Solapur"],
-            "Manipur": ["Imphal"],
-            "Meghalaya": ["Shillong"],
-            "Mizoram": ["Aizawl"],
-            "Nagaland": ["Kohima", "Dimapur"],
-            "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur"],
-            "Puducherry": ["Puducherry"],
-            "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali"],
-            "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Ajmer", "Bikaner"],
-            "Sikkim": ["Gangtok"],
-            "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Trichy", "Salem", "Tirunelveli", "Erode"],
-            "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam"],
-            "Tripura": ["Agartala"],
-            "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Noida", "Ghaziabad", "Meerut", "Prayagraj", "Bareilly", "Aligarh"],
-            "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Nainital", "Haldwani"],
-            "West Bengal": ["Kolkata", "Asansol", "Siliguri", "Durgapur", "Howrah", "Darjeeling"]
+            "Delhi": ["New Delhi", "North Delhi", "South Delhi", "West Delhi"],
+            "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Thane"],
+            "Karnataka": ["Bengaluru", "Mysuru", "Hubballi"],
+            "Haryana": ["Gurugram", "Faridabad", "Panipat", "Karnal"],
+            "Uttar Pradesh": ["Noida", "Ghaziabad", "Lucknow"]
         };
         
         const locationsArray = Object.entries(indianLocations).map(([state, cities]) => ({
@@ -833,46 +601,89 @@
             cities: cities.sort()
         })).sort((a, b) => a.state.localeCompare(b.state));
 
+        // EXPANDED SCHEMA to match OLX/Quikr & TradeGinger Doc
+        const defaultSchema = [
+            {
+                id: 1, name: 'Real Estate', icon: 'fa-building',
+                subcategories: ['Apartments (Rent)', 'Apartments (Sale)', 'Houses & Villas', 'Plots & Land', 'Commercial Office Space', 'Shops', 'PG & Guest Houses'],
+                attributes: [
+                    { key: 'bhk', label: 'BHK', type: 'select', options: ['1 BHK', '2 BHK', '3 BHK', '4+ BHK'] },
+                    { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Furnished', 'Semi-Furnished', 'Unfurnished'] },
+                    { key: 'area', label: 'Super Built-up Area (sq ft)', type: 'number' },
+                    { key: 'floor', label: 'Floor No', type: 'number' },
+                    { key: 'parking', label: 'Car Parking', type: 'select', options: ['0', '1', '2', '3+'] }
+                ]
+            },
+            {
+                id: 2, name: 'Automobiles', icon: 'fa-car',
+                subcategories: ['Cars', 'Motorcycles', 'Scooters', 'Commercial Vehicles', 'Spare Parts'],
+                attributes: [
+                    { key: 'brand', label: 'Brand', type: 'select', options: ['Maruti Suzuki', 'Hyundai', 'Tata', 'Mahindra', 'Honda', 'Toyota', 'Kia', 'Royal Enfield', 'Hero', 'Honda Bikes'] },
+                    { key: 'model', label: 'Model', type: 'text' },
+                    { key: 'year', label: 'Year', type: 'number' },
+                    { key: 'fuel', label: 'Fuel Type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric'] },
+                    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'] },
+                    { key: 'km_driven', label: 'KM Driven', type: 'number' },
+                    { key: 'owners', label: 'No. of Owners', type: 'select', options: ['1st', '2nd', '3rd', '4th+'] }
+                ]
+            },
+            {
+                id: 3, name: 'Electronics', icon: 'fa-mobile-alt',
+                subcategories: ['Mobile Phones', 'Tablets', 'Laptops', 'TVs', 'Cameras', 'Accessories', 'Wearables'],
+                attributes: [
+                    { key: 'brand', label: 'Brand', type: 'select', options: ['Apple', 'Samsung', 'Xiaomi', 'Vivo', 'Oppo', 'OnePlus', 'Dell', 'HP', 'Lenovo', 'Sony', 'Canon', 'Nikon'] },
+                    { key: 'storage', label: 'Storage', type: 'select', options: ['32GB', '64GB', '128GB', '256GB', '512GB', '1TB'] },
+                    { key: 'ram', label: 'RAM', type: 'select', options: ['4GB', '8GB', '16GB', '32GB'] },
+                    { key: 'screen_size', label: 'Screen Size (Inches)', type: 'text' }
+                ]
+            },
+            {
+                id: 4, name: 'Furniture', icon: 'fa-couch',
+                subcategories: ['Sofa & Dining', 'Beds & Wardrobes', 'Home Decor', 'Kids Furniture', 'Office Furniture'],
+                attributes: [
+                    { key: 'type', label: 'Type', type: 'select', options: ['Sofa Set', 'Dining Table', 'Double Bed', 'Single Bed', 'Wardrobe', 'Office Chair'] },
+                    { key: 'condition', label: 'Condition', type: 'select', options: ['New', 'Like New', 'Good', 'Fair'] },
+                    { key: 'material', label: 'Material', type: 'select', options: ['Wood', 'Metal', 'Plastic', 'Glass', 'Fabric'] }
+                ]
+            },
+            {
+                id: 5, name: 'Electricals', icon: 'fa-plug',
+                subcategories: ['ACs', 'Washing Machines', 'Fridges', 'Kitchen Appliances', 'Coolers'],
+                attributes: [
+                    { key: 'brand', label: 'Brand', type: 'text' },
+                    { key: 'type', label: 'Type', type: 'select', options: ['Split AC', 'Window AC', 'Top Load', 'Front Load', 'Single Door', 'Double Door'] },
+                    { key: 'age', label: 'Age (Years)', type: 'number' }
+                ]
+            },
+            {
+                id: 6, name: 'Pets', icon: 'fa-paw',
+                subcategories: ['Dogs', 'Cats', 'Fish & Aquarium', 'Pet Food & Accessories'],
+                attributes: [
+                    { key: 'breed', label: 'Breed', type: 'text' },
+                    { key: 'age', label: 'Age (Months)', type: 'number' },
+                    { key: 'vaccinated', label: 'Vaccinated', type: 'select', options: ['Yes', 'No'] }
+                ]
+            },
+            {
+                id: 7, name: 'Services', icon: 'fa-tools',
+                subcategories: ['Electronics Repair', 'Home Cleaning', 'Movers & Packers', 'Drivers', 'Maids', 'Education & Classes'],
+                attributes: [
+                    { key: 'service_type', label: 'Service Type', type: 'text' },
+                    { key: 'experience', label: 'Experience (Years)', type: 'number' },
+                    { key: 'location_type', label: 'Service Location', type: 'select', options: ['Home Service', 'Shop Visit', 'Online'] }
+                ]
+            }
+        ];
+
         const state = {
             user: null,
             profile: null,
-            categories: categoriesToUse,
+            categories: defaultSchema,
             locations: locationsArray,
             currentChatRoom: null,
             ip: '127.0.0.1',
-            debugAdmin: false // Added for demo purposes
-        };
-
-        // --- IMAGE UTILITIES ---
-        const compressImage = async (file) => {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        const MAX_WIDTH = 500; 
-                        const scale = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scale;
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.4); 
-                    }
-                }
-            });
-        };
-
-        // NEW: Fallback converter for local display
-        const blobToBase64 = (blob) => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
+            debugAdmin: false,
+            isDev: false 
         };
 
         // --- UTILS ---
@@ -885,14 +696,16 @@
             },
             formatPrice: (price) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price),
             timeAgo: (date) => {
-                const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-                let interval = seconds / 31536000;
-                if (interval > 1) return Math.floor(interval) + "y ago";
-                interval = seconds / 2592000;
-                if (interval > 1) return Math.floor(interval) + "mo ago";
-                interval = seconds / 86400;
-                if (interval > 1) return Math.floor(interval) + "d ago";
-                return "Just now";
+                try {
+                    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+                    let interval = seconds / 31536000;
+                    if (interval > 1) return Math.floor(interval) + "y ago";
+                    interval = seconds / 2592000;
+                    if (interval > 1) return Math.floor(interval) + "mo ago";
+                    interval = seconds / 86400;
+                    if (interval > 1) return Math.floor(interval) + "d ago";
+                    return "Just now";
+                } catch(e) { return "Recently"; }
             },
             toast: (msg, type = 'info') => {
                 const container = document.getElementById('toast-container');
@@ -903,122 +716,88 @@
                 container.appendChild(el);
                 setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; setTimeout(() => el.remove(), 300); }, 3000);
             },
-            // UPDATED: Added Debug Mode check for previewing
-            isAdmin: () => state.debugAdmin || (state.user && (
-                state.profile?.role === 'admin' || 
-                state.user?.user_metadata?.role === 'admin'
-            ))
+            isAdmin: () => state.debugAdmin || (state.user && state.profile?.role === 'admin'),
+            fileToBase64: (file) => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            })
         };
 
         // --- APP MODULES ---
         const app = {
             init: async () => {
                 try {
-                    try { const res = await fetch('https://api.ipify.org?format=json'); const d = await res.json(); state.ip = d.ip; } catch(e){}
-                    
+                    app.data.fetchIp(); // Non-blocking
+
                     const { data: { session } } = await supabase.auth.getSession();
-                    if(session) await app.auth.setUser(session.user);
-                    if (!session) app.auth.clearUser();
+                    
+                    if (session) {
+                        await app.auth.setUser(session.user);
+                    } else {
+                        const isDev = localStorage.getItem('tg_dev_mode') === 'true';
+                        if(isDev) app.auth.devLogin(false);
+                        else app.auth.clearUser();
+                    }
 
                     supabase.auth.onAuthStateChange(async (_event, session) => {
                         if (session?.user) await app.auth.setUser(session.user);
-                        else app.auth.clearUser();
-                        app.router.handle();
+                        else if (localStorage.getItem('tg_dev_mode') !== 'true') app.auth.clearUser();
                     });
 
                     app.router.handle();
                     window.addEventListener('hashchange', app.router.handle);
                     app.chat.init();
                     
-                    window.addEventListener('click', (e) => {
-                       const dropdown = document.getElementById('user-menu-dropdown');
-                       const btn = document.getElementById('user-menu-btn');
-                       if (dropdown && btn && !btn.contains(e.target) && !dropdown.contains(e.target)) {
-                           dropdown.classList.add('hidden');
-                       }
-                    });
-
                 } catch (err) {
                     console.error("Init Error:", err);
-                    utils.toast("Initialization failed. Please refresh.", "error");
+                    utils.toast("Init Warning: " + err.message, "info");
                 }
             },
 
-            // ... [ADMIN]
-            admin: {
-                toggleDemoMode: () => {
-                    state.debugAdmin = !state.debugAdmin;
-                    utils.toast(state.debugAdmin ? "Admin Mode Enabled (Demo)" : "Admin Mode Disabled", "success");
-                    app.ui.renderNav();
-                    app.router.handle(); // Refresh view
-                },
-                saveSchema: () => {
-                    localStorage.setItem('tg_categories', JSON.stringify(state.categories));
-                    localStorage.setItem('tg_schema_version', CONFIG.SCHEMA_VERSION); 
-                    utils.toast('Schema Saved Successfully!', 'success');
-                    app.router.handle(); 
-                },
-                addCategory: () => {
-                    const name = prompt("Enter Category Name:");
-                    if(!name) return;
-                    const id = state.categories.length > 0 ? Math.max(...state.categories.map(c => c.id)) + 1 : 1;
-                    state.categories.push({ id, name, icon: 'fa-box', subcategories: [], attributes: [] });
-                    app.admin.saveSchema();
-                },
-                addSubcategory: (catId) => {
-                    const name = prompt("Enter Subcategory Name:");
-                    if(!name) return;
-                    const cat = state.categories.find(c => c.id === catId);
-                    if(cat) {
-                        cat.subcategories.push(name);
-                        app.admin.saveSchema();
+            // ✨ Gemini AI Module
+            gemini: {
+                call: async (prompt) => {
+                    if (!apiKey) { console.warn("Gemini API Key missing"); return null; }
+                    try {
+                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                        });
+                        const data = await response.json();
+                        return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+                    } catch (e) {
+                        console.error("AI Error:", e);
+                        return null;
                     }
                 },
-                addAttribute: (catId) => {
-                    const label = prompt("Attribute Name (e.g. Fuel Type):");
-                    if(!label) return;
-                    const type = prompt("Type (text, number, select):", "text");
-                    let options = [];
-                    if(type === 'select') {
-                        const opts = prompt("Enter options comma separated (e.g. Petrol, Diesel):");
-                        if(opts) options = opts.split(',').map(s => s.trim());
-                    }
-                    const key = label.toLowerCase().replace(/\s+/g, '_');
-                    const cat = state.categories.find(c => c.id === catId);
-                    if(cat) {
-                        cat.attributes.push({ key, label, type, options });
-                        app.admin.saveSchema();
-                    }
+                generateDescription: async (title, category, subcategory, price, attributes) => {
+                    const prompt = `Write a short, attractive, and professional classified ad description (max 80 words) for a ${category} (${subcategory}) item. Title: "${title}". Price: ₹${price}. Key Details: ${JSON.stringify(attributes)}. Focus on selling points and condition. Do not include placeholders like [Insert Name].`;
+                    return await app.gemini.call(prompt);
+                },
+                generateSmartReplies: async (lastMessage, myRole) => {
+                    const prompt = `I am a ${myRole} in a marketplace chat. The other person said: "${lastMessage}". Suggest 3 short, professional, and safe responses I can send back. Return ONLY a valid JSON array of strings (e.g. ["Yes, it is available.", "Can we meet tomorrow?"]).`;
+                    const text = await app.gemini.call(prompt);
+                    try {
+                        // Clean markdown if present
+                        const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+                        return JSON.parse(cleanText);
+                    } catch(e) { return []; }
                 }
             },
 
-            // ... [AUTH]
             auth: {
                 isRegistering: false,
                 toggleMode: () => {
                     app.auth.isRegistering = !app.auth.isRegistering;
-                    const regFields = document.getElementById('register-fields');
-                    const typeToggle = document.getElementById('user-type-toggle');
-                    const btnText = document.getElementById('auth-btn-text');
-                    const switchText = document.getElementById('auth-switch-text');
-                    const switchBtn = document.getElementById('auth-switch-btn');
-                    const title = document.getElementById('auth-title');
-
-                    if(app.auth.isRegistering) {
-                        regFields.classList.remove('hidden');
-                        typeToggle.classList.remove('hidden');
-                        btnText.innerText = "Create Account";
-                        switchText.innerText = "Already have an account?";
-                        switchBtn.innerText = "Login";
-                        title.innerText = "Join TradeGinger";
-                    } else {
-                        regFields.classList.add('hidden');
-                        typeToggle.classList.add('hidden');
-                        btnText.innerText = "Secure Login";
-                        switchText.innerText = "New to TradeGinger?";
-                        switchBtn.innerText = "Create Account";
-                        title.innerText = "Welcome Back";
-                    }
+                    document.getElementById('register-fields').classList.toggle('hidden');
+                    document.getElementById('user-type-toggle').classList.toggle('hidden');
+                    document.getElementById('auth-btn-text').innerText = app.auth.isRegistering ? "Create Account" : "Secure Login";
+                    document.getElementById('auth-switch-text').innerText = app.auth.isRegistering ? "Already have an account?" : "New to TradeGinger?";
+                    document.getElementById('auth-switch-btn').innerText = app.auth.isRegistering ? "Login" : "Create Account";
+                    document.getElementById('auth-title').innerText = app.auth.isRegistering ? "Join TradeGinger" : "Welcome Back";
                 },
                 setUserType: (type, btn) => {
                     document.getElementById('auth-account-type').value = type;
@@ -1030,111 +809,61 @@
                     btn.classList.remove('text-gray-500', 'font-medium');
                     btn.classList.add('bg-white', 'shadow-sm', 'text-gray-900', 'font-bold');
                 },
-                handleAuthSubmit: async (e) => {
-                    e.preventDefault();
-                    const fd = new FormData(e.target);
-                    const email = fd.get('email');
-                    const password = fd.get('password');
-
-                    try {
-                        if(app.auth.isRegistering) {
-                            const firstName = fd.get('firstName');
-                            const lastName = fd.get('lastName');
-                            const accType = fd.get('accountType');
-                            
-                            const { error } = await supabase.auth.signUp({
-                                email, password,
-                                options: { 
-                                    data: { 
-                                        first_name: firstName, 
-                                        last_name: lastName, 
-                                        full_name: `${firstName} ${lastName}`,
-                                        account_type: accType,
-                                        ip_log: state.ip 
-                                    } 
-                                }
-                            });
-                            if(error) throw error;
-                            utils.toast('Account created! Please verify email.', 'success');
-                        } else {
-                            const { error } = await supabase.auth.signInWithPassword({ email, password });
-                            if(error) throw error;
-                            utils.toast('Logged in successfully', 'success');
-                            app.modals.auth.hide();
-                        }
-                    } catch (err) {
-                        utils.toast(err.message, 'error');
-                    }
-                },
-                loginWithGoogle: async () => {
-                    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
-                    if(error) utils.toast(error.message, 'error');
+                devLogin: (notify = true) => {
+                    localStorage.setItem('tg_dev_mode', 'true');
+                    state.isDev = true;
+                    state.user = { id: 'dev-user-123', email: 'dev@tradeginger.com' };
+                    state.profile = { full_name: 'Developer Mode', avatar_url: 'https://placehold.co/100x100?text=DEV', role: 'admin', account_type: 'business' };
+                    app.ui.renderNav();
+                    app.modals.auth.hide();
+                    if(notify) utils.toast('Simulated Login Active', 'success');
+                    app.router.handle();
                 },
                 setUser: async (user) => {
+                    localStorage.removeItem('tg_dev_mode');
                     state.user = user;
-                    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-                    const dbProfile = data || {};
-                    const meta = user.user_metadata || {};
-                    
-                    state.profile = {
-                        ...dbProfile,
-                        avatar_url: dbProfile.avatar_url || meta.avatar_url || meta.picture,
-                        first_name: dbProfile.first_name || meta.first_name || meta.full_name?.split(' ')[0] || 'User',
-                        account_type: dbProfile.account_type || meta.account_type || 'individual',
-                        mobile: dbProfile.mobile
-                    };
-                    
+                    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+                    state.profile = data || { full_name: user.email?.split('@')[0], avatar_url: user.user_metadata?.avatar_url };
                     app.ui.renderNav();
                     app.chat.fetchConversations();
                 },
                 clearUser: () => {
                     state.user = null;
                     state.profile = null;
+                    state.isDev = false;
+                    localStorage.removeItem('tg_dev_mode');
                     app.ui.renderNav();
-                    app.router.navigate('home');
                 },
-                logout: async (e) => {
-                    if(e) e.preventDefault();
-                    await supabase.auth.signOut();
-                    app.auth.clearUser();
-                    utils.toast('Logged out safely', 'info');
+                handleAuthSubmit: async (e) => {
+                    e.preventDefault();
+                    const fd = new FormData(e.target);
+                    const email = fd.get('email');
+                    const password = fd.get('password');
+                    try {
+                        if(app.auth.isRegistering) {
+                            const { error } = await supabase.auth.signUp({ 
+                                email, password, 
+                                options: { data: { first_name: fd.get('firstName'), account_type: fd.get('accountType') } } 
+                            });
+                            if(error) throw error;
+                            utils.toast('Account created! Verify email.', 'success');
+                        } else {
+                            const { error } = await supabase.auth.signInWithPassword({ email, password });
+                            if(error) throw error;
+                            utils.toast('Logged in successfully', 'success');
+                            app.modals.auth.hide();
+                        }
+                    } catch(err) {
+                        utils.toast(err.message, 'error');
+                    }
+                },
+                logout: async () => {
+                    if(state.isDev) { app.auth.clearUser(); utils.toast('Dev Mode Ended', 'info'); } 
+                    else { await supabase.auth.signOut(); app.auth.clearUser(); }
+                    app.router.navigate('home');
                 }
             },
 
-            // ... [PAYMENT]
-            payment: {
-                process: async (amount, desc) => {
-                    return new Promise((resolve) => {
-                        const options = {
-                            "key": CONFIG.RAZORPAY_KEY_ID,
-                            "amount": amount * 100,
-                            "currency": "INR",
-                            "name": "TradeGinger",
-                            "description": desc,
-                            "image": "https://placehold.co/128x128/0ea5e9/ffffff?text=TG",
-                            "handler": function (response){
-                                utils.toast(`Payment Successful! ID: ${response.razorpay_payment_id}`, 'success');
-                                resolve(true);
-                            },
-                            "prefill": {
-                                "name": state.profile?.full_name || "",
-                                "email": state.user?.email || "",
-                                "contact": state.profile?.mobile || ""
-                            },
-                            "theme": { "color": "#0ea5e9" },
-                            "modal": { "ondismiss": function(){ resolve(false); } }
-                        };
-                        const rzp1 = new Razorpay(options);
-                        rzp1.on('payment.failed', function (response){
-                            utils.toast(`Payment Failed: ${response.error.description}`, 'error');
-                            resolve(false);
-                        });
-                        rzp1.open();
-                    });
-                }
-            },
-
-            // ... [ROUTER]
             router: {
                 navigate: (path) => window.location.hash = path,
                 handle: async () => {
@@ -1142,104 +871,71 @@
                     const [route, params] = hash.split('?');
                     const searchParams = new URLSearchParams(params);
                     const view = document.getElementById('app-view');
-                    
                     window.scrollTo(0,0);
 
-                    if(route === 'sell' || route === 'profile' || route === 'leads' || route === 'admin') {
-                        if(!state.user) {
-                            app.modals.auth.show();
-                            return; 
-                        }
-                        if(route === 'admin' && !utils.isAdmin()) {
-                            utils.toast("Access Denied: Admins Only", "error");
-                            return app.router.navigate('home');
-                        }
+                    // Allow navigating to sell, but if not logged in, auth modal intercepts
+                    if((route === 'sell' || route === 'profile' || route === 'admin') && !state.user) {
+                        app.modals.auth.show();
+                        return;
                     }
 
                     switch(route) {
-                        case 'home':
-                            view.innerHTML = app.views.home();
-                            app.data.fetchHomeListings();
-                            break;
-                        case 'listing':
-                            view.innerHTML = app.views.listings(searchParams.get('cat'), searchParams.get('q'));
-                            app.data.fetchAllListings(searchParams);
-                            break;
-                        case 'detail':
-                            const id = searchParams.get('id');
-                            if(id) app.views.renderDetail(id);
-                            break;
-                        case 'profile':
-                            view.innerHTML = app.views.profile();
-                            app.data.fetchUserListings();
-                            app.data.renderMyLeads(); 
-                            break;
-                        case 'leads':
-                            view.innerHTML = app.views.leads();
-                            break;
-                        case 'admin':
-                            view.innerHTML = app.views.admin();
-                            break;
-                        case 'sell':
-                             app.modals.sell.show();
-                             history.back();
-                             break;
-                        default:
-                            view.innerHTML = app.views.home();
+                        case 'home': view.innerHTML = app.views.home(); app.data.fetchListings('home-feed', 8); break;
+                        case 'listing': view.innerHTML = app.views.listings(searchParams.get('cat')); app.data.fetchAllListings(searchParams); break;
+                        case 'detail': const id = searchParams.get('id'); if(id) app.views.renderDetail(id); break;
+                        case 'profile': view.innerHTML = app.views.profile(); app.data.fetchUserListings(); app.data.renderMyLeads(); break;
+                        case 'leads': view.innerHTML = app.views.leads(); break;
+                        case 'sell': app.modals.sell.show(); break; // Removed history.back() for stability
+                        case 'admin': view.innerHTML = app.views.admin(); break;
+                        default: view.innerHTML = app.views.home(); app.data.fetchListings('home-feed', 8);
                     }
                 }
             },
 
-            // ... [DATA]
             data: {
-                fetchHomeListings: async () => {
-                    const grid = document.getElementById('home-feed');
+                fetchIp: async () => { try { const res = await fetch('https://api.ipify.org?format=json'); const d = await res.json(); state.ip = d.ip; } catch(e){} },
+                fetchListings: async (targetId, limit) => {
+                    const grid = document.getElementById(targetId);
                     if(!grid) return;
-                    grid.innerHTML = app.ui.skeletonCard().repeat(4);
-                    const { data, error } = await supabase.from('listings').select('*').limit(8).order('created_at', {ascending: false});
-                    if(data) app.ui.renderGrid(grid, data);
+                    grid.innerHTML = '<div class="col-span-full text-center py-10"><div class="loader mx-auto"></div></div>';
+                    // Fetch latest
+                    const { data } = await supabase.from('listings').select('*').limit(limit).order('created_at', {ascending: false});
+                    if(data && data.length > 0) {
+                        // SORT: Homepage/Platinum First
+                        data.sort((a,b) => {
+                            const pA = a.attributes?.listing_type || 'free';
+                            const pB = b.attributes?.listing_type || 'free';
+                            const rank = { platinum: 3, gold: 2, silver: 1, c2c: 0, free: 0 };
+                            return rank[pB] - rank[pA];
+                        });
+                        app.ui.renderGrid(grid, data);
+                    } else grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">No listings found.</div>`;
                 },
                 fetchAllListings: async (params) => {
                     const grid = document.getElementById('listing-feed');
-                    const title = document.getElementById('listing-title');
                     if(!grid) return;
-                    grid.innerHTML = app.ui.skeletonCard().repeat(8);
-
+                    grid.innerHTML = app.ui.skeletonCard().repeat(6);
                     let query = supabase.from('listings').select('*');
-                    const catId = params.get('cat') ? state.categories.find(c => c.id == params.get('cat'))?.id : null;
+                    const catId = params.get('cat');
                     const q = params.get('q');
-
-                    if(title) title.innerText = q ? `Search: "${utils.sanitize(q)}"` : (params.get('catname') || 'All Listings');
-
                     if(catId) query = query.eq('category_id', catId);
                     if(q) query = query.ilike('title', `%${q}%`);
-
-                    const cat = state.categories.find(c => c.id == catId);
-                    if(cat && cat.attributes) {
-                        cat.attributes.forEach(attr => {
-                            const val = params.get(attr.key);
-                            if(val) {
-                                query = query.contains('attributes', { [attr.key]: val });
-                            }
+                    const { data } = await query.limit(50);
+                    if(data && data.length > 0) {
+                        // SORT: Featured (Gold/Platinum) First
+                        data.sort((a,b) => {
+                            const isFeaturedA = a.attributes?.is_featured ? 1 : 0;
+                            const isFeaturedB = b.attributes?.is_featured ? 1 : 0;
+                            return isFeaturedB - isFeaturedA;
                         });
-                    }
-
-                    const { data, error } = await query.limit(50);
-                    if(data && data.length > 0) app.ui.renderGrid(grid, data);
-                    else grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500 flex flex-col items-center"><i class="fas fa-search text-4xl mb-4 text-gray-300"></i>No items found matching "${utils.sanitize(q || '')}".</div>`;
+                        app.ui.renderGrid(grid, data);
+                    } else grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500">No results found.</div>`;
                 },
                 fetchUserListings: async () => {
                     const grid = document.getElementById('user-ads');
                     if(!grid) return;
                     const { data } = await supabase.from('listings').select('*').eq('user_id', state.user.id);
                     if(data) app.ui.renderGrid(grid, data, true);
-                },
-                sendEnquiry: async (listingId, sellerId) => {
-                    const name = document.getElementById('enquiry-name').value;
-                    const phone = document.getElementById('enquiry-phone').value;
-                    if(!name || !phone) return utils.toast('Please fill all fields', 'error');
-                    utils.toast('Enquiry sent! Seller will contact you.', 'success');
-                    document.getElementById('enquiry-form').reset();
                 },
                 buyLeadPack: async (type, amount, count) => {
                     if(await app.payment.process(amount, `${count} ${type} Leads`)) {
@@ -1263,30 +959,87 @@
                     if(!container) return;
                     const leads = JSON.parse(localStorage.getItem('my_leads')) || [];
                     if(leads.length === 0) {
-                        container.innerHTML = `
-                            <div class="text-center text-gray-500 py-8 flex flex-col items-center justify-center h-full">
-                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3 text-gray-400">
-                                    <i class="fas fa-address-book text-xl"></i>
-                                </div>
-                                <p class="mb-3 text-sm font-medium">Grow your business with verified leads</p>
-                                <a href="#leads" class="text-xs bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition shadow-sm">Buy Leads Now</a>
-                            </div>
-                        `;
+                        container.innerHTML = `<div class="text-center text-gray-500 py-8 flex flex-col items-center justify-center h-full"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3 text-gray-400"><i class="fas fa-address-book text-xl"></i></div><p class="mb-3 text-sm font-medium">Grow your business with verified leads</p><a href="#leads" class="text-xs bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition shadow-sm">Buy Leads Now</a></div>`;
                         return;
                     }
-                    container.innerHTML = leads.map(l => `
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 text-sm flex justify-between items-center hover:shadow-md transition group">
-                            <div>
-                                <div class="font-bold text-gray-800">${l.name}</div>
-                                <div class="text-gray-500 text-xs mb-2">${l.type} • ${new Date(l.date).toLocaleDateString()}</div>
-                                <div class="flex gap-2">
-                                    <a href="tel:${l.phone}" class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100 hover:bg-green-100 transition flex items-center gap-1"><i class="fas fa-phone-alt"></i> Call</a>
-                                    <a href="https://wa.me/${l.phone.replace(/\D/g,'')}" target="_blank" class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100 hover:bg-green-100 transition flex items-center gap-1"><i class="fab fa-whatsapp"></i> WA</a>
+                    container.innerHTML = leads.map(l => `<div class="bg-white p-4 rounded-xl border border-gray-100 text-sm flex justify-between items-center hover:shadow-md transition group"><div><div class="font-bold text-gray-800">${l.name}</div><div class="text-gray-500 text-xs mb-2">${l.type} • ${new Date(l.date).toLocaleDateString()}</div><div class="flex gap-2"><a href="tel:${l.phone}" class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded border border-green-100 hover:bg-green-100 transition flex items-center gap-1"><i class="fas fa-phone-alt"></i> Call</a></div></div><div class="text-gray-900 font-mono font-bold text-xs bg-gray-50 px-2 py-1 rounded border border-gray-200">${l.phone}</div></div>`).join('');
+                }
+            },
+
+            payment: {
+                process: async (amount, desc) => {
+                    return new Promise((resolve) => {
+                        // Mock Payment for Stability
+                        if(confirm(`Proceed to pay ₹${amount} for ${desc}?`)) {
+                            utils.toast(`Payment of ₹${amount} Successful!`, 'success');
+                            resolve(true);
+                        } else {
+                            resolve(false);
+                        }
+                    });
+                }
+            },
+
+            ui: {
+                toggleView: () => { document.body.classList.toggle('simulate-mobile'); utils.toast("View Toggled", "success"); },
+                skeletonCard: () => `<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden h-80"><div class="h-48 skeleton"></div><div class="p-4 space-y-3"><div class="h-6 w-3/4 skeleton rounded-md"></div><div class="h-4 w-1/2 skeleton rounded-md"></div></div></div>`,
+                unlockBuyerPhone: async (btn) => {
+                    if(await app.payment.process(5, "Unlock Contact")) {
+                        btn.parentElement.innerHTML = `<i class="fas fa-phone-alt mr-2"></i> +91 98XXX XXXXX`;
+                        utils.toast("Unlocked!", "success");
+                    }
+                },
+                renderNav: () => { 
+                    const nav = document.getElementById('nav-auth-section');
+                    const mobile = document.getElementById('nav-auth-section-mobile');
+                    if(state.user) {
+                        const html = `
+                            <div class="relative group">
+                                <button class="flex items-center gap-2">
+                                    <img src="${state.profile?.avatar_url || 'https://placehold.co/40'}" class="w-8 h-8 rounded-full border">
+                                </button>
+                                <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl hidden group-hover:block p-2 border z-50">
+                                    <div class="px-4 py-2 font-bold border-b text-sm">${state.profile?.full_name || 'User'}</div>
+                                    <a href="#profile" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50">My Profile</a>
+                                    <a href="#admin" class="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">Admin</a>
+                                    <button onclick="app.auth.logout()" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
                                 </div>
                             </div>
-                            <div class="text-gray-900 font-mono font-bold text-xs bg-gray-50 px-2 py-1 rounded border border-gray-200">${l.phone}</div>
+                        `;
+                        nav.innerHTML = html;
+                        mobile.innerHTML = `<img src="${state.profile?.avatar_url || 'https://placehold.co/40'}" class="w-8 h-8 rounded-full" onclick="app.router.navigate('profile')">`;
+                    } else {
+                        nav.innerHTML = `<button onclick="app.modals.auth.show()" class="bg-primary-50 text-primary-700 px-4 py-2 rounded-full text-sm font-bold border border-primary-100">Login</button>`;
+                        mobile.innerHTML = `<button onclick="app.modals.auth.show()" class="text-sm font-bold text-primary-600">Login</button>`;
+                    }
+                },
+                renderGrid: (container, items, canEdit = false) => {
+                    container.innerHTML = items.map(item => {
+                        const attrs = item.attributes || {};
+                        const plan = attrs.listing_type || 'free';
+                        
+                        let badge = '';
+                        if(plan === 'platinum') badge = `<div class="absolute top-2 left-2 bg-gradient-to-r from-gray-700 to-gray-900 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">PLATINUM</div>`;
+                        else if(plan === 'gold') badge = `<div class="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">GOLD</div>`;
+                        
+                        return `
+                        <div class="bg-white rounded-2xl border ${plan === 'platinum' ? 'border-gray-400 shadow-md' : 'border-gray-100'} overflow-hidden hover:shadow-xl transition relative group h-full flex flex-col">
+                            <a href="#detail?id=${item.id}" class="block h-48 overflow-hidden bg-gray-100 relative">
+                                <img src="${item.image_urls?.[0] || 'https://placehold.co/400'}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                ${badge}
+                                <div class="absolute bottom-2 left-2 bg-white/90 text-xs px-2 py-1 rounded font-bold">${utils.formatPrice(item.price)}</div>
+                            </a>
+                            <div class="p-4 flex-grow">
+                                <h3 class="font-bold text-gray-800 truncate">${utils.sanitize(item.title)}</h3>
+                                <div class="flex justify-between items-center text-xs text-gray-500 mt-2">
+                                    <span>${utils.timeAgo(item.created_at)}</span>
+                                    <span>${item.subcategory || 'Item'}</span>
+                                </div>
+                                ${attrs.expiry_date ? `<div class="mt-2 text-[10px] text-gray-400">Expires: ${new Date(attrs.expiry_date).toLocaleDateString()}</div>` : ''}
+                            </div>
+                            ${canEdit ? `<button onclick="app.sell.delete('${item.id}')" class="absolute top-2 right-2 bg-white p-2 rounded-full shadow text-red-500 hover:bg-red-50"><i class="fas fa-trash"></i></button>` : ''}
                         </div>
-                    `).join('');
+                    `}).join('');
                 }
             },
 
@@ -1301,692 +1054,363 @@
                             <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight drop-shadow-lg">Buy & Sell in Your <span class="text-accent-500">Community</span></h1>
                             <p class="text-lg md:text-xl text-gray-200 font-light max-w-2xl mx-auto">India's most trusted marketplace. Verified sellers, premium listings, and zero fees for individuals.</p>
                             <form onsubmit="app.ui.handleSearch(event)" class="bg-white/10 backdrop-blur-xl p-2 rounded-full flex shadow-2xl border border-white/20 max-w-xl mx-auto">
-                                <input type="text" id="hero-search" placeholder="Search cars, phones, property..." class="flex-grow bg-transparent text-white placeholder-gray-300 px-6 py-3 outline-none font-medium">
-                                <button type="submit" class="bg-accent-500 hover:bg-accent-600 text-white px-8 py-3 rounded-full font-bold transition shadow-lg hover:shadow-accent-500/50">Search</button>
+                                <input type="text" placeholder="Search cars, phones, property..." class="flex-grow bg-transparent text-white placeholder-gray-300 px-6 py-3 outline-none font-medium">
+                                <button type="submit" class="bg-accent-500 hover:bg-accent-600 text-white px-8 py-3 rounded-full font-bold transition">Search</button>
                             </form>
                         </div>
                     </section>
-                    <section class="py-16 container mx-auto px-4">
-                        <div class="flex justify-between items-end mb-8">
-                            <div>
-                                <h2 class="text-2xl font-bold text-gray-900">Browse Categories</h2>
-                                <p class="text-gray-500 text-sm mt-1">Find exactly what you're looking for</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-                            ${state.categories.map(c => `
-                                <a href="#listing?cat=${c.id}&catname=${c.name}" class="flex flex-col items-center p-4 bg-white rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition border border-gray-100 group">
-                                    <div class="w-14 h-14 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center text-xl mb-3 group-hover:bg-primary-600 group-hover:text-white transition shadow-inner"><i class="fas ${c.icon}"></i></div>
-                                    <span class="font-semibold text-sm text-gray-700 group-hover:text-primary-700">${c.name}</span>
-                                </a>
-                            `).join('')}
+                    <section class="py-12 container mx-auto px-4">
+                        <h2 class="text-2xl font-bold mb-6">Browse Categories</h2>
+                        <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
+                            ${state.categories.map(c => `<a href="#listing?cat=${c.id}" class="p-4 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col items-center hover:shadow-md transition text-center"><i class="fas ${c.icon} text-3xl text-primary-500 mb-2"></i><span class="text-sm font-bold text-gray-700">${c.name}</span></a>`).join('')}
                         </div>
                     </section>
-                    <section class="py-16 bg-white border-t border-gray-100">
+                    <section class="py-12 bg-gray-50">
                         <div class="container mx-auto px-4">
-                            <div class="flex justify-between items-end mb-10">
-                                <div>
-                                    <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Fresh Recommendations</h2>
-                                    <p class="text-gray-500 mt-1">Handpicked premium items just for you</p>
-                                </div>
-                                <a href="#listing" class="text-primary-600 font-bold hover:text-primary-700 flex items-center gap-2 transition group">View All <i class="fas fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i></a>
-                            </div>
-                            <div id="home-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+                            <h2 class="text-2xl font-bold mb-6">Fresh Recommendations</h2>
+                            <div id="home-feed" class="grid grid-cols-2 md:grid-cols-4 gap-6"></div>
                         </div>
                     </section>
                 `,
-                listings: (catId, q) => {
-                    const category = state.categories.find(c => c.id == catId);
-                    let sidebarFilters = '';
-                    
-                    if(category && category.attributes.length > 0) {
-                        sidebarFilters = `
-                            <div class="w-full md:w-72 flex-shrink-0 mb-8 md:mb-0">
-                                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-24">
-                                    <div class="flex justify-between items-center mb-6">
-                                        <h3 class="font-bold text-lg text-gray-900">Filters</h3>
-                                        <button onclick="app.router.handle()" class="text-xs text-primary-600 hover:underline">Reset</button>
-                                    </div>
-                                    ${category.attributes.map(attr => `
-                                        <div class="mb-5">
-                                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">${attr.label}</label>
-                                            ${attr.type === 'select' ? `
-                                                <div class="relative">
-                                                    <select onchange="app.ui.applyFilter('${attr.key}', this.value)" class="w-full border border-gray-200 rounded-lg text-sm px-3 py-2.5 bg-gray-50 focus:bg-white outline-none focus:ring-2 focus:ring-primary-100 appearance-none">
-                                                        <option value="">All</option>
-                                                        ${attr.options.map(o => `<option value="${o}">${o}</option>`).join('')}
-                                                    </select>
-                                                    <i class="fas fa-chevron-down absolute right-3 top-3.5 text-gray-400 pointer-events-none text-xs"></i>
-                                                </div>
-                                            ` : `
-                                                <input type="${attr.type}" placeholder="Any" class="w-full border border-gray-200 rounded-lg text-sm px-3 py-2.5 bg-gray-50 focus:bg-white outline-none focus:ring-2 focus:ring-primary-100">
-                                            `}
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        `;
-                    }
-
+                listings: (catId) => {
+                    const cat = state.categories.find(c => c.id == catId);
                     return `
-                    <div class="bg-gray-50 min-h-screen py-10">
-                        <div class="container mx-auto px-4">
-                            <div class="mb-8 flex items-center text-sm text-gray-500 font-medium">
-                                <a href="#home" class="hover:text-primary-600 transition">Home</a> 
-                                <span class="mx-3 text-gray-300">/</span> 
-                                <span class="text-gray-900">Listings</span>
+                    <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
+                        <div class="w-full md:w-64 flex-shrink-0">
+                            <div class="bg-white p-5 rounded-xl border border-gray-100 sticky top-24">
+                                <h3 class="font-bold text-lg mb-4">Filters</h3>
+                                ${cat?.attributes ? cat.attributes.map(a => `<div class="mb-4"><label class="text-xs font-bold uppercase text-gray-500 block mb-1">${a.label}</label>${a.type==='select'?`<select class="w-full border rounded p-2 text-sm bg-gray-50"><option>All</option>${a.options.map(o=>`<option>${o}</option>`).join('')}</select>`:`<input type="${a.type}" class="w-full border rounded p-2 text-sm bg-gray-50">`}</div>`).join('') : '<p class="text-sm text-gray-400">Select a category to see filters</p>'}
                             </div>
-                            <div class="flex flex-col md:flex-row md:gap-10">
-                                ${sidebarFilters}
-                                <div class="flex-grow">
-                                    <h1 class="text-3xl font-bold mb-8 text-gray-900" id="listing-title">All Listings</h1>
-                                    <div id="listing-feed" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        <!-- Data loaded here -->
-                                    </div>
-                                </div>
-                            </div>
+                        </div>
+                        <div class="flex-grow">
+                            <h2 class="text-2xl font-bold mb-6">${cat ? cat.name : 'All Listings'}</h2>
+                            <div id="listing-feed" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
                         </div>
                     </div>
                 `},
-                admin: () => `
-                    <div class="container mx-auto px-4 py-10 fade-in">
-                        <div class="flex justify-between items-center mb-8">
-                            <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-                            <button onclick="app.admin.addCategory()" class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700">+ New Category</button>
-                        </div>
-                        <div class="grid gap-6">
-                            ${state.categories.map(cat => `
-                                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                                    <div class="flex justify-between items-start mb-4 border-b pb-4">
-                                        <div>
-                                            <h3 class="text-xl font-bold"><i class="fas ${cat.icon} mr-2 text-gray-400"></i>${cat.name}</h3>
-                                            <p class="text-xs text-gray-500">ID: ${cat.id}</p>
-                                        </div>
-                                        <div class="space-x-2">
-                                            <button onclick="app.admin.addSubcategory(${cat.id})" class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded">+ Subcat</button>
-                                            <button onclick="app.admin.addAttribute(${cat.id})" class="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded">+ Attribute</button>
-                                        </div>
+                renderDetail: async (id) => {
+                    const view = document.getElementById('app-view');
+                    view.innerHTML = `<div class="h-screen flex items-center justify-center"><div class="loader"></div></div>`;
+                    const { data: ad } = await supabase.from('listings').select('*').eq('id', id).single();
+                    if(!ad) { view.innerHTML = `<div class="p-20 text-center">Ad not found</div>`; return; }
+                    
+                    const img = ad.image_urls?.[0] || 'https://placehold.co/600x400';
+                    view.innerHTML = `
+                        <div class="container mx-auto px-4 py-8 fade-in">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                <div class="lg:col-span-2">
+                                    <div class="bg-black rounded-xl overflow-hidden h-[400px] flex items-center justify-center">
+                                        <img src="${img}" class="h-full object-contain">
                                     </div>
-                                    <div class="grid md:grid-cols-2 gap-6">
-                                        <div>
-                                            <h4 class="font-semibold text-sm text-gray-600 mb-2">Subcategories</h4>
-                                            <div class="flex flex-wrap gap-2">
-                                                ${cat.subcategories.map(s => `<span class="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs">${s}</span>`).join('')}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <h4 class="font-semibold text-sm text-gray-600 mb-2">Attributes</h4>
-                                            <div class="space-y-2">
-                                                ${cat.attributes.map(a => `
-                                                    <div class="text-xs bg-gray-50 p-2 rounded flex justify-between">
-                                                        <span><strong>${a.label}</strong> (${a.type})</span>
-                                                        ${a.options ? `<span class="text-gray-500 truncate ml-2 max-w-[150px]">${a.options.join(', ')}</span>` : ''}
-                                                    </div>
-                                                `).join('')}
+                                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6">
+                                        <h1 class="text-3xl font-bold text-gray-900 mb-2">${utils.sanitize(ad.title)}</h1>
+                                        <div class="text-2xl font-extrabold text-primary-600 mb-4">${utils.formatPrice(ad.price)}</div>
+                                        <div class="prose max-w-none text-gray-700 whitespace-pre-line">${utils.sanitize(ad.description)}</div>
+                                        
+                                        <div class="mt-6 border-t pt-4">
+                                            <h4 class="font-bold mb-2">Details</h4>
+                                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                                ${ad.attributes ? Object.entries(ad.attributes).map(([k, v]) => `<div class="bg-gray-50 p-2 rounded"><span class="text-gray-500 capitalize">${k.replace(/_/g, ' ')}:</span> <span class="font-medium">${v}</span></div>`).join('') : ''}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `,
-                renderDetail: async (id) => {
-                    const view = document.getElementById('app-view');
-                    view.innerHTML = `<div class="h-screen flex items-center justify-center"><div class="loader"></div></div>`;
-                    
-                    try {
-                        const { data: ad, error: adError } = await supabase
-                            .from('listings')
-                            .select('*')
-                            .eq('id', id)
-                            .single();
-                        
-                        if (adError) throw adError;
-                        if (!ad) { view.innerHTML = `<div class="p-20 text-center">Ad not found</div>`; return; }
-
-                        // Fetch profile separately (safe fetch)
-                        let userProfile = {};
-                        if (ad.user_id) {
-                            const { data: profile } = await supabase
-                                .from('profiles')
-                                .select('*')
-                                .eq('id', ad.user_id)
-                                .single();
-                            userProfile = profile || {};
-                        }
-
-                        const mainImg = ad.image_urls?.[0] || 'https://placehold.co/600x400?text=No+Image';
-                        const userAvatar = userProfile.avatar_url || 'https://placehold.co/50x50?text=U';
-                        const sellerName = userProfile.full_name || 'TradeGinger User';
-                        const sellerPhone = userProfile.mobile || '9876543210';
-
-                        view.innerHTML = `
-                            <div class="container mx-auto px-4 py-8 fade-in">
-                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                    <div class="lg:col-span-2 space-y-4">
-                                        <div class="bg-black rounded-xl overflow-hidden h-[400px] md:h-[500px] flex items-center justify-center relative group">
-                                            <img src="${mainImg}" id="main-img" class="h-full w-full object-contain">
+                                <div class="space-y-6">
+                                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 sticky top-24">
+                                        <div class="flex items-center gap-4 mb-6 pb-6 border-b">
+                                            <div class="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-400"><i class="fas fa-user"></i></div>
+                                            <div><p class="font-bold text-lg">Seller</p><p class="text-xs text-gray-500">Member since 2024</p></div>
                                         </div>
-                                        <div class="flex gap-2 overflow-x-auto pb-2">
-                                            ${(ad.image_urls || []).map(url => `
-                                                <img src="${url}" onclick="document.getElementById('main-img').src='${url}'" class="w-20 h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-primary-500">
-                                            `).join('')}
-                                        </div>
-                                        
-                                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mt-6">
-                                            <h3 class="text-xl font-bold mb-4">Description</h3>
-                                            <p class="text-gray-700 leading-relaxed whitespace-pre-line">${utils.sanitize(ad.description)}</p>
-                                            <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
-                                                <div class="bg-gray-50 p-3 rounded"><strong>Category:</strong> ${ad.subcategory || 'General'}</div>
-                                                <div class="bg-gray-50 p-3 rounded"><strong>Location:</strong> ${utils.sanitize(ad.location)}</div>
-                                                <div class="bg-gray-50 p-3 rounded"><strong>Posted:</strong> ${utils.timeAgo(ad.created_at)}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="space-y-6">
-                                        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 sticky top-24">
-                                            <h1 class="text-2xl font-bold text-gray-900 mb-2">${utils.sanitize(ad.title)}</h1>
-                                            <div class="text-3xl font-extrabold text-primary-600 mb-6">${utils.formatPrice(ad.price)}</div>
-                                            
-                                            <div class="flex items-center gap-4 mb-6 pb-6 border-b">
-                                                <img src="${userAvatar}" class="w-14 h-14 rounded-full object-cover border">
-                                                <div>
-                                                    <p class="font-bold text-lg">${utils.sanitize(sellerName)}</p>
-                                                    <p class="text-xs text-gray-500">Member since 2024</p>
-                                                </div>
-                                            </div>
-
-                                            <div class="space-y-3">
-                                                <div id="phone-section" class="bg-green-50 border border-green-200 p-3 rounded-lg flex justify-between items-center">
-                                                    <div class="text-green-800 font-medium font-mono" data-phone="${sellerPhone}"><i class="fas fa-phone-alt mr-2"></i> +91 XXXXX XXXXX</div>
-                                                    <button onclick="app.ui.unlockBuyerPhone(this)" class="text-xs bg-green-600 text-white px-3 py-1 rounded shadow hover:bg-green-700">Unlock (₹5)</button>
-                                                </div>
-
-                                                <button onclick="app.chat.start('${ad.user_id}', '${ad.id}', '${sellerName.replace(/'/g, "")}')" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md transition flex items-center justify-center gap-2">
-                                                    <i class="fas fa-comment-dots"></i> Chat with Seller
-                                                </button>
-
-                                                <div class="border-t pt-4 mt-4">
-                                                    <h4 class="font-bold text-gray-700 mb-2">Send Enquiry</h4>
-                                                    <form id="enquiry-form" onsubmit="event.preventDefault(); app.data.sendEnquiry('${ad.id}', '${ad.user_id}')" class="space-y-2">
-                                                        <input type="text" id="enquiry-name" placeholder="Your Name" class="w-full text-sm border rounded px-3 py-2 bg-gray-50">
-                                                        <input type="tel" id="enquiry-phone" placeholder="Your Phone Number" class="w-full text-sm border rounded px-3 py-2 bg-gray-50">
-                                                        <button type="submit" class="w-full bg-gray-800 text-white text-sm py-2 rounded hover:bg-gray-900">Send Interest</button>
-                                                    </form>
-                                                </div>
-
-                                                ${state.user?.id === ad.user_id ? `<div class="text-center text-sm text-gray-500 bg-gray-100 p-2 rounded">This is your ad</div>` : ''}
-                                            </div>
+                                        <button onclick="app.chat.start('${ad.user_id}', '${ad.id}', 'Seller')" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md transition flex items-center justify-center gap-2 mb-3">
+                                            <i class="fas fa-comment-dots"></i> Chat with Seller
+                                        </button>
+                                        <div class="bg-green-50 border border-green-200 p-3 rounded-lg text-center text-green-800 font-mono text-sm cursor-pointer" onclick="app.ui.unlockBuyerPhone(this)">
+                                            <i class="fas fa-lock"></i> Unlock Phone
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        `;
-                    } catch(e) {
-                        console.error(e);
-                        view.innerHTML = `<div class="p-10 text-center text-red-500">Error loading ad details.</div>`;
-                    }
+                        </div>
+                    `;
                 },
                 profile: () => `
                     <div class="container mx-auto px-4 py-12 fade-in">
                         <div class="bg-white rounded-3xl shadow-soft border border-gray-100 overflow-hidden mb-10">
-                            <div class="h-40 bg-gradient-to-r from-dark-800 to-dark-900 relative">
-                                <div class="absolute inset-0 bg-white/5 pattern-grid-lg"></div>
-                            </div>
-                            <div class="px-8 pb-8 flex flex-col md:flex-row items-end md:items-center gap-8 -mt-16 relative z-10">
-                                <img src="${state.profile?.avatar_url || 'https://placehold.co/150x150'}" class="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-white object-cover">
-                                <div class="flex-grow mb-2">
-                                    <div class="flex items-center gap-3 flex-wrap">
-                                        <h1 class="text-3xl font-bold text-gray-900 tracking-tight">${utils.sanitize(state.profile?.full_name || 'User')}</h1>
-                                        ${state.profile?.account_type === 'business' ? '<span class="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full border border-blue-100 flex items-center gap-1"><i class="fas fa-check-circle"></i> Verified Business</span>' : ''}
-                                        <button onclick="utils.toast('Profile editing coming soon!', 'info')" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full border hover:bg-gray-200 transition font-medium">Edit</button>
-                                        <button onclick="app.admin.toggleDemoMode()" class="text-xs ${state.debugAdmin ? 'bg-red-100 text-red-700' : 'bg-purple-100 text-purple-700'} px-3 py-1 rounded-full border hover:opacity-80 transition font-bold flex items-center gap-1"><i class="fas fa-user-shield"></i> ${state.debugAdmin ? 'Disable' : 'Enable'} Admin Demo</button>
-                                    </div>
-                                    <p class="text-gray-500 font-medium mt-1"><i class="fas fa-envelope mr-2 opacity-50"></i> ${state.user?.email}</p>
-                                </div>
-                                <div class="mb-4 flex gap-3">
-                                    ${utils.isAdmin() ? `<button onclick="app.router.navigate('admin')" class="bg-dark-800 text-white px-5 py-2.5 rounded-xl hover:bg-dark-900 transition font-bold shadow-lg shadow-dark-800/20">Admin Dashboard</button>` : ''}
-                                    <button onclick="app.router.navigate('leads')" class="bg-accent-500 text-white hover:bg-accent-600 px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-accent-500/30 transition"><i class="fas fa-bolt mr-2"></i> Buy Leads</button>
-                                    <button onclick="app.auth.logout(event)" class="bg-white text-red-500 hover:bg-red-50 px-5 py-2.5 rounded-xl font-bold border border-red-100 transition">Logout</button>
+                            <div class="h-40 bg-gradient-to-r from-dark-800 to-dark-900"></div>
+                            <div class="px-8 pb-8 flex items-end gap-6 -mt-12 relative z-10">
+                                <img src="${state.profile?.avatar_url || 'https://placehold.co/150'}" class="w-24 h-24 rounded-full border-4 border-white shadow-lg bg-white object-cover">
+                                <div class="mb-2">
+                                    <h1 class="text-2xl font-bold text-gray-900">${utils.sanitize(state.profile?.full_name || 'User')}</h1>
+                                    <p class="text-gray-500 text-sm">${state.user?.email}</p>
+                                    ${state.profile?.account_type === 'business' ? '<span class="bg-blue-50 text-blue-700 text-xs font-bold px-2 py-1 rounded">Business Account</span>' : ''}
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
                             <div class="lg:col-span-2">
-                                <div class="flex justify-between items-center mb-6">
-                                    <h2 class="text-2xl font-bold text-gray-900">My Listings</h2>
-                                    <button onclick="app.router.navigate('sell')" class="text-sm text-primary-600 font-bold hover:underline">+ Post New</button>
-                                </div>
+                                <h2 class="text-2xl font-bold mb-6">My Listings</h2>
                                 <div id="user-ads" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
                             </div>
                             <div>
-                                <h2 class="text-2xl font-bold mb-6 text-gray-900">My Purchased Leads</h2>
-                                <div id="my-leads-container" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-3 h-[500px] overflow-y-auto custom-scrollbar">
-                                    <!-- Leads injected here -->
-                                </div>
+                                <h2 class="text-2xl font-bold mb-6">My Purchased Leads</h2>
+                                <div id="my-leads-container" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-3 h-[500px] overflow-y-auto custom-scrollbar"></div>
                             </div>
                         </div>
                     </div>
                 `,
-                toggleView: () => {
-                    const isMobileDevice = window.matchMedia("(max-width: 768px)").matches;
-                    const body = document.body;
-                    const icon = document.getElementById('view-switch-icon');
-                    
-                    if (isMobileDevice) {
-                        // On Mobile: Toggle Viewport to Desktop
-                        const meta = document.getElementById('viewport-meta');
-                        if (meta.content.includes('width=1280')) {
-                            meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
-                            icon.className = 'fas fa-desktop text-lg';
-                            utils.toast("Switched to Mobile View", "success");
-                        } else {
-                            meta.content = 'width=1280';
-                            icon.className = 'fas fa-mobile-alt text-lg';
-                            utils.toast("Switched to Desktop View", "success");
-                        }
-                    } else {
-                        // On Desktop: Toggle Mobile Simulation
-                        body.classList.toggle('simulate-mobile');
-                        if (body.classList.contains('simulate-mobile')) {
-                            icon.className = 'fas fa-desktop text-lg';
-                            utils.toast("Simulating Mobile View", "success");
-                        } else {
-                            icon.className = 'fas fa-mobile-alt text-lg';
-                            utils.toast("Switched to Full View", "success");
-                        }
-                    }
-                }
-            },
-
-            ui: {
-                // ... [SKELETON, RENDER GRID, UNLOCK PHONE: Same logic, slightly refined HTML]
-                skeletonCard: () => `<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden"><div class="h-48 skeleton"></div><div class="p-4 space-y-3"><div class="h-6 w-3/4 skeleton rounded-md"></div><div class="h-4 w-1/2 skeleton rounded-md"></div></div></div>`,
-                
-                unlockBuyerPhone: async (btn) => {
-                    if(await app.payment.process(5, "Buyer Unlock Fee")) {
-                        const container = btn.parentElement;
-                        const displayDiv = container.querySelector('div[data-phone]');
-                        if(displayDiv) {
-                             const realPhone = displayDiv.getAttribute('data-phone');
-                             displayDiv.innerHTML = `<i class="fas fa-phone-alt mr-2"></i> +91 ${realPhone}`;
-                             btn.remove();
-                        } else {
-                            utils.toast("Phone number displayed above!", "success");
-                        }
-                    }
-                },
-                unlockSellerPhone: async () => {
-                    if(await app.payment.process(99, "Seller Visibility Boost")) {
-                        utils.toast("Your phone number is now visible to all buyers immediately!", "success");
-                    }
-                },
-                renderGrid: (container, items, canEdit = false) => {
-                    if(items.length === 0) {
-                        container.innerHTML = `
-                            <div class="col-span-full text-center py-16 text-gray-500 bg-white rounded-2xl border border-dashed border-gray-200">
-                                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fas fa-box-open text-3xl text-gray-300"></i>
-                                </div>
-                                <p class="font-medium">No items found here yet.</p>
-                                ${canEdit ? '<button onclick="app.router.navigate(\'sell\')" class="mt-4 text-primary-600 font-bold hover:underline">Start Selling</button>' : ''}
-                            </div>`;
-                        return;
-                    }
-                    const isAdmin = utils.isAdmin();
-                    container.innerHTML = items.map(item => {
-                        // Determine card style based on plan (Check attributes if col missing)
-                        let cardClass = "group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative";
-                        let badge = "";
-                        
-                        // Fallback logic for plan type since column might be missing
-                        const planType = item.listing_type || item.attributes?.listing_type;
-                        
-                        // Logic to determine plan
-                        if(planType === 'platinum') {
-                            cardClass += " card-platinum";
-                            badge = `<div class="absolute top-3 left-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-lg tracking-wide z-10">PLATINUM</div>`;
-                        } else if (planType === 'gold') {
-                            cardClass += " card-gold";
-                            badge = `<div class="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-lg tracking-wide z-10">GOLD</div>`;
-                        }
-
-                        return `
-                        <div class="${cardClass}">
-                            <a href="#detail?id=${item.id}" class="block">
-                                <div class="relative h-52 overflow-hidden bg-gray-100">
-                                    <img src="${item.image_urls?.[0] || 'https://placehold.co/400x300'}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                                    <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur text-gray-800 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm">
-                                        <i class="fas fa-map-marker-alt text-primary-500"></i> ${utils.sanitize(item.location || item.cities?.name)}
-                                    </div>
-                                    ${badge}
-                                </div>
-                                <div class="p-5">
-                                    <div class="flex justify-between items-start mb-1">
-                                        <h3 class="font-extrabold text-xl text-gray-900 truncate pr-2">${utils.formatPrice(item.price)}</h3>
-                                    </div>
-                                    <p class="text-gray-600 text-sm truncate mb-4 font-medium">${utils.sanitize(item.title)}</p>
-                                    ${item.attributes ? `<div class="text-[10px] text-gray-500 mb-3 flex gap-2 flex-wrap">
-                                        ${Object.entries(item.attributes).slice(0,2).filter(([k])=>k!=='listing_type').map(([k,v]) => `<span class="bg-gray-50 border border-gray-100 px-2 py-1 rounded-md capitalize font-medium">${k.replace('_',' ')}: ${v}</span>`).join('')}
-                                    </div>` : ''}
-                                    <div class="flex justify-between items-center text-xs text-gray-400 border-t border-gray-50 pt-3 font-medium">
-                                        <span>${utils.timeAgo(item.created_at)}</span>
-                                        <span class="text-primary-600 bg-primary-50 px-2 py-0.5 rounded">${item.subcategory || 'Item'}</span>
-                                    </div>
-                                </div>
-                            </a>
-                            ${(canEdit || isAdmin) ? `
-                                <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
-                                    ${canEdit ? `<button onclick="app.sell.edit('${item.id}')" class="bg-white text-primary-600 w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-primary-600 hover:text-white transition"><i class="fas fa-edit text-xs"></i></button>` : ''}
-                                    <button onclick="app.sell.delete('${item.id}')" class="bg-white text-red-500 w-8 h-8 rounded-full flex items-center justify-center shadow-lg hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash text-xs"></i></button>
-                                </div>
-                            ` : ''}
-                            ${canEdit ? `<button onclick="app.ui.unlockSellerPhone()" class="absolute bottom-[4.5rem] right-3 bg-green-50 text-green-700 px-2 py-1 rounded text-[10px] font-bold shadow hover:bg-green-100 z-20 border border-green-200">Boost Phone ₹99</button>` : ''}
+                leads: () => `
+                    <div class="container mx-auto px-4 py-12 fade-in">
+                        <div class="text-center max-w-2xl mx-auto mb-12">
+                            <h1 class="text-4xl font-bold text-gray-900 mb-4">Grow Your Business with Verified Leads</h1>
+                            <p class="text-gray-500">Access high-quality, phone-verified leads directly in your dashboard.</p>
                         </div>
-                    `}).join('');
-                },
-                handleSearch: (e) => { e.preventDefault(); const val = e.target.querySelector('input').value; app.router.navigate('listing?q='+val); },
-                applyFilter: (key, value) => { 
-                    const currentUrl = new URL(window.location.href);
-                    let [hash, query] = currentUrl.hash.split('?');
-                    const params = new URLSearchParams(query);
-                    if(value) params.set(key, value);
-                    else params.delete(key);
-                    window.location.hash = `${hash}?${params.toString()}`;
-                },
-                renderNav: () => { 
-                    const nav = document.getElementById('nav-auth-section');
-                    const mobile = document.getElementById('nav-auth-section-mobile');
-                    
-                    if(state.user) {
-                        const avatarHtml = `<img src="${state.profile?.avatar_url || 'https://placehold.co/40x40'}" class="w-8 h-8 rounded-full border border-gray-200 object-cover cursor-pointer" onclick="app.router.navigate('profile')">`;
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <!-- Real Estate / Auto -->
+                            <div class="bg-white p-8 rounded-3xl border border-gray-100 hover:shadow-xl transition relative overflow-hidden group">
+                                <div class="absolute top-0 right-0 bg-blue-100 w-24 h-24 rounded-bl-full -mr-4 -mt-4 transition group-hover:scale-110"></div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">High Value</h3>
+                                <p class="text-sm text-gray-500 mb-6">Real Estate & Automobiles</p>
+                                <div class="text-3xl font-extrabold text-blue-600 mb-6">₹150<span class="text-sm text-gray-400 font-normal">/lead</span></div>
+                                <button onclick="app.data.buyLeadPack('Real Estate', 1500, 10)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition">Buy 10 Leads</button>
+                            </div>
+                            <!-- Electronics -->
+                            <div class="bg-white p-8 rounded-3xl border border-gray-100 hover:shadow-xl transition relative overflow-hidden group">
+                                <div class="absolute top-0 right-0 bg-purple-100 w-24 h-24 rounded-bl-full -mr-4 -mt-4 transition group-hover:scale-110"></div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Mid Value</h3>
+                                <p class="text-sm text-gray-500 mb-6">Electronics & Furniture</p>
+                                <div class="text-3xl font-extrabold text-purple-600 mb-6">₹75<span class="text-sm text-gray-400 font-normal">/lead</span></div>
+                                <button onclick="app.data.buyLeadPack('Electronics', 750, 10)" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition">Buy 10 Leads</button>
+                            </div>
+                            <!-- Services -->
+                            <div class="bg-white p-8 rounded-3xl border border-gray-100 hover:shadow-xl transition relative overflow-hidden group">
+                                <div class="absolute top-0 right-0 bg-green-100 w-24 h-24 rounded-bl-full -mr-4 -mt-4 transition group-hover:scale-110"></div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Volume</h3>
+                                <p class="text-sm text-gray-500 mb-6">Services & Pets</p>
+                                <div class="text-3xl font-extrabold text-green-600 mb-6">₹50<span class="text-sm text-gray-400 font-normal">/lead</span></div>
+                                <button onclick="app.data.buyLeadPack('Services', 500, 10)" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition">Buy 10 Leads</button>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                admin: () => `
+                    <div class="flex h-screen bg-gray-50">
+                        <!-- Sidebar -->
+                        <div class="w-64 bg-dark-900 text-gray-400 flex flex-col">
+                            <div class="p-6 font-bold text-white text-xl tracking-tight">TG Admin</div>
+                            <nav class="flex-grow px-4 space-y-1">
+                                <a href="#" class="block px-4 py-3 bg-dark-800 text-white rounded-lg flex items-center gap-3"><i class="fas fa-tachometer-alt w-5"></i> Dashboard</a>
+                                <a href="#" class="block px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3"><i class="fas fa-users w-5"></i> User Mgmt</a>
+                                <a href="#" class="block px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3"><i class="fas fa-gem w-5"></i> Premium Plans</a>
+                                <a href="#" class="block px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3"><i class="fas fa-ad w-5"></i> Ads & Listings</a>
+                                <a href="#" class="block px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3"><i class="fas fa-funnel-dollar w-5"></i> Leads & Sales</a>
+                                <a href="#" class="block px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3"><i class="fas fa-wallet w-5"></i> Payments</a>
+                            </nav>
+                            <div class="p-4 border-t border-gray-800">
+                                <button onclick="app.router.navigate('home')" class="text-sm hover:text-white flex items-center gap-2"><i class="fas fa-sign-out-alt"></i> Exit Admin</button>
+                            </div>
+                        </div>
                         
-                        const desktopHtml = `
-                            <button onclick="document.getElementById('chat-modal').classList.remove('hidden')" class="relative text-gray-500 hover:text-primary-600 text-xl"><i class="fas fa-comment-dots"></i></button>
-                            <div class="relative">
-                                <button id="user-menu-btn" onclick="document.getElementById('user-menu-dropdown').classList.toggle('hidden')" class="flex items-center gap-2 focus:outline-none">
-                                    ${avatarHtml}
-                                </button>
-                                <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 hidden py-2 animate-fade-in z-50">
-                                    <div class="px-4 py-2 border-b border-gray-50 text-sm font-bold text-gray-700">${utils.sanitize(state.profile?.first_name)}</div>
-                                    <a href="#profile" class="block px-4 py-2 text-sm text-gray-600 hover:bg-primary-50">My Profile</a>
-                                    ${utils.isAdmin() ? `<a href="#admin" class="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-50">Admin Dashboard</a>` : ''}
-                                    <div class="border-t border-gray-50 my-1"></div>
-                                    <a href="#" onclick="app.auth.logout(event)" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</a>
+                        <!-- Content -->
+                        <div class="flex-grow overflow-y-auto">
+                            <header class="bg-white border-b h-16 flex items-center px-8 justify-between">
+                                <h2 class="font-bold text-gray-800">Overview</h2>
+                                <div class="flex items-center gap-4">
+                                    <span class="text-sm text-gray-500">Super Admin</span>
+                                    <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
+                                </div>
+                            </header>
+                            <div class="p-8">
+                                <!-- Stats -->
+                                <div class="grid grid-cols-4 gap-6 mb-8">
+                                    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                                        <div class="text-sm text-gray-500 mb-1">Total Users</div>
+                                        <div class="text-2xl font-bold text-gray-900">12,403</div>
+                                    </div>
+                                    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                                        <div class="text-sm text-gray-500 mb-1">Active Premium</div>
+                                        <div class="text-2xl font-bold text-gray-900">845</div>
+                                    </div>
+                                    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                                        <div class="text-sm text-gray-500 mb-1">Revenue (Mo)</div>
+                                        <div class="text-2xl font-bold text-gray-900">₹4.2L</div>
+                                    </div>
+                                    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                                        <div class="text-sm text-gray-500 mb-1">Leads Sold</div>
+                                        <div class="text-2xl font-bold text-gray-900">2,100</div>
+                                    </div>
+                                </div>
+
+                                <!-- Recent Actions Table (Mock) -->
+                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                    <div class="px-6 py-4 border-b font-bold text-gray-800">Recent Transactions & Actions</div>
+                                    <table class="w-full text-sm text-left">
+                                        <thead class="bg-gray-50 text-gray-500">
+                                            <tr>
+                                                <th class="px-6 py-3">User</th>
+                                                <th class="px-6 py-3">Action</th>
+                                                <th class="px-6 py-3">Amount</th>
+                                                <th class="px-6 py-3">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y">
+                                            <tr>
+                                                <td class="px-6 py-4">Rohan K.</td>
+                                                <td class="px-6 py-4">Bought Platinum Plan</td>
+                                                <td class="px-6 py-4">₹14,999</td>
+                                                <td class="px-6 py-4 text-green-600">Success</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4">Amit S.</td>
+                                                <td class="px-6 py-4">Unlock Phone (C2C)</td>
+                                                <td class="px-6 py-4">₹5</td>
+                                                <td class="px-6 py-4 text-green-600">Success</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4">Priya M.</td>
+                                                <td class="px-6 py-4">Posted Ad (Auto)</td>
+                                                <td class="px-6 py-4">-</td>
+                                                <td class="px-6 py-4 text-yellow-600">Pending Review</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        `;
-                        
-                        nav.innerHTML = desktopHtml;
-                        mobile.innerHTML = avatarHtml;
-                    } else {
-                        nav.innerHTML = `<button onclick="app.modals.auth.show()" class="bg-primary-50 text-primary-700 px-4 py-2 rounded-full text-sm font-bold hover:bg-primary-100 transition shadow-sm border border-primary-100">Login / Register</button>`;
-                        mobile.innerHTML = `<button onclick="app.modals.auth.show()" class="text-sm font-bold text-primary-600">Login</button>`;
-                    }
-                },
-                toggleView: () => app.views.toggleView() // Hook to view function
+                        </div>
+                    </div>
+                `
             },
 
-            // ... [MODALS, SELL, LOCATION, CHAT: Logic preserved, ensuring integration]
+            // --- Modals Logic ---
             modals: {
-                auth: {
-                    show: () => { document.getElementById('auth-modal').classList.remove('hidden', 'opacity-0', 'pointer-events-none'); document.getElementById('auth-modal').classList.add('opacity-100'); },
-                    hide: () => { document.getElementById('auth-modal').classList.add('hidden', 'opacity-0', 'pointer-events-none'); }
-                },
-                sell: {
-                    show: async () => {
-                        document.getElementById('sell-modal').classList.remove('hidden');
-                        // Reset form defaults if not editing
-                        if(!app.sell.isEditing) {
-                            document.getElementById('sell-form').reset();
-                            document.getElementById('sell-modal-title').innerText = 'Post an Ad';
-                            document.getElementById('sell-submit-btn').innerText = 'Post & Pay';
-                            document.getElementById('plan-selection-section').classList.remove('hidden');
-                            document.getElementById('preview-container').innerHTML = '';
-                        }
-                        
-                        const catSelect = document.getElementById('category-select');
-                        if(catSelect.options.length <= 1) {
-                            state.categories.forEach(c => {
-                                const opt = document.createElement('option');
-                                opt.value = c.id; opt.text = c.name;
-                                catSelect.add(opt);
-                            });
-                            const stSelect = document.getElementById('state-select');
-                            if(stSelect.options.length <= 1) { // Populate states only once
-                                state.locations.forEach(l => {
-                                    const opt = document.createElement('option');
-                                    opt.value = l.state; opt.text = l.state;
-                                    stSelect.add(opt);
-                                });
-                            }
-                        }
-                    },
-                    hide: () => {
-                        document.getElementById('sell-modal').classList.add('hidden');
-                        app.sell.isEditing = false; // Reset edit state
-                    }
-                },
-                tnc: {
-                    show: () => document.getElementById('info-modal').classList.remove('hidden'),
-                    hide: () => document.getElementById('info-modal').classList.add('hidden')
-                },
-                privacy: {
-                      show: () => document.getElementById('privacy-modal').classList.remove('hidden'),
-                      hide: () => document.getElementById('privacy-modal').classList.add('hidden')
-                },
-                sitemap: {
-                      show: () => document.getElementById('sitemap-modal').classList.remove('hidden'),
-                      hide: () => document.getElementById('sitemap-modal').classList.add('hidden')
+                auth: { show: () => { document.getElementById('auth-modal').classList.remove('hidden', 'opacity-0', 'pointer-events-none'); document.getElementById('auth-modal').classList.add('opacity-100'); }, hide: () => { document.getElementById('auth-modal').classList.add('hidden', 'opacity-0', 'pointer-events-none'); } },
+                sell: { 
+                    show: () => { 
+                        document.getElementById('sell-modal').classList.remove('hidden'); 
+                        const sel = document.getElementById('category-select');
+                        if(sel.options.length < 2) state.categories.forEach(c => { const o = document.createElement('option'); o.value=c.id; o.text=c.name; sel.add(o); });
+                        const st = document.getElementById('state-select');
+                        if(st.options.length < 2) state.locations.forEach(l => { const o = document.createElement('option'); o.value=l.state; o.text=l.state; st.add(o); });
+                    }, 
+                    hide: () => document.getElementById('sell-modal').classList.add('hidden') 
                 }
             },
             sell: {
                 stagedFiles: [],
                 planPrice: 0,
                 micrositeCost: 0,
-                isEditing: false,
-                handleCategoryChange: (catId) => {
-                    app.sell.updateSubcats(catId);
-                    app.sell.renderAttributes(catId);
-                },
-                updateSubcats: (catId) => {
-                   const cat = state.categories.find(c => c.id == catId);
-                   const sub = document.getElementById('subcategory-select');
-                   sub.innerHTML = "<option value=''>Select...</option>";
-                   sub.disabled = false;
-                   if(cat && cat.subcategories) {
-                       cat.subcategories.forEach(s => { const o = document.createElement('option'); o.text = s; o.value = s; sub.add(o); });
-                   }
-                },
-                renderAttributes: (catId) => {
-                    const cat = state.categories.find(c => c.id == catId);
-                    const container = document.getElementById('dynamic-attributes');
-                    container.innerHTML = '';
-
-                    if(cat && cat.attributes) {
-                        cat.attributes.forEach(attr => {
-                            const div = document.createElement('div');
-                            const label = `<label class="block text-xs font-bold text-gray-500 uppercase mb-2">${attr.label}</label>`;
-                            let input = '';
-                            if(attr.type === 'select') {
-                                input = `<div class="relative"><select name="attr_${attr.key}" id="attr_${attr.key}" class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none bg-gray-50 focus:bg-white appearance-none">
-                                                <option value="">Select...</option>
-                                                ${attr.options.map(o => `<option value="${o}">${o}</option>`).join('')}
-                                           </select><i class="fas fa-chevron-down absolute right-4 top-3.5 text-gray-400 pointer-events-none"></i></div>`;
-                            } else {
-                                input = `<input type="${attr.type}" name="attr_${attr.key}" id="attr_${attr.key}" class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none">`;
-                            }
-                            div.innerHTML = label + input;
-                            container.appendChild(div);
-                        });
-                    }
+                handleCategoryChange: (id) => {
+                    const cat = state.categories.find(c => c.id == id);
+                    const sub = document.getElementById('subcategory-select');
+                    sub.innerHTML = '<option>Select...</option>';
+                    sub.disabled = false;
+                    cat?.subcategories.forEach(s => { const o = document.createElement('option'); o.value=s; o.text=s; sub.add(o); });
+                    
+                    const attrContainer = document.getElementById('dynamic-attributes');
+                    attrContainer.innerHTML = '';
+                    cat?.attributes?.forEach(attr => {
+                        const div = document.createElement('div');
+                        div.innerHTML = `<label class="block text-xs font-bold text-gray-500 uppercase mb-2">${attr.label}</label>${attr.type==='select'?`<select name="attr_${attr.key}" class="w-full border rounded-xl px-4 py-3 bg-white"><option>Select...</option>${attr.options.map(o=>`<option>${o}</option>`).join('')}</select>`:`<input type="${attr.type}" name="attr_${attr.key}" class="w-full border rounded-xl px-4 py-3">`}`;
+                        attrContainer.appendChild(div);
+                    });
                 },
                 handleFiles: (e) => {
                     const files = Array.from(e.target.files);
                     app.sell.stagedFiles.push(...files);
                     const container = document.getElementById('preview-container');
-                    // Don't clear, append
-                    files.forEach(f => {
-                        const url = URL.createObjectURL(f);
-                        container.innerHTML += `<img src="${url}" class="w-16 h-16 object-cover rounded-lg border border-gray-200 shadow-sm">`;
-                    });
+                    files.forEach(f => { container.innerHTML += `<img src="${URL.createObjectURL(f)}" class="w-16 h-16 object-cover rounded-lg border">`; });
                 },
-                updatePlanPrice: (price) => {
-                    app.sell.planPrice = price;
+                updatePlanPrice: (p) => { app.sell.planPrice = p; app.sell.calcTotal(); },
+                toggleMicrosite: (cb) => { app.sell.micrositeCost = cb.checked ? 3999 : 0; app.sell.calcTotal(); },
+                calcTotal: () => { document.getElementById('total-plan-price').innerText = `₹${app.sell.planPrice + app.sell.micrositeCost}`; },
+                generateAI: async () => { 
+                    const fd = new FormData(document.getElementById('sell-form'));
+                    const title = fd.get('title');
+                    const price = fd.get('price');
+                    const catId = fd.get('category');
+                    const subcat = fd.get('subcategory');
                     
-                    // Microsite Logic Check
-                    const plan = document.querySelector('input[name="plan"]:checked')?.value;
-                    const micrositeCheck = document.getElementById('microsite-addon');
-                    const micrositeContainer = document.getElementById('microsite-container');
-                    const micrositeDesc = document.getElementById('microsite-desc');
-
-                    if(plan === 'platinum') {
-                        // Auto-include microsite in Platinum
-                        micrositeCheck.checked = true;
-                        micrositeCheck.disabled = true;
-                        micrositeContainer.classList.add('opacity-50', 'pointer-events-none');
-                        micrositeDesc.innerText = "Included with Platinum Plan";
-                        app.sell.micrositeCost = 0;
-                    } else {
-                        micrositeCheck.disabled = false;
-                        micrositeContainer.classList.remove('opacity-50', 'pointer-events-none');
-                        micrositeDesc.innerText = "Dedicated business page. + ₹3,999/month";
-                        // If it was checked manually, charge for it
-                        app.sell.micrositeCost = micrositeCheck.checked ? 3999 : 0;
-                    }
-
-                    app.sell.calcTotal();
-                },
-                toggleMicrosite: (cb) => {
-                    app.sell.micrositeCost = cb.checked ? 3999 : 0;
-                    app.sell.calcTotal();
-                },
-                calcTotal: () => {
-                    document.getElementById('total-plan-price').innerText = `₹${app.sell.planPrice + app.sell.micrositeCost}`;
-                },
-                generateAI: async () => {
-                    const title = document.getElementsByName('title')[0].value;
-                    if(!title) return utils.toast('Enter title first', 'error');
-                    document.getElementById('ad-description').value = `Premium ${title} in excellent condition. Verified by TradeGinger AI. Contact for more details.`;
-                    utils.toast('AI Generated Description (Mock)', 'success');
-                },
-                edit: async (adId) => {
-                    app.sell.isEditing = true;
-                    // BUG FIX: Removed 'cities(*)' because there is no explicit foreign key relation on the public table view causing the edit to fail
-                    const { data: ad } = await supabase.from('listings').select('*').eq('id', adId).single();
-                    if(!ad) return utils.toast("Error loading ad", "error");
-
-                    await app.modals.sell.show();
+                    if(!title || !catId) return utils.toast("Please fill title & category first", "error");
                     
-                    document.getElementById('sell-modal-title').innerText = 'Edit Ad';
-                    document.getElementById('sell-submit-btn').innerText = 'Update Ad';
-                    document.getElementById('plan-selection-section').classList.add('hidden'); // Don't ask plan on edit
-                    document.getElementById('edit-id').value = ad.id;
-
-                    document.querySelector('[name="title"]').value = ad.title;
-                    document.querySelector('[name="price"]').value = ad.price;
-                    document.querySelector('[name="description"]').value = ad.description;
+                    const btn = document.getElementById('ai-btn');
+                    btn.disabled = true;
+                    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Writing...`;
                     
-                    // Pre-fill Location logic
-                    let foundState = null;
-                    // Find state that contains this city string
-                    for(const loc of state.locations) {
-                        if(loc.cities.includes(ad.location)) {
-                            foundState = loc.state;
-                            break;
-                        }
-                    }
+                    const catName = state.categories.find(c=>c.id==catId)?.name;
+                    const attrs = {};
+                    for(let [k,v] of fd.entries()) if(k.startsWith('attr_') && v && v !== 'Select...') attrs[k.replace('attr_', '')] = v;
 
-                    if(foundState) {
-                         const stSelect = document.getElementById('state-select');
-                         stSelect.value = foundState; 
-                         app.location.populateCities(foundState, 'city-select');
-                         document.getElementById('city-select').value = ad.location; 
-                         document.getElementById('city-select').disabled = false;
-                    }
-
-                    document.getElementById('category-select').value = ad.category_id;
-                    app.sell.handleCategoryChange(ad.category_id);
-                    setTimeout(() => { 
-                         document.getElementById('subcategory-select').value = ad.subcategory;
-                         if(ad.attributes) {
-                            Object.entries(ad.attributes).forEach(([key, val]) => {
-                                const el = document.getElementById(`attr_${key}`);
-                                if(el) el.value = val;
-                            });
-                        }
-                    }, 100);
+                    const desc = await app.gemini.generateDescription(title, catName, subcat, price, attrs);
+                    if(desc) document.querySelector('[name=description]').value = desc;
+                    else utils.toast("AI generation failed. Try again.", "error");
                     
-                    const container = document.getElementById('preview-container');
-                    container.innerHTML = '';
-                    if(ad.image_urls) {
-                        ad.image_urls.forEach(url => {
-                            container.innerHTML += `<img src="${url}" class="w-16 h-16 object-cover rounded-lg border border-gray-200">`;
-                        });
-                    }
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fas fa-wand-magic-sparkles"></i> AI Write`;
                 },
                 submit: async () => {
+                    if(!state.user) return utils.toast("Please login to post", "error");
+                    
                     const form = document.getElementById('sell-form');
-                    if(!form.checkValidity()) return utils.toast('Please fill all fields', 'error');
-                    
-                    const terms = document.getElementById('accept-terms').checked;
-                    if(!terms) return utils.toast('Please accept the Terms & Conditions', 'error');
-                    
+                    if(!form.checkValidity()) {
+                        form.reportValidity();
+                        return;
+                    }
+
+                    // -- PAYMENT STEP --
                     const totalCost = app.sell.planPrice + app.sell.micrositeCost;
-
-                    // Payment only if NOT editing and price > 0
-                    if(!app.sell.isEditing && totalCost > 0) {
-                        const success = await app.payment.process(totalCost, "Ad Posting & Plans");
-                        if(!success) return;
+                    if(totalCost > 0) {
+                        const paid = await app.payment.process(totalCost, "Ad Listing Fee");
+                        if(!paid) return; // Stop if payment cancelled/failed
                     }
-                    
-                    utils.toast(app.sell.isEditing ? 'Updating...' : 'Compressing & Uploading...', 'info');
-                    
-                    const imageUrls = [];
-                    for (const file of app.sell.stagedFiles) {
-                         try {
-                            const compressedBlob = await compressImage(file);
-                            const fileName = `${state.user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
-                            
-                            // Try uploading to Supabase Storage
-                            const { data, error } = await supabase.storage.from('listings').upload(fileName, compressedBlob, {
-                                cacheControl: '3600',
-                                upsert: false
-                            });
 
-                            if (error) throw error;
-                            
-                            const { data: publicUrlData } = supabase.storage.from('listings').getPublicUrl(fileName);
-                            imageUrls.push(publicUrlData.publicUrl);
+                    utils.toast("Processing...", "info");
 
-                        } catch(e) { 
-                            console.warn("Storage upload failed, falling back to Base64:", e.message);
-                            try {
-                                const base64 = await blobToBase64(file); 
-                                imageUrls.push(base64);
-                            } catch(b64err) {
-                                console.error("Base64 conversion failed", b64err);
-                                imageUrls.push('https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=500'); // Last resort
-                            }
-                        }
-                    }
-                    
                     const fd = new FormData(form);
-                    // Extract dynamic attributes
+                    
+                    // Collect dynamic attributes
                     const attributes = {};
                     for(let [key, val] of fd.entries()) {
-                        if(key.startsWith('attr_')) attributes[key.replace('attr_', '')] = val;
+                        if(key.startsWith('attr_') && val !== 'Select...') attributes[key.replace('attr_', '')] = val;
+                    }
+                    
+                    // -- BUSINESS LOGIC: PLANS & EXPIRY --
+                    const plan = document.querySelector('input[name="plan"]:checked')?.value || 'free';
+                    attributes['listing_type'] = plan;
+                    
+                    // Calculate Expiry Date
+                    const now = new Date();
+                    let expiryDays = 45; // Default Free
+                    if (plan === 'c2c') expiryDays = 20;
+                    else if (plan === 'silver') expiryDays = 180; // 6 Months
+                    else if (plan === 'gold' || plan === 'platinum') expiryDays = 365; // 1 Year
+                    
+                    const expiryDate = new Date(now);
+                    expiryDate.setDate(now.getDate() + expiryDays);
+                    attributes['expiry_date'] = expiryDate.toISOString();
+
+                    // Set Featured/Homepage Flags
+                    if (plan === 'gold' || plan === 'platinum') {
+                        attributes['is_featured'] = true;
+                    }
+                    if (plan === 'platinum') {
+                        attributes['on_homepage'] = true;
+                    }
+                    if (plan === 'silver') {
+                        attributes['is_highlighted'] = true;
+                    }
+
+                    // Handle Image Upload (Robust Fallback)
+                    let imageUrls = [];
+                    if(app.sell.stagedFiles.length > 0) {
+                        try {
+                            imageUrls = await Promise.all(app.sell.stagedFiles.map(file => utils.fileToBase64(file)));
+                        } catch(e) {
+                            console.warn("Image processing failed", e);
+                            imageUrls = ['https://placehold.co/600x400?text=Image+Error'];
+                        }
                     }
 
                     const citySelect = document.getElementById('city-select');
-                    const cityName = citySelect.options[citySelect.selectedIndex].text;
-                    const plan = document.querySelector('input[name="plan"]:checked').value;
-
-                    // FIX: Add listing_type to attributes because column doesn't exist in DB
-                    if(plan) attributes['listing_type'] = plan;
+                    const cityName = citySelect.options[citySelect.selectedIndex]?.text || '';
 
                     const payload = {
                         user_id: state.user.id,
@@ -1997,79 +1421,69 @@
                         subcategory: fd.get('subcategory'),
                         location: cityName,
                         attributes: attributes,
-                        // listing_type: plan <-- REMOVED CAUSING ERROR
+                        image_urls: imageUrls
                     };
 
-                    if(imageUrls.length > 0) payload.image_urls = imageUrls;
-
-                    let error;
-                    if(app.sell.isEditing) {
-                        const id = document.getElementById('edit-id').value;
-                        const { error: upError } = await supabase.from('listings').update(payload).eq('id', id);
-                        error = upError;
-                    } else {
-                        const { error: inError } = await supabase.from('listings').insert(payload);
-                        error = inError;
-                    }
-
-                    if(error) return utils.toast(error.message, 'error');
+                    const { error } = await supabase.from('listings').insert(payload);
                     
-                    utils.toast(app.sell.isEditing ? 'Ad Updated!' : 'Ad Posted Successfully!', 'success');
-                    app.modals.sell.hide();
-                    form.reset();
-                    app.sell.stagedFiles = [];
-                    document.getElementById('preview-container').innerHTML = '';
-                    app.router.navigate('profile');
+                    if(error) {
+                        console.error(error);
+                        utils.toast("Error: " + error.message, 'error');
+                    } else { 
+                        utils.toast('Ad Posted Successfully!', 'success'); 
+                        app.modals.sell.hide(); 
+                        form.reset();
+                        app.sell.stagedFiles = [];
+                        document.getElementById('preview-container').innerHTML = '';
+                        app.router.navigate('profile'); 
+                    }
                 },
                 delete: async (id) => {
-                    if(!confirm('Delete this ad?')) return;
-                    const { error } = await supabase.from('listings').delete().eq('id', id);
-                    if(error) utils.toast(error.message, 'error');
-                    else {
-                        utils.toast('Deleted', 'success');
+                    if(confirm("Delete this ad?")) {
+                        await supabase.from('listings').delete().eq('id', id);
+                        utils.toast("Deleted", "success");
                         app.data.fetchUserListings();
                     }
                 }
             },
-
-            location: {
-                populateCities: (s, tid) => {
-                    const t = document.getElementById(tid);
-                    t.innerHTML = '<option value="">Select City...</option>';
-                    t.disabled = false;
-                    const l = state.locations.find(x=>x.state===s);
-                    l?.cities.forEach(c => { const o = document.createElement('option'); o.text = c; o.value = c; t.add(o); });
-                }
-            },
-
             chat: {
-                subscription: null,
-                init: async () => { if(state.user) app.chat.fetchConversations(); },
+                init: () => { if(state.user) app.chat.fetchConversations(); },
                 fetchConversations: async () => {
-                    const { data } = await supabase.from('chat_rooms').select('*, listings(title), buyer:buyer_id(full_name, avatar_url), seller:seller_id(full_name, avatar_url)').or(`buyer_id.eq.${state.user.id},seller_id.eq.${state.user.id}`);
-                    if(data) document.getElementById('chat-list').innerHTML = data.map(r => {
-                        const u = r.buyer_id === state.user.id ? r.seller : r.buyer;
-                        return `<div onclick="app.chat.openRoom('${r.id}', '${u?.full_name}', '${u?.avatar_url}')" class="p-4 border-b hover:bg-gray-100 cursor-pointer flex items-center gap-3"><img src="${u?.avatar_url||'https://placehold.co/40'}" class="w-10 h-10 rounded-full object-cover"><div><div class="font-bold text-sm">${u?.full_name}</div><div class="text-xs text-gray-500 truncate w-32">${r.listings?.title||'Ad'}</div></div></div>`;
-                    }).join('');
+                    const { data } = await supabase.from('chat_rooms').select('*, buyer:buyer_id(full_name), seller:seller_id(full_name)').or(`buyer_id.eq.${state.user.id},seller_id.eq.${state.user.id}`);
+                    if(data) document.getElementById('chat-list').innerHTML = data.map(r => `<div onclick="app.chat.openRoom('${r.id}')" class="p-4 border-b hover:bg-gray-50 cursor-pointer text-sm font-bold text-gray-700">Chat #${r.id.substring(0,4)}</div>`).join('');
                 },
                 start: async (sid, lid, sname) => {
                     if(!state.user) return app.modals.auth.show();
                     if(sid === state.user.id) return utils.toast("Cannot chat with self", "error");
                     let { data: r } = await supabase.from('chat_rooms').select('id').eq('listing_id', lid).eq('buyer_id', state.user.id).eq('seller_id', sid).maybeSingle();
                     if(!r) { const { data } = await supabase.from('chat_rooms').insert({ listing_id: lid, buyer_id: state.user.id, seller_id: sid }).select().single(); r = data; }
-                    app.chat.openRoom(r.id, sname);
+                    app.chat.openRoom(r.id);
                 },
-                openRoom: async (rid, name, img) => {
+                openRoom: async (rid) => {
                     state.currentChatRoom = rid;
                     document.getElementById('chat-modal').classList.remove('hidden');
-                    document.getElementById('chat-header-name').innerText = name;
-                    document.getElementById('chat-header-img').src = img || 'https://placehold.co/40';
-                    const c = document.getElementById('chat-messages');
-                    c.innerHTML = '';
-                    if(app.chat.subscription) supabase.removeChannel(app.chat.subscription);
-                    const { data } = await supabase.from('chat_messages').select('*').eq('room_id', rid).order('created_at', {ascending: true});
-                    data?.forEach(m => app.chat.renderMsg(m));
-                    app.chat.subscription = supabase.channel(`room:${rid}`).on('postgres_changes', {event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${rid}`}, p => app.chat.renderMsg(p.new)).subscribe();
+                    const c = document.getElementById('chat-messages'); c.innerHTML = '';
+                    
+                    const { data: messages } = await supabase.from('chat_messages').select('*').eq('room_id', rid).order('created_at', {ascending: true});
+                    const { data: room } = await supabase.from('chat_rooms').select('*').eq('id', rid).single();
+                    
+                    // Determine my role
+                    const myRole = room.seller_id === state.user.id ? 'Seller' : 'Buyer';
+                    
+                    messages?.forEach(m => app.chat.renderMsg(m));
+                    
+                    // Generate smart replies if last message wasn't mine
+                    const lastMsg = messages?.[messages.length-1];
+                    if(lastMsg && lastMsg.sender_id !== state.user.id) {
+                        const suggestions = await app.gemini.generateSmartReplies(lastMsg.content, myRole);
+                        const sDiv = document.getElementById('smart-replies');
+                        if(suggestions.length > 0) {
+                            sDiv.innerHTML = suggestions.map(s => `<button onclick="document.getElementById('chat-input').value='${s}'" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-full px-3 py-1 text-gray-600 transition whitespace-nowrap">✨ ${s}</button>`).join('');
+                            sDiv.classList.remove('hidden');
+                        } else sDiv.classList.add('hidden');
+                    }
+
+                    supabase.channel(`room:${rid}`).on('postgres_changes', {event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${rid}`}, p => app.chat.renderMsg(p.new)).subscribe();
                 },
                 renderMsg: (m) => {
                     const me = m.sender_id === state.user.id;
@@ -2080,11 +1494,18 @@
                 send: async (e) => {
                     e.preventDefault();
                     const i = document.getElementById('chat-input');
-                    const txt = i.value.trim();
-                    if(!txt) return;
-                    if(txt.match(/(\d{10}|@)/)) return utils.toast('Contact sharing prohibited. Use Unlock feature.', 'error');
-                    await supabase.from('chat_messages').insert({ room_id: state.currentChatRoom, sender_id: state.user.id, content: txt });
+                    if(!i.value.trim()) return;
+                    await supabase.from('chat_messages').insert({ room_id: state.currentChatRoom, sender_id: state.user.id, content: i.value });
                     i.value = '';
+                    document.getElementById('smart-replies').classList.add('hidden'); // Hide suggestions after sending
+                }
+            },
+            location: {
+                populateCities: (s, tid) => {
+                    const t = document.getElementById(tid);
+                    t.innerHTML = '<option>Select...</option>';
+                    t.disabled = false;
+                    state.locations.find(x=>x.state===s)?.cities.forEach(c => { const o=document.createElement('option'); o.value=c; o.text=c; t.add(o); });
                 }
             }
         };

@@ -692,6 +692,7 @@
                 if(!str) return '';
                 const div = document.createElement('div');
                 div.textContent = str;
+                div.innerHTML = div.innerHTML.replace(/\n/g, '<br>');
                 return div.innerHTML;
             },
             formatPrice: (price) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price),
@@ -712,7 +713,7 @@
                 const el = document.createElement('div');
                 const colors = { success: 'bg-green-600', error: 'bg-red-600', info: 'bg-dark-800' };
                 el.className = `toast ${colors[type]}`;
-                el.innerHTML = `<i class="fas fa-info-circle"></i> <span>${utils.sanitize(msg)}</span>`;
+                el.innerHTML = `<i class="fas fa-info-circle"></i> <span>${msg}</span>`;
                 container.appendChild(el);
                 setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; setTimeout(() => el.remove(), 300); }, 3000);
             },

@@ -149,6 +149,15 @@
         <span class="absolute left-14 top-3 bg-dark-900 text-white text-[10px] px-2 py-1 rounded opacity-0 hover:opacity-100 transition pointer-events-none whitespace-nowrap">Switch View</span>
     </div>
 
+    <!-- WhatsApp Support FAB -->
+    <a href="https://wa.me/919876543210?text=Hi%20TradeGinger,%20I%20am%20interested%20in%20Seller%20Onboarding%20and%20Business%20Leads." target="_blank" class="fixed bottom-24 md:bottom-6 right-4 z-[200] bg-[#25D366] hover:bg-[#128C7E] text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 group border-4 border-white/10">
+        <i class="fab fa-whatsapp text-3xl"></i>
+        <div class="absolute right-16 top-1/2 -translate-y-1/2 bg-white text-gray-800 px-4 py-2 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none transform translate-x-4 group-hover:translate-x-0">
+            <div class="text-xs font-bold whitespace-nowrap">Seller Support</div>
+            <div class="text-[10px] text-gray-500 whitespace-nowrap">Get Leads & Help</div>
+        </div>
+    </a>
+
     <!-- App Wrapper for Layout Stability -->
     <div id="app-wrapper" class="flex flex-col min-h-screen relative bg-gray-50 transition-all duration-300 w-full pb-[70px] md:pb-0">
 
@@ -280,6 +289,27 @@
 
     <!-- SYSTEM MODALS -->
     
+    <!-- Admin Auth Modal -->
+    <div id="admin-auth-modal" class="fixed inset-0 bg-dark-900/80 backdrop-blur-md hidden z-[210] flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all duration-300 scale-100">
+            <div class="p-8 text-center">
+                <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Admin Access</h3>
+                <p class="text-sm text-gray-500 mb-6">Enter security PIN to access the dashboard.</p>
+                
+                <form onsubmit="app.admin.handleAuth(event)" class="space-y-4">
+                    <input type="password" id="admin-pin" placeholder="Enter PIN (Try: 2025)" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none text-center text-lg font-bold tracking-widest transition" maxlength="4" required>
+                    <button type="submit" class="w-full bg-dark-900 hover:bg-black text-white font-bold py-3 rounded-xl shadow-lg transition transform hover:-translate-y-0.5">
+                        Unlock Dashboard
+                    </button>
+                </form>
+                <button onclick="app.modals.adminAuth.hide(); app.router.navigate('home')" class="mt-4 text-xs text-gray-400 hover:text-gray-600 underline">Return Home</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Auth Modal -->
     <div id="auth-modal" class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm hidden z-[200] flex items-end md:items-center justify-center p-0 md:p-4 transition-all duration-300 opacity-0 scale-95 pointer-events-none">
         <div class="bg-white rounded-t-2xl md:rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all duration-300 max-h-[90vh] overflow-y-auto">
@@ -384,7 +414,12 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Price (₹)</label>
-                            <input type="number" name="price" placeholder="0" required class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none font-bold text-gray-800">
+                            <div class="relative">
+                                <input type="number" name="price" id="price-input" placeholder="0" required class="w-full rounded-xl border-gray-200 border px-4 py-3 focus:ring-2 focus:ring-primary-500 outline-none font-bold text-gray-800">
+                                <button type="button" onclick="app.sell.estimatePrice()" id="estimate-btn" class="absolute right-2 top-2 bg-green-50 text-green-700 hover:bg-green-100 text-[10px] font-bold px-3 py-1.5 rounded-lg transition border border-green-100 flex items-center gap-1">
+                                    <i class="fas fa-magic"></i> Estimate
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -683,7 +718,8 @@
             currentChatRoom: null,
             ip: '127.0.0.1',
             debugAdmin: false,
-            isDev: false 
+            isDev: false,
+            isAdminAuthenticated: false // New Security State
         };
 
         // --- UTILS ---
@@ -757,6 +793,103 @@
                 }
             },
 
+            // --- ADMIN MODULE ---
+            admin: {
+                handleAuth: (e) => {
+                    e.preventDefault();
+                    const pin = document.getElementById('admin-pin').value;
+                    if(pin === '2025') { // Hardcoded for Demo
+                        state.isAdminAuthenticated = true;
+                        app.modals.adminAuth.hide();
+                        app.router.navigate('admin');
+                        utils.toast("Admin Access Granted", "success");
+                    } else {
+                        utils.toast("Invalid PIN", "error");
+                        document.getElementById('admin-pin').value = '';
+                    }
+                },
+                init: async () => {
+                    // Load Dashboard Stats
+                    const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+                    const { count: adCount } = await supabase.from('listings').select('*', { count: 'exact', head: true });
+                    
+                    document.getElementById('stat-users').innerText = userCount || 0;
+                    document.getElementById('stat-ads').innerText = adCount || 0;
+                    
+                    // Default to Listings Tab
+                    app.admin.loadListings();
+                },
+                switchTab: (tab) => {
+                    document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden'));
+                    document.getElementById(`admin-${tab}`).classList.remove('hidden');
+                    
+                    // Highlight sidebar
+                    document.querySelectorAll('.admin-nav-item').forEach(el => el.classList.remove('bg-dark-800', 'text-white'));
+                    document.getElementById(`nav-${tab}`).classList.add('bg-dark-800', 'text-white');
+
+                    if(tab === 'listings') app.admin.loadListings();
+                    if(tab === 'users') app.admin.loadUsers();
+                },
+                loadListings: async () => {
+                    const container = document.getElementById('admin-listings-table');
+                    container.innerHTML = '<tr><td colspan="5" class="text-center py-4"><div class="loader mx-auto"></div></td></tr>';
+                    
+                    const { data } = await supabase.from('listings').select('*, profiles(full_name)').order('created_at', {ascending: false}).limit(50);
+                    
+                    if(!data || data.length === 0) {
+                        container.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-500">No listings found.</td></tr>';
+                        return;
+                    }
+
+                    container.innerHTML = data.map(item => `
+                        <tr class="hover:bg-gray-50 transition border-b border-gray-100">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="${item.image_urls?.[0] || 'https://placehold.co/40'}" class="w-10 h-10 rounded-lg object-cover bg-gray-200">
+                                    <div class="font-medium text-gray-900 truncate max-w-[150px]">${utils.sanitize(item.title)}</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-500">${item.profiles?.full_name || 'Unknown'}</td>
+                            <td class="px-6 py-4 font-bold">₹${item.price}</td>
+                            <td class="px-6 py-4"><span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Active</span></td>
+                            <td class="px-6 py-4">
+                                <button onclick="app.admin.deleteListing('${item.id}')" class="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `).join('');
+                },
+                loadUsers: async () => {
+                    const container = document.getElementById('admin-users-table');
+                    container.innerHTML = '<tr><td colspan="4" class="text-center py-4"><div class="loader mx-auto"></div></td></tr>';
+                    
+                    const { data } = await supabase.from('profiles').select('*').order('created_at', {ascending: false}).limit(50);
+                    
+                    container.innerHTML = data.map(u => `
+                        <tr class="hover:bg-gray-50 transition border-b border-gray-100">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="${u.avatar_url || 'https://placehold.co/40'}" class="w-8 h-8 rounded-full">
+                                    <span class="font-medium">${utils.sanitize(u.full_name)}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500">${new Date(u.created_at).toLocaleDateString()}</td>
+                            <td class="px-6 py-4"><span class="capitalize px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-bold">${u.account_type || 'Individual'}</span></td>
+                            <td class="px-6 py-4 text-xs text-gray-400">ID: ${u.id.substring(0,8)}...</td>
+                        </tr>
+                    `).join('');
+                },
+                deleteListing: async (id) => {
+                    if(confirm("ADMIN ACTION: Permanently delete this listing?")) {
+                        const { error } = await supabase.from('listings').delete().eq('id', id);
+                        if(error) utils.toast("Delete failed: " + error.message, 'error');
+                        else {
+                            utils.toast("Listing deleted by Admin", 'success');
+                            app.admin.loadListings();
+                        }
+                    }
+                }
+            },
+
             // ✨ Gemini AI Module
             gemini: {
                 call: async (prompt) => {
@@ -786,6 +919,20 @@
                         const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
                         return JSON.parse(cleanText);
                     } catch(e) { return []; }
+                },
+                estimatePrice: async (title, category, subcategory, attributes) => {
+                    const prompt = `I am selling a used item on a marketplace in India. 
+                    Category: ${category} (${subcategory}).
+                    Title: "${title}".
+                    Details: ${JSON.stringify(attributes)}.
+                    
+                    Based on general market rates for used items in India, suggest a realistic price range in INR. 
+                    Return ONLY a short string like "₹5,000 - ₹7,000". Do not add any conversational text.`;
+                    return await app.gemini.call(prompt);
+                },
+                translateToHindi: async (text) => {
+                    const prompt = `Translate the following marketplace chat message to Hindi (or Hinglish if appropriate for casual chat). Text: "${text}". Return ONLY the translation.`;
+                    return await app.gemini.call(prompt);
                 }
             },
 
@@ -880,6 +1027,18 @@
                         return;
                     }
 
+                    // Admin Route Protection
+                    if(route === 'admin') {
+                        if(!state.user) {
+                            app.modals.auth.show();
+                            return;
+                        }
+                        if(!state.isAdminAuthenticated) {
+                            app.modals.adminAuth.show();
+                            return;
+                        }
+                    }
+
                     switch(route) {
                         case 'home': view.innerHTML = app.views.home(); app.data.fetchListings('home-feed', 8); break;
                         case 'listing': view.innerHTML = app.views.listings(searchParams.get('cat')); app.data.fetchAllListings(searchParams); break;
@@ -887,7 +1046,10 @@
                         case 'profile': view.innerHTML = app.views.profile(); app.data.fetchUserListings(); app.data.renderMyLeads(); break;
                         case 'leads': view.innerHTML = app.views.leads(); break;
                         case 'sell': app.modals.sell.show(); break; // Removed history.back() for stability
-                        case 'admin': view.innerHTML = app.views.admin(); break;
+                        case 'admin': 
+                            view.innerHTML = app.views.admin(); 
+                            app.admin.init();
+                            break;
                         default: view.innerHTML = app.views.home(); app.data.fetchListings('home-feed', 8);
                     }
                 }
@@ -1191,90 +1353,142 @@
                                 <button onclick="app.data.buyLeadPack('Services', 500, 10)" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition">Buy 10 Leads</button>
                             </div>
                         </div>
+
+                        <!-- WhatsApp Custom Leads Banner -->
+                        <div class="mt-12 bg-green-50 border border-green-100 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-green-100 rounded-full opacity-50 pointer-events-none"></div>
+                            <div class="relative z-10">
+                                <h3 class="text-xl font-bold text-green-900 mb-2 flex items-center gap-2"><i class="fab fa-whatsapp text-2xl"></i> Need a Custom Lead Package?</h3>
+                                <p class="text-green-700 max-w-lg">Chat directly with our sales team for bulk deals, specific city targeting, and verified seller onboarding support.</p>
+                            </div>
+                            <a href="https://wa.me/919876543210?text=Hi%20TradeGinger,%20I%20need%20a%20custom%20leads%20package." target="_blank" class="relative z-10 bg-[#25D366] hover:bg-[#128C7E] text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-green-500/20 flex items-center gap-2 transition transform hover:-translate-y-0.5 whitespace-nowrap">
+                                <span>Chat Now</span> <i class="fas fa-arrow-right text-sm"></i>
+                            </a>
+                        </div>
                     </div>
                 `,
                 admin: () => `
-                    <div class="flex h-screen bg-gray-50">
+                    <div class="flex h-screen bg-gray-50 fade-in">
                         <!-- Sidebar -->
-                        <div class="w-64 bg-dark-900 text-gray-400 flex flex-col">
-                            <div class="p-6 font-bold text-white text-xl tracking-tight">TG Admin</div>
-                            <nav class="flex-grow px-4 space-y-1">
-                                <a href="#" class="block px-4 py-3 bg-dark-800 text-white rounded-lg flex items-center gap-3"><i class="fas fa-tachometer-alt w-5"></i> Dashboard</a>
-                                <a href="#" class="block px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3"><i class="fas fa-users w-5"></i> User Mgmt</a>
-                                <a href="#" class="block px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3"><i class="fas fa-gem w-5"></i> Premium Plans</a>
-                                <a href="#" class="block px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3"><i class="fas fa-ad w-5"></i> Ads & Listings</a>
-                                <a href="#" class="block px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3"><i class="fas fa-funnel-dollar w-5"></i> Leads & Sales</a>
-                                <a href="#" class="block px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3"><i class="fas fa-wallet w-5"></i> Payments</a>
+                        <div class="w-64 bg-dark-900 text-gray-400 flex flex-col flex-shrink-0 transition-all duration-300">
+                            <div class="p-6 font-bold text-white text-xl tracking-tight flex items-center gap-2">
+                                <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white text-xs">TG</div>
+                                Admin
+                            </div>
+                            <nav class="flex-grow px-4 space-y-2 mt-4">
+                                <button id="nav-dashboard" onclick="app.admin.switchTab('dashboard')" class="w-full admin-nav-item px-4 py-3 bg-dark-800 text-white rounded-lg flex items-center gap-3 transition text-left text-sm font-medium">
+                                    <i class="fas fa-tachometer-alt w-5 text-center"></i> Dashboard
+                                </button>
+                                <button id="nav-listings" onclick="app.admin.switchTab('listings')" class="w-full admin-nav-item px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3 transition text-left text-sm font-medium">
+                                    <i class="fas fa-ad w-5 text-center"></i> Listings
+                                </button>
+                                <button id="nav-users" onclick="app.admin.switchTab('users')" class="w-full admin-nav-item px-4 py-3 hover:bg-dark-800 hover:text-white rounded-lg flex items-center gap-3 transition text-left text-sm font-medium">
+                                    <i class="fas fa-users w-5 text-center"></i> Users
+                                </button>
                             </nav>
                             <div class="p-4 border-t border-gray-800">
-                                <button onclick="app.router.navigate('home')" class="text-sm hover:text-white flex items-center gap-2"><i class="fas fa-sign-out-alt"></i> Exit Admin</button>
+                                <button onclick="state.isAdminAuthenticated=false; app.router.navigate('home')" class="text-sm hover:text-white flex items-center gap-2 text-red-400 font-bold px-2 py-1"><i class="fas fa-lock"></i> Lock Admin</button>
                             </div>
                         </div>
                         
                         <!-- Content -->
-                        <div class="flex-grow overflow-y-auto">
-                            <header class="bg-white border-b h-16 flex items-center px-8 justify-between">
-                                <h2 class="font-bold text-gray-800">Overview</h2>
+                        <div class="flex-grow overflow-y-auto relative">
+                            <header class="bg-white border-b h-16 flex items-center px-8 justify-between sticky top-0 z-10 shadow-sm">
+                                <h2 class="font-bold text-gray-800 text-lg">Admin Control Center</h2>
                                 <div class="flex items-center gap-4">
-                                    <span class="text-sm text-gray-500">Super Admin</span>
-                                    <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
+                                    <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Super Admin Mode</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="text-right hidden sm:block">
+                                            <div class="text-sm font-bold text-gray-900">${state.profile?.full_name || 'Admin'}</div>
+                                            <div class="text-[10px] text-gray-500">Authorized</div>
+                                        </div>
+                                        <img src="${state.profile?.avatar_url || 'https://placehold.co/40'}" class="w-9 h-9 rounded-full bg-gray-200 border border-gray-300">
+                                    </div>
                                 </div>
                             </header>
+                            
                             <div class="p-8">
-                                <!-- Stats -->
-                                <div class="grid grid-cols-4 gap-6 mb-8">
-                                    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                                        <div class="text-sm text-gray-500 mb-1">Total Users</div>
-                                        <div class="text-2xl font-bold text-gray-900">12,403</div>
+                                <!-- Dashboard Tab -->
+                                <div id="admin-dashboard" class="admin-tab-content">
+                                    <!-- Stats -->
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-soft">
+                                            <div class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Total Users</div>
+                                            <div class="text-3xl font-extrabold text-gray-900" id="stat-users">...</div>
+                                        </div>
+                                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-soft">
+                                            <div class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Live Listings</div>
+                                            <div class="text-3xl font-extrabold text-primary-600" id="stat-ads">...</div>
+                                        </div>
+                                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-soft">
+                                            <div class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Total Revenue</div>
+                                            <div class="text-3xl font-extrabold text-green-600">₹4.2L</div>
+                                            <div class="text-xs text-gray-400 mt-1">Estimated</div>
+                                        </div>
+                                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-soft">
+                                            <div class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Platform Health</div>
+                                            <div class="text-3xl font-extrabold text-gray-900 flex items-center gap-2">
+                                                98% <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                                        <div class="text-sm text-gray-500 mb-1">Active Premium</div>
-                                        <div class="text-2xl font-bold text-gray-900">845</div>
-                                    </div>
-                                    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                                        <div class="text-sm text-gray-500 mb-1">Revenue (Mo)</div>
-                                        <div class="text-2xl font-bold text-gray-900">₹4.2L</div>
-                                    </div>
-                                    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                                        <div class="text-sm text-gray-500 mb-1">Leads Sold</div>
-                                        <div class="text-2xl font-bold text-gray-900">2,100</div>
+                                    
+                                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-6 flex items-start gap-4">
+                                        <div class="bg-blue-100 text-blue-600 p-3 rounded-lg"><i class="fas fa-info-circle text-xl"></i></div>
+                                        <div>
+                                            <h4 class="font-bold text-blue-900">Welcome to the secure admin area</h4>
+                                            <p class="text-sm text-blue-700 mt-1">Use the sidebar to manage listings and users. All deletions are permanent.</p>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- Recent Actions Table (Mock) -->
-                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                                    <div class="px-6 py-4 border-b font-bold text-gray-800">Recent Transactions & Actions</div>
-                                    <table class="w-full text-sm text-left">
-                                        <thead class="bg-gray-50 text-gray-500">
-                                            <tr>
-                                                <th class="px-6 py-3">User</th>
-                                                <th class="px-6 py-3">Action</th>
-                                                <th class="px-6 py-3">Amount</th>
-                                                <th class="px-6 py-3">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y">
-                                            <tr>
-                                                <td class="px-6 py-4">Rohan K.</td>
-                                                <td class="px-6 py-4">Bought Platinum Plan</td>
-                                                <td class="px-6 py-4">₹14,999</td>
-                                                <td class="px-6 py-4 text-green-600">Success</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="px-6 py-4">Amit S.</td>
-                                                <td class="px-6 py-4">Unlock Phone (C2C)</td>
-                                                <td class="px-6 py-4">₹5</td>
-                                                <td class="px-6 py-4 text-green-600">Success</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="px-6 py-4">Priya M.</td>
-                                                <td class="px-6 py-4">Posted Ad (Auto)</td>
-                                                <td class="px-6 py-4">-</td>
-                                                <td class="px-6 py-4 text-yellow-600">Pending Review</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <!-- Listings Tab -->
+                                <div id="admin-listings" class="admin-tab-content hidden">
+                                    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                                        <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50/50">
+                                            <h3 class="font-bold text-gray-800">All Marketplace Listings</h3>
+                                            <button onclick="app.admin.loadListings()" class="text-sm text-primary-600 hover:underline"><i class="fas fa-sync-alt"></i> Refresh</button>
+                                        </div>
+                                        <div class="overflow-x-auto">
+                                            <table class="w-full text-sm text-left">
+                                                <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold tracking-wider">
+                                                    <tr>
+                                                        <th class="px-6 py-3">Item</th>
+                                                        <th class="px-6 py-3">Seller</th>
+                                                        <th class="px-6 py-3">Price</th>
+                                                        <th class="px-6 py-3">Status</th>
+                                                        <th class="px-6 py-3">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="admin-listings-table" class="divide-y divide-gray-100"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <!-- Users Tab -->
+                                <div id="admin-users" class="admin-tab-content hidden">
+                                    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                                        <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50/50">
+                                            <h3 class="font-bold text-gray-800">Registered Users</h3>
+                                            <button onclick="app.admin.loadUsers()" class="text-sm text-primary-600 hover:underline"><i class="fas fa-sync-alt"></i> Refresh</button>
+                                        </div>
+                                        <div class="overflow-x-auto">
+                                            <table class="w-full text-sm text-left">
+                                                <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold tracking-wider">
+                                                    <tr>
+                                                        <th class="px-6 py-3">User</th>
+                                                        <th class="px-6 py-3">Joined</th>
+                                                        <th class="px-6 py-3">Type</th>
+                                                        <th class="px-6 py-3">ID</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="admin-users-table" class="divide-y divide-gray-100"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -1284,6 +1498,7 @@
             // --- Modals Logic ---
             modals: {
                 auth: { show: () => { document.getElementById('auth-modal').classList.remove('hidden', 'opacity-0', 'pointer-events-none'); document.getElementById('auth-modal').classList.add('opacity-100'); }, hide: () => { document.getElementById('auth-modal').classList.add('hidden', 'opacity-0', 'pointer-events-none'); } },
+                adminAuth: { show: () => document.getElementById('admin-auth-modal').classList.remove('hidden'), hide: () => document.getElementById('admin-auth-modal').classList.add('hidden') },
                 sell: { 
                     show: () => { 
                         document.getElementById('sell-modal').classList.remove('hidden'); 
@@ -1346,6 +1561,33 @@
                     
                     btn.disabled = false;
                     btn.innerHTML = `<i class="fas fa-wand-magic-sparkles"></i> AI Write`;
+                },
+                estimatePrice: async () => {
+                    const fd = new FormData(document.getElementById('sell-form'));
+                    const title = fd.get('title');
+                    const catId = fd.get('category');
+                    const subcat = fd.get('subcategory');
+                    
+                    if(!title || !catId) return utils.toast("Enter Title & Category first", "error");
+                    
+                    const btn = document.getElementById('estimate-btn');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    btn.disabled = true;
+
+                    const catName = state.categories.find(c=>c.id==catId)?.name;
+                    const attrs = {};
+                    for(let [k,v] of fd.entries()) if(k.startsWith('attr_') && v && v !== 'Select...') attrs[k.replace('attr_', '')] = v;
+
+                    const range = await app.gemini.estimatePrice(title, catName, subcat, attrs);
+                    if(range) {
+                        utils.toast(`Suggested Price: ${range}`, 'success');
+                    } else {
+                        utils.toast("Could not estimate price.", "error");
+                    }
+                    
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
                 },
                 submit: async () => {
                     if(!state.user) return utils.toast("Please login to post", "error");
@@ -1489,8 +1731,37 @@
                 renderMsg: (m) => {
                     const me = m.sender_id === state.user.id;
                     const c = document.getElementById('chat-messages');
-                    c.insertAdjacentHTML('beforeend', `<div class="flex ${me?'justify-end':'justify-start'}"><div class="${me?'bg-primary-600 text-white':'bg-gray-200 text-gray-800'} px-4 py-2 rounded-xl text-sm max-w-xs shadow-sm">${utils.sanitize(m.content)}</div></div>`);
+                    const msgId = `msg-${m.id || Math.random().toString(36).substr(2,9)}`; 
+                    
+                    const translateBtn = !me ? `<button onclick="app.chat.translate('${msgId}')" class="text-gray-300 hover:text-primary-600 transition" title="Translate to Hindi"><i class="fas fa-language"></i></button>` : '';
+                    
+                    c.insertAdjacentHTML('beforeend', `
+                        <div class="flex ${me?'justify-end':'justify-start'} items-center mb-2 gap-2 group">
+                            <div class="${me?'bg-primary-600 text-white':'bg-gray-200 text-gray-800'} px-4 py-2 rounded-xl text-sm max-w-xs shadow-sm relative order-first" id="${msgId}">
+                                ${utils.sanitize(m.content)}
+                            </div>
+                            ${translateBtn}
+                        </div>
+                    `);
                     c.scrollTop = c.scrollHeight;
+                },
+                translate: async (elemId) => {
+                    const el = document.getElementById(elemId);
+                    if(!el) return;
+                    const original = el.innerText;
+                    
+                    // Show loading state directly in the bubble
+                    const originalHTML = el.innerHTML;
+                    el.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+                    
+                    const translated = await app.gemini.translateToHindi(original);
+                    
+                    if(translated) {
+                        el.innerHTML = `<div>${translated}</div><div class="text-[10px] opacity-60 border-t border-gray-400/20 mt-1 pt-1 font-mono">${original}</div>`;
+                    } else {
+                        el.innerHTML = originalHTML;
+                        utils.toast("Translation failed", "error");
+                    }
                 },
                 send: async (e) => {
                     e.preventDefault();

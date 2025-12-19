@@ -536,11 +536,16 @@
 
                 </form>
             </div>
-            <div class="p-6 border-t border-gray-100 bg-gray-50 flex justify-between items-center rounded-b-2xl pb-safe flex-shrink-0">
-                <div class="text-sm text-gray-600 font-medium">Total: <span id="total-plan-price" class="font-extrabold text-xl text-primary-700 ml-2">₹0</span></div>
-                <div class="flex gap-3">
-                    <button onclick="app.modals.sell.hide()" class="px-6 py-2.5 rounded-xl text-gray-600 hover:bg-gray-200 font-medium transition">Cancel</button>
-                    <button onclick="app.sell.submit()" id="sell-submit-btn" class="px-8 py-2.5 rounded-xl bg-accent-500 text-white font-bold hover:bg-accent-600 shadow-lg hover:shadow-accent-500/40 transition transform hover:-translate-y-0.5">Post & Pay</button>
+            <div class="p-6 border-t border-gray-100 bg-gray-50 flex flex-col md:flex-row justify-between items-center rounded-b-2xl pb-safe flex-shrink-0 gap-4">
+                <div class="text-sm text-gray-600 font-medium order-2 md:order-1">Total: <span id="total-plan-price" class="font-extrabold text-xl text-primary-700 ml-2">₹0</span></div>
+                <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto order-1 md:order-2">
+                    <button type="button" onclick="app.sell.postViaWhatsapp()" class="px-6 py-2.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg shadow-green-500/30 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                        <i class="fab fa-whatsapp text-lg"></i> Fast Post via WhatsApp
+                    </button>
+                    <div class="flex gap-3">
+                        <button onclick="app.modals.sell.hide()" class="px-6 py-2.5 rounded-xl text-gray-600 hover:bg-gray-200 font-medium transition">Cancel</button>
+                        <button onclick="app.sell.submit()" id="sell-submit-btn" class="px-8 py-2.5 rounded-xl bg-accent-500 text-white font-bold hover:bg-accent-600 shadow-lg hover:shadow-accent-500/40 transition transform hover:-translate-y-0.5">Post & Pay</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1361,7 +1366,7 @@
                                 <h3 class="text-xl font-bold text-green-900 mb-2 flex items-center gap-2"><i class="fab fa-whatsapp text-2xl"></i> Need a Custom Lead Package?</h3>
                                 <p class="text-green-700 max-w-lg">Chat directly with our sales team for bulk deals, specific city targeting, and verified seller onboarding support.</p>
                             </div>
-                            <a href="https://wa.me/919876543210?text=Hi%20TradeGinger,%20I%20need%20a%20custom%20leads%20package." target="_blank" class="relative z-10 bg-[#25D366] hover:bg-[#128C7E] text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-green-500/20 flex items-center gap-2 transition transform hover:-translate-y-0.5 whitespace-nowrap">
+                            <a href="https://wa.me/918920835284?text=Hi%20TradeGinger,%20I%20need%20a%20custom%20leads%20package." target="_blank" class="relative z-10 bg-[#25D366] hover:bg-[#128C7E] text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-green-500/20 flex items-center gap-2 transition transform hover:-translate-y-0.5 whitespace-nowrap">
                                 <span>Chat Now</span> <i class="fas fa-arrow-right text-sm"></i>
                             </a>
                         </div>
@@ -1588,6 +1593,34 @@
                     
                     btn.innerHTML = originalText;
                     btn.disabled = false;
+                },
+                postViaWhatsapp: () => {
+                    const fd = new FormData(document.getElementById('sell-form'));
+                    const title = fd.get('title') || 'N/A';
+                    const price = fd.get('price') || 'N/A';
+                    const catId = fd.get('category');
+                    const subcat = fd.get('subcategory') || 'N/A';
+                    const desc = fd.get('description') || 'N/A';
+                    
+                    const catName = state.categories.find(c => c.id == catId)?.name || 'General';
+                    const citySelect = document.getElementById('city-select');
+                    const city = citySelect.options[citySelect.selectedIndex]?.text || 'N/A';
+                    
+                    // Construct Structured Message for Automation
+                    const text = `*🚀 New Seller Onboarding & Ad Request*
+                    
+*Category:* ${catName} (${subcat})
+*Title:* ${title}
+*Price:* ₹${price}
+*Location:* ${city}
+-----------------------
+*Description:* ${desc}
+-----------------------
+*Request:* Please approve my ad and verify my seller account.`;
+
+                    const url = `https://wa.me/918920835284?text=${encodeURIComponent(text)}`;
+                    window.open(url, '_blank');
+                    utils.toast("Opening WhatsApp...", "success");
                 },
                 submit: async () => {
                     if(!state.user) return utils.toast("Please login to post", "error");

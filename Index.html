@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade Ginger | Exclusive Campus Internships</title>
-    <meta name="description" content="Level up your career. Join the Trade Ginger exclusive network for college students and interns.">
     
+    <title>Trade Ginger | Exclusive Internships & Entry-Level Jobs</title>
+    <meta name="description" content="Skip the Naukri and Cutshort grind. Trade Ginger offers exclusive internships, campus ambassador roles, and entry-level jobs for top college students.">
+    <meta name="keywords" content="jobs, internships, fresher jobs, entry level jobs, student internships, campus ambassador, naukri alternative, cutshort alternative, college student jobs">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://yourwebsite.com/"> <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://formsubmit.co;">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -29,9 +29,14 @@
                 radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
                 radial-gradient(at 50% 0%, hsla(225,39%,30%,0.3) 0, transparent 50%), 
                 radial-gradient(at 100% 0%, hsla(339,49%,30%,0.3) 0, transparent 50%);
+            
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none; 
         }
 
-        .container {
+        /* Semantic Main Container */
+        main.container {
             max-width: 500px;
             width: 100%;
             padding: 40px;
@@ -66,19 +71,22 @@
             -webkit-text-fill-color: transparent;
         }
 
-        p {
-            font-size: 1rem;
-            color: #94a3b8;
-            margin-bottom: 25px;
-            line-height: 1.5;
+        /* SEO Visually Hidden H2 */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
         }
 
-        /* Form Styling */
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+        p.subtitle { font-size: 1rem; color: #94a3b8; margin-bottom: 25px; line-height: 1.5; }
+
+        form { display: flex; flex-direction: column; gap: 15px; }
 
         input {
             width: 100%;
@@ -97,7 +105,6 @@
             box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
         }
 
-        /* File Upload Styling */
         .file-upload-wrapper {
             text-align: left;
             background: rgba(15, 23, 42, 0.6);
@@ -106,21 +113,10 @@
             padding: 12px;
         }
 
-        .file-upload-label {
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        input[type="file"] {
-            padding: 0;
-            background: transparent;
-            border: none;
-            font-size: 0.9rem;
-            color: #cbd5e1;
-        }
-
+        .file-upload-label { font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px; display: block; }
+        
+        input[type="file"] { padding: 0; background: transparent; border: none; font-size: 0.9rem; color: #cbd5e1; }
+        
         input[type="file"]::file-selector-button {
             background: #334155;
             color: white;
@@ -133,9 +129,7 @@
             transition: background 0.3s ease;
         }
 
-        input[type="file"]::file-selector-button:hover {
-            background: #475569;
-        }
+        input[type="file"]::file-selector-button:hover { background: #475569; }
 
         button[type="submit"] {
             width: 100%;
@@ -156,47 +150,86 @@
             box-shadow: 0 10px 20px -10px rgba(124, 58, 237, 0.7);
         }
 
-        .footer-text {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-top: 20px;
+        button:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
         }
+
+        .footer-text { font-size: 0.75rem; color: #64748b; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="badge">🚀 Limited Slots Available</div>
-        <h1>Skip the Boring Internships.</h1>
-        <p>Join the Trade Ginger network. Gain real experience, build your resume, and unlock exclusive perks.</p>
+    <main class="container">
+        <header>
+            <div class="badge">🚀 Limited Slots Available</div>
+            <h1>Skip the Boring Internships.</h1>
+            <h2 class="sr-only">Top entry-level jobs and internships alternative to Naukri and Cutshort.</h2>
+            <p class="subtitle">Join the Trade Ginger network. Gain real experience, build your resume, and unlock exclusive career perks.</p>
+        </header>
 
-        <!-- FormSubmit Integration (Fix 2) -->
-        <!-- enctype="multipart/form-data" is strictly required to send images/files -->
         <form action="https://formsubmit.co/tradegingersales@gmail.com" method="POST" enctype="multipart/form-data">
             
-            <!-- Hidden configuration for a cleaner email format -->
-            <input type="hidden" name="_captcha" value="false">
+            <input type="text" name="_honey" style="display:none">
             <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_subject" value="New Student Application (with Photo)">
+            <input type="hidden" name="_subject" value="New Student Application (with Photo & LinkedIn)">
 
             <input type="email" name="Email" placeholder="College Email Address" required>
-            <input type="tel" name="Mobile" placeholder="WhatsApp Number" required>
+            
+            <input type="tel" name="Mobile" placeholder="WhatsApp Number (10 Digits)" pattern="[0-9]{10}" maxlength="10" title="Please enter exactly 10 digits" required>
+            
             <input type="text" name="City" placeholder="Your City / Campus" required>
             
-            <!-- New LinkedIn Field -->
-            <input type="url" name="LinkedIn" placeholder="LinkedIn Profile URL (Optional)">
+            <input type="url" name="LinkedIn" placeholder="LinkedIn Profile URL (Optional)" pattern="^https:\/\/(www\.)?linkedin\.com\/.*$" title="Must be a valid LinkedIn URL starting with https://www.linkedin.com/">
             
-            <!-- New Photo Upload Field -->
             <div class="file-upload-wrapper">
-                <label class="file-upload-label" for="photo">Upload Your Photo (Required)</label>
+                <label class="file-upload-label" for="photo">Upload Your Photo (Max 5MB)</label>
                 <input type="file" id="photo" name="Photo" accept="image/png, image/jpeg, image/jpg" required>
             </div>
             
-            <button type="submit">Claim Your Spot 🔥</button>
+            <button type="submit" id="submitBtn">Claim Your Spot 🔥</button>
         </form>
 
-        <p class="footer-text">Drop your details. We'll hit you up within 24 hours.</p>
-    </div>
+        <footer class="footer-text">
+            <p>Drop your details. We'll hit you up within 24 hours.</p>
+        </footer>
+    </main>
+
+    <script>
+        // --- 1. FILE SIZE LIMITER (5MB) ---
+        const uploadField = document.getElementById("photo");
+        uploadField.onchange = function() {
+            if(this.files[0].size > 5242880) { // 5MB in bytes
+               alert("That photo is too large! Please upload an image under 5MB.");
+               this.value = ""; 
+            }
+        };
+
+        // --- 2. ANTI-SPAM: PREVENT DOUBLE SUBMISSIONS ---
+        const form = document.querySelector('form');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (localStorage.getItem('tradeGingerApplied')) {
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Already Applied ✔️";
+        }
+
+        form.addEventListener('submit', function() {
+            localStorage.setItem('tradeGingerApplied', 'true');
+            submitBtn.innerText = "Sending securely...";
+            submitBtn.style.pointerEvents = "none";
+        });
+
+        // --- 3. ANTI-SNOOPING: BLOCK RIGHT CLICK & DEV TOOLS ---
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12') e.preventDefault();
+            if (e.ctrlKey && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key)) e.preventDefault();
+            if (e.ctrlKey && ['U', 'u', 'S', 's'].includes(e.key)) e.preventDefault();
+        });
+    </script>
 
 </body>
 </html>

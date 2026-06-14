@@ -3,95 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trade Ginger | Exclusive Access for Students & Interns</title>
-    <meta name="description" content="Level up your hustle. Join the ultimate network for top college students and interns.">
+    <title>Trade Ginger | Exclusive Campus Internships</title>
+    <meta name="description" content="Level up your career. Join the Trade Ginger exclusive network for college students and interns.">
     
     <style>
-        /* Modern, Dark, Gen-Z Vibe */
-        :root {
-            --bg-dark: #0f172a;
-            --neon-blue: #38bdf8;
-            --neon-purple: #818cf8;
-            --text-main: #f8fafc;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: radial-gradient(circle at top left, #1e1b4b, var(--bg-dark));
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 450px;
-            padding: 20px;
-        }
-
-        /* Glassmorphism Card */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 40px 30px;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .badge {
-            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            margin: 0 0 10px 0;
-            line-height: 1.2;
-            background: linear-gradient(to right, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        pTo send form data directly to your email without setting up a backend server or database, we can use a free service like **FormSubmit**. It uses a simple HTML `action` attribute to securely route the form submissions straight to your inbox. 
-
-To attract college students and interns, the design needs to be highly visual, mobile-first, and offer a strong "hook"—like an exclusive internship, a side-hustle opportunity, or a campus ambassador program. We will use a modern, dark-mode "glassmorphism" aesthetic with neon accents that appeals to a younger, tech-savvy demographic.
-
-Here is the complete, backend-free code tailored for your audience.
-
-### The Gen-Z Optimized Landing Page Code
-
-Save this as an `index.html` file. 
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- SEO & Virality Meta Tags -->
-    <title>Trade Ginger | Exclusive Campus Internships & Opportunities</title>
-    <meta name="description" content="Level up your career. Join the Trade Ginger exclusive network for college students and interns. Get real-world experience and top-tier perks.">
-    <meta name="keywords" content="student internship, college side hustle, campus ambassador, remote intern, youth opportunities, career growth">
-    
-    <style>
-        /* Modern Dark Mode & Neon CSS */
-        @import url('[https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap)');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 
         * {
             box-sizing: border-box;
@@ -107,6 +23,7 @@ Save this as an `index.html` file.
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px 0;
             overflow-x: hidden;
             background-image: 
                 radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
@@ -116,7 +33,7 @@ Save this as an `index.html` file.
 
         .container {
             max-width: 500px;
-            width: 90%;
+            width: 100%;
             padding: 40px;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 20px;
@@ -152,7 +69,7 @@ Save this as an `index.html` file.
         p {
             font-size: 1rem;
             color: #94a3b8;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             line-height: 1.5;
         }
 
@@ -180,7 +97,47 @@ Save this as an `index.html` file.
             box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
         }
 
-        button {
+        /* File Upload Styling */
+        .file-upload-wrapper {
+            text-align: left;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .file-upload-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input[type="file"] {
+            padding: 0;
+            background: transparent;
+            border: none;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 15px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: #475569;
+        }
+
+        button[type="submit"] {
             width: 100%;
             padding: 16px;
             background: linear-gradient(to right, #4f46e5, #7c3aed);
@@ -194,7 +151,7 @@ Save this as an `index.html` file.
             margin-top: 10px;
         }
 
-        button:hover {
+        button[type="submit"]:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px -10px rgba(124, 58, 237, 0.7);
         }
@@ -211,23 +168,29 @@ Save this as an `index.html` file.
     <div class="container">
         <div class="badge">🚀 Limited Slots Available</div>
         <h1>Skip the Boring Internships.</h1>
-        <p>Join the Trade Ginger student network. Gain real experience, build your resume, and unlock exclusive perks in your city.</p>
+        <p>Join the Trade Ginger network. Gain real experience, build your resume, and unlock exclusive perks.</p>
 
-        <!-- NO BACKEND FORM SETUP -->
-        <!-- The action URL sends the data directly to your email -->
-        <form action="[https://formsubmit.co/tradegingersales@gmail.com](https://formsubmit.co/tradegingersales@gmail.com)" method="POST">
+        <!-- FormSubmit Integration (Fix 2) -->
+        <!-- enctype="multipart/form-data" is strictly required to send images/files -->
+        <form action="https://formsubmit.co/tradegingersales@gmail.com" method="POST" enctype="multipart/form-data">
             
-            <!-- Security & UX configuration for FormSubmit -->
-            <!-- Disables the ugly recaptcha ->
+            <!-- Hidden configuration for a cleaner email format -->
             <input type="hidden" name="_captcha" value="false">
-            <!-- Removes empty fields from the email -->
             <input type="hidden" name="_template" value="table">
-            <!-- Subject line of the email you receive -->
-            <input type="hidden" name="_subject" value="New Student/Intern Lead!">
+            <input type="hidden" name="_subject" value="New Student Application (with Photo)">
 
             <input type="email" name="Email" placeholder="College Email Address" required>
             <input type="tel" name="Mobile" placeholder="WhatsApp Number" required>
             <input type="text" name="City" placeholder="Your City / Campus" required>
+            
+            <!-- New LinkedIn Field -->
+            <input type="url" name="LinkedIn" placeholder="LinkedIn Profile URL (Optional)">
+            
+            <!-- New Photo Upload Field -->
+            <div class="file-upload-wrapper">
+                <label class="file-upload-label" for="photo">Upload Your Photo (Required)</label>
+                <input type="file" id="photo" name="Photo" accept="image/png, image/jpeg, image/jpg" required>
+            </div>
             
             <button type="submit">Claim Your Spot 🔥</button>
         </form>

@@ -3,233 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>Trade Ginger | Exclusive Internships & Entry-Level Jobs</title>
-    <meta name="description" content="Skip the Naukri and Cutshort grind. Trade Ginger offers exclusive internships, campus ambassador roles, and entry-level jobs for top college students.">
-    <meta name="keywords" content="jobs, internships, fresher jobs, entry level jobs, student internships, campus ambassador, naukri alternative, cutshort alternative, college student jobs">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://yourwebsite.com/"> <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://formsubmit.co;">
-
+    <title>Tradeginger Domains for Sale</title>
+    <!-- Tailwind CSS for rapid styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px 0;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-                radial-gradient(at 50% 0%, hsla(225,39%,30%,0.3) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(339,49%,30%,0.3) 0, transparent 50%);
-            
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            user-select: none; 
+        /* Horizontal movement across the screen */
+        @keyframes moveRight {
+            0% { left: -150px; transform: rotate(-20deg); }
+            100% { left: 100vw; transform: rotate(360deg); }
         }
 
-        /* Semantic Main Container */
-        main.container {
-            max-width: 500px;
-            width: 100%;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 20px;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            text-align: center;
+        /* Vertical bouncing effect */
+        @keyframes bounce {
+            0%, 100% { 
+                bottom: 10%; 
+                animation-timing-function: ease-out; 
+            }
+            50% { 
+                bottom: 40%; 
+                animation-timing-function: ease-in; 
+            }
         }
 
-        .badge {
-            display: inline-block;
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 900;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, #38bdf8, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* SEO Visually Hidden H2 */
-        .sr-only {
+        .jumping-ginger {
             position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
+            font-size: 10rem; /* Big ginger */
+            line-height: 1;
+            /* Combines both animations to create a forward jump */
+            animation: 
+                moveRight 8s linear infinite, 
+                bounce 1.5s infinite alternate;
+            z-index: 0;
+            filter: drop-shadow(0px 15px 10px rgba(0,0,0,0.3));
         }
 
-        p.subtitle { font-size: 1rem; color: #94a3b8; margin-bottom: 25px; line-height: 1.5; }
-
-        form { display: flex; flex-direction: column; gap: 15px; }
-
-        input {
-            width: 100%;
-            padding: 16px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid #334155;
-            border-radius: 10px;
-            color: white;
-            font-size: 1rem;
-            transition: all 0.3s ease;
+        /* Subtle pulse for the email button */
+        @keyframes pulse-shadow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+            50% { box-shadow: 0 0 20px 10px rgba(249, 115, 22, 0.2); }
         }
-
-        input:focus {
-            outline: none;
-            border-color: #818cf8;
-            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
-        }
-
-        .file-upload-wrapper {
-            text-align: left;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 12px;
-        }
-
-        .file-upload-label { font-size: 0.85rem; color: #94a3b8; margin-bottom: 8px; display: block; }
         
-        input[type="file"] { padding: 0; background: transparent; border: none; font-size: 0.9rem; color: #cbd5e1; }
-        
-        input[type="file"]::file-selector-button {
-            background: #334155;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-right: 15px;
-            font-weight: bold;
-            transition: background 0.3s ease;
+        .contact-btn {
+            animation: pulse-shadow 2s infinite;
         }
-
-        input[type="file"]::file-selector-button:hover { background: #475569; }
-
-        button[type="submit"] {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(to right, #4f46e5, #7c3aed);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            margin-top: 10px;
-        }
-
-        button[type="submit"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -10px rgba(124, 58, 237, 0.7);
-        }
-
-        button:disabled {
-            background: #475569;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        .footer-text { font-size: 0.75rem; color: #64748b; margin-top: 20px; }
     </style>
 </head>
-<body>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col justify-center items-center overflow-hidden font-sans relative">
 
-    <main class="container">
-        <header>
-            <div class="badge">🚀 Limited Slots Available</div>
-            <h1>Skip the Boring Internships.</h1>
-            <h2 class="sr-only">Top entry-level jobs and internships alternative to Naukri and Cutshort.</h2>
-            <p class="subtitle">Join the Trade Ginger network. Gain real experience, build your resume, and unlock exclusive career perks.</p>
-        </header>
+    <!-- The Jumping Ginger -->
+    <div class="jumping-ginger pointer-events-none select-none">🫚</div>
 
-        <form action="https://formsubmit.co/tradegingersales@gmail.com" method="POST" enctype="multipart/form-data">
-            
-            <input type="text" name="_honey" style="display:none">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_subject" value="New Student Application (with Photo & LinkedIn)">
-
-            <input type="email" name="Email" placeholder="College Email Address" required>
-            
-            <input type="tel" name="Mobile" placeholder="WhatsApp Number (10 Digits)" pattern="[0-9]{10}" maxlength="10" title="Please enter exactly 10 digits" required>
-            
-            <input type="text" name="City" placeholder="Your City / Campus" required>
-            
-            <input type="url" name="LinkedIn" placeholder="LinkedIn Profile URL (Optional)" pattern="^https:\/\/(www\.)?linkedin\.com\/.*$" title="Must be a valid LinkedIn URL starting with https://www.linkedin.com/">
-            
-            <div class="file-upload-wrapper">
-                <label class="file-upload-label" for="photo">Upload Your Photo (Max 5MB)</label>
-                <input type="file" id="photo" name="Photo" accept="image/png, image/jpeg, image/jpg" required>
+    <!-- Main Content Card -->
+    <div class="z-10 p-10 bg-slate-800 bg-opacity-70 rounded-3xl shadow-2xl border border-slate-700 backdrop-blur-md text-center max-w-2xl w-[90%]">
+        
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-6 text-orange-400 tracking-tight">
+            Web Address Available For Sale
+        </h1>
+        
+        <div class="bg-slate-900/50 p-6 rounded-2xl mb-8 border border-slate-700">
+            <p class="text-sm uppercase tracking-widest text-slate-400 mb-4 font-semibold">Premium Domains</p>
+            <div class="flex flex-col gap-3 text-2xl md:text-3xl font-mono text-white">
+                <span class="hover:text-orange-400 transition-colors">Tradeginger.com</span>
+                <span class="text-slate-500 hidden md:inline">|</span>
+                <span class="hover:text-orange-400 transition-colors">Tradeginger.in</span>
             </div>
-            
-            <button type="submit" id="submitBtn">Claim Your Spot 🔥</button>
-        </form>
+        </div>
 
-        <footer class="footer-text">
-            <p>Drop your details. We'll hit you up within 24 hours.</p>
-        </footer>
-    </main>
-
-    <script>
-        // --- 1. FILE SIZE LIMITER (5MB) ---
-        const uploadField = document.getElementById("photo");
-        uploadField.onchange = function() {
-            if(this.files[0].size > 5242880) { // 5MB in bytes
-               alert("That photo is too large! Please upload an image under 5MB.");
-               this.value = ""; 
-            }
-        };
-
-        // --- 2. ANTI-SPAM: PREVENT DOUBLE SUBMISSIONS ---
-        const form = document.querySelector('form');
-        const submitBtn = document.getElementById('submitBtn');
-
-        if (localStorage.getItem('tradeGingerApplied')) {
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Already Applied ✔️";
-        }
-
-        form.addEventListener('submit', function() {
-            localStorage.setItem('tradeGingerApplied', 'true');
-            submitBtn.innerText = "Sending securely...";
-            submitBtn.style.pointerEvents = "none";
-        });
-
-        // --- 3. ANTI-SNOOPING: BLOCK RIGHT CLICK & DEV TOOLS ---
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (e.key === 'F12') e.preventDefault();
-            if (e.ctrlKey && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key)) e.preventDefault();
-            if (e.ctrlKey && ['U', 'u', 'S', 's'].includes(e.key)) e.preventDefault();
-        });
-    </script>
+        <div class="mt-4">
+            <p class="text-lg text-slate-300 mb-5">Interested in acquiring these domains?</p>
+            <a href="mailto:tradegingersales@gmail.com" 
+               class="contact-btn inline-block px-8 py-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-full transition-all duration-300 text-lg md:text-xl transform hover:scale-105">
+                tradegingersales@gmail.com
+            </a>
+        </div>
+        
+    </div>
 
 </body>
 </html>
